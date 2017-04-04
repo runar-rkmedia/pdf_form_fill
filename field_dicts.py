@@ -256,3 +256,361 @@ nexans = {
         'type': str
     }
 }
+varmecomfort = {
+    'variabletopmostSubform[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0]',
+        'type': 'topmostSubform[]'
+    },
+    'variabletopmostSubform[0].Side1[0].#field[13]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].#field[13]',
+        'type': 'topmostSubform[].Side[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].#field[14]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].#field[14]',
+        'type': 'topmostSubform[].Side[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].#field[15]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].#field[15]',
+        'type': 'topmostSubform[].Side[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].#field[16]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].#field[16]',
+        'type': 'topmostSubform[].Side[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[10]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[10]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[11]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[11]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[12]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[12]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[13]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[13]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[14]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[14]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[15]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[15]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[16]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[16]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[19]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[19]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[20]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[20]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[21]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[21]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[22]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[22]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[23]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[23]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[24]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[24]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[25]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[25]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[26]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[26]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[27]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[27]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[28]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[28]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[29]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[29]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[30]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[30]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[31]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[31]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[33]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[33]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[34]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[34]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[35]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[35]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[36]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[36]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[37]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[37]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[39]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[39]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[40]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[40]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[41]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[41]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[42]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[42]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[46]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[46]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[47]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[47]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[48]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[48]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[49]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[49]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[5]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[5]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[6]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[6]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].#field[9]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[9]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text25[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text25[0]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text3[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text3[0]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text4[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text4[0]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text4[1]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text4[1]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text4[2]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text4[2]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[0]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[1]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[1]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[2]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[2]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[3]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[3]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[4]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[4]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[5]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[5]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text5[6]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[6]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text6[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text6[0]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text7[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text7[0]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].PlacedPDF[0].Text7[1]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text7[1]',
+        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text15[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text15[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text16[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text16[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text17[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text17[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text18[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text18[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text19[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text19[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text20[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text20[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text21[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text21[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text22[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text22[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text23[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text23[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text24[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text24[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text25[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text25[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text29[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text29[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text30[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text30[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text4[0]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text4[0]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    },
+    'variabletopmostSubform[0].Side1[0].Text4[1]': {
+        'text': 'TextInPDF',
+        'field': 'topmostSubform[0].Side1[0].Text4[1]',
+        'type': 'topmostSubform[].Side[].Text[]'
+    }
+
+}
