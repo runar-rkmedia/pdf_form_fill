@@ -1,360 +1,362 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Data for VarmeComfort-dictionary."""
 from field_dicts import NumberTypes
 varmecomfort = {
-    'AXZ1': {
+    '1': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0]',
         'type': 'topmostSubform[]'
     },
-    'AXZ2': {
+    '2': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0].Side1[0].#field[13]',
-        'type': 'topmostSubform[].Side[].#field[]'
+        'type': bool
     },
-    'AXZ3': {
-        'text': 'TextInPDF',
+    'Overdekning_betong_check': {
+        'text': 'Betong check',
         'field': 'topmostSubform[0].Side1[0].#field[14]',
-        'type': 'topmostSubform[].Side[].#field[]'
+        'type': bool
     },
-    'AXZ4': {
-        'text': 'TextInPDF',
+    'Overdekning_avrettermasse_check': {
+        'text': 'Avrettemasse check',
         'field': 'topmostSubform[0].Side1[0].#field[15]',
-        'type': 'topmostSubform[].Side[].#field[]'
+        'type': bool
     },
-    'AXZ5': {
-        'text': 'TextInPDF',
+    'Overdekning_jording_check': {
+        'text': 'Jording',
         'field': 'topmostSubform[0].Side1[0].#field[16]',
-        'type': 'topmostSubform[].Side[].#field[]'
+        'type': bool
     },
-    'AXZ6': {
-        'text': 'TextInPDF',
+    'Inneanlegg_lavtbyggende_brennbart_check': {
+        'text': 'Lavtbyggende gulv ikke brennbart underlag',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[10]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ7': {
-        'text': 'TextInPDF',
+    'Inneanlegg_tradisjonell_stop_check': {
+        'text': 'Tradisjonell Støp',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[11]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ8': {
-        'text': 'TextInPDF',
+    'Inneanlegg_annet_check': {
+        'text': 'Inneanlegg annet check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[12]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ9': {
-        'text': 'TextInPDF',
+    'Uteanlegg_frostsikring_ror_check': {
+        'text': 'Frostsikring rør',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[13]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ10': {
-        'text': 'TextInPDF',
+    'Uteanlegg_frostsikring_tak_check': {
+        'text': 'Frostsikring tak/takrenner',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[14]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ11': {
-        'text': 'TextInPDF',
+    'Utenlegg_betong_check': {
+        'text': 'Betong check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[15]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ12': {
-        'text': 'TextInPDF',
+    'Uteanlegg_belegningsstein_check': {
+        'text': 'Belegninggsstein',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[16]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ13': {
+    'Uteanlegg_annet_check': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[19]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ14': {
-        'text': 'TextInPDF',
+    'Uteanlegg_asfalt_check': {
+        'text': 'Asdalt check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[20]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ15': {
-        'text': 'TextInPDF',
+    'Skisse_check': {
+        'text': 'Plassering av varmenhetene er dokumentert ved Skisse side 2 check', # noqa
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[21]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ16': {
-        'text': 'TextInPDF',
+    'Foto_check': {
+        'text': 'Plassering av varmenhetene er dokumentert ved Foto check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[22]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ17': {
-        'text': 'TextInPDF',
+    'Eier_informert_check': {
+        'text': 'Eier og/eller bruker er informert check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[23]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ18': {
-        'text': 'TextInPDF',
+    'Dokumentasjon_overlevert_check': {
+        'text': 'Dokumentasjonen er overlevert',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[24]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ19': {
-        'text': 'TextInPDF',
+    'Inneanlegg_Inteliohm_check': {
+        'text': 'Inteliohm check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[25]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ20': {
-        'text': 'TextInPDF',
+    'Sikkerhetstiltak_Maksbegrenser_check': {
+        'text': 'Maksbegrenser brukt',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[26]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ21': {
-        'text': 'TextInPDF',
+    'Styring_effektregulator_check': {
+        'text': 'Effektregulator check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[27]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ22': {
-        'text': 'TextInPDF',
+    'Styring_termostat_check': {
+        'text': 'Termostat',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[28]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ23': {
-        'text': 'TextInPDF',
+    'Styring_type_740_check': {
+        'text': '740 check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[29]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ24': {
-        'text': 'TextInPDF',
+    'Styring_type_750_check': {
+        'text': '750 check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[30]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ25': {
-        'text': 'TextInPDF',
+    'Styring_type_760_check': {
+        'text': '760 check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[31]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ26': {
-        'text': 'TextInPDF',
+    'Styring_type_Annet_check': {
+        'text': 'Annet check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[33]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ27': {
-        'text': 'TextInPDF',
+    'Styring_foler_rom_check': {
+        'text': 'Romføler check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[34]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ28': {
-        'text': 'TextInPDF',
+    'Styring_foler_gulv_check': {
+        'text': 'Gulvføler check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[35]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ29': {
-        'text': 'TextInPDF',
+    'Styring_foler_begrensning_check': {
+        'text': 'Begrensningsføler check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[36]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ30': {
-        'text': 'TextInPDF',
+    'Styring_foler_annet_check': {
+        'text': 'Annet check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[37]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ31': {
-        'text': 'TextInPDF',
+    'Styring_utendors_takrennefoler_check': {
+        'text': 'Takrenneføler check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[39]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ32': {
-        'text': 'TextInPDF',
+    'Styring_utendors_bakkefoler_check': {
+        'text': 'Bakkeføler check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[40]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ33': {
-        'text': 'TextInPDF',
+    'Styring_utendors_luft_check': {
+        'text': 'Luftføler',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[41]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ34': {
-        'text': 'TextInPDF',
+    'Styring_utendors_annet_check': {
+        'text': 'Annet check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[42]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ35': {
-        'text': 'TextInPDF',
+    'Sikkerthetstiltak_jorfdeilbryter_30ma_check': {
+        'text': 'Sikkerhetstiltak jordfeilbryter 30mA innstallert',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[46]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ36': {
-        'text': 'TextInPDF',
+    'Sikkerhetstiltak_Temperatur_under_80_check': {
+        'text': 'Temperatur i Gulv overskrider ikke 80C ved at.',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[47]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ37': {
-        'text': 'TextInPDF',
+    'Sikkerhetstiltak_monteringsanordning_fulgt_check': {
+        'text': 'Monteringsanordning fulgt check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[48]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ38': {
-        'text': 'TextInPDF',
+    'Sikkerhetstiltak_eier_informert_omt_tiltak': {
+        'text': 'Eier informert om tiltak',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[49]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ39': {
-        'text': 'TextInPDF',
+    'Inneanlegg_flxheat_kabel_check': {
+        'text': 'Flxheat kabel',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[5]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ40': {
-        'text': 'TextInPDF',
+    'Inneanlegg_flxheat_matte_check': {
+        'text': 'Flxheat mattecheck',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[6]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ41': {
-        'text': 'TextInPDF',
+    'Inneanlegg_lavtbyggende_ikke_brennbart_check': {
+        'text': 'Lavtbyggende gulv ikke-brennbart underlag check',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].#field[9]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].#field[]'
+        'type': bool
     },
-    'AXZ42': {
+    'UKJENT': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text25[0]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ43': {
-        'text': 'TextInPDF',
+    'Firma': {
+        'text': 'Ansvarlig Firma',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text3[0]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ44': {
-        'text': 'TextInPDF',
+    'Firma_org_nr': {
+        'text': 'Org.nr.:',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text4[0]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ45': {
-        'text': 'TextInPDF',
+    'Takrennefoler_antall': {
+        'text': 'Takrenneføler antall',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text4[1]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ46': {
-        'text': 'TextInPDF',
+    'Bakkefoler_antall': {
+        'text': 'Bakkeføler antall',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text4[2]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ47': {
-        'text': 'TextInPDF',
+    'Firma_adresse': {
+        'text': 'dresse',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[0]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ48': {
+    'anleggs_adresse': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[1]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ49': {
-        'text': 'TextInPDF',
+    'Produkt_inne_annet': {
+        'text': 'nnet',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[2]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ50': {
-        'text': 'TextInPDF',
+    'Produkt_ute_annet': {
+        'text': 'nnet',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[3]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ51': {
-        'text': 'TextInPDF',
+    'Styring_type_annet': {
+        'text': 'nnet',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[4]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ52': {
-        'text': 'TextInPDF',
+    'Styring_foler_annet': {
+        'text': 'nnet',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[5]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ53': {
-        'text': 'TextInPDF',
+    'Styring_utendors_annet': {
+        'text': 'nnet',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[6]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ54': {
-        'text': 'TextInPDF',
+    'Firma_telefon': {
+        'text': 'Telefon',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text6[0]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ55': {
-        'text': 'TextInPDF',
+    'Montoer': {
+        'text': 'Kontaktperson',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text7[0]',
         'type': str
     },
-    'AXZ56': {
+    'Kundenavn': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text7[1]',
-        'type': 'topmostSubform[].Side[].PlacedPDF[].Text[]'
+        'type': str
     },
-    'AXZ57': {
-        'text': 'TextInPDF',
+    'Beskrivelse_antall': {
+        'text': 'ntall',
         'field': 'topmostSubform[0].Side1[0].Text15[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': Takrennefoler_antall
     },
-    'AXZ58': {
-        'text': 'TextInPDF',
+    'Beskrivelse_type_kabler': {
+        'text': 'Type kabler, matter, folie',
         'field': 'topmostSubform[0].Side1[0].Text16[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': str
     },
-    'AXZ59': {
-        'text': 'TextInPDF',
+    'Beskrivelse_effekt': {
+        'text': 'effekt',
         'field': 'topmostSubform[0].Side1[0].Text17[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ60': {
-        'text': 'TextInPDF',
+    'Beskrivelse_ohmsk_verdi': {
+        'text': 'Ideel ohmsk verdi',
         'field': 'topmostSubform[0].Side1[0].Text18[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ61': {
-        'text': 'TextInPDF',
+    'Beskrivelse_volt': {
+        'text': 'Volt',
         'field': 'topmostSubform[0].Side1[0].Text19[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ62': {
-        'text': 'TextInPDF',
+    'Beskrivelse_cc': {
+        'text': 'CC',
         'field': 'topmostSubform[0].Side1[0].Text20[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ63': {
-        'text': 'TextInPDF',
+    'Beskrivelse_metereffekt': {
+        'text': 'W/m',
         'field': 'topmostSubform[0].Side1[0].Text21[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ64': {
-        'text': 'TextInPDF',
+    'Beskrivelse_flateeffekt': {
+        'text': 'W/m2',
         'field': 'topmostSubform[0].Side1[0].Text22[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ65': {
-        'text': 'TextInPDF',
+    'Ohm_foer': {
+        'text': 'Målt resistans før installasjon',
         'field': 'topmostSubform[0].Side1[0].Text23[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ66': {
-        'text': 'TextInPDF',
+    'Ohm_etter': {
+        'text': 'Målt resistans etter installasjon',
         'field': 'topmostSubform[0].Side1[0].Text24[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ67': {
-        'text': 'TextInPDF',
+    'Mohm_foer': {
+        'text': 'Målt isolasjon etter installasjon',
         'field': 'topmostSubform[0].Side1[0].Text25[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': NumberTypes
     },
-    'AXZ68': {
-        'text': 'TextInPDF',
+    'Dato': {
+        'text': 'Dato',
         'field': 'topmostSubform[0].Side1[0].Text29[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': str
     },
-    'AXZ69': {
-        'text': 'TextInPDF',
+    'Underskrift': {
+        'text': 'Underskrift',
         'field': 'topmostSubform[0].Side1[0].Text30[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': str
     },
-    'AXZ70': {
-        'text': 'TextInPDF',
+    'Overdekning_avrettermasse_dybde': {
+        'text': 'Dato',
         'field': 'topmostSubform[0].Side1[0].Text4[0]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': str
     },
-    'AXZ71': {
-        'text': 'TextInPDF',
+    'Overdekning_betong_dybde': {
+        'text': 'Dybde overdekning betong',
         'field': 'topmostSubform[0].Side1[0].Text4[1]',
-        'type': 'topmostSubform[].Side[].Text[]'
+        'type': str
     }
 
 }
