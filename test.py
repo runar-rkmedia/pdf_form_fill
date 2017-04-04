@@ -6,7 +6,7 @@ import field_dicts
 def logger(msg, msg_type='info'):
     """A logger function."""
     if msg_type == 'info':
-        print "{}: {}".format(msg_type, msg)
+        print ("{}: {}".format(msg_type, msg))
 
 class FormField(object):
     """Wrapper for pdffields."""
@@ -51,15 +51,19 @@ class FormField(object):
 
 nexans = FormField(
     '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf', field_dicts.nexans)
+varmecomfort = FormField(
+    'Kontrollskjema_varme_2012.pdf', field_dicts.nexans)
+
+print(varmecomfort.print_all_fields())
 # print(nexans.print_all_fields())
-nexans.set_field('firma_navn', 'Kristiansand Elektro AS')
-nexans.set_field('anleggs_adresse', 'Rigetjonnveien 3')
-nexans.set_field('anleggs_adresse2', '4626 Kristiansand')
-nexans.set_field('Rom_navn', 'Bad')
-nexans.set_field('areal', 4.6)
-nexans.set_field('type_og_effekt', 'TXLP 500')
-nexans.set_field('meterEffekt', 17.0)
-nexans.set_field('nominell_motstand', 100)
-nexans.set_field('driftspenning', 230)
-nexans.create_filled_pdf('output.pdf')
+# nexans.set_field('firma_navn', 'Kristiansand Elektro AS')
+# nexans.set_field('anleggs_adresse', 'Rigetjonnveien 3')
+# nexans.set_field('anleggs_adresse2', '4626 Kristiansand')
+# nexans.set_field('Rom_navn', 'Bad')
+# nexans.set_field('areal', 4.6)
+# nexans.set_field('type_og_effekt', 'TXLP 500')
+# nexans.set_field('meterEffekt', 17.0)
+# nexans.set_field('nominell_motstand', 100)
+# nexans.set_field('driftspenning', 230)
+# nexans.create_filled_pdf('output.pdf')
 # print(nexans_fields_dict['firma_navn']['text'])

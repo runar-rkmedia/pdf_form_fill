@@ -1,6 +1,8 @@
 """part of smart pdf filler."""
-import types
-NumberTypes = (types.IntType, types.LongType, types.FloatType, types.ComplexType)
+# import types
+# python2
+# NumberTypes = (types.IntType, types.LongType, types.FloatType, types.ComplexType)
+NumberTypes = (int, float, complex)
 
 nexans = {
     'variableCheck Box1': {
