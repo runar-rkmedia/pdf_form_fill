@@ -1,23 +1,73 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% block body %}
-<h1>Smart varmekabel-dokumentasjon</h1>
-<p>Dette er et prosjekt helt i startfasen. Målet er å skape en smartere og lettere metode for å fylle ut varmekabel-dokumentasjon, men om dette fungerer tilfredstillende, vil dette muligens kunne ha et mye bredere bruksområde.</p>
-<hr>
-<form class="" action="nexans.html" method="post">
-    <label for="input-rom_navn">Romnavn</label>
-    <input type="text" name="rom_navn" id="input-rom_navn">
-    <label for="input-rom_navn">Romnavn</label>
-    <input type="text" name="rom_navn" id="input-rom_navn">
-    <label for="input-areal">Areal</label>
-    <input type="text" name="areal" id="input-areal">
-    <label for="input-effekt">Effekt</label>
-    <input type="text" name="effekt" id="input-effekt">
-    <select name="meterEffekt">
-        <option value="10">10W/m</option>
-        <option value="17">17W/m</option>
-    </select>
-    <input type="submit" value="Fyll inn i skjema">
-</form>
+    <div class="row header">
+        <h1>Smart varmekabel-dokumentasjon</h1>
+        <p>Dette er et prosjekt helt i startfasen. Målet er å skape en smartere og lettere metode for å fylle ut varmekabel-dokumentasjon, men om dette fungerer tilfredstillende, vil dette muligens kunne ha et mye bredere bruksområde.</p>
+        <hr>
+    </div>
+    <div class="row">
+        <form class="" action="nexans.html" method="post">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="form-kunde">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form-kunde" aria-expanded="true" aria-controls="collapse-form-kunde">Kundeinformasjon</a>
+                        </h4>
+                    </div>
+                    <div div id="collapse-form-kunde" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form-kunde">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="input-anleggs_adresse">Anleggsadresse</label>
+                                <input class="form-control" type="text" name="anleggs_adresse" id="input-anleggs_adresse">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-anleggs_adresse2">Anleggsadresse 2</label>
+                                <input class="form-control" type="text" name="anleggs_adresse2" id="input-anleggs_adresse2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="form_vk">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_vk" aria-expanded="true" aria-controls="collapse-form_vk">Spesifikasjoner varmekabel</a>
+                        </h4>
+                    </div>
+                    <div div id="collapse-form_vk" class="panel-collapse collapse " role="tabpanel" aria-labelledby="form_vk">
+                        <div class="panel-body form-inline">
+                            <div class="form-group">
+                                <label for="input-rom_navn">Romnavn</label>
+                                <input class="form-control" type="text" name="rom_navn" id="input-rom_navn">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-areal">Areal</label>
+                                <input class="form-control" type="text" name="areal" id="input-areal">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-effekt">Effekt</label>
+                                <input class="form-control" type="text" name="effekt" id="input-effekt">
+                            </div>
+                            <div class="form-group">
+                                <label class="radio-inline">
+                                    <input type="radio" name="meterEffekt" id="inlineRadio1" value="10">
+                                    10 W/m
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="meterEffekt" id="inlineRadio2" value="16">
+                                    16 W/m
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="meterEffekt" id="inlineRadio3" value="17">
+                                    17 W/m
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" value="Fyll inn i skjema">
+        </form>
+    </div>
 
 {% endblock %}
