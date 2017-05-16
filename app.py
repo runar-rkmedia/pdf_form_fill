@@ -24,20 +24,7 @@ def view_form():
 @app.route('/nexans.html', methods=['POST'])
 def fill_document():
     """Fill a document with data from form, and smart usage."""
-    print(request.form)
-    areal = float(request.form['areal'])
-    effekt = float(request.form['effekt'])
-    meterEffekt = float(request.form['meterEffekt'])
-    # nexans.set_field('areal', areal)
-    # nexans.set_field('effekt', effekt)
-    # nexans.set_field('meterEffekt', meterEffekt)
-    # nexans.set_field('type', 'TXLP')
-    nexans.set_fields_from_dict({
-        'areal': areal,
-        'effekt': effekt,
-        'meterEffekt': meterEffekt,
-        'type': 'TXLP',
-        })
+    nexans.set_fields_from_dict(request.form) # TODO: is this safe?
     nexans.create_filled_pdf('output.pdf')
     return render_template(
         'form.html',
