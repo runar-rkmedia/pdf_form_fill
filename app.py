@@ -5,6 +5,7 @@ from vk_objects import nexans
 from flask import (
     Flask,
     request,
+    redirect,
     render_template,
 )
 
@@ -26,9 +27,7 @@ def fill_document():
     """Fill a document with data from form, and smart usage."""
     nexans.set_fields_from_dict(request.form) # TODO: is this safe?
     nexans.create_filled_pdf('output.pdf')
-    return render_template(
-        'form.html',
-    )
+    return redirect('/')
 
 
 # hook up extensions to app

@@ -83,7 +83,7 @@ nexans = {
         'field': 'Text3',
         'type': str
     },
-    'Rom_navn': {
+    'rom_navn': {
         'text': 'Rom',
         'field': 'Text4',
         'type': str
