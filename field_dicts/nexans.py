@@ -1,72 +1,72 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
-from field_dicts import NumberTypes
+from .field_dicts import NumberTypes
 nexans = {
-    'variableCheck Box1': {
+    'check:enleder': {
         'text': 'TextInPDF',
         'field': 'Check Box1',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box2': {
+    'check:toleder': {
         'text': 'TextInPDF',
         'field': 'Check Box2',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box3': {
+    'check:jordet_kabelskjerm': {
         'text': 'TextInPDF',
         'field': 'Check Box3',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box4': {
+    'check:jordet_netting': {
         'text': 'TextInPDF',
         'field': 'Check Box4',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box5': {
+    'check:jording_annet': {
         'text': 'TextInPDF',
         'field': 'Check Box5',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box6': {
+    'check:montert_i_henhold_til_installasjonsveiledning': {
         'text': 'TextInPDF',
         'field': 'Check Box6',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box7': {
+    'check:ikke_montert_i_henhold_til_installasjonsveiledning': {
         'text': 'TextInPDF',
         'field': 'Check Box7',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box8': {
+    'check:maks_temp_planlegging': {
         'text': 'TextInPDF',
         'field': 'Check Box8',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box9': {
+    'check:maks_temp_utførelse': {
         'text': 'TextInPDF',
         'field': 'Check Box9',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box10': {
+    'check:maks_temp_annet': {
         'text': 'TextInPDF',
         'field': 'Check Box10',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box11': {
+    'check:følertype-gulv': {
         'text': 'TextInPDF',
         'field': 'Check Box11',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box12': {
+    'check:følertype-rom': {
         'text': 'TextInPDF',
         'field': 'Check Box12',
-        'type': bool
+        'type': str
     },
-    'variableCheck Box13': {
+    'check:følertype-annet': {
         'text': 'TextInPDF',
         'field': 'Check Box13',
-        'type': bool
+        'type': str
     },
     'firma_navn': {
         'text': 'Installert av (firma)',
@@ -113,142 +113,142 @@ nexans = {
         'field': 'Text9',
         'type': NumberTypes
     },
-    'variableText10': {
+    'ohm_a': {
         'text': 'TextInPDF',
         'field': 'Text10',
         'type': str
     },
-    'variableText11': {
+    'ohm_b': {
         'text': 'TextInPDF',
         'field': 'Text11',
         'type': str
     },
-    'variableText12': {
+    'ogm_c': {
         'text': 'TextInPDF',
         'field': 'Text12',
         'type': str
     },
-    'variableText13': {
+    'ohm_dato_og_underskrift': {
         'text': 'TextInPDF',
         'field': 'Text13',
         'type': str
     },
-    'variableText14': {
+    'mohm_a': {
         'text': 'TextInPDF',
         'field': 'Text14',
         'type': str
     },
-    'variableText15': {
+    'mohm_b': {
         'text': 'TextInPDF',
         'field': 'Text15',
         'type': str
     },
-    'variableText16': {
+    'mohm_c': {
         'text': 'TextInPDF',
         'field': 'Text16',
         'type': str
     },
-    'variableText17': {
+    'montasjedybde': {
         'text': 'TextInPDF',
         'field': 'Text17',
         'type': str
     },
-    'variableText18': {
+    'antall_elementer_matter_installert': {
         'text': 'TextInPDF',
         'field': 'Text18',
         'type': str
     },
-    'variableText19': {
+    'oppvarmet_areal': {
         'text': 'TextInPDF',
         'field': 'Text19',
         'type': str
     },
-    'variableText20': {
+    'flateeffekt': {
         'text': 'TextInPDF',
         'field': 'Text20',
         'type': str
     },
-    'variableText21': {
+    'sikringstørrelse': {
         'text': 'TextInPDF',
         'field': 'Text21',
         'type': str
     },
-    'variableText22': {
+    'utløserstrøm_for_fordfeilvern': {
         'text': 'TextInPDF',
         'field': 'Text22',
         'type': str
     },
-    'variableText23': {
+    'mohm_dato_og_underskrift': {
         'text': 'TextInPDF',
         'field': 'Text23',
         'type': str
     },
-    'variableText24': {
+    'jording_annet': {
         'text': 'TextInPDF',
         'field': 'Text24',
         'type': str
     },
-    'variableText25': {
+    'spesielle_forhold': {
         'text': 'TextInPDF',
         'field': 'Text25',
         'type': str
     },
-    'variableText26': {
+    'underskrift_installatør': {
         'text': 'TextInPDF',
         'field': 'Text26',
         'type': str
     },
-    'variableText27': {
+    'stempel_installatør': {
         'text': 'TextInPDF',
         'field': 'Text27',
         'type': str
     },
-    'variableText28': {
+    'støpemasse_benyttet': {
         'text': 'TextInPDF',
         'field': 'Text28',
         'type': str
     },
-    'variableText29': {
+    'dato_spesielle_forhold': {
         'text': 'TextInPDF',
         'field': 'Text29',
         'type': str
     },
-    'variableText30': {
+    'støpetykkelse_støper': {
         'text': 'TextInPDF',
         'field': 'Text30',
         'type': str
     },
-    'variableText31': {
+    'dato_støper': {
         'text': 'TextInPDF',
         'field': 'Text31',
         'type': str
     },
-    'variableText32': {
+    'underskrift_støper': {
         'text': 'TextInPDF',
         'field': 'Text32',
         'type': str
     },
-    'variableText33': {
+    'underskrift_anleggseier': {
         'text': 'TextInPDF',
         'field': 'Text33',
         'type': str
     },
-    'variableText34': {
+    'dat_anleggseier': {
         'text': 'TextInPDF',
         'field': 'Text34',
         'type': str
     },
-    'variableText35': {
+    'maks_temp_beskrivelse': {
         'text': 'TextInPDF',
         'field': 'Text35',
         'type': str
     },
-    'variableText36': {
+    'styresystem_typebetegnelse': {
         'text': 'TextInPDF',
         'field': 'Text36',
         'type': str
     },
-    'variableText37': {
+    'følertype_annet': {
         'text': 'TextInPDF',
         'field': 'Text37',
         'type': str
