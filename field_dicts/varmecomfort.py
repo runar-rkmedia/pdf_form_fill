@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for VarmeComfort-dictionary."""
-from field_dicts import NumberTypes
+from .field_dicts import NumberTypes
 varmecomfort = {
     '1': {
         'text': 'TextInPDF',

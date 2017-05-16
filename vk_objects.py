@@ -1,14 +1,18 @@
-#!/usr/bin/env python
+#!venv/bin/python
+# Because of bug in Atom Beta or Atom Runnar, virtualenv is not activated.
+# Please remove the above shebang, and use the one below in production.
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Part of smart pdf-form-filler (wip)"""
 import pdffields.fields
 from field_dicts import nexans
+from field_dicts.field_dicts import NumberTypes
 
 
 def logger(msg, msg_type='info'):
     """A logger function."""
     if msg_type == 'info':
-        print ("{}: {}".format(msg_type, msg))
+        print("{}: {}".format(msg_type, msg))
 
 
 class FormField(object):
@@ -33,13 +37,21 @@ class FormField(object):
         """Set a field in the pdf to a value."""
         thisDict = self.fields_dict[fieldVariable]
         thisType = thisDict['type']
-        if typeCheckBypass or isinstance(value, thisType):
-            self.fields[thisDict['field']] = value
-            logger("Set field '{}' to '{}'".format(fieldVariable, value))
-        else:
-            raise ValueError(
-                "Expected a {} for fieldVariable = '{}' got value = '{}'".format(  # noqa
-                    thisType, fieldVariable, value))
+        # Cast the value to the needed type.
+        if thisType == NumberTypes and not isinstance(value, thisType):
+            for t in NumberTypes:
+                try:
+                    value = t(value)
+                    break
+                except ValueError:
+                    pass
+        elif thisType == bool:
+            if value:
+                value = 'Yes'
+            else:
+                value = 'No'
+        self.fields[thisDict['field']] = value
+        logger("Set field '{}' to '{}'".format(fieldVariable, value))
 
     def preprocess_format_dict(self, dictionary):
         """Fill specific fields in the formatting with info from dictionary."""
@@ -85,29 +97,26 @@ class FormField(object):
 
 nexans_format = {
     'type_og_effekt': [
-        '{} {}',
+        '{} {:.0f}',
         ['type', 'effekt']]
 }
 nexans = FormField(
     '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
     nexans.nexans,
     nexans_format)
-# varmecomfort = FormField(
-# 'Kontrollskjema_varme_2012.pdf', varmecomfort.varmecomfort)
-
-# varmecomfort.fill_pdf_with_field_vars()
-# varmecomfort.set_field('Inneanlegg_tradisjonell_stop_check', True)
-# varmecomfort.set_field('Firma_adresse', 'Test')
-# varmecomfort.set_field('anleggs_adresse', 'Test')
-# varmecomfort.set_field('Kundenavn', 'Test')
-# varmecomfort.set_field('Takrennefoler_antall', 2)
-# varmecomfort.create_filled_pdf('output.pdf')
-
-# print(varmecomfort.print_all_fields())
-# print(nexans.print_all_fields())
 standard_data = {
     'firma_navn': 'Kristiansand Elektro AS',
-    'effekt': 800,
-    'type': 'Kul',
+    'type': 'TFXP',
+    'driftspenning': '230',
+    'sikringstørrelse': '16A',
+    'utløserstrøm_for_fordfeilvern': '30mA',
+    'check-jordet_kabelskjerm': True,
+    'check-toleder': True
 }
 nexans.set_fields_from_dict(standard_data)
+
+if __name__ == '__main__':
+    # standard_data['areal'] = '37.2'
+    nexans.set_fields_from_dict(standard_data)
+    # nexans.fill_pdf_with_field_vars()
+    nexans.create_filled_pdf('output.pdf')

@@ -3,70 +3,70 @@
 """Data for nexans-dictionary."""
 from .field_dicts import NumberTypes
 nexans = {
-    'check:enleder': {
+    'check-enleder': {
         'text': 'TextInPDF',
         'field': 'Check Box1',
-        'type': str
+        'type': bool
     },
-    'check:toleder': {
+    'check-toleder': {
         'text': 'TextInPDF',
         'field': 'Check Box2',
-        'type': str
+        'type': bool
     },
-    'check:jordet_kabelskjerm': {
+    'check-jordet_kabelskjerm': {
         'text': 'TextInPDF',
         'field': 'Check Box3',
-        'type': str
+        'type': bool
     },
-    'check:jordet_netting': {
+    'check-jordet_netting': {
         'text': 'TextInPDF',
         'field': 'Check Box4',
-        'type': str
+        'type': bool
     },
-    'check:jording_annet': {
+    'check-jording_annet': {
         'text': 'TextInPDF',
         'field': 'Check Box5',
-        'type': str
+        'type': bool
     },
-    'check:montert_i_henhold_til_installasjonsveiledning': {
+    'check-montert_i_henhold_til_installasjonsveiledning': {
         'text': 'TextInPDF',
         'field': 'Check Box6',
-        'type': str
+        'type': bool
     },
-    'check:ikke_montert_i_henhold_til_installasjonsveiledning': {
+    'check-ikke_montert_i_henhold_til_installasjonsveiledning': {
         'text': 'TextInPDF',
         'field': 'Check Box7',
-        'type': str
+        'type': bool
     },
-    'check:maks_temp_planlegging': {
+    'check-maks_temp_planlegging': {
         'text': 'TextInPDF',
         'field': 'Check Box8',
-        'type': str
+        'type': bool
     },
-    'check:maks_temp_utførelse': {
+    'check-maks_temp_utførelse': {
         'text': 'TextInPDF',
         'field': 'Check Box9',
-        'type': str
+        'type': bool
     },
-    'check:maks_temp_annet': {
+    'check-maks_temp_annet': {
         'text': 'TextInPDF',
         'field': 'Check Box10',
-        'type': str
+        'type': bool
     },
-    'check:følertype-gulv': {
+    'check-følertype-gulv': {
         'text': 'TextInPDF',
         'field': 'Check Box11',
-        'type': str
+        'type': bool
     },
-    'check:følertype-rom': {
+    'check-følertype-rom': {
         'text': 'TextInPDF',
         'field': 'Check Box12',
-        'type': str
+        'type': bool
     },
-    'check:følertype-annet': {
+    'check-følertype-annet': {
         'text': 'TextInPDF',
         'field': 'Check Box13',
-        'type': str
+        'type': bool
     },
     'firma_navn': {
         'text': 'Installert av (firma)',
