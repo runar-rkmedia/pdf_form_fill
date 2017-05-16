@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+<h1>Smart varmekabel-dokumentasjon</h1>
+<p>Dette er et prosjekt helt i startfasen. Målet er å skape en smartere og lettere metode for å fylle ut varmekabel-dokumentasjon, men om dette fungerer tilfredstillende, vil dette muligens kunne ha et mye bredere bruksområde.</p>
+<hr>
+<form class="" action="nexans.html" method="post">
+    <label for="input-areal">Areal</label>
+    <input type="text" name="areal" id="input-areal">
+    <label for="input-effekt">Effekt</label>
+    <input type="text" name="effekt" id="input-effekt">
+    <select name="meterEffekt">
+        <option value="10">10W/m</option>
+        <option value="17">17W/m</option>
+    </select>
+    <input type="submit" value="Fyll inn i skjema">
+</form>
+
+{% endblock %}

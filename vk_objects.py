@@ -61,22 +61,22 @@ class FormField(object):
 
 nexans = FormField(
     '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf', nexans.nexans)
-varmecomfort = FormField(
-    'Kontrollskjema_varme_2012.pdf', varmecomfort.varmecomfort)
+# varmecomfort = FormField(
+# 'Kontrollskjema_varme_2012.pdf', varmecomfort.varmecomfort)
 
 # varmecomfort.fill_pdf_with_field_vars()
-varmecomfort.set_field('Inneanlegg_tradisjonell_stop_check', True)
-varmecomfort.set_field('Firma_adresse', 'Test')
-varmecomfort.set_field('anleggs_adresse', 'Test')
-varmecomfort.set_field('Kundenavn', 'Test')
-varmecomfort.set_field('Takrennefoler_antall', 2)
-varmecomfort.create_filled_pdf('output.pdf')
+# varmecomfort.set_field('Inneanlegg_tradisjonell_stop_check', True)
+# varmecomfort.set_field('Firma_adresse', 'Test')
+# varmecomfort.set_field('anleggs_adresse', 'Test')
+# varmecomfort.set_field('Kundenavn', 'Test')
+# varmecomfort.set_field('Takrennefoler_antall', 2)
+# varmecomfort.create_filled_pdf('output.pdf')
 
 # print(varmecomfort.print_all_fields())
 # print(nexans.print_all_fields())
-# nexans.set_field('firma_navn', 'Kristiansand Elektro AS')
-# nexans.set_field('anleggs_adresse', 'Rigetjonnveien 3')
-# nexans.set_field('anleggs_adresse2', '4626 Kristiansand')
+nexans.set_field('firma_navn', 'Kristiansand Elektro AS')
+nexans.set_field('anleggs_adresse', 'Rigetjonnveien 3')
+nexans.set_field('anleggs_adresse2', '4626 Kristiansand')
 # nexans.set_field('Rom_navn', 'Bad')
 # nexans.set_field('areal', 4.6)
 # nexans.set_field('type_og_effekt', 'TXLP 500')

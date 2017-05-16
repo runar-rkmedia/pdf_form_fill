@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for VarmeComfort-dictionary."""
-from field_dicts import NumberTypes
+from field_dicts.field_dicts import NumberTypes
 varmecomfort = {
     '1': {
         'text': 'TextInPDF',
@@ -286,7 +286,7 @@ varmecomfort = {
     'Beskrivelse_antall': {
         'text': 'ntall',
         'field': 'topmostSubform[0].Side1[0].Text15[0]',
-        'type': Takrennefoler_antall
+        'type': NumberTypes
     },
     'Beskrivelse_type_kabler': {
         'text': 'Type kabler, matter, folie',
