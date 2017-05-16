@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
-from field_dicts.field_dicts import NumberTypes
+from field_dicts import NumberTypes
 nexans = {
     'variableCheck Box1': {
         'text': 'TextInPDF',

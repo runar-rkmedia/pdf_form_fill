@@ -29,8 +29,9 @@ def fill_document():
     effekt = float(request.form['effekt'])
     meterEffekt = float(request.form['meterEffekt'])
     nexans.set_field('areal', areal)
-    nexans.set_field('type_og_effekt', 'TXLP {}'.format(effekt))
+    nexans.set_field('effekt', effekt)
     nexans.set_field('meterEffekt', meterEffekt)
+    nexans.set_field('type', 'TXLP')
     nexans.create_filled_pdf('output.pdf')
     return render_template(
         'form.html',
