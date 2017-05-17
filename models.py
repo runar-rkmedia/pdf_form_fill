@@ -56,6 +56,10 @@ class Product(db.Model):
         for key, val in dictionary.items():
             db.session.add(ProductSpec(key=key, value=val, product=self))
 
+    def get_specs(self):
+        """Retrieve all specs for this product."""
+        return ProductSpec.query.filter_by(product_id=self.id).all()
+
 
 class ProductSpec(db.Model):
     """ProductSpec-table."""
