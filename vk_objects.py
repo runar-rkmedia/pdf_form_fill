@@ -56,16 +56,16 @@ class FormField(object):
     def preprocess_format_dict(self, dictionary):
         """Fill specific fields in the formatting with info from dictionary."""
         for key, value in self.formatting.items():
+            print(key)
             string_format = value[0]
             format_keys = value[1]
-            expanded_values = []
             try:
-                for f_key in format_keys:
-                    expanded_values.append(dictionary[f_key])
-                dictionary[key] = string_format.format(*expanded_values)
-            except KeyError:
+                dictionary[key] = string_format.format(
+                    *format_keys(dictionary))
+            except (KeyError):
                 pass
-            return dictionary
+
+        return dictionary
 
     def set_fields_from_dict(self, dictionary):
         """Set multiple fields in pdf from a dictionary."""
@@ -98,7 +98,22 @@ class FormField(object):
 nexans_format = {
     'type_og_effekt': [
         '{} {:.0f}',
-        ['type', 'effekt']]
+        lambda x: (x['type'], float(x['effekt']))
+    ],
+    'flateeffekt': [
+        '{:.2f}',
+        lambda x: (float(x['effekt']) / float(x['oppvarmet_areal']),)
+    ]
+}
+nexans_format = {
+    'type_og_effekt': [
+        '{} {:.0f}',
+        lambda x: (x['type'], float(x['effekt']))
+    ],
+    'flateeffekt': [
+        '{:.2f}',
+        lambda x: (float(x['effekt']) / float(x['oppvarmet_areal']),)
+    ]
 }
 nexans = FormField(
     '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
@@ -108,15 +123,18 @@ standard_data = {
     'firma_navn': 'Kristiansand Elektro AS',
     'type': 'TFXP',
     'driftspenning': '230',
-    'sikringstørrelse': '16A',
-    'utløserstrøm_for_fordfeilvern': '30mA',
+    'sikringstørrelse': '16',
+    'utløserstrøm_for_fordfeilvern': '30',
     'check-jordet_kabelskjerm': True,
     'check-toleder': True
 }
-nexans.set_fields_from_dict(standard_data)
+# nexans.set_fields_from_d§ict(standard_data)
 
 if __name__ == '__main__':
-    # standard_data['areal'] = '37.2'
+    standard_data['areal'] = '9'
+    standard_data['effekt'] = '700'
+    standard_data['type'] = 'TFXP'
+    standard_data['oppvarmet_areal'] = '5.48'
     nexans.set_fields_from_dict(standard_data)
     # nexans.fill_pdf_with_field_vars()
     nexans.create_filled_pdf('output.pdf')
