@@ -58,7 +58,6 @@ class FormField(object):
     def preprocess_format_dict(self, dictionary):
         """Fill specific fields in the formatting with info from dictionary."""
         for key, value in self.formatting.items():
-            print(key)
             string_format = value[0]
             format_keys = value[1]
             try:
@@ -99,18 +98,8 @@ class FormField(object):
 
 nexans_format = {
     'type_og_effekt': [
-        '{} {:.0f}',
-        lambda x: (x['type'], float(x['effekt']))
-    ],
-    'flateeffekt': [
-        '{:.2f}',
-        lambda x: (float(x['effekt']) / float(x['oppvarmet_areal']),)
-    ]
-}
-nexans_format = {
-    'type_og_effekt': [
-        '{} {:.0f}',
-        lambda x: (x['type'], float(x['effekt']))
+        '{}',
+        lambda x: (x['Betegnelse'],)
     ],
     'flateeffekt': [
         '{:.2f}',
@@ -131,13 +120,14 @@ standard_data = {
     'check-toleder': True
 }
 
+
 def filter_vk(arg):
     """Description."""
     try:
         f = open('Nexans_TXLP.csv')
     finally:
         pass
-# nexans.set_fields_from_d§ict(standard_data)
+nexans.set_fields_from_dict(standard_data)
 
 if __name__ == '__main__':
     # standard_data['areal'] = '9'
