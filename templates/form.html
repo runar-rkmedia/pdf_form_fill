@@ -34,7 +34,7 @@
                             <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_vk" aria-expanded="true" aria-controls="collapse-form_vk">Spesifikasjoner varmekabel</a>
                         </h4>
                     </div>
-                    <div div id="collapse-form_vk" class="panel-collapse collapse " role="tabpanel" aria-labelledby="form_vk">
+                    <div div id="collapse-form_vk" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form_vk">
                         <div class="panel-body form-inline">
                             <div class="form-group">
                                 <label for="input-rom_navn">Romnavn</label>
@@ -42,32 +42,73 @@
                             </div>
                             <div class="form-group">
                                 <label for="input-areal">Areal</label>
-                                <input class="form-control" type="text" name="areal" id="input-areal">
+                                <input class="form-control" type="text" name="areal" id="input-areal" value="300">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-areal">Oppvarmet areal</label>
+                                <input class="form-control" type="text" name="oppvarmet_areal" id="input-areal" value="300">
                             </div>
                             <div class="form-group">
                                 <label for="input-effekt">Effekt</label>
-                                <input class="form-control" type="text" name="effekt" id="input-effekt">
-                            </div>
+                                <input class="form-control" type="text" name="effekt" id="input-effekt" value="500">
+                            </div><br>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="meterEffekt" id="inlineRadio1" value="10">
+                                    <input type="radio" name="meterEffekt" id="meterEffekt1" value="10">
                                     10 W/m
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="meterEffekt" id="inlineRadio2" value="16">
+                                    <input type="radio" name="meterEffekt" id="meterEffekt2" value="16">
                                     16 W/m
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="meterEffekt" id="inlineRadio3" value="17" checked="true">
+                                    <input type="radio" name="meterEffekt" id="meterEffekt3" value="17" checked="true">
                                     17 W/m
                                 </label>
-                            </div>
+                            </div><br>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="manufacturor" id="inlineRadio1" value="Nexans" checked='true'>
+                                    <input type="radio" name="manufacturor" id="manufacturor1" value="Nexans" checked="true">
                                     Nexans
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="form_maalinger">
+                            <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_maalinger" aria-expanded="true" aria-controls="collapse-form_maalinger">Målinger</a>
+                            </h4>
+                        </div>
+                    <div div id="collapse-form_maalinger" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form_maalinger">
+                        <div class="panel-body form-inline">
+                            <h4>Ledermotstand</h4>
+                            <div class="form-group">
+                                <label for="input-ohm_a">Før installasjon</label>
+                                <input class="form-control" type="text" name="ohm_a" id="input-ohm_a">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-ohm_b">Før støping</label>
+                                <input class="form-control" type="text" name="ohm_b" id="input-ohm_b">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-ohm_c">Før tilkobling</label>
+                                <input class="form-control" type="text" name="ohm_c" id="input-ohm_c">
+                            </div><br>
+                            <h4>Isolasjonsmotstand</h4>
+                            <p>Målt over 100 Mohm</p>
+                            <label class="checkbox">
+                                <input type="checkbox" name="mohm_a" value="999" checked="true">
+                                Før installasjon
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="mohm_b" value="999" checked="true">
+                                Før støping
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="mohm_c" value="999" checked="true">
+                                Før tilkobling
+                            </label>
                         </div>
                     </div>
                 </div>
