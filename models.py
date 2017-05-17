@@ -4,6 +4,21 @@ from flask_sqlalchemy import SQLAlchemy
 import bleach
 db = SQLAlchemy()
 
+def lookup_vk(manufacturor, watt_per_meter, watt_total):
+    """Return a specific heating_cable from a generic lookup."""
+    # I am sure this can be improved a lot
+    m = Manufacturor.query.filter_by(name=manufacturor).one()
+    product_types = ProductType.query.filter_by(
+        watt_per_meter=watt_per_meter,
+        manufacturor_id=m.id).all()
+    product_type_ids = []
+    for pt in product_types:
+        product_type_ids.append(pt.id)
+
+    products = Product.query.filter(
+        Product.product_type_id.in_(product_type_ids),
+        Product.effekt == watt_total)
+    return products
 
 class Manufacturor(db.Model):
     """Manufacturor-table."""
