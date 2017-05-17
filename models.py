@@ -19,9 +19,12 @@ class ProductType(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
+    mainSpec = db.Column(db.String(25))
+    watt_per_meter = db.Column(db.Numeric(6))
+    ledere = db.Column(db.Integer)
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
-        Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')
+        Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id') # noqa
 
 
 class Product(db.Model):
@@ -29,6 +32,7 @@ class Product(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
+    effekt = db.Column(db.Numeric(8))
     product_type_id = db.Column(db.Integer, db.ForeignKey(ProductType.id))
     product_type = db.relationship(
         ProductType, primaryjoin='Product.product_type_id==ProductType.id')

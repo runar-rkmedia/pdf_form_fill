@@ -44,20 +44,22 @@ if __name__ == "__main__":
             db.create_all()
             Nexans = Manufacturor(name='Nexans', description="It's nexans")
             db.session.add(Nexans)
-            txlp = ProductType(name='TXLP/2R/17', manufacturor=Nexans)
+            txlp = ProductType(name='TXLP/2R/17',
+                               mainSpec='TXLP',
+                               watt_per_meter=17,
+                               ledere=2,
+                               manufacturor=Nexans)
             db.session.add(txlp)
             import Nexans_TXLP
             for vk in Nexans_TXLP.vks:
                 name = vk.pop('Betegnelse')
+                effekt = vk.pop('Effekt ved 230V')
                 if name:
-                    new_vk = Product(name=name, product_type=txlp)
+                    new_vk = Product(
+                        name=name, product_type=txlp, effekt=effekt)
                     new_vk.add_keys_from_dict(vk)
                     db.session.add(new_vk)
             db.session.commit()
-            # import setup
-            # for setup_manufacturor in setup.manufacturors:
-            #     db.session.add(Manufacturor(**setup_manufacturor))
-            # db.session.commit()
             print("Database tables created")
     else:
         app.run(host='0.0.0.0', port=app.config['PORT'])
