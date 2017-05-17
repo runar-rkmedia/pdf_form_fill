@@ -8,7 +8,7 @@ class BaseConfig(object):
     TESTING = False
     PORT = int(os.environ.get("PORT", 5000))
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL', 'sqlite:///varmekabel.db')
+        'DATABASE_URL', 'postgres:///varmekabler')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
