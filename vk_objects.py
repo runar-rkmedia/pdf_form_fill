@@ -5,6 +5,8 @@
 # -*- coding: utf-8 -*-
 """Part of smart pdf-form-filler (wip)"""
 import pdffields.fields
+import csv
+import sys
 from field_dicts import nexans
 from field_dicts.field_dicts import NumberTypes
 
@@ -128,13 +130,20 @@ standard_data = {
     'check-jordet_kabelskjerm': True,
     'check-toleder': True
 }
+
+def filter_vk(arg):
+    """Description."""
+    try:
+        f = open('Nexans_TXLP.csv')
+    finally:
+        pass
 # nexans.set_fields_from_d§ict(standard_data)
 
 if __name__ == '__main__':
-    standard_data['areal'] = '9'
-    standard_data['effekt'] = '700'
-    standard_data['type'] = 'TFXP'
-    standard_data['oppvarmet_areal'] = '5.48'
-    nexans.set_fields_from_dict(standard_data)
-    # nexans.fill_pdf_with_field_vars()
-    nexans.create_filled_pdf('output.pdf')
+    # standard_data['areal'] = '9'
+    # standard_data['effekt'] = '700'
+    # standard_data['type'] = 'TFXP'
+    # standard_data['oppvarmet_areal'] = '5.48'
+    # nexans.set_fields_from_dict(standard_data)
+    # nexans.create_filled_pdf('output.pdf')
+    pass
