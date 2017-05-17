@@ -1,6 +1,7 @@
 """Udacity assignment for creating a Neighborhood-map."""
 
 import sys
+
 from config import configure_app
 from models import (db, Manufacturor, Product,
                     ProductSpec, ProductType, lookup_vk)
@@ -36,10 +37,13 @@ def set_fields_from_product(dictionary, product, specs=None):
 
 
 @app.route('/')
-def view_form():
+def view_form(dictionary={
+    'anleggs_postnummer': 4626,
+    'anleggs_poststed': 'Kristiansand',
+}):
     """View for home."""
     return render_template(
-        'form.html',
+        'form.html', dictionary=dictionary
     )
 
 
@@ -60,8 +64,8 @@ def fill_document():
             dictionary, varmekabel, specs)
 
     nexans.set_fields_from_dict(dictionary)
-    nexans.create_filled_pdf('output.pdf')
-    return redirect('/')
+    nexans.create_filled_pdf('pdf/' + dictionary.get('anleggs_adresse','output') + '.pdf')
+    return view_form(dictionary)
 
 
 # hook up extensions to app

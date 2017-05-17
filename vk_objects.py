@@ -5,7 +5,7 @@
 # -*- coding: utf-8 -*-
 """Part of smart pdf-form-filler (wip)"""
 import pdffields.fields
-import csv
+from time import gmtime, strftime
 import sys
 from field_dicts import nexans
 from field_dicts.field_dicts import NumberTypes
@@ -60,6 +60,7 @@ class FormField(object):
         for key, value in self.formatting.items():
             string_format = value[0]
             format_keys = value[1]
+            print(string_format)
             try:
                 dictionary[key] = string_format.format(
                     *format_keys(dictionary))
@@ -95,6 +96,9 @@ class FormField(object):
             print(key, value['field'], value['text'])
             self.set_field(key, key, True)
 
+def currentDate():
+    """get formated current date."""
+    return strftime("%d.%m.%Y", gmtime())
 
 nexans_format = {
     'type_og_effekt': [
@@ -104,7 +108,24 @@ nexans_format = {
     'flateeffekt': [
         '{:.2f}',
         lambda x: (float(x['effekt']) / float(x['oppvarmet_areal']),)
-    ]
+    ],
+    'anleggs_adresse2': [
+        '{} {}',
+        lambda x: (x['anleggs_postnummer'],x['anleggs_poststed'])
+    ],
+    'ohm_dato_og_underskrift': [
+        '{}',
+        lambda x: (currentDate(),)
+    ],
+    'mohm_dato_og_underskrift': [
+        '{}',
+        lambda x: (currentDate(),)
+    ],
+    'dato_spesielle_forhold': [
+        '{}',
+        lambda x: (currentDate(),)
+    ],
+
 }
 nexans = FormField(
     '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
@@ -117,7 +138,9 @@ standard_data = {
     'sikringstørrelse': '16',
     'utløserstrøm_for_fordfeilvern': '30',
     'check-jordet_kabelskjerm': True,
-    'check-toleder': True
+    'check-toleder': True,
+    'check-maks_temp_planlegging': True,
+    'check-følertype-gulv': True,
 }
 
 

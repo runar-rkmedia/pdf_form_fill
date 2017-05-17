@@ -19,11 +19,15 @@
                         <div class="panel-body">
                             <div class="form-group">
                                 <label for="input-anleggs_adresse">Anleggsadresse</label>
-                                <input class="form-control" type="text" name="anleggs_adresse" id="input-anleggs_adresse">
+                                <input class="form-control" type="text" name="anleggs_adresse" id="input-anleggs_adresse" value="{{ dictionary['anleggs_adresse'] }}">
                             </div>
-                            <div class="form-group">
-                                <label for="input-anleggs_adresse2">Anleggsadresse 2</label>
-                                <input class="form-control" type="text" name="anleggs_adresse2" id="input-anleggs_adresse2">
+                            <div class="form-group col-xs-4">
+                                <label for="input-anleggs_postnummer">Postnummer</label>
+                                <input class="form-control" type="text" name="anleggs_postnummer" id="input-anleggs_postnummer" value="{{ dictionary['anleggs_postnummer'] }}">
+                            </div>
+                            <div class="form-group col-xs-8">
+                                <label for="input-anleggs_poststed">Poststed</label>
+                                <input class="form-control" type="text" name="anleggs_poststed" id="input-anleggs_poststed" value="{{ dictionary['anleggs_poststed'] }}">
                             </div>
                         </div>
                     </div>
@@ -38,31 +42,43 @@
                         <div class="panel-body form-inline">
                             <div class="form-group">
                                 <label for="input-rom_navn">Romnavn</label>
-                                <input class="form-control" type="text" name="rom_navn" id="input-rom_navn">
+                                <input class="form-control" type="text" name="rom_navn" id="input-rom_navn"  value="{{ dictionary['rom_navn'] }}">
                             </div>
                             <div class="form-group">
                                 <label for="input-areal">Areal</label>
-                                <input class="form-control" type="text" name="areal" id="input-areal" value="300">
+                                <input class="form-control" type="text" name="areal" id="input-areal" value="{{ dictionary['areal'] }}">
                             </div>
                             <div class="form-group">
                                 <label for="input-areal">Oppvarmet areal</label>
-                                <input class="form-control" type="text" name="oppvarmet_areal" id="input-areal" value="300">
+                                <input class="form-control" type="text" name="oppvarmet_areal" id="input-areal"  value="{{ dictionary['oppvarmet_areal'] }}">
                             </div>
                             <div class="form-group">
                                 <label for="input-effekt">Effekt</label>
-                                <input class="form-control" type="text" name="effekt" id="input-effekt" value="500">
+                                <input class="form-control" type="text" name="effekt" id="input-effekt"  value="{{ dictionary['effekt'] }}">
                             </div><br>
                             <div class="form-group">
                                 <label class="radio-inline">
-                                    <input type="radio" name="meterEffekt" id="meterEffekt1" value="10">
+                                    <input type="radio" name="meterEffekt" id="meterEffekt1" value="10"
+                                {% if dictionary['meterEffekt'] == "10" %}
+                                checked="true"
+                                {% endif %}
+                                >
                                     10 W/m
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="meterEffekt" id="meterEffekt2" value="16">
+                                    <input type="radio" name="meterEffekt" id="meterEffekt2" value="16"
+                                {% if dictionary['meterEffekt'] == "16" %}
+                                checked="true"
+                                {% endif %}
+                                >
                                     16 W/m
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="meterEffekt" id="meterEffekt3" value="17" checked="true">
+                                    <input type="radio" name="meterEffekt" id="meterEffekt3" value="17"
+                                {% if dictionary['meterEffekt'] == "17" %}
+                                checked="true"
+                                {% endif %}
+                                >
                                     17 W/m
                                 </label>
                             </div><br>
@@ -85,28 +101,40 @@
                             <h4>Ledermotstand</h4>
                             <div class="form-group">
                                 <label for="input-ohm_a">Før installasjon</label>
-                                <input class="form-control" type="text" name="ohm_a" id="input-ohm_a">
+                                <input class="form-control" type="text" name="ohm_a" id="input-ohm_a" value="{{ dictionary['ohm_a'] }}">
                             </div>
                             <div class="form-group">
                                 <label for="input-ohm_b">Før støping</label>
-                                <input class="form-control" type="text" name="ohm_b" id="input-ohm_b">
+                                <input class="form-control" type="text" name="ohm_b" id="input-ohm_b" value="{{ dictionary['ohm_b'] }}">
                             </div>
                             <div class="form-group">
                                 <label for="input-ohm_c">Før tilkobling</label>
-                                <input class="form-control" type="text" name="ohm_c" id="input-ohm_c">
+                                <input class="form-control" type="text" name="ohm_c" id="input-ohm_c" value="{{ dictionary['ohm_c'] }}">
                             </div><br>
                             <h4>Isolasjonsmotstand</h4>
                             <p>Målt over 100 Mohm</p>
                             <label class="checkbox">
-                                <input type="checkbox" name="mohm_a" value="999" checked="true">
+                                <input type="checkbox" name="mohm_a" value="999"
+                                {% if dictionary['mohm_a'] %}
+                                checked="true"
+                                {% endif %}
+                                >
                                 Før installasjon
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="mohm_b" value="999" checked="true">
+                                <input type="checkbox" name="mohm_b" value="999"
+                                {% if dictionary['mohm_b'] %}
+                                checked="true"
+                                {% endif %}
+                                >
                                 Før støping
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox" name="mohm_c" value="999" checked="true">
+                                <input type="checkbox" name="mohm_c" value="999"
+                                {% if dictionary['mohm_c'] %}
+                                checked="true"
+                                {% endif %}
+                                >
                                 Før tilkobling
                             </label>
                         </div>
