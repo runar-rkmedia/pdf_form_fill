@@ -64,7 +64,7 @@ def fill_document():
             dictionary, varmekabel, specs)
 
     nexans.set_fields_from_dict(dictionary)
-    nexans.create_filled_pdf('pdf/' + dictionary.get('anleggs_adresse','output') + '.pdf')
+    nexans.create_filled_pdf(dictionary.get('anleggs_adresse','output') + '.pdf')
     return view_form(dictionary)
 
 
