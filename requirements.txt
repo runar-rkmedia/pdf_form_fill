@@ -1,0 +1,14 @@
+bleach==2.0.0
+click==6.7
+fdfgen==0.16.0
+Flask==0.12.2
+Flask-SQLAlchemy==2.2
+html5lib==0.999999999
+itsdangerous==0.24
+Jinja2==2.9.6
+MarkupSafe==1.0
+psycopg2==2.7.1
+six==1.10.0
+SQLAlchemy==1.1.9
+webencodings==0.5.1
+Werkzeug==0.12.2
