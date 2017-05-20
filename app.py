@@ -191,15 +191,11 @@ if __name__ == "__main__":
             for vk in Nexans_TXLP.vks:
                 name = vk.pop('Betegnelse')
                 effekt = vk.pop('Effekt ved 230V')
-                print(name[-2:])
                 if name[-2:] == '17':
-                    print('sfd')
                     product_type = txlp17
                 else:
-                    print('134')
                     product_type = txlp10
                 if name:
-                    print(txlp10.name)
                     new_vk = Product(
                         name=name, product_type=product_type, effekt=effekt)
                     new_vk.add_keys_from_dict(vk)
