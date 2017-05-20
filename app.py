@@ -97,6 +97,7 @@ def fill_document():
     nexans.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_path = user_file_path(filename)
+    print(output_path)
     nexans.create_filled_pdf(output_path)
     return success(dictionary, filename)
 
