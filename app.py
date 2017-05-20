@@ -1,6 +1,7 @@
 """Udacity assignment for creating a Neighborhood-map."""
 
 import sys
+import os
 
 from config import configure_app
 from models import (db, Manufacturor, Product,
@@ -11,6 +12,7 @@ from flask import (
     request,
     redirect,
     render_template,
+    send_from_directory
 )
 
 
@@ -18,6 +20,14 @@ app = Flask(__name__, instance_relative_config=True)
 configure_app(app)
 
 db.init_app(app)
+
+
+def user_file_path(filename=None):
+    """Return full path to user-directory."""
+    paths = [app.root_path, app.config['USER_FILES']]
+    if filename:
+        paths.append(filename)
+    return os.path.join(*paths)
 
 
 def set_fields_from_product(dictionary, product, specs=None):
@@ -36,12 +46,33 @@ def set_fields_from_product(dictionary, product, specs=None):
     return dictionary
 
 
+@app.route('/user_files/<path:filename>', methods=['GET'])
+def download(filename):
+    """Serve a file for downloading."""
+    user_files = user_file_path()
+    print(user_files)
+    return send_from_directory(directory=user_files, filename=filename)
+
+
+@app.route('/success/')
+def success(dictionary, user_file):
+    """Form filled successfully, show file, or edit."""
+    return render_template(
+        'success.html',
+        dictionary=dictionary,
+        user_file=user_file
+    )
+
+
 @app.route('/')
-def view_form(dictionary={
-    'anleggs_postnummer': 4626,
-    'anleggs_poststed': 'Kristiansand',
-}):
+def view_form(dictionary=None):
     """View for home."""
+    # Set up some defaults. (retrieve this from the user-config later.)
+    if dictionary is None:
+        dictionary = {
+            'anleggs_postnummer': 4626,
+            'anleggs_poststed': 'Kristiansand',
+        }
     return render_template(
         'form.html', dictionary=dictionary
     )
@@ -64,8 +95,10 @@ def fill_document():
             dictionary, varmekabel, specs)
 
     nexans.set_fields_from_dict(dictionary)
-    nexans.create_filled_pdf(dictionary.get('anleggs_adresse','output') + '.pdf')
-    return view_form(dictionary)
+    filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
+    output_path = user_file_path(filename)
+    nexans.create_filled_pdf(output_path)
+    return success(dictionary, filename)
 
 
 # hook up extensions to app

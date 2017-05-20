@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+<div class="row message-box">
+    <div class="message">Ditt skjema er ferdig utfyllt.</div></div>
+    <a href="{{url_for('download', filename=user_file)}}">Klikk her for å laste det ned.</a>
+
+    <p>Hvis du vil gjøre endringer, trykker du tilbake i nettleseren.</p>
+
+    <p class="bg-danger">MERK: Filen ovenfor er bare tilgjengelig i en kort periode. <br>Hvis du vil sende filen til noen, anbefales det å laste den ned først.</p>
+{% endblock %}

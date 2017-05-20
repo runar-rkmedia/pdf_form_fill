@@ -9,6 +9,8 @@ class BaseConfig(object):
     PORT = int(os.environ.get("PORT", 5000))
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgres:///varmekabler')
+    USER_FILES = os.environ.get(
+        'user_files', 'user_files')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
