@@ -1,9 +1,10 @@
-"""Udacity assignment for creating a Neighborhood-map."""
+"""PDF-fill for heating cables."""
 
 import sys
 import os
 
 from config import configure_app
+from helpers import commafloat
 from models import (db, Manufacturor, Product,
                     ProductSpec, ProductType, lookup_vk)
 from vk_objects import nexans
@@ -65,35 +66,57 @@ def success(dictionary, user_file):
 
 
 @app.route('/')
-def view_form(dictionary=None, errors=None):
+def view_form(dictionary=None, error_fields=[], error_message=None):
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
     if dictionary is None:
         dictionary = {
             'anleggs_postnummer': 4626,
             'anleggs_poststed': 'Kristiansand',
+            'meterEffekt':  "17"
         }
     return render_template(
-        'form.html', dictionary=dictionary, errors=errors
+        'form.html',
+        dictionary=dictionary,
+        error_fields=error_fields,
+        error_message=error_message
     )
 
 
 @app.route('/nexans.html', methods=['POST'])
 def fill_document():
     """Fill a document with data from form, and smart usage."""
-    required_fields = [
-        'anleggs_adresse',
-        'manufacturor',
-        'effekt',
-        'meterEffekt'
-        ]
-    errors = []
-    for key in required_fields:
+    required_fields = {
+        'strings': [
+            'anleggs_adresse',
+            'manufacturor',
+        ],
+        'digits': [
+            'effekt',
+            'meterEffekt',
+            'oppvarmet_areal'
+        ]}
+    error_fields = []
+
+    for key in required_fields['strings']:
         field = request.form.get(key)
         if not field:
-            errors.append(key)
-    if errors:
-        return view_form(dictionary=request.form, errors=errors)
+            error_fields.append(key)
+    for key in required_fields['digits']:
+        field = request.form.get(key)
+        if not field:
+            error_fields.append(key)
+        else:
+            try:
+                commafloat(field)
+            except ValueError:
+                error_fields.append(key)
+
+    if error_fields:
+        return view_form(
+            dictionary=request.form,
+            error_fields=error_fields,
+            error_message=None)
 
     vk_manufacturor = request.form['manufacturor']
     vk_effekt = request.form['effekt']
@@ -101,14 +124,22 @@ def fill_document():
     filtered_vks = lookup_vk(vk_manufacturor, vk_meterEffekt, vk_effekt)
     dictionary = request.form.copy()
     if len(filtered_vks) > 1:
-        raise ValueError("Got more than one product. Need more filtering.")
+        return view_form(
+            dictionary=dictionary,
+            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format( # noqa
+                vk_manufacturor, vk_meterEffekt, vk_effekt
+            ))
     elif len(filtered_vks) == 1:
         varmekabel = filtered_vks[0]
         specs = varmekabel.get_specs()
         dictionary = set_fields_from_product(
             dictionary, varmekabel, specs)
     else:
-        raise ValueError("Could not find any products matching this filter")
+        return view_form(
+            dictionary=dictionary,
+            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format( # noqa
+                vk_manufacturor, vk_meterEffekt, vk_effekt
+            ))
 
     nexans.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'

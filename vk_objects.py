@@ -7,6 +7,7 @@
 import pdffields.fields
 from time import gmtime, strftime
 import sys
+from helpers import commafloat
 from field_dicts import nexans
 from field_dicts.field_dicts import NumberTypes
 
@@ -107,7 +108,7 @@ nexans_format = {
     ],
     'flateeffekt': [
         '{:.2f}',
-        lambda x: (float(x['effekt']) / float(x['oppvarmet_areal']),)
+        lambda x: (commafloat(x['effekt']) / commafloat(x['oppvarmet_areal']),)
     ],
     'anleggs_adresse2': [
         '{} {}',

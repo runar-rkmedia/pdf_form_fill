@@ -2,9 +2,15 @@
 {% extends 'base.html' %}
 {% block body %}
     <div class="row">
-        {% for error in errors%}
-        <div class="error bg-danger">Feltet '{{error}}'  er ikke fyllt ut tilstrekkelig.</div>
-        {% endfor %}
+        <div class="error bg-danger">
+        {% if error_message %}
+        <p>{{error_message}}</p>
+        {% endif %}
+        {% if error_fields %}
+
+        Noen felt var ikke fylt ut tilstrekkelig. Dette gjelder: <strong>{{ error_fields|join(', ') }}</strong>
+        {% endif %}
+        </div>
         <form class="" action="nexans.html" method="post">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">
@@ -55,19 +61,21 @@
                                 <input class="form-control" type="text" name="effekt" id="input-effekt"  value="{{ dictionary['effekt'] }}">
                             </div><br>
                             <div class="form-group">
-                                <label class="radio-inline">
+                                <label class="radio-inline disabled">
                                     <input type="radio" name="meterEffekt" id="meterEffekt1" value="10"
                                 {% if dictionary['meterEffekt'] == "10" %}
                                 checked="true"
                                 {% endif %}
+                                disabled
                                 >
                                     10 W/m
                                 </label>
-                                <label class="radio-inline">
+                                <label class="radio-inline disabled">
                                     <input type="radio" name="meterEffekt" id="meterEffekt2" value="16"
                                 {% if dictionary['meterEffekt'] == "16" %}
                                 checked="true"
                                 {% endif %}
+                                disabled
                                 >
                                     16 W/m
                                 </label>
