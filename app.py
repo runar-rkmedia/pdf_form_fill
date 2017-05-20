@@ -2,8 +2,10 @@
 
 import sys
 import os
+import re
 
 from config import configure_app
+import base64
 from helpers import commafloat
 from models import (db, Manufacturor, Product,
                     ProductSpec, ProductType, lookup_vk)
@@ -23,11 +25,11 @@ app = Flask(__name__, instance_relative_config=True)
 configure_app(app)
 
 
-
 assets = Environment(app)
-# js = Bundle('js/ko.js', 'js/map.js', 'js/bootstrap.js', 'js/skycons.js',
-#             filters='jsmin', output='gen/packed.js')
-# assets.register('js_all', js)
+js = Bundle(
+    'js/signature_pad.js',
+    filters='jsmin', output='gen/packed.js')
+assets.register('js_all', js)
 
 css = Bundle(
     # 'css/bootstrap.min.css',
@@ -62,6 +64,18 @@ def set_fields_from_product(dictionary, product, specs=None):
         if s.key == 'Nominell elementmotstand':
             dictionary['nominell_motstand'] = s.value
     return dictionary
+
+
+@app.route('/set_sign', methods=['POST'])
+def save_image():
+    """Save an image from a data-string."""
+    image_b64 = request.values['imageBase64']
+    image_data = re.sub('^data:image/.+;base64,', '', image_b64)
+    imgdata = base64.b64decode(image_data)
+    filename = 'some_image.jpg'
+    with open(filename, 'wb') as f:
+        f.write(imgdata)
+    return 's'
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
@@ -143,7 +157,7 @@ def fill_document():
     if len(filtered_vks) > 1:
         return view_form(
             dictionary=dictionary,
-            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format( # noqa
+            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
                 vk_manufacturor, vk_meterEffekt, vk_effekt
             ))
     elif len(filtered_vks) == 1:
@@ -154,7 +168,7 @@ def fill_document():
     else:
         return view_form(
             dictionary=dictionary,
-            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format( # noqa
+            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
                 vk_manufacturor, vk_meterEffekt, vk_effekt
             ))
 

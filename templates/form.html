@@ -2,7 +2,14 @@
 {% extends 'base.html' %}
 {% block body %}
 {% include 'includes/header.html' %}
+<div class="row">
+    <div class="col-xs-12">
+        <canvas id="canvas"></canvas>
+    </div>
+    <button class="btn-saveSign btn-primary" type="button" name="button">Save my signature</button>
+</div>
     <div class="row">
+
         <div class="error bg-danger">
             {% if error_message %}
                 <p>{{error_message}}</p>

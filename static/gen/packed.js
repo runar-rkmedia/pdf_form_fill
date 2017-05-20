@@ -1,0 +1,4 @@
+var canvas=document.querySelector("canvas");var signaturePad=new SignaturePad(canvas);$(function(){c=$('canvas');htmlCanvas=document.getElementById('canvas');context=htmlCanvas.getContext('2d');initialize();function initialize(){window.addEventListener('resize',resizeCanvas,false);resizeCanvas();}
+function resizeCanvas(){htmlCanvas.width=c.parent().width();htmlCanvas.height=c.parent().width()/16*9;}
+function redraw(){context.strokeStyle='blue';context.lineWidth='5';context.strokeRect(0,0,window.innerWidth,window.innerHeight);}
+$('.btn-saveSign').click(function(){var test=signaturePad.toDataURL();console.log(test);$.ajax({type:"POST",url:"/set_sign",data:{imageBase64:test}}).done(function(){console.log('sent');});})});
