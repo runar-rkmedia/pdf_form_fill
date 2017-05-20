@@ -4,18 +4,23 @@ https://github.com/ccnmtl/fdfgenfdf# wip pdf-fill-forms
 
 This is a work in progress. The goal of this project is to create a webpage or an app that workers can use on-site to fill pdfforms.
 
+Notes:
+
+Currently, the pdfs are just stored on the server. This is okey, as the user will most likely be downloading the file straight away. I do not plan on storing the pdfs long-term, since it is cheaper to just store the values, and re-filling the pdf-template-forms as necacary.
+
+For that reason, I don't see a problem in storing the pdf's on herokus [Ephemeral filesystem](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem) for the 5-minute-window a user might need to download his pdf.
 
 ## To do:
 
-### MWE:
- - [ ] Type
- - [ ] Nominell motstand
- - [ ] ohm
- - [ ] mohm
- - [ ] dato
- - [ ] oppvarmet_areal
- - [X] flateeffekt(calc)
- - [ ] Følertype
+ - [ ] Øglænd
+ - [ ] TermoFloor
+ - [ ] VarmeComfort
+ - [ ] 1881
+ - [ ] Lagre skjema
+ - [ ] Lagre kunder
+ - [ ] Lagre firma
+ - [ ] Lagre bruker
+ - [ ] proff.no
 
 ## Why not just use Acrobat?
 
