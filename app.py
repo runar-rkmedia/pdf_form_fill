@@ -15,10 +15,27 @@ from flask import (
     render_template,
     send_from_directory
 )
+from flask_scss import Scss
+from flask_assets import Environment, Bundle
 
 
 app = Flask(__name__, instance_relative_config=True)
 configure_app(app)
+
+
+
+assets = Environment(app)
+# js = Bundle('js/ko.js', 'js/map.js', 'js/bootstrap.js', 'js/skycons.js',
+#             filters='jsmin', output='gen/packed.js')
+# assets.register('js_all', js)
+
+css = Bundle(
+    # 'css/bootstrap.min.css',
+    'css/style.css',
+    filters='cssmin',
+    output='css/min.css'
+)
+assets.register('css_all', css)
 
 db.init_app(app)
 
@@ -187,4 +204,6 @@ if __name__ == "__main__":
             print("Database tables created")
 
     else:
+        if app.config['DEBUG'] is True:
+            Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
         app.run(host='0.0.0.0', port=app.config['PORT'])
