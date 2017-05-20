@@ -23,7 +23,6 @@ app = Flask(__name__, instance_relative_config=True)
 configure_app(app)
 
 
-
 assets = Environment(app)
 # js = Bundle('js/ko.js', 'js/map.js', 'js/bootstrap.js', 'js/skycons.js',
 #             filters='jsmin', output='gen/packed.js')
@@ -143,7 +142,7 @@ def fill_document():
     if len(filtered_vks) > 1:
         return view_form(
             dictionary=dictionary,
-            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format( # noqa
+            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
                 vk_manufacturor, vk_meterEffekt, vk_effekt
             ))
     elif len(filtered_vks) == 1:
@@ -154,7 +153,7 @@ def fill_document():
     else:
         return view_form(
             dictionary=dictionary,
-            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format( # noqa
+            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
                 vk_manufacturor, vk_meterEffekt, vk_effekt
             ))
 
@@ -176,29 +175,37 @@ if __name__ == "__main__":
             db.create_all()
             Nexans = Manufacturor(name='Nexans', description="It's nexans")
             db.session.add(Nexans)
-            txlp = ProductType(name='TXLP/2R/17',
-                               mainSpec='TXLP',
-                               watt_per_meter=17,
-                               ledere=2,
-                               manufacturor=Nexans)
-            txlp_tull = ProductType(name='TXLP/TULL/17',
-                                    mainSpec='TXLPTULL',
-                                    watt_per_meter=16,
-                                    ledere=2,
-                                    manufacturor=Nexans)
-            db.session.add(txlp)
-            db.session.add(txlp_tull)
+            txlp17 = ProductType(name='TXLP/2R/17',
+                                 mainSpec='TXLP',
+                                 watt_per_meter=17,
+                                 ledere=2,
+                                 manufacturor=Nexans)
+            txlp10 = ProductType(name='TXLP/2R/10',
+                                      mainSpec='TXLP',
+                                      watt_per_meter=10,
+                                      ledere=2,
+                                      manufacturor=Nexans)
+            db.session.add(txlp17)
+            db.session.add(txlp10)
             import Nexans_TXLP
             for vk in Nexans_TXLP.vks:
                 name = vk.pop('Betegnelse')
                 effekt = vk.pop('Effekt ved 230V')
+                print(name[-2:])
+                if name[-2:] == '17':
+                    print('sfd')
+                    product_type = txlp17
+                else:
+                    print('134')
+                    product_type = txlp10
                 if name:
+                    print(txlp10.name)
                     new_vk = Product(
-                        name=name, product_type=txlp, effekt=effekt)
+                        name=name, product_type=product_type, effekt=effekt)
                     new_vk.add_keys_from_dict(vk)
                     db.session.add(new_vk)
             tulle_vk = Product(
-                name='TULL', product_type=txlp_tull, effekt=500)
+                name='TULL', product_type=txlp10, effekt=500)
             db.session.add(tulle_vk)
             db.session.commit()
             print("Database tables created")
