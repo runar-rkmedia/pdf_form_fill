@@ -58,14 +58,14 @@
                             <div class="form-group col-xs-12">
                                 <fieldset>
                                     <legend>Watt per meter</legend>
-                                    <label class="radio-inline disabled">
-                                        <input type="radio" name="meterEffekt" id="meterEffekt1" value="10" {% if dictionary['meterEffekt'] == "10" %} checked="true" {% endif %} disabled>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="meterEffekt" id="meterEffekt1" value="10" {% if dictionary['meterEffekt'] == "10" %} checked="true" {% endif %}>
                                         10 W/m
                                     </label>
-                                    <label class="radio-inline disabled">
-                                        <input type="radio" name="meterEffekt" id="meterEffekt2" value="16" {% if dictionary['meterEffekt'] == "16" %} checked="true" {% endif %} disabled>
+                                    <!-- <label class="radio-inline">
+                                        <input type="radio" name="meterEffekt" id="meterEffekt2" value="16" {% if dictionary['meterEffekt'] == "16" %} checked="true" {% endif %}>
                                         16 W/m
-                                    </label>
+                                    </label> -->
                                     <label class="radio-inline">
                                         <input type="radio" name="meterEffekt" id="meterEffekt3" value="17" {% if dictionary['meterEffekt'] == "17" %} checked="true" {% endif %}>
                                         17 W/m
@@ -112,7 +112,7 @@
                                     </div>
                                     <fieldset class="col-xs-12">
                                         <legend>Isolasjonsmotstand</legend>
-                                        <p>Kryss av for målinger over 100 MΩ</p>
+                                        <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
                                         <div class="col-xs-4 col-sm-3 col-md-2">
                                             <label class="checkbox-inline">
                                                 <input type="checkbox" name="mohm_a" value="999" {% if dictionary['mohm_a'] %} checked="true" {% endif %}>
@@ -140,5 +140,5 @@
             <input class="btn btn-primary" type="submit" value="Fyll inn i skjema">
         </form>
     </div>
-{% include 'includes/header.html' %}
+{% include 'includes/footer.html' %}
 {% endblock %}

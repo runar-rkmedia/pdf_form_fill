@@ -3,16 +3,20 @@
   padding: 8px 5px;
   margin: 15vh 4px 5px; }
 
-  #input-anleggs_postnummer {
-    width: 100px; }
+  footer {
+    margin: 40px 0;
+    text-align: center; }
 
-    legend {
-      font-size: 14px;
-      font-weight: 700;
-      border: 0;
-      margin-bottom: 5px; }
+    #input-anleggs_postnummer {
+      width: 100px; }
 
-      @media screen and (max-width: 450px) {
-        label {
-          font-size: 12px;   }
+      legend {
+        font-size: 14px;
+        font-weight: 700;
+        border: 0;
+        margin-bottom: 5px; }
+
+        @media screen and (max-width: 450px) {
+          label {
+            font-size: 12px;   }
 }
