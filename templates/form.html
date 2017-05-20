@@ -2,6 +2,9 @@
 {% extends 'base.html' %}
 {% block body %}
     <div class="row">
+        {% for error in errors%}
+        <div class="error bg-danger">Feltet '{{error}}'  er ikke fyllt ut tilstrekkelig.</div>
+        {% endfor %}
         <form class="" action="nexans.html" method="post">
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                 <div class="panel panel-default">

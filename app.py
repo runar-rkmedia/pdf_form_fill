@@ -65,7 +65,7 @@ def success(dictionary, user_file):
 
 
 @app.route('/')
-def view_form(dictionary=None):
+def view_form(dictionary=None, errors=None):
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
     if dictionary is None:
@@ -74,13 +74,27 @@ def view_form(dictionary=None):
             'anleggs_poststed': 'Kristiansand',
         }
     return render_template(
-        'form.html', dictionary=dictionary
+        'form.html', dictionary=dictionary, errors=errors
     )
 
 
 @app.route('/nexans.html', methods=['POST'])
 def fill_document():
     """Fill a document with data from form, and smart usage."""
+    required_fields = [
+        'anleggs_adresse',
+        'manufacturor',
+        'effekt',
+        'meterEffekt'
+        ]
+    errors = []
+    for key in required_fields:
+        field = request.form.get(key)
+        if not field:
+            errors.append(key)
+    if errors:
+        return view_form(dictionary=request.form, errors=errors)
+
     vk_manufacturor = request.form['manufacturor']
     vk_effekt = request.form['effekt']
     vk_meterEffekt = request.form['meterEffekt']
@@ -88,11 +102,13 @@ def fill_document():
     dictionary = request.form.copy()
     if len(filtered_vks) > 1:
         raise ValueError("Got more than one product. Need more filtering.")
-    else:
+    elif len(filtered_vks) == 1:
         varmekabel = filtered_vks[0]
         specs = varmekabel.get_specs()
         dictionary = set_fields_from_product(
             dictionary, varmekabel, specs)
+    else:
+        raise ValueError("Could not find any products matching this filter")
 
     nexans.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
