@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% block body %}
+{% include 'includes/header.html' %}
     <div class="row">
         <div class="error bg-danger">
             {% if error_message %}
@@ -139,5 +140,5 @@
             <input class="btn btn-primary" type="submit" value="Fyll inn i skjema">
         </form>
     </div>
-
+{% include 'includes/header.html' %}
 {% endblock %}
