@@ -35,6 +35,7 @@ class ProductType(db.Model):
     description = db.Column(db.String(500))
     mainSpec = db.Column(db.String(25))
     watt_per_meter = db.Column(db.Numeric(6))
+    watt_per_square_meter = db.Column(db.Numeric(6))
     ledere = db.Column(db.Integer)
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
