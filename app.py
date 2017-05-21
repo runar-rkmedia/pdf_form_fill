@@ -90,7 +90,8 @@ def view_form(dictionary=None, error_fields=[], error_message=None):
         dictionary = {
             'anleggs_postnummer': 4626,
             'anleggs_poststed': 'Kristiansand',
-            'meterEffekt':  "17"
+            'meterEffekt':  "17",
+            'manufacturor':  "Nexans"
         }
     return render_template(
         'form.html',

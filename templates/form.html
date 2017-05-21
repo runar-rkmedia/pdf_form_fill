@@ -50,11 +50,11 @@
                                 <fieldset>
                                     <legend>Fabrikant</legend>
                                     <label class="radio-inline">
-                                        <input type="radio" name="manufacturor" id="manufacturor1" value="Nexans" checked="true">
+                                        <input type="radio" name="manufacturor" id="manufacturor1" value="Nexans" {% if dictionary['manufacturor'] == "Nexans" %} checked="true" {% endif %}>
                                         Nexans
                                     </label>
                                     <label class="radio-inline">
-                                        <input type="radio" name="manufacturor" id="manufacturor2" value="Øglænd">
+                                        <input type="radio" name="manufacturor" id="manufacturor2" value="Øglænd"  {% if dictionary['manufacturor'] == "Øglænd" %} checked="true" {% endif %}>
                                         Øglænd
                                     </label>
                                 </fieldset>
