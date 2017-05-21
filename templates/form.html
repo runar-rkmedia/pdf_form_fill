@@ -53,21 +53,29 @@
                                         <input type="radio" name="manufacturor" id="manufacturor1" value="Nexans" checked="true">
                                         Nexans
                                     </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="manufacturor" id="manufacturor2" value="Øglænd">
+                                        Øglænd
+                                    </label>
                                 </fieldset>
                             </div>
                             <div class="form-group col-xs-12">
                                 <fieldset>
                                     <legend>Watt per meter</legend>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="meterEffekt" id="meterEffekt1" value="10" {% if dictionary['meterEffekt'] == "10" %} checked="true" {% endif %}>
+                                    <label class="radio-inline" id="meterEffekt8">
+                                        <input type="radio" name="meterEffekt" value="8" {% if dictionary['meterEffekt'] == "8" %} checked="true" {% endif %}>
+                                        8 W/m
+                                    </label>
+                                    <label class="radio-inline" id="meterEffekt10">
+                                        <input type="radio" name="meterEffekt" value="10" {% if dictionary['meterEffekt'] == "10" %} checked="true" {% endif %}>
                                         10 W/m
                                     </label>
-                                    <!-- <label class="radio-inline">
-                                        <input type="radio" name="meterEffekt" id="meterEffekt2" value="16" {% if dictionary['meterEffekt'] == "16" %} checked="true" {% endif %}>
+                                    <label class="radio-inline" id="meterEffekt16">
+                                        <input type="radio" name="meterEffekt" value="16" {% if dictionary['meterEffekt'] == "16" %} checked="true" {% endif %}>
                                         16 W/m
-                                    </label> -->
-                                    <label class="radio-inline">
-                                        <input type="radio" name="meterEffekt" id="meterEffekt3" value="17" {% if dictionary['meterEffekt'] == "17" %} checked="true" {% endif %}>
+                                    </label>
+                                    <label class="radio-inline" id="meterEffekt17">
+                                        <input type="radio" name="meterEffekt" value="17" {% if dictionary['meterEffekt'] == "17" %} checked="true" {% endif %}>
                                         17 W/m
                                     </label>
                                 </fieldset>

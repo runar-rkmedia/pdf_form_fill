@@ -24,9 +24,10 @@ configure_app(app)
 
 
 assets = Environment(app)
-# js = Bundle('js/ko.js', 'js/map.js', 'js/bootstrap.js', 'js/skycons.js',
-#             filters='jsmin', output='gen/packed.js')
-# assets.register('js_all', js)
+js = Bundle(
+    'js/def.js',
+            filters='jsmin', output='gen/packed.js')
+assets.register('js_all', js)
 
 css = Bundle(
     # 'css/bootstrap.min.css',
