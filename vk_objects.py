@@ -129,7 +129,7 @@ nexans_format = {
 
 }
 nexans = FormField(
-    '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
+    'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
     nexans.nexans,
     nexans_format)
 standard_data = {
