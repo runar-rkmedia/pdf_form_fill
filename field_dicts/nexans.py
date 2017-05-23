@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
 from .field_dicts import NumberTypes
-nexans = {
+nexans_fields = {
     'check-enleder': {
         'text': 'TextInPDF',
         'field': 'Check Box1',

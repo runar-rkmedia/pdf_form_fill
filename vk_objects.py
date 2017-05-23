@@ -8,7 +8,8 @@ import pdffields.fields
 from time import gmtime, strftime
 import sys
 from helpers import commafloat
-from field_dicts import nexans
+from field_dicts.nexans import nexans_fields
+from field_dicts.oegleand import oegland_fields
 from field_dicts.field_dicts import NumberTypes
 
 
@@ -128,9 +129,15 @@ nexans_format = {
     ],
 
 }
+oegland_format = {
+}
 nexans = FormField(
     'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
-    nexans.nexans,
+    nexans_fields,
+    nexans_format)
+oegland = FormField(
+    'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf',
+    oegland_fields,
     nexans_format)
 standard_data = {
     'firma_navn': 'Kristiansand Elektro AS',
