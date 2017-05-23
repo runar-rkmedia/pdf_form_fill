@@ -98,6 +98,7 @@ class FormField(object):
             print(key, value['field'], value['text'])
             self.set_field(key, key, True)
 
+
 def currentDate():
     """get formated current date."""
     return strftime("%d.%m.%Y", gmtime())
@@ -113,7 +114,7 @@ nexans_format = {
     ],
     'anleggs_adresse2': [
         '{} {}',
-        lambda x: (x['anleggs_postnummer'],x['anleggs_poststed'])
+        lambda x: (x['anleggs_postnummer'], x['anleggs_poststed'])
     ],
     'ohm_dato_og_underskrift': [
         '{}',
