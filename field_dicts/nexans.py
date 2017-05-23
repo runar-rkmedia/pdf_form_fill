@@ -1,8 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
-from .field_dicts import NumberTypes
-nexans_fields = {
+from .helpers import NumberTypes, commafloat, currentDate
+translator = {
+    'type_og_effekt': [
+        '{}',
+        lambda x: (x['Betegnelse'],)
+    ],
+    'flateeffekt': [
+        '{:.2f}',
+        lambda x: (commafloat(x['effekt']) / commafloat(x['oppvarmet_areal']),)
+    ],
+    'anleggs_adresse2': [
+        '{} {}',
+        lambda x: (x['anleggs_postnummer'], x['anleggs_poststed'])
+    ],
+    'ohm_dato_og_underskrift': [
+        '{}',
+        lambda x: (currentDate(),)
+    ],
+    'mohm_dato_og_underskrift': [
+        '{}',
+        lambda x: (currentDate(),)
+    ],
+    'dato_spesielle_forhold': [
+        '{}',
+        lambda x: (currentDate(),)
+    ],
+
+}
+fields = {
     'check-enleder': {
         'text': 'TextInPDF',
         'field': 'Check Box1',

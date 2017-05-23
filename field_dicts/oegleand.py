@@ -1,272 +1,276 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for øglænd-dictionary."""
-from .field_dicts import NumberTypes
-oegland_fields = {
-    'variable&#197;r': {
+from .helpers import NumberTypes, commafloat, currentDate
+
+translator = {
+}
+
+fields = {
+    '&#197;r': {
         'text': 'TextInPDF',
         'field': '&#197;r',
-        'type': '&#;r'
+        'type': bool
     },
-    'variableAdresse Installat&#248;r': {
+    'Adresse Installat&#248;r': {
         'text': 'TextInPDF',
         'field': 'Adresse Installat&#248;r',
-        'type': 'Adresse Installat&#;r'
+        'type': bool
     },
-    'variableAdresse installasjonssted': {
+    'anleggs_adresse': {
         'text': 'TextInPDF',
         'field': 'Adresse installasjonssted',
         'type': 'Adresse installasjonssted'
     },
-    'variableAnnet': {
+    'innendoers_innstallasjon_annet': {
         'text': 'TextInPDF',
         'field': 'Annet',
-        'type': 'Annet'
+        'type': bool
     },
-    'variableAreal m2': {
+    'oppvarmet_areal': {
         'text': 'TextInPDF',
         'field': 'Areal m2',
-        'type': 'Areal m'
+        'type': NumberTypes
     },
-    'variableAsf': {
+    'Asf': {
         'text': 'TextInPDF',
         'field': 'Asf',
-        'type': 'Asf'
+        'type': bool
     },
-    'variableBren': {
+    'Bren': {
         'text': 'TextInPDF',
         'field': 'Bren',
-        'type': 'Bren'
+        'type': bool
     },
-    'variableDag': {
+    'Dag': {
         'text': 'TextInPDF',
         'field': 'Dag',
-        'type': 'Dag'
+        'type': bool
     },
-    'variableDoku': {
+    'Doku': {
         'text': 'TextInPDF',
         'field': 'Doku',
-        'type': 'Doku'
+        'type': bool
     },
-    'variableEffekt W': {
+    'effekt': {
         'text': 'TextInPDF',
         'field': 'Effekt W',
-        'type': 'Effekt W'
+        'type': str
     },
-    'variableEier': {
+    'Eier': {
         'text': 'TextInPDF',
         'field': 'Eier',
-        'type': 'Eier'
+        'type': bool
     },
-    'variableEks bad, gang': {
+    'rom_navn': {
         'text': 'TextInPDF',
         'field': 'Eks bad, gang',
         'type': 'Eks bad, gang'
     },
-    'variableFart': {
+    'Fart': {
         'text': 'TextInPDF',
         'field': 'Fart',
-        'type': 'Fart'
+        'type': bool
     },
-    'variableFirmanavn': {
+    'firma_navn': {
         'text': 'TextInPDF',
         'field': 'Firmanavn',
-        'type': 'Firmanavn'
+        'type': str
     },
-    'variableFrost': {
+    'Frost': {
         'text': 'TextInPDF',
         'field': 'Frost',
-        'type': 'Frost'
+        'type': bool
     },
-    'variableFrostsikringsstyring type': {
+    'frostsikringstype': {
         'text': 'TextInPDF',
         'field': 'Frostsikringsstyring type',
         'type': 'Frostsikringsstyring type'
     },
-    'variableHovedgruppe': {
+    'produkt_type': {
         'text': 'TextInPDF',
         'field': 'Hovedgruppe',
         'type': 'Hovedgruppe'
     },
-    'variableInfor': {
+    'Infor': {
         'text': 'TextInPDF',
         'field': 'Infor',
-        'type': 'Infor'
+        'type': bool
     },
-    'variableInn Be': {
+    'Inn Be': {
         'text': 'TextInPDF',
         'field': 'Inn Be',
-        'type': 'Inn Be'
+        'type': bool
     },
-    'variableIsolasjonstest M&#8486; inst': {
+    'Isolasjonstest M&#8486; inst': {
         'text': 'TextInPDF',
         'field': 'Isolasjonstest M&#8486; inst',
         'type': 'Isolasjonstest M&#; inst'
     },
-    'variableIsolasjonstest M&#8486; st&#248;p': {
+    'Isolasjonstest stop': {
         'text': 'TextInPDF',
         'field': 'Isolasjonstest M&#8486; st&#248;p',
         'type': 'Isolasjonstest M&#; st&#;p'
     },
-    'variableIsolasjonstest M&#8486; tilk': {
+    'Isolasjonstest M&#8486; tilk': {
         'text': 'TextInPDF',
         'field': 'Isolasjonstest M&#8486; tilk',
         'type': 'Isolasjonstest M&#; tilk'
     },
-    'variableJord': {
+    'check-jordfeilbryter-30mA': {
         'text': 'TextInPDF',
         'field': 'Jord',
-        'type': 'Jord'
+        'type': bool
     },
-    'variableKontaktperson': {
+    'firma_kontaktperson': {
         'text': 'TextInPDF',
         'field': 'Kontaktperson',
         'type': 'Kontaktperson'
     },
-    'variableLam': {
+    'check-innendørs-lamiflex': {
         'text': 'TextInPDF',
         'field': 'Lam',
-        'type': 'Lam'
+        'type': bool
     },
-    'variableLavt': {
+    'check-innendørs-lavtbygggende-gult': {
         'text': 'TextInPDF',
         'field': 'Lavt',
-        'type': 'Lavt'
+        'type': bool
     },
-    'variableMnd': {
+    'dato-måned': {
         'text': 'TextInPDF',
         'field': 'Mnd',
-        'type': 'Mnd'
+        'type': NumberTypes
     },
-    'variableMont': {
+    'check-beskyttelses-tiltak-monteringsanvisning-fulgt': {
         'text': 'TextInPDF',
         'field': 'Mont',
-        'type': 'Mont'
+        'type': bool
     },
-    'variableOrganisasjonsnr': {
+    'firma_orgnr': {
         'text': 'TextInPDF',
         'field': 'Organisasjonsnr',
-        'type': 'Organisasjonsnr'
+        'type': str
     },
-    'variableOverdekning': {
+    'Overdekning_mm': {
         'text': 'TextInPDF',
         'field': 'Overdekning',
-        'type': 'Overdekning'
+        'type': NumberTypes
     },
-    'variableR&#248;r in': {
+    'check-utendørs-frostsikring-rør–innendig': {
         'text': 'TextInPDF',
         'field': 'R&#248;r in',
-        'type': 'R&#;r in'
+        'type': bool
     },
-    'variableR&#248;r ut': {
+    'check-utendørs-frostsikring-rør–utvendig': {
         'text': 'TextInPDF',
         'field': 'R&#248;r ut',
-        'type': 'R&#;r ut'
+        'type': bool
     },
-    'variableResistans &#8486; inst': {
+    'ohm_a': {
         'text': 'TextInPDF',
         'field': 'Resistans &#8486; inst',
-        'type': 'Resistans &#; inst'
+        'type': NumberTypes
     },
-    'variableResistans &#8486; st&#248;p': {
+    'ohm_b': {
         'text': 'TextInPDF',
         'field': 'Resistans &#8486; st&#248;p',
-        'type': 'Resistans &#; st&#;p'
+        'type': NumberTypes
     },
-    'variableResistans &#8486; tilk': {
+    'ohm_c': {
         'text': 'TextInPDF',
         'field': 'Resistans &#8486; tilk',
-        'type': 'Resistans &#; tilk'
+        'type': NumberTypes
     },
-    'variableResistans max &#8486;': {
+    'resistans_max': {
         'text': 'TextInPDF',
         'field': 'Resistans max &#8486;',
-        'type': 'Resistans max &#;'
+        'type': NumberTypes
     },
-    'variableResistans min &#8486;': {
+    'resistans_min': {
         'text': 'TextInPDF',
         'field': 'Resistans min &#8486;',
-        'type': 'Resistans min &#;'
+        'type': NumberTypes
     },
-    'variableSn&#248;smeltestyringstype': {
+    'styring-smeltestyringstype': {
         'text': 'TextInPDF',
         'field': 'Sn&#248;smeltestyringstype',
-        'type': 'Sn&#;smeltestyringstype'
+        'type': str
     },
-    'variableSpenning V': {
+    'spenning': {
         'text': 'TextInPDF',
         'field': 'Spenning V',
-        'type': 'Spenning V'
+        'type': NumberTypes
     },
-    'variableSpesifiser': {
+    'innendørs_annet_spesifiser': {
         'text': 'TextInPDF',
         'field': 'Spesifiser',
-        'type': 'Spesifiser'
+        'type': str
     },
-    'variableStei': {
+    'check-utendørs_belegningsstein-heller': {
         'text': 'TextInPDF',
         'field': 'Stei',
-        'type': 'Stei'
+        'type': bool
     },
-    'variableStyr': {
+    'check-beskyttelses-tiltak-bruk-av-styring': {
         'text': 'TextInPDF',
         'field': 'Styr',
-        'type': 'Styr'
+        'type': bool
     },
-    'variableTelefon': {
+    'firma_telefon': {
         'text': 'TextInPDF',
         'field': 'Telefon',
-        'type': 'Telefon'
+        'type': str
     },
-    'variableType kabel/matte': {
+    'type_kabel_matte': {
         'text': 'TextInPDF',
         'field': 'Type kabel/matte',
-        'type': 'Type kabel/matte'
+        'type': str
     },
-    'variableUbre': {
+    'check-innendørs-varmematte_ubrennbart_underlag': {
         'text': 'TextInPDF',
         'field': 'Ubre',
-        'type': 'Ubre'
+        'type': bool
     },
-    'variableUnderskrift': {
+    'installatør_underskrift': {
         'text': 'TextInPDF',
         'field': 'Underskrift',
-        'type': 'Underskrift'
+        'type': str
     },
-    'variableUt Bet': {
+    'check-utendørs-betong': {
         'text': 'TextInPDF',
         'field': 'Ut Bet',
-        'type': 'Ut Bet'
+        'type': bool
     },
-    'variableW/m2': {
+    'watt_per_square_meter': {
         'text': 'TextInPDF',
         'field': 'W/m2',
-        'type': 'W/m'
+        'type': NumberTypes
     },
-    'variableannet': {
+    'check-styring-annet': {
         'text': 'TextInPDF',
         'field': 'annet',
-        'type': 'annet'
+        'type': bool
     },
-    'variablebegr': {
+    'check-styring-begrensningsføler': {
         'text': 'TextInPDF',
         'field': 'begr',
-        'type': 'begr'
+        'type': bool
     },
-    'variablec/c': {
+    'cc': {
         'text': 'TextInPDF',
         'field': 'c/c',
-        'type': 'c/c'
+        'type': NumberTypes
     },
-    'variablegulv': {
+    'check-styring-gulvføler': {
         'text': 'TextInPDF',
         'field': 'gulv',
-        'type': 'gulv'
+        'type': bool
     },
-    'variablerom': {
+    'check-styring-romføler': {
         'text': 'TextInPDF',
         'field': 'rom',
-        'type': 'rom'
+        'type': bool
     }
 
 }

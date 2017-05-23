@@ -4,14 +4,14 @@ import sys
 import os
 
 from config import configure_app
-from helpers import commafloat
+from field_dicts.helpers import commafloat
 from models import (db, Manufacturor, Product,
-                    ProductSpec, ProductType, lookup_vk)
+                    ProductType, lookup_vk)
 from vk_objects import nexans
 from flask import (
     Flask,
     request,
-    redirect,
+    # redirect,
     render_template,
     send_from_directory
 )
@@ -26,7 +26,7 @@ configure_app(app)
 assets = Environment(app)
 js = Bundle(
     'js/def.js',
-            filters='jsmin', output='gen/packed.js')
+    filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
 css = Bundle(

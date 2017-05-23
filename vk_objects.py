@@ -5,12 +5,8 @@
 # -*- coding: utf-8 -*-
 """Part of smart pdf-form-filler (wip)"""
 import pdffields.fields
-from time import gmtime, strftime
-import sys
-from helpers import commafloat
-from field_dicts.nexans import nexans_fields
-from field_dicts.oegleand import oegland_fields
-from field_dicts.field_dicts import NumberTypes
+from field_dicts import nexans, oegleand
+from field_dicts.helpers import NumberTypes
 
 
 def logger(msg, msg_type='info'):
@@ -99,47 +95,14 @@ class FormField(object):
             self.set_field(key, key, True)
 
 
-def currentDate():
-    """get formated current date."""
-    return strftime("%d.%m.%Y", gmtime())
-
-nexans_format = {
-    'type_og_effekt': [
-        '{}',
-        lambda x: (x['Betegnelse'],)
-    ],
-    'flateeffekt': [
-        '{:.2f}',
-        lambda x: (commafloat(x['effekt']) / commafloat(x['oppvarmet_areal']),)
-    ],
-    'anleggs_adresse2': [
-        '{} {}',
-        lambda x: (x['anleggs_postnummer'], x['anleggs_poststed'])
-    ],
-    'ohm_dato_og_underskrift': [
-        '{}',
-        lambda x: (currentDate(),)
-    ],
-    'mohm_dato_og_underskrift': [
-        '{}',
-        lambda x: (currentDate(),)
-    ],
-    'dato_spesielle_forhold': [
-        '{}',
-        lambda x: (currentDate(),)
-    ],
-
-}
-oegland_format = {
-}
-nexans = FormField(
+Nexans = FormField(
     'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
-    nexans_fields,
-    nexans_format)
-oegland = FormField(
+    nexans.fields,
+    nexans.translator)
+Oegleand = FormField(
     'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf',
-    oegland_fields,
-    nexans_format)
+    oegleand.fields,
+    oegleand.translator)
 standard_data = {
     'firma_navn': 'Kristiansand Elektro AS',
     'type': 'TFXP',
@@ -152,20 +115,15 @@ standard_data = {
     'check-følertype-gulv': True,
 }
 
-
-def filter_vk(arg):
-    """Description."""
-    try:
-        f = open('Nexans_TXLP.csv')
-    finally:
-        pass
-nexans.set_fields_from_dict(standard_data)
+Nexans.set_fields_from_dict(standard_data)
+# Oegleand.fill_pdf_with_field_vars()
+# Oegleand.create_filled_pdf('pdf/Oegland.pdf')
 
 if __name__ == '__main__':
     # standard_data['areal'] = '9'
     # standard_data['effekt'] = '700'
     # standard_data['type'] = 'TFXP'
     # standard_data['oppvarmet_areal'] = '5.48'
-    # nexans.set_fields_from_dict(standard_data)
-    # nexans.create_filled_pdf('output.pdf')
+    # Nexans.set_fields_from_dict(standard_data)
+    # Nexans.create_filled_pdf('output.pdf')
     pass
