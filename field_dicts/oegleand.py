@@ -24,7 +24,7 @@ translator = {
 }
 
 yes = 'Ja'
-no = 'No'
+no = 'Nei'
 
 checkbox_value = [yes, no]
 

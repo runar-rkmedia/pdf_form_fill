@@ -29,6 +29,12 @@ translator = {
     ],
 
 }
+
+yes = 'Yes'
+no = 'No'
+
+checkbox_value = [yes, no]
+
 fields = {
     'check-enleder': {
         'text': 'TextInPDF',

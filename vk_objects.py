@@ -32,7 +32,8 @@ class FormField(object):
 
     """
 
-    def __init__(self, pdf_path, fields_dict, translator, checkbox_value=['Yes', 'No']):
+    def __init__(self, pdf_path, fields_dict,
+                 translator, checkbox_value=['Yes', 'No']):
         self.pdf_path = pdf_path
         self.fields_dict = fields_dict
         self.fields = self.set_fields_from_pdf()
@@ -113,12 +114,13 @@ class FormField(object):
 Nexans = FormField(
     'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
     nexans.fields,
-    nexans.translator)
+    nexans.translator,
+    nexans.checkbox_value)
 Oegleand = FormField(
     'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf',
     oegleand.fields,
     oegleand.translator,
-    ['Ja', 'Nei'])
+    oegleand.checkbox_value)
 standard_data = {
     'firma_navn': 'Kristiansand Elektro AS',
     'type': 'TFXP',
