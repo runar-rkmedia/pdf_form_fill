@@ -2,6 +2,8 @@
 
 import sys
 import os
+import random
+import string
 
 from config import configure_app
 from field_dicts.helpers import commafloat
@@ -39,13 +41,22 @@ assets.register('css_all', css)
 
 db.init_app(app)
 
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
-def user_file_path(filename=None):
-    """Return full path to user-directory."""
+
+def user_file_path(filename=None, create_random_dir=False):
+    """Return full path to user-dir, with a random generated unique folder."""
     paths = [app.root_path, app.config['USER_FILES']]
+    new_path = paths.copy()
+    if create_random_dir:
+        while os.path.exists(os.path.join(*new_path)):
+            new_path = paths.copy()
+            new_path.append(id_generator())
+        os.mkdir(os.path.join(*new_path))
     if filename:
-        paths.append(filename)
-    return os.path.join(*paths)
+        new_path.append(filename)
+    return os.path.join(*new_path)
 
 
 def set_fields_from_product(dictionary, product, specs=None):
@@ -67,9 +78,7 @@ def set_fields_from_product(dictionary, product, specs=None):
 @app.route('/user_files/<path:filename>', methods=['GET'])
 def download(filename):
     """Serve a file for downloading."""
-    user_files = user_file_path()
-    print(user_files)
-    return send_from_directory(directory=user_files, filename=filename)
+    return send_from_directory(directory=app.root_path, filename=filename)
 
 
 @app.route('/success/')
@@ -165,6 +174,11 @@ def fill_document():
     print(output_path)
     nexans.create_filled_pdf(output_path)
     return success(dictionary, filename)
+    output_path = user_file_path(filename, create_random_dir=True)
+    print(os.path.relpath(output_path))
+    print(vk_manufacturor, form.pdf_path)
+    form.create_filled_pdf(output_path)
+    return success(dictionary, os.path.relpath(output_path))
 
 
 # hook up extensions to app
