@@ -4,23 +4,45 @@
 from .helpers import NumberTypes, commafloat, currentDate
 
 translator = {
+    'check-jordfeilbryter-30mA': [
+        '{}',
+        lambda x: yes if x['utløserstrøm_for_fordfeilvern'] else no
+    ],
+    'check-beskyttelses-tiltak-monteringsanvisning-fulgt': [
+        '{}',
+        lambda x: yes if x[
+            'check-installasjonsveiledning_fulgt'] else no
+    ],
+    'check-beskyttelses-tiltak-bruk-av-styring': [
+        '{}',
+        lambda x: yes if x[
+            'check-følertype-gulv'] or x[
+                'check-følertype-rom'] or x[
+                    'check-følertype-begrensningsføler'] or x[
+                        'check-følertype-annet'] else no
+    ],
 }
 
+yes = 'Ja'
+no = 'No'
+
+checkbox_value = [yes, no]
+
 fields = {
-    '&#197;r': {
+    'dato-År': {
         'text': 'TextInPDF',
-        'field': '&#197;r',
-        'type': bool
+        'field': 'År',
+        'type': str
     },
-    'Adresse Installat&#248;r': {
+    'firma_adresse': {
         'text': 'TextInPDF',
-        'field': 'Adresse Installat&#248;r',
-        'type': bool
+        'field': 'Adresse Installatør',
+        'type': str
     },
     'anleggs_adresse': {
         'text': 'TextInPDF',
         'field': 'Adresse installasjonssted',
-        'type': 'Adresse installasjonssted'
+        'type': str
     },
     'innendoers_innstallasjon_annet': {
         'text': 'TextInPDF',
@@ -42,7 +64,7 @@ fields = {
         'field': 'Bren',
         'type': bool
     },
-    'Dag': {
+    'dato-dag': {
         'text': 'TextInPDF',
         'field': 'Dag',
         'type': bool
@@ -65,7 +87,7 @@ fields = {
     'rom_navn': {
         'text': 'TextInPDF',
         'field': 'Eks bad, gang',
-        'type': 'Eks bad, gang'
+        'type': str
     },
     'Fart': {
         'text': 'TextInPDF',
@@ -85,12 +107,12 @@ fields = {
     'frostsikringstype': {
         'text': 'TextInPDF',
         'field': 'Frostsikringsstyring type',
-        'type': 'Frostsikringsstyring type'
+        'type': str
     },
     'produkt_type': {
         'text': 'TextInPDF',
         'field': 'Hovedgruppe',
-        'type': 'Hovedgruppe'
+        'type': str
     },
     'Infor': {
         'text': 'TextInPDF',
@@ -102,20 +124,20 @@ fields = {
         'field': 'Inn Be',
         'type': bool
     },
-    'Isolasjonstest M&#8486; inst': {
+    'm_ohm': {
         'text': 'TextInPDF',
-        'field': 'Isolasjonstest M&#8486; inst',
-        'type': 'Isolasjonstest M&#; inst'
+        'field': 'Isolasjonstest MΩ inst',
+        'type': str
     },
     'Isolasjonstest stop': {
         'text': 'TextInPDF',
-        'field': 'Isolasjonstest M&#8486; st&#248;p',
-        'type': 'Isolasjonstest M&#; st&#;p'
+        'field': 'Isolasjonstest MΩ støp',
+        'type': str
     },
-    'Isolasjonstest M&#8486; tilk': {
+    'Isolasjonstest MΩ tilk': {
         'text': 'TextInPDF',
-        'field': 'Isolasjonstest M&#8486; tilk',
-        'type': 'Isolasjonstest M&#; tilk'
+        'field': 'Isolasjonstest MΩ tilk',
+        'type': str
     },
     'check-jordfeilbryter-30mA': {
         'text': 'TextInPDF',
@@ -159,45 +181,45 @@ fields = {
     },
     'check-utendørs-frostsikring-rør–innendig': {
         'text': 'TextInPDF',
-        'field': 'R&#248;r in',
+        'field': 'Rør in',
         'type': bool
     },
     'check-utendørs-frostsikring-rør–utvendig': {
         'text': 'TextInPDF',
-        'field': 'R&#248;r ut',
+        'field': 'Rør ut',
         'type': bool
     },
     'ohm_a': {
         'text': 'TextInPDF',
-        'field': 'Resistans &#8486; inst',
+        'field': 'Resistans Ω inst',
         'type': NumberTypes
     },
     'ohm_b': {
         'text': 'TextInPDF',
-        'field': 'Resistans &#8486; st&#248;p',
+        'field': 'Resistans Ω støp',
         'type': NumberTypes
     },
     'ohm_c': {
         'text': 'TextInPDF',
-        'field': 'Resistans &#8486; tilk',
+        'field': 'Resistans Ω tilk',
         'type': NumberTypes
     },
     'resistans_max': {
         'text': 'TextInPDF',
-        'field': 'Resistans max &#8486;',
+        'field': 'Resistans max Ω',
         'type': NumberTypes
     },
     'resistans_min': {
         'text': 'TextInPDF',
-        'field': 'Resistans min &#8486;',
+        'field': 'Resistans min Ω',
         'type': NumberTypes
     },
     'styring-smeltestyringstype': {
         'text': 'TextInPDF',
-        'field': 'Sn&#248;smeltestyringstype',
+        'field': 'Snøsmeltestyringstype',
         'type': str
     },
-    'spenning': {
+    'driftspenning': {
         'text': 'TextInPDF',
         'field': 'Spenning V',
         'type': NumberTypes
@@ -247,12 +269,12 @@ fields = {
         'field': 'W/m2',
         'type': NumberTypes
     },
-    'check-styring-annet': {
+    'check-følertype-annet': {
         'text': 'TextInPDF',
         'field': 'annet',
         'type': bool
     },
-    'check-styring-begrensningsføler': {
+    'check-følertype-begrensningsføler': {
         'text': 'TextInPDF',
         'field': 'begr',
         'type': bool
@@ -262,15 +284,14 @@ fields = {
         'field': 'c/c',
         'type': NumberTypes
     },
-    'check-styring-gulvføler': {
+    'check-følertype-gulv': {
         'text': 'TextInPDF',
         'field': 'gulv',
         'type': bool
     },
-    'check-styring-romføler': {
+    'check-følertype-rom': {
         'text': 'TextInPDF',
         'field': 'rom',
         'type': bool
     }
-
 }
