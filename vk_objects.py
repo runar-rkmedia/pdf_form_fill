@@ -16,13 +16,28 @@ def logger(msg, msg_type='info'):
 
 
 class FormField(object):
-    """Wrapper for pdffields."""
+    """Wrapper for pdffields.
 
-    def __init__(self, pdf_path, fields_dict, formatting):
+    args:
+    pdf_path: path to pdf-form
+    fields_dict: dictionary dumped by 'print_all_fields' and modified
+        translator: a dict with a list containing a string  for formatting,
+        and a lambda function to retrieve the data. Used to wrap generalized-
+        data into this forms data.
+    checkbox_value: for forms with checkboxes we need to know which values will
+        check the box, and which will not. Should be a list of two values.
+        To find this value, you can check some of the boxes in the form, save
+        it and run 'pdftk file.pdf dump_data_fields_utf8' on it.
+        e.g. ['true', 'false']
+
+    """
+
+    def __init__(self, pdf_path, fields_dict, translator, checkbox_value=['Yes', 'No']):
         self.pdf_path = pdf_path
         self.fields_dict = fields_dict
         self.fields = self.set_fields_from_pdf()
-        self.formatting = formatting
+        self.translator = translator
+        self.checkbox_value = checkbox_value
 
     def set_fields_from_pdf(self):
         """Return all fields in the pdf."""
@@ -47,15 +62,15 @@ class FormField(object):
                     pass
         elif thisType == bool:
             if value:
-                value = 'Yes'
+                value = self.checkbox_value[0]
             else:
-                value = 'No'
+                value = self.checkbox_value[1]
         self.fields[thisDict['field']] = value
         logger("Set field '{}' to '{}'".format(fieldVariable, value))
 
     def preprocess_format_dict(self, dictionary):
-        """Fill specific fields in the formatting with info from dictionary."""
-        for key, value in self.formatting.items():
+        """Fill specific fields in the translator with info from dictionary."""
+        for key, value in self.translator.items():
             string_format = value[0]
             format_keys = value[1]
             print(string_format)
@@ -102,7 +117,8 @@ Nexans = FormField(
 Oegleand = FormField(
     'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf',
     oegleand.fields,
-    oegleand.translator)
+    oegleand.translator,
+    ['Ja', 'Nei'])
 standard_data = {
     'firma_navn': 'Kristiansand Elektro AS',
     'type': 'TFXP',
@@ -113,9 +129,12 @@ standard_data = {
     'check-toleder': True,
     'check-maks_temp_planlegging': True,
     'check-følertype-gulv': True,
+    'check-installasjonsveiledning_fulgt': True
 }
 
 Nexans.set_fields_from_dict(standard_data)
+Oegleand.set_fields_from_dict(standard_data)
+# print(Oegleand.print_all_fields())
 # Oegleand.fill_pdf_with_field_vars()
 # Oegleand.create_filled_pdf('pdf/Oegland.pdf')
 
