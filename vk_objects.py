@@ -9,9 +9,20 @@ from field_dicts import nexans, oegleand
 from field_dicts.helpers import NumberTypes
 
 
+def setLoggerOptions(msg_type, enabled):
+    """Will enable/disable a msg_type."""
+    enabled_msg_types[msg_type] = enabled
+
+
+
+enabled_msg_types = {'info': False,
+                     'warning': True,
+                     'fatal':True}
+
+
 def logger(msg, msg_type='info'):
     """A logger function."""
-    if msg_type == 'info':
+    if enabled_msg_types.get(msg_type):
         print("{}: {}".format(msg_type, msg))
 
 
@@ -74,7 +85,6 @@ class FormField(object):
         for key, value in self.translator.items():
             string_format = value[0]
             format_keys = value[1]
-            print(string_format)
             try:
                 dictionary[key] = string_format.format(
                     *format_keys(dictionary))
@@ -107,7 +117,6 @@ class FormField(object):
     def fill_pdf_with_field_vars(self):
         """Fill all fields in the pdf with var-name from dict."""
         for key, value in self.fields_dict.items():
-            print(key, value['field'], value['text'])
             self.set_field(key, key, True)
 
 
