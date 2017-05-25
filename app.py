@@ -42,7 +42,9 @@ assets.register('css_all', css)
 
 db.init_app(app)
 
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    """Return random string with digits."""
     return ''.join(random.choice(chars) for _ in range(size))
 
 
