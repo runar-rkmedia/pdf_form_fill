@@ -1,0 +1,4 @@
+[submodule "pdffields"]
+	path = pdffields
+	url = git@github.com:runartrollet/pdffields.git
+	branch = utf8

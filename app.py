@@ -9,7 +9,7 @@ import decimal
 from config import configure_app
 from field_dicts.helpers import commafloat
 from models import (db, Manufacturor, lookup_vk)
-from vk_objects import Nexans, Oegleand
+from vk_objects import FormField
 
 from flask import (
     Flask,
@@ -194,10 +194,7 @@ def fill_document():
             error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
                 vk_manufacturor, vk_meterEffekt, vk_effekt
             ))
-    if vk_manufacturor == 'Nexans':
-        form = Nexans
-    elif vk_manufacturor == 'Øglænd':
-        form = Oegleand
+    form = FormField(vk_manufacturor)
     form.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_path = user_file_path(filename, create_random_dir=True)

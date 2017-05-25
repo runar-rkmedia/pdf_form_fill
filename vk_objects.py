@@ -140,41 +140,5 @@ class FormField(object):
         for key, value in self.fields_dict.items():
             self.set_field(key, key, True)
 
-
-Nexans = FormField(
-    'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf',
-    nexans.fields,
-    nexans.translator,
-    nexans.checkbox_value)
-Oegleand = FormField(
-    'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf',
-    oegleand.fields,
-    oegleand.translator,
-    oegleand.checkbox_value)
-standard_data = {
-    'firma_navn': 'Kristiansand Elektro AS',
-    'type': 'TFXP',
-    'driftspenning': '230',
-    'sikringstørrelse': '16',
-    'utløserstrøm_for_fordfeilvern': '30',
-    'check-jordet_kabelskjerm': True,
-    'check-toleder': True,
-    'check-maks_temp_planlegging': True,
-    'check-følertype-gulv': True,
-    'check-installasjonsveiledning_fulgt': True
-}
-
-Nexans.set_fields_from_dict(standard_data)
-Oegleand.set_fields_from_dict(standard_data)
-# print(Oegleand.print_all_fields())
-# Oegleand.fill_pdf_with_field_vars()
-# Oegleand.create_filled_pdf('pdf/Oegland.pdf')
-
 if __name__ == '__main__':
-    # standard_data['areal'] = '9'
-    # standard_data['effekt'] = '700'
-    # standard_data['type'] = 'TFXP'
-    # standard_data['oppvarmet_areal'] = '5.48'
-    # Nexans.set_fields_from_dict(standard_data)
-    # Nexans.create_filled_pdf('output.pdf')
     pass
