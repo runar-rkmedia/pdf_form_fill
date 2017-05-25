@@ -4,6 +4,7 @@ import sys
 import os
 import random
 import string
+import decimal
 
 from config import configure_app
 from field_dicts.helpers import commafloat
@@ -14,6 +15,7 @@ from vk_objects import Nexans, Oegleand
 from flask import (
     Flask,
     request,
+    json,
     # redirect,
     render_template,
     send_from_directory
@@ -22,8 +24,20 @@ from flask_scss import Scss
 from flask_assets import Environment, Bundle
 
 
+class MyJSONEncoder(json.JSONEncoder):
+    """Redefine flasks json-encoded to convert Decimals.."""
+
+    def default(self, obj): # noqa
+        if isinstance(obj, decimal.Decimal):
+            # Convert decimal instances to strings.
+            return str(obj)
+        return super(MyJSONEncoder, self).default(obj)
+
 app = Flask(__name__, instance_relative_config=True)
+app.json_encoder = MyJSONEncoder
 configure_app(app)
+
+
 
 
 assets = Environment(app)
@@ -76,6 +90,13 @@ def set_fields_from_product(dictionary, product, specs=None):
         if s.key == 'Nominell elementmotstand':
             dictionary['nominell_motstand'] = s.value
     return dictionary
+
+@app.route('/products.json')
+def json_products():
+    """Return a json-object of all products."""
+    manufacturors = Manufacturor.query.all()
+
+    return json.jsonify([i.serialize for i in manufacturors])
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
