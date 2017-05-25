@@ -1,4 +1,5 @@
 """PDF-fill for heating cables."""
+# pylama:ignore=W0512
 
 import os
 import random
@@ -89,6 +90,34 @@ def set_fields_from_product(dictionary, product, specs=None):
             dictionary['nominell_motstand'] = s.value
     return dictionary
 
+def validate_fields(request_form):
+    """Validate the input from a form."""
+    error_fields = []
+    required_fields = {
+        'strings': [
+            'anleggs_adresse',
+            'manufacturor',
+        ],
+        'digits': [
+            'effekt',
+            'meterEffekt',
+            'oppvarmet_areal'
+        ]}
+    for key in required_fields['strings']:
+        field = request_form.get(key)
+        if not field:
+            error_fields.append(key)
+    for key in required_fields['digits']:
+        field = request_form.get(key)
+        if not field:
+            error_fields.append(key)
+        else:
+            try:
+                commafloat(field)
+            except ValueError:
+                error_fields.append(key)
+    return error_fields
+
 @app.route('/products.json')
 def json_products():
     """Return a json-object of all products."""
@@ -131,35 +160,11 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
         error_message=error_message
     )
 
-
 @app.route('/nexans.html', methods=['POST'])
 def fill_document():
     """Fill a document with data from form, and smart usage."""
-    required_fields = {
-        'strings': [
-            'anleggs_adresse',
-            'manufacturor',
-        ],
-        'digits': [
-            'effekt',
-            'meterEffekt',
-            'oppvarmet_areal'
-        ]}
-    error_fields = []
 
-    for key in required_fields['strings']:
-        field = request.form.get(key)
-        if not field:
-            error_fields.append(key)
-    for key in required_fields['digits']:
-        field = request.form.get(key)
-        if not field:
-            error_fields.append(key)
-        else:
-            try:
-                commafloat(field)
-            except ValueError:
-                error_fields.append(key)
+    error_fields = validate_fields(request.form)
 
     if error_fields:
         return view_form(
