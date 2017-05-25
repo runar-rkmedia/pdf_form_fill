@@ -3,6 +3,8 @@
 """Data for øglænd-dictionary."""
 from .helpers import NumberTypes, commafloat, currentDate
 
+pdf_path = 'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf'
+
 translator = {
     'check-jordfeilbryter-30mA': [
         '{}',
@@ -28,7 +30,7 @@ no = 'Nei'
 
 checkbox_value = [yes, no]
 
-fields = {
+fields_dict = {
     'dato-År': {
         'text': 'TextInPDF',
         'field': 'År',

@@ -32,7 +32,7 @@ class FormField(object):
     args:
     pdf_path: path to pdf-form
     fields_dict: dictionary dumped by 'print_all_fields' and modified
-        translator: a dict with a list containing a string  for formatting,
+    translator: a dict with a list containing a string  for formatting,
         and a lambda function to retrieve the data. Used to wrap generalized-
         data into this forms data.
     checkbox_value: for forms with checkboxes we need to know which values will
@@ -42,14 +42,35 @@ class FormField(object):
         e.g. ['true', 'false']
 
     """
+    standard_data = {
+        'firma_navn': 'Kristiansand Elektro AS',
+        'type': 'TFXP',
+        'driftspenning': '230',
+        'sikringstørrelse': '16',
+        'utløserstrøm_for_fordfeilvern': '30',
+        'check-jordet_kabelskjerm': True,
+        'check-toleder': True,
+        'check-maks_temp_planlegging': True,
+        'check-følertype-gulv': True,
+        'check-installasjonsveiledning_fulgt': True
+    }
 
-    def __init__(self, pdf_path, fields_dict,
-                 translator, checkbox_value=['Yes', 'No']):
-        self.pdf_path = pdf_path
-        self.fields_dict = fields_dict
+    form_data_dict = {
+        'Nexans': nexans,
+        'Øglænd': oegleand
+    }
+
+    def __init__(self, manufacturor, standard_data=standard_data):
+        form_data = self.form_data_dict.get(manufacturor)
+        if not form_data:
+            raise ValueError("Could not find '{}' in dictionary when gathering form_data.")
+
+        self.pdf_path = form_data.pdf_path
+        self.fields_dict = form_data.fields_dict
         self.fields = self.set_fields_from_pdf()
-        self.translator = translator
-        self.checkbox_value = checkbox_value
+        self.translator = form_data.translator
+        self.checkbox_value = form_data.checkbox_value
+        self.set_fields_from_dict(standard_data)
 
     def set_fields_from_pdf(self):
         """Return all fields in the pdf."""

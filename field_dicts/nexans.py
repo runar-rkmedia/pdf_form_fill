@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
 from .helpers import NumberTypes, commafloat, currentDate
+pdf_path = 'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf'
+
 translator = {
     'type_og_effekt': [
         '{}',
@@ -35,7 +37,7 @@ no = 'No'
 
 checkbox_value = [yes, no]
 
-fields = {
+fields_dict = {
     'check-enleder': {
         'text': 'TextInPDF',
         'field': 'Check Box1',
