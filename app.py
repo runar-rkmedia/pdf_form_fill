@@ -1,6 +1,5 @@
 """PDF-fill for heating cables."""
 
-import sys
 import os
 import random
 import string
@@ -8,8 +7,7 @@ import decimal
 
 from config import configure_app
 from field_dicts.helpers import commafloat
-from models import (db, Manufacturor, Product,
-                    ProductType, lookup_vk)
+from models import (db, Manufacturor, lookup_vk)
 from vk_objects import Nexans, Oegleand
 
 from flask import (
@@ -116,7 +114,7 @@ def success(dictionary, user_file):
 
 
 @app.route('/')
-def view_form(dictionary=None, error_fields=[], error_message=None):
+def view_form(dictionary=None, error_fields=None, error_message=None):
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
     if dictionary is None:
@@ -204,46 +202,6 @@ def fill_document():
 
 # hook up extensions to app
 if __name__ == "__main__":
-    if '--setup' in sys.argv:
-        print('Setup')
-        print(app.config['SQLALCHEMY_DATABASE_URI'])
-        with app.app_context():
-            db.drop_all()
-            db.create_all()
-            Nexans = Manufacturor(name='Nexans', description="It's nexans")
-            db.session.add(Nexans)
-            txlp17 = ProductType(name='TXLP/2R/17',
-                                 mainSpec='TXLP',
-                                 watt_per_meter=17,
-                                 ledere=2,
-                                 manufacturor=Nexans)
-            txlp10 = ProductType(name='TXLP/2R/10',
-                                      mainSpec='TXLP',
-                                      watt_per_meter=10,
-                                      ledere=2,
-                                      manufacturor=Nexans)
-            db.session.add(txlp17)
-            db.session.add(txlp10)
-            import Nexans_TXLP
-            for vk in Nexans_TXLP.vks:
-                name = vk.pop('Betegnelse')
-                effekt = vk.pop('Effekt ved 230V')
-                if name[-2:] == '17':
-                    product_type = txlp17
-                else:
-                    product_type = txlp10
-                if name:
-                    new_vk = Product(
-                        name=name, product_type=product_type, effekt=effekt)
-                    new_vk.add_keys_from_dict(vk)
-                    db.session.add(new_vk)
-            tulle_vk = Product(
-                name='TULL', product_type=txlp10, effekt=500)
-            db.session.add(tulle_vk)
-            db.session.commit()
-            print("Database tables created")
-
-    else:
-        if app.config['DEBUG'] is True:
-            Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
-        app.run(host='0.0.0.0', port=app.config['PORT'])
+    if app.config['DEBUG'] is True:
+        Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
+    app.run(host='0.0.0.0', port=app.config['PORT'])
