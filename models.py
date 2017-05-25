@@ -26,6 +26,20 @@ class Manufacturor(db.Model):
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        product_types = ProductType.query.filter_by(manufacturor=self).all()
+        product_type_dict = [i.serialize for i in product_types]
+
+        dictionary = {
+            'id': self.id,
+            'name': self.name,
+            'product_types': product_type_dict
+        }
+        return dictionary
+
 
 class ProductType(db.Model):
     """ProcuctTypes-table."""
@@ -40,6 +54,26 @@ class ProductType(db.Model):
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        products = Product.query.filter_by(product_type=self).all()
+        products_dict = [i.serialize for i in products]
+
+        dictionary = {
+        'id': self.id,
+        'name': self.name,
+        'ledere': self.ledere,
+        'products': products_dict
+        }
+        if self.watt_per_meter:
+            dictionary['watt_per_meter'] = self.watt_per_meter
+        if self.watt_per_square_meter:
+            dictionary[
+                'watt_per_square_meter'] = self.watt_per_square_meter
+        return dictionary
 
 
 class Product(db.Model):
@@ -60,6 +94,15 @@ class Product(db.Model):
     def get_specs(self):
         """Retrieve all specs for this product."""
         return ProductSpec.query.filter_by(product_id=self.id).all()
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        dictionary = {
+            'id': self.id,
+            'effect': self.effekt
+        }
+        return dictionary
 
 
 class ProductSpec(db.Model):
