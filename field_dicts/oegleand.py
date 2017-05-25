@@ -15,6 +15,14 @@ translator = {
         lambda x: yes if x[
             'check-installasjonsveiledning_fulgt'] else no
     ],
+    'watt_per_square_meter': [
+        '{:.2f}',
+        lambda x: (commafloat(x['effekt']) / commafloat(x['oppvarmet_areal']),)
+    ],
+    'cc': [
+        '{:.2f}',
+        lambda x: (commafloat(x['oppvarmet_areal']) / commafloat(x['lengde']) * 100,)
+    ],
     'check-beskyttelses-tiltak-bruk-av-styring': [
         '{}',
         lambda x: yes if x[
@@ -126,17 +134,17 @@ fields_dict = {
         'field': 'Inn Be',
         'type': bool
     },
-    'm_ohm': {
+    'mohm_a': {
         'text': 'TextInPDF',
         'field': 'Isolasjonstest MΩ inst',
         'type': str
     },
-    'Isolasjonstest stop': {
+    'mohm_b': {
         'text': 'TextInPDF',
         'field': 'Isolasjonstest MΩ støp',
         'type': str
     },
-    'Isolasjonstest MΩ tilk': {
+    'mohm_c': {
         'text': 'TextInPDF',
         'field': 'Isolasjonstest MΩ tilk',
         'type': str
@@ -228,6 +236,7 @@ fields_dict = {
     },
     'innendørs_annet_spesifiser': {
         'text': 'TextInPDF',
+
         'field': 'Spesifiser',
         'type': str
     },
@@ -246,7 +255,7 @@ fields_dict = {
         'field': 'Telefon',
         'type': str
     },
-    'type_kabel_matte': {
+    'Betegnelse': {
         'text': 'TextInPDF',
         'field': 'Type kabel/matte',
         'type': str

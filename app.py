@@ -77,7 +77,7 @@ def user_file_path(filename=None, create_random_dir=False):
 
 def set_fields_from_product(dictionary, product, specs=None):
     """Set multiple fields from a Product-table."""
-    dictionary["Betegnelse"] = product.name
+    dictionary["Betegnelse"] = product.product_type.name
     # legg til enleder/toleder
     ledere = product.product_type.ledere
     if ledere == 2:
@@ -86,8 +86,16 @@ def set_fields_from_product(dictionary, product, specs=None):
         dictionary['check-enleder'] = True
 
     for s in specs:
+        print(s.key + '\n')
         if s.key == 'Nominell elementmotstand':
             dictionary['nominell_motstand'] = s.value
+        if s.key == 'Resistans_min':
+            dictionary['resistans_min'] = s.value
+        if s.key == 'Resistans_max':
+            dictionary['resistans_max'] = s.value
+        if s.key == 'Lengde':
+            dictionary['lengde'] = s.value
+    print(dictionary)
     return dictionary
 
 def validate_fields(request_form):
