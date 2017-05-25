@@ -3,6 +3,11 @@
 {% block body %}
 {% include 'includes/header.html' %}
     <div class="row">
+        <input id="typeahead" type="text" class="form-control" placeholder="Search" tabindex="-1" data-bind="
+  dropdown: {
+    suggestion: suggestion,
+    query: query
+  }">
         <div class="error bg-danger">
             {% if error_message %}
                 <p>{{error_message}}</p>
