@@ -158,7 +158,7 @@ def json_fill_document():
     if error_fields:
         return jsonify(
             error_fields=error_fields,
-            error_message='Felt felte nedenfor er påkrevd.',
+            error_message='Noen felt var ikke tilstrekkelig utfylt',
             status=400
         )
 

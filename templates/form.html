@@ -13,13 +13,14 @@
       }">
         </div>
     </div>
+    <!-- ko if: error_message || error_fields -->
     <div class="error bg-danger col-xs-12">
       <p data-bind="text:error_message"></p>
       <!-- ko foreach:{data: error_fields, as :'item'} -->
-      <strong data-bind="text: $data"></strong><!-- ko if: ($index() !== ($parent.error_fields().length - 1)) -->,
-      <!-- /ko -->
+      <strong data-bind="text: $data"></strong><!-- ko if: ($index() !== ($parent.error_fields().length - 1)) -->, <!-- /ko -->
       <!-- /ko -->
     </div>
+    <!-- /ko -->
     <form id="form" class="" action="nexans.html" method="post" data-bind="submit: post_form">
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
