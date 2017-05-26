@@ -3,16 +3,6 @@
 {% block body %}
   {% include 'includes/header.html' %}
   <div class="row">
-    <div class="example">
-      <div class="form-group">
-        <label for="typeahead">Type Here</label>
-        <input id="typeahead" type="text" class="form-control" name="Search" placeholder="Search" tabindex="-1" data-bind="
-      dropdown: {
-        suggestion: suggestion,
-        query: query
-      }">
-      </div>
-    </div>
     <!-- ko if: error_message || error_fields -->
     <div class="error bg-danger col-xs-12">
       <p data-bind="text:error_message"></p>
@@ -67,12 +57,13 @@
                   <!-- /ko -->
                 </fieldset>
               </div>
+              <!-- ko with: Products() -->
               <div class="form-group col-xs-12">
                 <fieldset>
                   <legend>Watt per meter</legend>
-                  <!-- ko foreach: Products().spec_groups().watt_per_meter -->
-                  <label class="radio-inline" id="meterEffekt8">
-                    <input type="radio" name="meterEffekt" data-bind="value: $data">
+                  <!-- ko foreach: spec_groups().watt_per_meter -->
+                  <label class="radio-inline">
+                    <input type="radio" name="meterEffekt" data-bind="checked: $root.watt_per_meter, value: $data">
                     <!-- ko text: $data + ' W/m' -->
                     <!-- /ko -->
                   </label>
@@ -80,17 +71,14 @@
                 </fieldset>
               </div>
               <div class="form-group col-xs-12">
-                <select class="form-control">
-                  <option></option>
-                  <!-- ko foreach: Products().filtered_products -->
-                    <!-- ko foreach: $data.product_types -->
-                    <!-- ko foreach: $data.products -->
-                      <option data-bind="text: $parent.name + ' ' +  $data.effect + 'W'">1</option>
-                      <!-- /ko -->
-                    <!-- /ko -->
-                  <!-- /ko -->
+                <select class="form-control" data-bind="options: filtered_products,
+                    optionsText: 'name',
+                    optionsValue: 'id',
+                    value: $root.selected_vk">
+
                 </select>
               </div>
+              <!-- /ko -->
               <div class="form-group col-xs-6">
                 <label for="input-rom_navn">Romnavn</label>
                 <input class="form-control" type="text" name="rom_navn" id="input-rom_navn" data-bind="textInput: rom_navn">
@@ -160,7 +148,7 @@
     </form>
     <div class="file_download" data-bind="if: file_download">
       <div class="message">Ditt skjema er ferdig utfyllt.</div>
-      <a data-bind="attr: { href: file_download}" title="Utfylt skjema">Klikk her for å laste det ned.</a>
+      <a target="vk_pdf" data-bind="attr: { href: file_download}" title="Utfylt skjema">Klikk her for å laste det ned.</a>
 
       <p>Hvis du vil gjøre endringer, kan du gjøre det på denne siden, eller i det nedlastede skjemaet.</p>
 
