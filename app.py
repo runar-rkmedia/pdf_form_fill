@@ -42,12 +42,15 @@ configure_app(app)
 assets = Environment(app)
 js = Bundle(
     'js/def.js',
+    'js/ko-bootstrap-typeahead.js',
+    'js/ko.js',
     filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
 css = Bundle(
     # 'css/bootstrap.min.css',
     'css/style.css',
+    'css/ko-bootstrap-typeahead.css',
     filters='cssmin',
     output='css/min.css'
 )

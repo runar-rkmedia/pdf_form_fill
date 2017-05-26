@@ -3,7 +3,6 @@ $(function() {
   "use strict";
 
   var service, model;
-
   // a dummy service used in the example
   service = (function() {
 
@@ -16,17 +15,41 @@ $(function() {
       new Item("Six")
     ];
 
+    $.get("/products.json")
+      .done(function(result) {
+        data = flatten_products(result)
+        console.log(data);
+
+      })
+      .fail(function(e) {
+        self.errormsg('Could not retrieve data: Error ' + e.status);
+      });
+
     function Item(name) {
       this.name = name;
     }
 
+    function flatten_products(products) {
+      var r = [];
+      for (var i = 0; i < products.length; i++) {
+        var m = products[i]
+        for (var j = 0; j < m['product_types'].length; j++) {
+          var d = m['product_types'][j]
+          for (var k = 0; k < d['products'].length; k++) {
+            var p = d['products'][k]
+            p['name'] = m.name + " " + d.name + " " + p.effect + "W"
+            r.push(p)
+          }
+        }
+      }
+      return r;
+    }
+
     function query(term) {
       return $.Deferred(function(deferred) {
-        setTimeout(function() {
-          deferred.resolve(data.filter(function(item) {
-            return !!~item.name.indexOf(term);
-          }));
-        }, Math.random() * 250);
+        deferred.resolve(data.filter(function(item) {
+          return !!~item.name.toLowerCase().indexOf(term.toLowerCase());
+        }));
       });
     }
 
