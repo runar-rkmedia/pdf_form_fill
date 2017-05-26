@@ -2,6 +2,10 @@ $(function() {
 
   "use strict";
 
+  function sortNumber(a, b) {
+    return a - b;
+  }
+
   var service, model;
   // a dummy service used in the example
   service = (function() {
@@ -57,22 +61,66 @@ $(function() {
     };
   })();
 
+  function ProductModel(rootModel) {
+    var self = this;
+    self.products = ko.observableArray();
+
+    self.filtered_products = ko.computed(function() {
+      return ko.utils.arrayFilter(self.products(), function(prod) {
+        return prod.name == rootModel.manufacturor();
+      });
+
+
+    });
+    self.spec_groups = ko.computed(function() {
+      var array = self.filtered_products();
+      var w = [];
+      var w_squared = [];
+      for (var i = 0; i < array.length; i++) {
+        var m = array[i].product_types;
+        for (var j = 0; j < m.length; j++) {
+          var p = m[j];
+          if ('watt_per_meter' in p && w.indexOf(p.watt_per_meter) == -1) {
+            w.push(p.watt_per_meter);
+          }
+          if ('watt_per_square_meter' in p && w.indexOf(p.watt_per_square_meter) == -1) {
+            w_squared.push('watt_per_square_meter');
+          }
+        }
+      }
+      return {
+        'watt_per_meter': w.sort(sortNumber),
+        'watt_per_square_meter': w_squared
+      };
+    });
+    self.getProducts = function() {
+      $.get("/products.json",
+          $('#form').serialize())
+        .done(function(result) {
+          self.products(result);
+        })
+        .fail(function(e) {
+          console.log('Could not retrieve data = Error ' + e.status);
+        });
+    };
+  }
+
   function AppViewModel() {
 
     var self = this;
 
 
-    self.anleggs_adresse = ko.observable();
+    self.anleggs_adresse = ko.observable('sdfsd');
     self.anleggs_poststed = ko.observable();
     self.anleggs_postnummer = ko.observable();
 
-    self.manufacturor = ko.observable();
-    self.watt_per_meter = ko.observable();
+    self.manufacturor = ko.observable('Nexans');
+    self.watt_per_meter = ko.observable("17");
 
     self.rom_navn = ko.observable();
     self.areal = ko.observable();
-    self.oppvarmet_areal = ko.observable();
-    self.effect = ko.observable();
+    self.oppvarmet_areal = ko.observable(4);
+    self.effect = ko.observable(500);
 
     self.ohm_a = ko.observable();
     self.ohm_b = ko.observable();
@@ -90,9 +138,18 @@ $(function() {
     self.last_sent_args = ko.observable();
     self.form_args = ko.observable($('#form').serialize());
 
+    self.Products = ko.observable();
 
-    $('input').on("change keyup paste click", function() {
-         self.form_args($('#form').serialize());
+    self.init = function() {
+      self.Products(new ProductModel(self));
+      self.Products().getProducts();
+    };
+
+
+
+
+    $('body').on("change keyup paste click", 'input', function() {
+      self.form_args($('#form').serialize());
     });
     self.form_changed = ko.computed(function() {
       return self.form_args() !== self.last_sent_args();
@@ -106,6 +163,7 @@ $(function() {
         $.post("/json/heating/",
             self.form_args())
           .done(function(result) {
+            console.log(result);
             self.last_sent_args(self.form_args());
             if (result.error_fields) {
               self.error_fields(result.error_fields);
@@ -137,6 +195,7 @@ $(function() {
   // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
   //   AppViewModel.suggestions([]);
   // });
-
-  ko.applyBindings(new AppViewModel());
+  var myApp = new AppViewModel();
+  myApp.init();
+  ko.applyBindings(myApp);
 });
