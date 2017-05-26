@@ -100,6 +100,7 @@ $(function() {
 
 
     self.post_form = function(e, t) {
+      self.form_args($('#form').serialize())
       if (self.form_changed()) {
         console.log('sending...');
         $.post("/json/heating/",
