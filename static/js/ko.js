@@ -111,17 +111,17 @@ $(function() {
           var self = this;
 
 
-          self.anleggs_adresse = ko.observable('sdfsd');
+          self.anleggs_adresse = ko.observable();
           self.anleggs_poststed = ko.observable();
           self.anleggs_postnummer = ko.observable();
 
-          self.manufacturor = ko.observable('Nexans');
-          self.watt_per_meter = ko.observable("17");
+          self.manufacturor = ko.observable();
+          self.watt_per_meter = ko.observable();
 
           self.rom_navn = ko.observable();
           self.areal = ko.observable();
-          self.oppvarmet_areal = ko.observable(4);
-          self.effect = ko.observable(500);
+          self.oppvarmet_areal = ko.observable();
+          self.effect = ko.observable();
 
           self.ohm_a = ko.observable();
           self.ohm_b = ko.observable();
@@ -140,6 +140,7 @@ $(function() {
           self.form_args = ko.observable($('#form').serialize());
 
           self.Products = ko.observable();
+          self.selected_vk = ko.observable();
 
           self.init = function() {
             self.Products(new ProductModel(self));
@@ -158,11 +159,26 @@ $(function() {
 
 
           self.post_form = function(e, t) {
-            self.form_args($('#form').serialize())
+            self.form_args($('#form').serialize());
             if (self.form_changed()) {
               console.log('sending...');
               $.post("/json/heating/",
-                  self.form_args())
+                  {
+                    'anleggs_adresse': self.anleggs_adresse(),
+                    'anleggs_poststed': self.anleggs_poststed(),
+                    'anleggs_postnummer': self.anleggs_postnummer(),
+                    'rom_navn': self.rom_navn(),
+                    'areal': self.areal(),
+                    'oppvarmet_areal': self.oppvarmet_areal(),
+                    'mohm_a': self.mohm_a(),
+                    'mohm_b': self.mohm_b(),
+                    'mohm_c': self.mohm_c(),
+                    'ohm_a': self.mohm_a(),
+                    'ohm_b': self.mohm_c,
+                    'ohm_c': self.ohm_c(),
+                    'product_id': self.selected_vk()
+
+                  })
                 .done(function(result) {
                   self.last_sent_args(self.form_args());
                   if (result.error_fields) {

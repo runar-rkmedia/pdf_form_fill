@@ -95,6 +95,11 @@ class Product(db.Model):
         """Retrieve all specs for this product."""
         return ProductSpec.query.filter_by(product_id=self.id).all()
 
+    @classmethod
+    def get_by_id(cls, p_id):
+        """Return object by id."""
+        return Product.query.filter_by(id=p_id).first()
+
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""

@@ -8,7 +8,7 @@ import decimal
 
 from config import configure_app
 from field_dicts.helpers import commafloat
-from models import (db, Manufacturor, lookup_vk)
+from models import (db, Manufacturor, Product)
 from vk_objects import FormField
 
 from flask import (
@@ -44,7 +44,7 @@ js = Bundle(
     'js/def.js',
     'js/ko-bootstrap-typeahead.js',
     'js/ko.js',
-    filters='jsmin',
+    # filters='jsmin',
     output='gen/packed.js')
 assets.register('js_all', js)
 
@@ -113,11 +113,9 @@ def validate_fields(request_form):
     required_fields = {
         'strings': [
             'anleggs_adresse',
-            'manufacturor',
         ],
         'digits': [
-            'effekt',
-            'meterEffekt',
+            'product_id',
             'oppvarmet_areal'
         ]}
     for key in required_fields['strings']:
@@ -137,7 +135,7 @@ def validate_fields(request_form):
 
 
 @app.route('/products.json')
-@limiter.limit("1/second", error_message='Èn per sekund')
+# @limiter.limit("1/second", error_message='Èn per sekund')
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_products():
@@ -162,29 +160,22 @@ def json_fill_document():
             status=400
         )
 
-    vk_manufacturor = request.form['manufacturor']
-    vk_effekt = request.form['effekt']
-    vk_meterEffekt = request.form['meterEffekt']
-    filtered_vks = lookup_vk(vk_manufacturor, vk_meterEffekt, vk_effekt)
+    product_id = request.form['product_id']
+    product = Product.get_by_id(product_id)
+    manufacturor = product.product_type.manufacturor.name
     dictionary = request.form.copy()
-    if len(filtered_vks) == 1:
-        varmekabel = filtered_vks[0]
-        specs = varmekabel.get_specs()
+    if product:
+        specs = product.get_specs()
         dictionary = set_fields_from_product(
-            dictionary, varmekabel, specs)
-
-    elif len(filtered_vks) > 1:
-        return jsonify(
-            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
-                vk_manufacturor, vk_meterEffekt, vk_effekt),
-            status=400
-            )
+            dictionary, product, specs)
     else:
         return jsonify(
-            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
-                vk_manufacturor, vk_meterEffekt, vk_effekt),
+            error_message=(
+                "Fant ingen varmekabler med denne id '{}'. "
+                "Om dette er en feil, bør dette rapporteres."
+            ).format(manufacturor),
             status=400)
-    form = FormField(vk_manufacturor)
+    form = FormField(manufacturor)
     form.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_path = user_file_path(filename, create_random_dir=True)
