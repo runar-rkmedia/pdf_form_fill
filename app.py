@@ -175,6 +175,13 @@ def json_fill_document():
                 "Om dette er en feil, bør dette rapporteres."
             ).format(manufacturor),
             status=400)
+    if dictionary.get('mohm_a') == 'true':
+        dictionary['mohm_a'] = 999
+    if dictionary.get('mohm_b') == 'true':
+        dictionary['mohm_b'] = 999
+    if dictionary.get('mohm_c') == 'true':
+        dictionary['mohm_c'] = 999
+    print(dictionary.get('mohm_a'))
     form = FormField(manufacturor)
     form.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'

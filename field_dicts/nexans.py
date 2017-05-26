@@ -158,7 +158,7 @@ fields_dict = {
         'field': 'Text11',
         'type': str
     },
-    'ogm_c': {
+    'ohm_c': {
         'text': 'TextInPDF',
         'field': 'Text12',
         'type': str

@@ -173,8 +173,8 @@ $(function() {
                     'mohm_a': self.mohm_a(),
                     'mohm_b': self.mohm_b(),
                     'mohm_c': self.mohm_c(),
-                    'ohm_a': self.mohm_a(),
-                    'ohm_b': self.mohm_c,
+                    'ohm_a': self.ohm_a(),
+                    'ohm_b': self.ohm_b(),
                     'ohm_c': self.ohm_c(),
                     'product_id': self.selected_vk()
 
