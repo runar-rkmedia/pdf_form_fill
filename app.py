@@ -14,16 +14,16 @@ from vk_objects import FormField
 from flask import (
     Flask,
     request,
-    json,
     # redirect,
     render_template,
     send_from_directory
 )
+from flask.json import jsonify, JSONEncoder
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 
 
-class MyJSONEncoder(json.JSONEncoder):
+class MyJSONEncoder(JSONEncoder):
     """Redefine flasks json-encoded to convert Decimals.."""
 
     def default(self, obj): # noqa
@@ -32,19 +32,18 @@ class MyJSONEncoder(json.JSONEncoder):
             return str(obj)
         return super(MyJSONEncoder, self).default(obj)
 
+
 app = Flask(__name__, instance_relative_config=True)
 app.json_encoder = MyJSONEncoder
 configure_app(app)
-
-
-
 
 assets = Environment(app)
 js = Bundle(
     'js/def.js',
     'js/ko-bootstrap-typeahead.js',
     'js/ko.js',
-    filters='jsmin', output='gen/packed.js')
+    filters='jsmin',
+    output='gen/packed.js')
 assets.register('js_all', js)
 
 css = Bundle(
@@ -89,7 +88,6 @@ def set_fields_from_product(dictionary, product, specs=None):
         dictionary['check-enleder'] = True
 
     for s in specs:
-        print(s.key + '\n')
         if s.key == 'Nominell elementmotstand':
             dictionary['nominell_motstand'] = s.value
         if s.key == 'Resistans_min':
@@ -98,8 +96,8 @@ def set_fields_from_product(dictionary, product, specs=None):
             dictionary['resistans_max'] = s.value
         if s.key == 'Lengde':
             dictionary['lengde'] = s.value
-    print(dictionary)
     return dictionary
+
 
 def validate_fields(request_form):
     """Validate the input from a form."""
@@ -129,18 +127,64 @@ def validate_fields(request_form):
                 error_fields.append(key)
     return error_fields
 
+
 @app.route('/products.json')
 def json_products():
     """Return a json-object of all products."""
     manufacturors = Manufacturor.query.all()
 
-    return json.jsonify([i.serialize for i in manufacturors])
+    return jsonify([i.serialize for i in manufacturors])
+
+
+@app.route('/json/heating/', methods=['POST'])
+def json_fill_document():
+    """Return a json-object of all products."""
+    error_fields = validate_fields(request.form)
+
+    if error_fields:
+        return jsonify(
+            error_fields=error_fields,
+            error_message='Felt felte nedenfor er påkrevd.',
+            status=400
+            )
+
+    vk_manufacturor = request.form['manufacturor']
+    vk_effekt = request.form['effekt']
+    vk_meterEffekt = request.form['meterEffekt']
+    filtered_vks = lookup_vk(vk_manufacturor, vk_meterEffekt, vk_effekt)
+    dictionary = request.form.copy()
+    if len(filtered_vks) == 1:
+        varmekabel = filtered_vks[0]
+        specs = varmekabel.get_specs()
+        dictionary = set_fields_from_product(
+            dictionary, varmekabel, specs)
+
+    elif len(filtered_vks) > 1:
+        return jsonify(
+            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
+                vk_manufacturor, vk_meterEffekt, vk_effekt),
+            status=400
+            )
+    else:
+        return jsonify(
+            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
+                vk_manufacturor, vk_meterEffekt, vk_effekt),
+            status=400)
+    form = FormField(vk_manufacturor)
+    form.set_fields_from_dict(dictionary)
+    filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
+    output_path = user_file_path(filename, create_random_dir=True)
+    form.create_filled_pdf(output_path)
+    return jsonify(
+        file_download=os.path.relpath(output_path),
+        status=200)
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
 def download(filename):
     """Serve a file for downloading."""
-    return send_from_directory(directory=app.root_path, filename=filename)
+    directory = os.path.join(app.root_path, app.config['USER_FILES'])
+    return send_from_directory(directory=directory, filename=filename)
 
 
 @app.route('/success/')
@@ -164,53 +208,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    return render_template(
-        'form.html',
-        dictionary=dictionary,
-        error_fields=error_fields,
-        error_message=error_message
-    )
-
-@app.route('/nexans.html', methods=['POST'])
-def fill_document():
-    """Fill a document with data from form, and smart usage."""
-
-    error_fields = validate_fields(request.form)
-
-    if error_fields:
-        return view_form(
-            dictionary=request.form,
-            error_fields=error_fields,
-            error_message=None)
-
-    vk_manufacturor = request.form['manufacturor']
-    vk_effekt = request.form['effekt']
-    vk_meterEffekt = request.form['meterEffekt']
-    filtered_vks = lookup_vk(vk_manufacturor, vk_meterEffekt, vk_effekt)
-    dictionary = request.form.copy()
-    if len(filtered_vks) > 1:
-        return view_form(
-            dictionary=dictionary,
-            error_message="Fant flere varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
-                vk_manufacturor, vk_meterEffekt, vk_effekt
-            ))
-    elif len(filtered_vks) == 1:
-        varmekabel = filtered_vks[0]
-        specs = varmekabel.get_specs()
-        dictionary = set_fields_from_product(
-            dictionary, varmekabel, specs)
-    else:
-        return view_form(
-            dictionary=dictionary,
-            error_message="Fant ingen varmekabler fra {} på {} w/m, med effekten {}".format(  # noqa
-                vk_manufacturor, vk_meterEffekt, vk_effekt
-            ))
-    form = FormField(vk_manufacturor)
-    form.set_fields_from_dict(dictionary)
-    filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
-    output_path = user_file_path(filename, create_random_dir=True)
-    form.create_filled_pdf(output_path)
-    return success(dictionary, os.path.relpath(output_path))
+    return render_template('form.html')
 
 
 # hook up extensions to app

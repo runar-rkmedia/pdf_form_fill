@@ -15,14 +15,13 @@ $(function() {
       new Item("Six")
     ];
 
-    $.get("/products.json")
+    $.get("/products.json",
+        $('#form').serialize())
       .done(function(result) {
         data = flatten_products(result)
-        console.log(data);
-
       })
       .fail(function(e) {
-        self.errormsg('Could not retrieve data: Error ' + e.status);
+        console.log('Could not retrieve data: Error ' + e.status);
       });
 
     function Item(name) {
@@ -60,6 +59,7 @@ $(function() {
 
   model = {
 
+
     anleggs_adresse: ko.observable(),
     anleggs_poststed: ko.observable(),
     anleggs_postnummer: ko.observable(),
@@ -79,6 +79,31 @@ $(function() {
     mohm_a: ko.observable(),
     mohm_b: ko.observable(),
     mohm_c: ko.observable(),
+
+    error_fields: ko.observableArray(),
+    error_message: ko.observable(),
+
+    file_download: ko.observable(),
+
+    post_form: function() {
+      $.post("/json/heating/",
+          $('#form').serialize())
+        .done(function(result) {
+          var form = $('#form');
+          console.log(result)
+          if (result.error_fields) {
+            model.error_fields(result.error_fields)
+          }
+          if (result.file_download) {
+            model.file_download(result.file_download)
+          }
+          if (result.error_message) {
+            model.error_message(result.error_message)
+          }
+
+
+        })
+    },
 
     loading: ko.observable(false), // true to show 'Loading...'
     suggestion: ko.observable(""), // the selected suggestion
