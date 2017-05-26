@@ -36,6 +36,27 @@ $(function() {
   })();
 
   model = {
+
+    anleggs_adresse: ko.observable(),
+    anleggs_poststed: ko.observable(),
+    anleggs_postnummer: ko.observable(),
+
+    manufacturor: ko.observable(),
+    watt_per_meter: ko.observable(),
+
+    rom_navn: ko.observable(),
+    areal: ko.observable(),
+    oppvarmet_areal: ko.observable(),
+    effect: ko.observable(),
+
+    ohm_a: ko.observable(),
+    ohm_b: ko.observable(),
+    ohm_c: ko.observable(),
+
+    mohm_a: ko.observable(),
+    mohm_b: ko.observable(),
+    mohm_c: ko.observable(),
+
     loading: ko.observable(false), // true to show 'Loading...'
     suggestion: ko.observable(""), // the selected suggestion
     suggestions: ko.observableArray([]), // the selections available
