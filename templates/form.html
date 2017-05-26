@@ -20,7 +20,7 @@
       <!-- /ko -->
       <!-- /ko -->
     </div>
-    <form id="form" class="" action="nexans.html" method="post">
+    <form id="form" class="" action="nexans.html" method="post" data-bind="submit: post_form">
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="form-kunde">
@@ -152,7 +152,7 @@
         </div>
       </div>
     </div>
-    <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form">
+    <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, enable: form_changed">
   </form>
   <div class="file_download" data-bind="if: file_download">
     <div class="message">Ditt skjema er ferdig utfyllt.</div>

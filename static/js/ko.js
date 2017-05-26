@@ -18,10 +18,10 @@ $(function() {
     $.get("/products.json",
         $('#form').serialize())
       .done(function(result) {
-        data = flatten_products(result)
+        data = flatten_products(result);
       })
       .fail(function(e) {
-        console.log('Could not retrieve data: Error ' + e.status);
+        console.log('Could not retrieve data = Error ' + e.status);
       });
 
     function Item(name) {
@@ -31,13 +31,13 @@ $(function() {
     function flatten_products(products) {
       var r = [];
       for (var i = 0; i < products.length; i++) {
-        var m = products[i]
-        for (var j = 0; j < m['product_types'].length; j++) {
-          var d = m['product_types'][j]
-          for (var k = 0; k < d['products'].length; k++) {
-            var p = d['products'][k]
-            p['name'] = m.name + " " + d.name + " " + p.effect + "W"
-            r.push(p)
+        var m = products[i];
+        for (var j = 0; j < m.product_types.length; j++) {
+          var d = m.product_types[j];
+          for (var k = 0; k < d.products.length; k++) {
+            var p = d.products[k];
+            p.name = m.name + " " + d.name + " " + p.effect + "W";
+            r.push(p);
           }
         }
       }
@@ -57,69 +57,85 @@ $(function() {
     };
   })();
 
-  model = {
+  function AppViewModel() {
+
+    var self = this;
 
 
-    anleggs_adresse: ko.observable(),
-    anleggs_poststed: ko.observable(),
-    anleggs_postnummer: ko.observable(),
+    self.anleggs_adresse = ko.observable();
+    self.anleggs_poststed = ko.observable();
+    self.anleggs_postnummer = ko.observable();
 
-    manufacturor: ko.observable(),
-    watt_per_meter: ko.observable(),
+    self.manufacturor = ko.observable();
+    self.watt_per_meter = ko.observable();
 
-    rom_navn: ko.observable(),
-    areal: ko.observable(),
-    oppvarmet_areal: ko.observable(),
-    effect: ko.observable(),
+    self.rom_navn = ko.observable();
+    self.areal = ko.observable();
+    self.oppvarmet_areal = ko.observable();
+    self.effect = ko.observable();
 
-    ohm_a: ko.observable(),
-    ohm_b: ko.observable(),
-    ohm_c: ko.observable(),
+    self.ohm_a = ko.observable();
+    self.ohm_b = ko.observable();
+    self.ohm_c = ko.observable();
 
-    mohm_a: ko.observable(),
-    mohm_b: ko.observable(),
-    mohm_c: ko.observable(),
+    self.mohm_a = ko.observable();
+    self.mohm_b = ko.observable();
+    self.mohm_c = ko.observable();
 
-    error_fields: ko.observableArray(),
-    error_message: ko.observable(),
+    self.error_fields = ko.observableArray();
+    self.error_message = ko.observable();
 
-    file_download: ko.observable(),
+    self.file_download = ko.observable();
 
-    post_form: function() {
-      $.post("/json/heating/",
-          $('#form').serialize())
-        .done(function(result) {
-          var form = $('#form');
-          console.log(result)
-          if (result.error_fields) {
-            model.error_fields(result.error_fields)
-          }
-          if (result.file_download) {
-            model.file_download(result.file_download)
-          }
-          if (result.error_message) {
-            model.error_message(result.error_message)
-          }
+    self.last_sent_args = ko.observable();
+    self.form_args = ko.observable($('#form').serialize());
 
 
-        })
-    },
+    $('input').on("change keyup paste click", function() {
+         self.form_args($('#form').serialize());
+    });
+    self.form_changed = ko.computed(function() {
+      return self.form_args() !== self.last_sent_args();
+    }, this);
 
-    loading: ko.observable(false), // true to show 'Loading...'
-    suggestion: ko.observable(""), // the selected suggestion
-    suggestions: ko.observableArray([]), // the selections available
-    query: function(term) { // called to query for the data and to update the suggestions
-      model.loading(true);
+
+    self.post_form = function(e, t) {
+      if (self.form_changed()) {
+        console.log('sending...');
+        $.post("/json/heating/",
+            self.form_args())
+          .done(function(result) {
+            self.last_sent_args(self.form_args());
+            if (result.error_fields) {
+              self.error_fields(result.error_fields);
+            }
+            if (result.file_download) {
+              self.file_download(result.file_download);
+            }
+            if (result.error_message) {
+              self.error_message(result.error_message);
+            }
+
+
+          });
+      }
+    };
+
+    self.loading = ko.observable(false); // true to show 'Loading...'
+    self.suggestion = ko.observable(""); // the selected suggestion
+    self.suggestions = ko.observableArray([]); // the selections available
+    self.query = function(term) { // called to query for the data and to update the suggestions
+      self.loading(true);
       service.query(term).then(function(data) {
-        model.loading(false);
-        model.suggestions(data);
+        self.loading(false);
+        self.suggestions(data);
       });
-    }
-  };
+    };
+  }
 
-  model.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
-    model.suggestions([]);
-  });
+  // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
+  //   AppViewModel.suggestions([]);
+  // });
 
-  ko.applyBindings(model);
+  ko.applyBindings(new AppViewModel());
 });
