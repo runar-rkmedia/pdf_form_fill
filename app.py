@@ -21,12 +21,14 @@ from flask import (
 from flask.json import jsonify, JSONEncoder
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 class MyJSONEncoder(JSONEncoder):
     """Redefine flasks json-encoded to convert Decimals.."""
 
-    def default(self, obj): # noqa
+    def default(self, obj):  # noqa
         if isinstance(obj, decimal.Decimal):
             # Convert decimal instances to strings.
             return str(obj)
@@ -56,6 +58,12 @@ css = Bundle(
 assets.register('css_all', css)
 
 db.init_app(app)
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -129,6 +137,9 @@ def validate_fields(request_form):
 
 
 @app.route('/products.json')
+@limiter.limit("1/second", error_message='Èn per sekund')
+@limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
+@limiter.limit("200/hour", error_message='200 per hour')
 def json_products():
     """Return a json-object of all products."""
     manufacturors = Manufacturor.query.all()
@@ -137,6 +148,9 @@ def json_products():
 
 
 @app.route('/json/heating/', methods=['POST'])
+@limiter.limit("1/second", error_message='Èn per sekund')
+@limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
+@limiter.limit("200/hour", error_message='200 per hour')
 def json_fill_document():
     """Return a json-object of all products."""
     error_fields = validate_fields(request.form)
@@ -146,7 +160,7 @@ def json_fill_document():
             error_fields=error_fields,
             error_message='Felt felte nedenfor er påkrevd.',
             status=400
-            )
+        )
 
     vk_manufacturor = request.form['manufacturor']
     vk_effekt = request.form['effekt']
@@ -209,6 +223,18 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'manufacturor':  "Nexans"
         }
     return render_template('form.html')
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    """Errorhandler for ratelimiting."""
+    return jsonify(
+        error_message=(
+            "Ta det med ro, vennligst ikke hamre i vei på serveren. "
+            "Du har nådd grensen for maks antall innsendinger: {}"
+        ).format(e.description),
+        status=429
+    )
 
 
 # hook up extensions to app
