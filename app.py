@@ -10,21 +10,37 @@ import base64
 
 from config import configure_app
 from field_dicts.helpers import commafloat
-from models import (db, Manufacturor, Product)
+from models import (db, Manufacturor, Product, User, OAuth)
 from vk_objects import FormField
 
 from flask import (
     Flask,
     request,
-    # redirect,
+    flash,
+    redirect,
     render_template,
-    send_from_directory
+    send_from_directory,
+    url_for
 )
 from flask.json import jsonify, JSONEncoder
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+
+from sqlalchemy.orm.exc import NoResultFound
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.consumer import oauth_authorized, oauth_error
+from flask_dance.consumer.backend.sqla import (
+    SQLAlchemyBackend
+)
+from flask_login import (
+    LoginManager,
+    current_user,
+    login_required,
+    login_user,
+    logout_user
+)
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -40,6 +56,25 @@ class MyJSONEncoder(JSONEncoder):
 app = Flask(__name__, instance_relative_config=True)
 app.json_encoder = MyJSONEncoder
 configure_app(app)
+
+
+blueprint = make_google_blueprint(
+    client_id=app.config['G_CLIENT_ID'],
+    client_secret=app.config['G_CLIENT_SECRET'],
+    offline=True,
+    scope=["profile", "email"],
+    reprompt_consent=True,
+)
+app.register_blueprint(blueprint, url_prefix="/login")
+
+# setup login manager
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
+# setup SQLAlchemy backend
+blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+
 
 assets = Environment(app)
 js = Bundle(
@@ -67,6 +102,12 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["2000 per day", "500 per hour"]
 )
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Return user by user_id."""
+    return User.query.get(int(user_id))
 
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -110,7 +151,6 @@ def set_fields_from_product(dictionary, product, specs=None):
     return dictionary
 
 
-
 def validate_fields(request_form):
     """Validate the input from a form."""
     print('validate/...')
@@ -139,6 +179,57 @@ def validate_fields(request_form):
     return error_fields
 
 
+@app.route("/login")
+def login():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    assert resp.ok, resp.text
+    return "You are {email} on Google".format(email=resp.json()["email"])
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Du er nå logget ut")
+    return redirect(url_for("view_form"))
+
+
+@oauth_authorized.connect_via(blueprint)
+def google_logged_in(blueprint, token):  # noqa
+    """Create/login local user on successful OAuth login."""
+    if not token:
+        flash(
+            "Feil: Kunne ikke logge på med {name}".format(name=blueprint.name))
+        return
+    # figure out who the user is
+    resp = blueprint.session.get("/oauth2/v2/userinfo")
+    print('loggin in...')
+    from pprint import pprint
+    pprint(blueprint.session)
+    if resp.ok:
+        print(resp.json())
+        name = resp.json()["name"]
+        email = resp.json()["email"]
+        query = User.query.filter_by(email=email)
+        try:
+            user = query.one()
+        except NoResultFound:
+            # create a user
+            user = User(
+                name=name,
+                email=email,
+                )
+            db.session.add(user)
+            db.session.commit()
+        login_user(user)
+        flash("Vellykket pålogginggjennom Google")
+    else:
+        msg = "Feil: Kunne ikke hente bruker-info fra {name}".format(
+            name=blueprint.name)
+        flash(msg, category="error")
+
+
 @app.route('/set_sign', methods=['POST'])
 def save_image():
     """Save an image from a data-string."""
@@ -149,7 +240,6 @@ def save_image():
     with open(filename, 'wb') as f:
         f.write(imgdata)
     return 's'
-
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
@@ -222,14 +312,11 @@ def json_fill_document():
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_path = user_file_path(filename, create_random_dir=True)
     form.create_filled_pdf(output_path)
-    form.stamp_with_image(output_path, 'some_image.png', 20,10)
+    form.stamp_with_image(output_path, 'some_image.png', 20, 10)
 
     return jsonify(
         file_download=os.path.relpath(output_path),
         status=200)
-
-
-
 
 
 @app.route('/')

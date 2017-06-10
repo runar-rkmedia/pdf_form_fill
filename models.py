@@ -1,6 +1,12 @@
 """Database-structure for item-catalog."""
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_dance.consumer.backend.sqla import (
+    OAuthConsumerMixin,
+)
+from flask_login import (
+    UserMixin,
+)
 import bleach
 import enum
 db = SQLAlchemy()
@@ -64,11 +70,12 @@ class CompanyContact(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """User-table for users."""
     __tablename__ = 'vk_user'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(100))
+    email = db.Column(db.String(100))
     title = db.Column(db.String(50))
     signature = db.Column(db.Binary())
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
@@ -84,6 +91,13 @@ class User(db.Model):
             user=self
         )
         db.session.add(user_contact)
+
+
+class OAuth(db.Model, OAuthConsumerMixin):
+    """Oath-table."""
+    __tablename__ = 'oauth'
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = db.relationship(User)
 
 
 class UserContact(db.Model):

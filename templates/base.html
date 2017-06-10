@@ -12,6 +12,22 @@
         {% endassets %}
     </head>
     <body>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flash">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      {% if current_user.is_authenticated %}
+        Du er logget inn som {{ current_user.name }}!
+        <a href="{{ url_for("logout") }}">Logg ut</a>
+      {% else %}
+        Du er ikke logget inn.
+        <a href="{{ url_for("google.login") }}">Logg inn</a>
+      {% endif %}
         <div class="container">
             {% block body %}{% endblock %}
         </div>
