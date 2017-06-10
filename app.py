@@ -9,14 +9,15 @@ import re
 import base64
 
 from config import configure_app
-from field_dicts.helpers import commafloat
-from models import (db, Manufacturor, Product, User, OAuth)
+from field_dicts.helpers import commafloat, id_generator
+from models import (db, Manufacturor, Product, User, OAuth, Invite)
 from vk_objects import FormField
 
 from flask import (
     Flask,
     request,
     flash,
+    session,
     redirect,
     render_template,
     send_from_directory,
@@ -110,11 +111,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    """Return random string with digits."""
-    return ''.join(random.choice(chars) for _ in range(size))
-
-
 def user_file_path(filename=None, create_random_dir=False):
     """Return full path to user-dir, with a random generated unique folder."""
     paths = [app.root_path, app.config['USER_FILES']]
@@ -181,18 +177,35 @@ def validate_fields(request_form):
 
 @app.route("/login")
 def login():
+    """Login."""
     if not google.authorized:
         return redirect(url_for("google.login"))
     resp = google.get("/oauth2/v2/userinfo")
     assert resp.ok, resp.text
     return "You are {email} on Google".format(email=resp.json()["email"])
 
+
 @app.route("/logout")
 @login_required
 def logout():
+    """Logout."""
     logout_user()
     flash("Du er nå logget ut")
     return redirect(url_for("view_form"))
+
+
+@app.route('/invite/<invite_id>')
+def get_invite(invite_id):
+    """Route for getting an invite."""
+    invite = Invite.query.filter(
+        Invite.id == invite_id,
+        Invite.invitee_user_id == None
+        ).first()
+    print(invite, invite_id)
+    if invite is not None:
+        session['invite'] = invite_id
+        return redirect(url_for("google.login"))
+    return "Fant ingen invitasjon med denne id'en"
 
 
 @oauth_authorized.connect_via(blueprint)
@@ -204,11 +217,11 @@ def google_logged_in(blueprint, token):  # noqa
         return
     # figure out who the user is
     resp = blueprint.session.get("/oauth2/v2/userinfo")
-    print('loggin in...')
-    from pprint import pprint
-    pprint(blueprint.session)
-    if resp.ok:
-        print(resp.json())
+    invite = Invite.query.filter(
+        Invite.id == invite_id,
+        Invite.invitee_user_id == None
+        ).first()
+    if resp.ok and invite is not None:
         name = resp.json()["name"]
         email = resp.json()["email"]
         query = User.query.filter_by(email=email)
@@ -219,8 +232,10 @@ def google_logged_in(blueprint, token):  # noqa
             user = User(
                 name=name,
                 email=email,
-                )
+                company=invite.company,
+            )
             db.session.add(user)
+            invite.invitee = user
             db.session.commit()
         login_user(user)
         flash("Vellykket pålogginggjennom Google")
@@ -306,6 +321,14 @@ def json_fill_document():
         dictionary['mohm_b'] = 999
     if dictionary.get('mohm_c') == 'true':
         dictionary['mohm_c'] = 999
+    if current_user.is_authenticated:
+        if current_user.company:
+            dictionary['firma_navn'] = current_user.company.name
+            dictionary['firma_orgnr'] = current_user.company.orgnumber
+            dictionary['firma_adresse1'] = current_user.company.address.linje1
+            dictionary['firma_adresse2'] = current_user.company.address.linje2
+            dictionary['firma_poststed'] = current_user.company.address.postal
+            dictionary['firma_postnummer'] = current_user.company.address.postnumber
     print(dictionary.get('mohm_a'))
     form = FormField(manufacturor)
     form.set_fields_from_dict(dictionary)

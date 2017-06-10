@@ -11,6 +11,8 @@ import bleach
 import enum
 db = SQLAlchemy()
 
+from field_dicts.helpers import id_generator
+
 
 class ContactType(enum.Enum):
     phone = 1,
@@ -91,6 +93,32 @@ class User(db.Model, UserMixin):
             user=self
         )
         db.session.add(user_contact)
+
+
+class Invite(db.Model):
+    """Invite-table for users."""
+    __tablename__ = 'invite'
+
+    id = db.Column(db.String, unique=True, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    company = db.relationship(
+        Company, primaryjoin='Invite.company_id==Company.id')
+    inviter_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    inviter = db.relationship(
+        User, primaryjoin='Invite.inviter_user_id==User.id')
+    invitee_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    invitee = db.relationship(
+        User, primaryjoin='Invite.invitee_user_id==User.id')
+
+    @classmethod
+    def get_random_unique_invite_id(cls):
+        """Return a random unique id for the invite-table."""
+        rand = id_generator()
+        while db.session.query(Invite).filter(
+                Invite.id == rand).limit(1).first() is not None:
+            rand = id_generator()
+
+        return rand
 
 
 class OAuth(db.Model, OAuthConsumerMixin):

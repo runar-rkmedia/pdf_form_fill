@@ -12,6 +12,7 @@ class BaseConfig(object):
     USER_FILES = os.environ.get(
         'user_files', 'user_files')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'dev'
 
 
 class DevelopmentConfig(BaseConfig):
