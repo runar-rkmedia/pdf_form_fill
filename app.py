@@ -113,6 +113,7 @@ def set_fields_from_product(dictionary, product, specs=None):
 
 def validate_fields(request_form):
     """Validate the input from a form."""
+    print('validate/...')
     error_fields = []
     required_fields = {
         'strings': [
@@ -221,6 +222,8 @@ def json_fill_document():
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_path = user_file_path(filename, create_random_dir=True)
     form.create_filled_pdf(output_path)
+    form.stamp_with_image(output_path, 'some_image.png', 20,10)
+
     return jsonify(
         file_download=os.path.relpath(output_path),
         status=200)
