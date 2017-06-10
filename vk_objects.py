@@ -45,7 +45,6 @@ class FormField(object):
 
     """
     standard_data = {
-        'firma_navn': 'Kristiansand Elektro AS',
         'type': 'TFXP',
         'driftspenning': '230',
         'sikringstørrelse': '16',

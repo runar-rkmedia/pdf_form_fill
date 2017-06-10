@@ -1,14 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for øglænd-dictionary."""
-from .helpers import NumberTypes, commafloat, currentDate
+from .helpers import NumberTypes, commafloat, currentDate, group_number
 
 pdf_path = 'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf'
+
+
 
 translator = {
     'check-jordfeilbryter-30mA': [
         '{}',
         lambda x: yes if x['utløserstrøm_for_fordfeilvern'] else no
+    ],
+    'firma_adresse': [
+        '{}, {} {}',
+        lambda x: (x['firma_adresse1'],
+                   x.get('firma_postnummer',''),
+                   x.get('firma_poststed',''))
+    ],
+    'firma_orgnr': [
+        '{}',
+        lambda x: (group_number(x['firma_orgnr']),)
     ],
     'check-beskyttelses-tiltak-monteringsanvisning-fulgt': [
         '{}',
