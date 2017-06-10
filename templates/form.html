@@ -3,6 +3,12 @@
 {% block body %}
   {% include 'includes/header.html' %}
   <div class="row">
+      <div class="col-xs-12">
+          <canvas id="canvas"></canvas>
+      </div>
+      <button class="btn-saveSign btn-primary" type="button" name="button">Save my signature</button>
+  </div>
+  <div class="row">
     <!-- ko if: error_message || error_fields -->
     <div class="error bg-danger col-xs-12">
       <p data-bind="text:error_message"></p>

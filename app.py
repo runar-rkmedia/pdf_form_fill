@@ -5,6 +5,8 @@ import os
 import random
 import string
 import decimal
+import re
+import base64
 
 from config import configure_app
 from field_dicts.helpers import commafloat
@@ -41,6 +43,7 @@ configure_app(app)
 
 assets = Environment(app)
 js = Bundle(
+    'js/signature_pad.js',
     'js/def.js',
     'js/ko-bootstrap-typeahead.js',
     'js/ko.js',
@@ -107,6 +110,7 @@ def set_fields_from_product(dictionary, product, specs=None):
     return dictionary
 
 
+
 def validate_fields(request_form):
     """Validate the input from a form."""
     error_fields = []
@@ -132,6 +136,36 @@ def validate_fields(request_form):
             except ValueError:
                 error_fields.append(key)
     return error_fields
+
+
+@app.route('/set_sign', methods=['POST'])
+def save_image():
+    """Save an image from a data-string."""
+    image_b64 = request.values['imageBase64']
+    image_data = re.sub('^data:image/.+;base64,', '', image_b64)
+    imgdata = base64.b64decode(image_data)
+    filename = 'some_image.jpg'
+    with open(filename, 'wb') as f:
+        f.write(imgdata)
+    return 's'
+
+
+
+@app.route('/user_files/<path:filename>', methods=['GET'])
+def download(filename):
+    """Serve a file for downloading."""
+    directory = os.path.join(app.root_path, app.config['USER_FILES'])
+    return send_from_directory(directory=directory, filename=filename)
+
+
+@app.route('/success/')
+def success(dictionary, user_file):
+    """Form filled successfully, show file, or edit."""
+    return render_template(
+        'success.html',
+        dictionary=dictionary,
+        user_file=user_file
+    )
 
 
 @app.route('/products.json')
@@ -192,21 +226,7 @@ def json_fill_document():
         status=200)
 
 
-@app.route('/user_files/<path:filename>', methods=['GET'])
-def download(filename):
-    """Serve a file for downloading."""
-    directory = os.path.join(app.root_path, app.config['USER_FILES'])
-    return send_from_directory(directory=directory, filename=filename)
 
-
-@app.route('/success/')
-def success(dictionary, user_file):
-    """Form filled successfully, show file, or edit."""
-    return render_template(
-        'success.html',
-        dictionary=dictionary,
-        user_file=user_file
-    )
 
 
 @app.route('/')
