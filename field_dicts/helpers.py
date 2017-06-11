@@ -5,9 +5,9 @@ import random
 NumberTypes = (int, float, complex)
 
 
-def currentDate():
+def currentDate(date_format="%d.%m.%Y"):
     """Get formated current date."""
-    return strftime("%d.%m.%Y", gmtime())
+    return strftime(date_format, gmtime())
 
 
 def commafloat(string_as_number):

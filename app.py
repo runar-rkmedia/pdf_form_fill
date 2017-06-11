@@ -369,10 +369,16 @@ def json_fill_document():
             status=400)
     if dictionary.get('mohm_a') == 'true':
         dictionary['mohm_a'] = 999
+    else:
+        dictionary['mohm_a'] = ''
     if dictionary.get('mohm_b') == 'true':
         dictionary['mohm_b'] = 999
+    else:
+        dictionary['mohm_b'] = ''
     if dictionary.get('mohm_c') == 'true':
         dictionary['mohm_c'] = 999
+    else:
+        dictionary['mohm_c'] = ''
     if current_user.is_authenticated:
         if current_user.company:
             dictionary['firma_navn'] = current_user.company.name

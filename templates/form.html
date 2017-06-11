@@ -144,10 +144,16 @@
           </div>
         </div>
       </div>
-      <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, enable: form_changed">
+      <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form">
     </form>
-    <div class="file_download" data-bind="if: file_download">
-      <div class="message">Ditt skjema er ferdig utfyllt.</div>
+    <div class="Loading" data-bind="if: loading">
+      <span class="glyphicon glyphicon-refresh spinning"></span> Fyller ut skjema...
+    </div>
+    <div class="file_download" data-bind="if: file_download, enable: loading, css: {
+      'bg-danger': loading(),
+      'bg-info': !loading(),
+    }">
+      <div class="message" data-bind="ifnot: form_changed">Ditt skjema er ferdig utfyllt.</div>
       <a target="vk_pdf" data-bind="attr: { href: file_download}" title="Utfylt skjema">Klikk her for å laste det ned.</a>
 
       <p>Hvis du vil gjøre endringer, kan du gjøre det på denne siden, eller i det nedlastede skjemaet.</p>

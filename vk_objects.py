@@ -54,7 +54,9 @@ class FormField(object):
         'check-toleder': True,
         'check-maks_temp_planlegging': True,
         'check-følertype-gulv': True,
-        'check-installasjonsveiledning_fulgt': True
+        'check-installasjonsveiledning_fulgt': True,
+        'check-Dokumentasjon-overlevert': True,
+        'check-Eier-informert': True
     }
 
     form_data_dict = {

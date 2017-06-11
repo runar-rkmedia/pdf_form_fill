@@ -42,6 +42,18 @@ translator = {
         '{:.2f}',
         lambda x: (commafloat(x['oppvarmet_areal']) / commafloat(x['lengde']) * 100,)
     ],
+    'dato-År': [
+        '{}',
+        lambda x: (currentDate('%Y'),)
+    ],
+    'dato-måned': [
+        '{}',
+        lambda x: (currentDate('%m'),)
+    ],
+    'dato-dag': [
+        '{}',
+        lambda x: (currentDate('%d'),)
+    ],
     'check-beskyttelses-tiltak-bruk-av-styring': [
         '{}',
         lambda x: yes if x[
@@ -96,9 +108,9 @@ fields_dict = {
     'dato-dag': {
         'text': 'TextInPDF',
         'field': 'Dag',
-        'type': bool
+        'type': str
     },
-    'Doku': {
+    'check-Dokumentasjon-overlevert': {
         'text': 'TextInPDF',
         'field': 'Doku',
         'type': bool
@@ -108,7 +120,7 @@ fields_dict = {
         'field': 'Effekt W',
         'type': str
     },
-    'Eier': {
+    'check-Eier-informert': {
         'text': 'TextInPDF',
         'field': 'Eier',
         'type': bool
@@ -191,7 +203,7 @@ fields_dict = {
     'dato-måned': {
         'text': 'TextInPDF',
         'field': 'Mnd',
-        'type': NumberTypes
+        'type': str
     },
     'check-beskyttelses-tiltak-monteringsanvisning-fulgt': {
         'text': 'TextInPDF',

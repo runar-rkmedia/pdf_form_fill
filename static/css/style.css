@@ -10,16 +10,34 @@
     canvas {
       border: 1px solid black; }
 
-      #input-anleggs_postnummer {
-        width: 100px; }
+      .glyphicon.spinning {
+        animation: spin 1s infinite linear;
+        -webkit-animation: spin2 1s infinite linear; }
 
-        legend {
-          font-size: 14px;
-          font-weight: 700;
-          border: 0;
-          margin-bottom: 5px; }
+        @keyframes spin {
+          from {
+            transform: scale(1) rotate(0deg);   }
+            to {
+              transform: scale(1) rotate(360deg);   }
+}
 
-          @media screen and (max-width: 450px) {
-            label {
-              font-size: 12px;   }
+@-webkit-keyframes spin2 {
+  from {
+    -webkit-transform: rotate(0deg);   }
+    to {
+      -webkit-transform: rotate(360deg);   }
+}
+
+#input-anleggs_postnummer {
+  width: 100px; }
+
+  legend {
+    font-size: 14px;
+    font-weight: 700;
+    border: 0;
+    margin-bottom: 5px; }
+
+    @media screen and (max-width: 450px) {
+      label {
+        font-size: 12px;   }
 }
