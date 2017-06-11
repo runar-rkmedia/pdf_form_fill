@@ -9,6 +9,12 @@ class BaseConfig(object):
     PORT = int(os.environ.get("PORT", 5000))
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgres:///varmekabler')
+    G_CLIENT_ID = os.environ.get(
+        'G_CLIENT_ID', 'postgres:///varmekabler')
+    G_CLIENT_SECRET = os.environ.get(
+        'G_CLIENT_SECRET', '')
+    OAUTHLIB_INSECURE_TRANSPORT = os.environ.get(
+        'OAUTHLIB_INSECURE_TRANSPORT', '')
     USER_FILES = os.environ.get(
         'user_files', 'user_files')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -21,7 +27,6 @@ class DevelopmentConfig(BaseConfig):
     DEBUG = True
     TESTING = False
     SECRET_KEY = 'dev'
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 class TestingConfig(BaseConfig):

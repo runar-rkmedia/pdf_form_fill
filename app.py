@@ -396,7 +396,8 @@ def json_fill_document():
         stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
         os.remove(image)
         os.remove(output_pdf)
-        output_pdf = stamped_pdf
+        # output_pdf = stamped_pdf
+        os.rename(stamped_pdf, output_pdf)
 
     return jsonify(
         file_download=os.path.relpath(output_pdf),
