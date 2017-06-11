@@ -2,3 +2,6 @@
 	path = pdffields
 	url = https://github.com/runartrollet/pdffields.git
 	branch = utf8
+[submodule "pdfstamp"]
+	path = pdfstamp
+	url = https://github.com/CrossRef/pdfstamp.git

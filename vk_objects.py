@@ -145,60 +145,17 @@ class FormField(object):
     def stamp_with_image(self, output_path, image, offsetx, offsety):
         """Will put image on top of this pdf"""
         # convert image to pdf
-        call = ['convert', image, 'image.pdf']
+        call = [
+            'java',
+            '-jar',
+            'pdfstamp/pdfstamp.jar',
+            '-i',
+            image,
+            '-l',
+            '10,10',
+            output_path]
+        print(call)
         check_output(call).decode('utf8')
-
-        # resize the image
-        full_page_stamp = [
-            "gs",
-            '-o',
-            'resize.pdf', #output-file
-            "-sDEVICE=pdfwrite",
-            "-dPDFFitPage",
-            '-g3200x500',
-            '-f'
-            'image.pdf' # signature-image
-        ]
-
-        subprocess.call(full_page_stamp, stderr=sys.stdout)
-
-        # create a4-page with stamp in position
-        full_page_stamp = [
-            "gs",
-            '-o',
-            'A4-stamp.pdf', #output-file
-            "-sDEVICE=pdfwrite",
-            "-g5950x8420",
-            '-c "<</PageOffset [' +
-            str(offsetx) +
-            ' ' +
-            str(offsety) +
-            ']>> setpagedevice"',
-            '-f',
-            'resize.pdf' # signature-image
-        ]
-        subprocess.call(full_page_stamp, stderr=sys.stdout)
-
-        # combine the a4-page with original
-
-        combine_call = [
-            'pdftk',
-            output_path,
-            'stamp',
-            'A4-stamp.pdf',
-            'output',
-            'stamped.pdf'
-        ]
-        print(" ".join(full_page_stamp))
-        check_output(combine_call).decode('utf8')
-
-        try:
-            pass
-        except:
-            pass
-        return True
-        # call = ['pdftk', pdf_file, 'dump_data_fields_utf8']
-        # data_string = check_output(call).decode('utf8')
 
 if __name__ == '__main__':
     pass
