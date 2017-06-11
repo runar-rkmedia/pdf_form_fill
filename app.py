@@ -101,6 +101,9 @@ login_manager.init_app(app)
 # setup SQLAlchemy backend
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 @login_manager.user_loader
 def load_user(user_id):
