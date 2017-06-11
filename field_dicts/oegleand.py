@@ -5,7 +5,14 @@ from .helpers import NumberTypes, commafloat, currentDate, group_number
 
 pdf_path = 'static/forms/Samsvarserklæring_01_17_skjemautfylling.pdf'
 
-
+signature_location_size = [
+    {
+        'x': 259,
+        'y': 59,
+        'sizex': 228,
+        'sizey': 33
+    }
+]
 
 translator = {
     'check-jordfeilbryter-30mA': [

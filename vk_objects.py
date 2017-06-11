@@ -6,10 +6,11 @@
 """Part of smart pdf-form-filler (wip)"""
 import pdffields.fields
 from field_dicts import nexans, oegleand
-from field_dicts.helpers import NumberTypes
+from field_dicts.helpers import NumberTypes, get_image_size
 from subprocess import check_output
 import subprocess
 import sys
+import os
 
 
 def setLoggerOptions(msg_type, enabled):
@@ -71,6 +72,7 @@ class FormField(object):
         self.fields_dict = form_data.fields_dict
         self.fields = self.set_fields_from_pdf()
         self.translator = form_data.translator
+        self.signature_location_size = form_data.signature_location_size
         self.checkbox_value = form_data.checkbox_value
         self.set_fields_from_dict(standard_data)
 
@@ -144,18 +146,36 @@ class FormField(object):
 
     def stamp_with_image(self, output_path, image, offsetx, offsety):
         """Will put image on top of this pdf"""
-        # convert image to pdf
-        call = [
-            'java',
-            '-jar',
-            'pdfstamp/pdfstamp.jar',
-            '-i',
-            image,
-            '-l',
-            '10,10',
-            output_path]
-        print(call)
-        check_output(call).decode('utf8')
+        image_size = get_image_size(image)
+        for signature_location_size in self.signature_location_size:
+            dpi = max(
+                image_size[0]*72/signature_location_size['sizex'],
+                image_size[1]*72/signature_location_size['sizey']
+            )
+            print(dpi)
+            call = [
+                'java',
+                '-jar',
+                'pdfstamp/pdfstamp.jar',
+                '-i',
+                image,
+                '-d',
+                str(int(dpi)),
+                '-l',
+                "{},{}".format(
+                    signature_location_size['x'],
+                    signature_location_size['y']
+                    ),
+                '-e',
+                's',
+                output_path]
+            print(call)
+            check_output(call).decode('utf8')
+            path, filename = os.path.split(output_path)
+            filename, ext = os.path.splitext(filename)
+            newfilename = '{}_s{}'.format(filename, ext)
+            output_path = os.path.join(path, newfilename)
+        return output_path
 
 if __name__ == '__main__':
     pass

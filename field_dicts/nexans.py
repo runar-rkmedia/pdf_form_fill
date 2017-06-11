@@ -4,6 +4,28 @@
 from .helpers import NumberTypes, commafloat, currentDate
 pdf_path = 'static/forms/2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf'
 
+signature_location_size = [
+    {
+        'x': 164,
+        'y': 176,
+        'sizex': 219,
+        'sizey': 19
+    },
+    {
+        'x': 174,
+        'y': 432,
+        'sizex': 114,
+        'sizey': 16
+    },
+    {
+        'x': 174,
+        'y': 524,
+        'sizex': 114,
+        'sizey': 16
+    }
+]
+
+
 translator = {
     'type_og_effekt': [
         '{}',

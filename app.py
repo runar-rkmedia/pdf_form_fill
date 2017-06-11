@@ -385,12 +385,21 @@ def json_fill_document():
     form = FormField(manufacturor)
     form.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
-    output_path = user_file_path(filename, create_random_dir=True)
-    form.create_filled_pdf(output_path)
-    form.stamp_with_image(output_path, 'test.png', 20, 10)
+    output_dir = user_file_path(create_random_dir=True)
+    output_pdf = os.path.join(output_dir, filename)
+    form.create_filled_pdf(output_pdf)
+    if current_user.is_authenticated and current_user.signature:
+
+        image = os.path.join(output_dir, 'sign.png')
+        with open(image, 'wb') as f:
+            f.write(current_user.signature)
+        stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
+        os.remove(image)
+        os.remove(output_pdf)
+        output_pdf = stamped_pdf
 
     return jsonify(
-        file_download=os.path.relpath(output_path),
+        file_download=os.path.relpath(output_pdf),
         status=200)
 
 
