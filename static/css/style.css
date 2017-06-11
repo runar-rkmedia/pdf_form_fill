@@ -7,16 +7,19 @@
     margin: 40px 0;
     text-align: center; }
 
-    #input-anleggs_postnummer {
-      width: 100px; }
+    canvas {
+      border: 1px solid black; }
 
-      legend {
-        font-size: 14px;
-        font-weight: 700;
-        border: 0;
-        margin-bottom: 5px; }
+      #input-anleggs_postnummer {
+        width: 100px; }
 
-        @media screen and (max-width: 450px) {
-          label {
-            font-size: 12px;   }
+        legend {
+          font-size: 14px;
+          font-weight: 700;
+          border: 0;
+          margin-bottom: 5px; }
+
+          @media screen and (max-width: 450px) {
+            label {
+              font-size: 12px;   }
 }

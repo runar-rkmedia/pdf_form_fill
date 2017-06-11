@@ -13,6 +13,7 @@ class BaseConfig(object):
         'user_files', 'user_files')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'dev'
+    USE_SESSION_FOR_NEXT = True
 
 
 class DevelopmentConfig(BaseConfig):

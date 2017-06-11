@@ -46,7 +46,7 @@ $(function() {
 
     function resizeCanvas() {
         htmlCanvas.width = c.parent().width();
-        htmlCanvas.height = c.parent().width() / 16 * 9;
+        htmlCanvas.height = c.parent().width() / 4 * 1;
         // redraw();
     }
 
@@ -55,10 +55,11 @@ $(function() {
         context.lineWidth = '5';
         context.strokeRect(0, 0, window.innerWidth, window.innerHeight);
     }
+    $('.btn-clearSign').click(function() {
+      signaturePad.clear();
+    });
     $('.btn-saveSign').click(function() {
         var test = signaturePad.toDataURL();
-        console.log(test);
-
 
         $.ajax({
           type: "POST",
@@ -66,8 +67,13 @@ $(function() {
           data:{
             imageBase64: test
           }
-        }).done(function() {
-          console.log('sent');
+        }).done(function(resp) {
+          if (resp.status === 200) {
+            location.reload();
+          }
+          else {
+            console.log(resp.errormsg);
+          }
         });
     })
 });

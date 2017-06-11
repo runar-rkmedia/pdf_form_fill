@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>{{current_user.company.name}}</h2>
+      Adresse:
+      {{current_user.company.address.linje1}}
+      {% if current_user.company.address.linje2 %}
+        ,
+        {{current_user.company.address.linje2}}
+      {% endif %}
+      {{current_user.company.address.postnumber}}
+      {{current_user.company.address.postal}}
+      <h3>Medlemmer</h3>
+      <ul>
+        {% for member in memmbers %}
+          <li>
+            {{member.name}}
+          </li>
+        {% endfor %}
+      </ul>
+      <p>Du kan invitere kollegaer til dette firmaet. Merk at all medlemmer av ditt firma kan se gjennom og endre dokumentasjonen som dere har lagret, på lik linje med deg selv.</p>
+
+      <p>For å invitere en kollega, trykk nedenfor, og du vil få en ny invitasjons-lenke. Send så denne lenken til din kollega.</p>
+      <button class="btn-primary" data-bind="click: createInvite">Inviter kollega</button>
+      <!-- ko foreach: invites -->
+      <div>
+        <a data-bind="text: document.location.origin + $root.base_url() + url, attr: {href: $root.base_url() + url}"></a>
+      </div>
+      <!-- /ko -->
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+<script src="{{url_for('static', filename='js/ko_company.js')}}"></script>
+{% endblock %}

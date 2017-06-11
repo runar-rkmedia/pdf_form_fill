@@ -59,33 +59,13 @@ app.json_encoder = MyJSONEncoder
 configure_app(app)
 
 
-blueprint = make_google_blueprint(
-    client_id=app.config['G_CLIENT_ID'],
-    client_secret=app.config['G_CLIENT_SECRET'],
-    offline=True,
-    scope=["profile", "email"],
-    reprompt_consent=True,
-)
-app.register_blueprint(blueprint, url_prefix="/login")
-
-# setup login manager
-login_manager = LoginManager()
-login_manager.login_view = 'login'
-login_manager.init_app(app)
-
-# setup SQLAlchemy backend
-blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
-
-
 assets = Environment(app)
-js = Bundle(
-    'js/signature_pad.js',
-    'js/def.js',
+js_main= Bundle(
     'js/ko-bootstrap-typeahead.js',
     'js/ko.js',
-    # filters='jsmin',
+    filters='jsmin',
     output='gen/packed.js')
-assets.register('js_all', js)
+assets.register('js_main', js_main)
 
 css = Bundle(
     # 'css/bootstrap.min.css',
@@ -104,11 +84,123 @@ limiter = Limiter(
     default_limits=["2000 per day", "500 per hour"]
 )
 
+blueprint = make_google_blueprint(
+    client_id=app.config['G_CLIENT_ID'],
+    client_secret=app.config['G_CLIENT_SECRET'],
+    offline=True,
+    scope=["profile", "email"],
+    reprompt_consent=True,
+)
+app.register_blueprint(blueprint, url_prefix="/login")
+
+# setup login manager
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
+# setup SQLAlchemy backend
+blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     """Return user by user_id."""
     return User.query.get(int(user_id))
+
+
+@app.route("/login")
+def login():
+    """Login."""
+    print('hello')
+    next = request.args.get('next')
+    session['next'] = next
+    print('sdfsdsdfsdwe4r2354')
+    if not google.authorized:
+        return redirect(
+            url_for("google.login",
+                    redirect_url=next or url_for('view_form')))
+    resp = google.get("/oauth2/v2/userinfo")
+    assert resp.ok, resp.text
+    return "You are {email} on Google".format(email=resp.json()["email"])
+
+@oauth_authorized.connect
+def logged_in(blueprint, token):
+    next = session.get('next')
+    print('next {}'.format(next))
+    return redirect(next or url_for('view_form'))
+
+
+@oauth_authorized.connect_via(blueprint)
+def google_logged_in(blueprint, token):  # noqa
+    """Create/login local user on successful OAuth login."""
+    if not token:
+        flash(
+            "Feil: Kunne ikke logge på med {name}".format(name=blueprint.name))
+        return
+    # figure out who the user is
+    resp = blueprint.session.get("/oauth2/v2/userinfo")
+    if resp.ok:
+        name = resp.json()["name"]
+        email = resp.json()["email"]
+        query = User.query.filter_by(email=email)
+        try:
+            user = query.one()
+        except NoResultFound:
+            # create a user
+            user = User(
+                name=name,
+                email=email,
+            )
+            db.session.add(user)
+            db.session.commit()
+        login_user(user)
+        flash("Vellykket pålogging gjennom Google")
+    else:
+        msg = "Feil: Kunne ikke hente bruker-info fra {name}".format(
+            name=blueprint.name)
+        flash(msg, category="error")
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    """Logout."""
+    logout_user()
+    flash("Du er nå logget ut")
+    return redirect(url_for("view_form"))
+
+
+@app.route("/cp/")
+@login_required
+def control_panel():
+    """Control-Panel."""
+    signature = None
+    if current_user.signature:
+        signature = base64.b64encode(
+            current_user.signature).decode(encoding='UTF-8')
+    return render_template('control-panel.html', signature=signature)
+
+
+@app.route("/cp/company/")
+@login_required
+def control_panel_company():
+    """Control-Panel for viewing users company."""
+    memmbers = User.query.filter(
+        User.company == current_user.company
+    )
+    return render_template('control-panel-company.html', memmbers=memmbers)
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    """Errorhandler for ratelimiting."""
+    return jsonify(
+        error_message=(
+            "Ta det med ro, vennligst ikke hamre i vei på serveren. "
+            "Du har nådd grensen for maks antall innsendinger: {}"
+        ).format(e.description),
+        status=429
+    )
 
 
 def user_file_path(filename=None, create_random_dir=False):
@@ -174,87 +266,35 @@ def validate_fields(request_form):
                 error_fields.append(key)
     return error_fields
 
-
-@app.route("/login")
-def login():
-    """Login."""
-    if not google.authorized:
-        return redirect(url_for("google.login"))
-    resp = google.get("/oauth2/v2/userinfo")
-    assert resp.ok, resp.text
-    return "You are {email} on Google".format(email=resp.json()["email"])
-
-
-@app.route("/logout")
+@app.route('/invite/<invite_id>', methods=['GET', 'POST'])
+@app.route('/invite/')
 @login_required
-def logout():
-    """Logout."""
-    logout_user()
-    flash("Du er nå logget ut")
-    return redirect(url_for("view_form"))
-
-
-@app.route('/invite/<invite_id>')
 def get_invite(invite_id):
     """Route for getting an invite."""
-    invite = Invite.query.filter(
-        Invite.id == invite_id,
-        Invite.invitee_user_id == None
-        ).first()
-    print(invite, invite_id)
-    if invite is not None:
-        session['invite'] = invite_id
-        return redirect(url_for("google.login"))
-    return "Fant ingen invitasjon med denne id'en"
-
-
-@oauth_authorized.connect_via(blueprint)
-def google_logged_in(blueprint, token):  # noqa
-    """Create/login local user on successful OAuth login."""
-    if not token:
-        flash(
-            "Feil: Kunne ikke logge på med {name}".format(name=blueprint.name))
-        return
-    # figure out who the user is
-    resp = blueprint.session.get("/oauth2/v2/userinfo")
-    invite = Invite.query.filter(
-        Invite.id == invite_id,
-        Invite.invitee_user_id == None
-        ).first()
-    if resp.ok and invite is not None:
-        name = resp.json()["name"]
-        email = resp.json()["email"]
-        query = User.query.filter_by(email=email)
-        try:
-            user = query.one()
-        except NoResultFound:
-            # create a user
-            user = User(
-                name=name,
-                email=email,
-                company=invite.company,
-            )
-            db.session.add(user)
-            invite.invitee = user
-            db.session.commit()
-        login_user(user)
-        flash("Vellykket pålogginggjennom Google")
-    else:
-        msg = "Feil: Kunne ikke hente bruker-info fra {name}".format(
-            name=blueprint.name)
-        flash(msg, category="error")
+    invite = Invite.get_invite_from_id(invite_id)
+    if request.method == 'POST' and invite:
+        invite.invitee=current_user
+        current_user.company=invite.company
+        db.session.commit()
+        return render_template('invite.html', invite=invite, newly_invite=True)
+    return render_template('invite.html', invite=invite)
 
 
 @app.route('/set_sign', methods=['POST'])
 def save_image():
     """Save an image from a data-string."""
     image_b64 = request.values['imageBase64']
-    image_data = re.sub('^data:image/.+;base64,', '', image_b64)
-    imgdata = base64.b64decode(image_data)
-    filename = 'some_image.jpg'
-    with open(filename, 'wb') as f:
-        f.write(imgdata)
-    return 's'
+    if len(image_b64) < 200000:
+        image_data = re.sub('^data:image/.+;base64,', '', image_b64)
+        imgdata = base64.b64decode(image_data)
+        if current_user.is_authenticated:
+            current_user.signature = imgdata
+            db.session.commit()
+        return jsonify({'status': 200})
+    return jsonify({
+        'status': 403,
+        'errormsg': 'Feil: Mottok en signatur-fil som var større enn antatt.'
+    })
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
@@ -263,16 +303,24 @@ def download(filename):
     directory = os.path.join(app.root_path, app.config['USER_FILES'])
     return send_from_directory(directory=directory, filename=filename)
 
-
-@app.route('/success/')
-def success(dictionary, user_file):
-    """Form filled successfully, show file, or edit."""
-    return render_template(
-        'success.html',
-        dictionary=dictionary,
-        user_file=user_file
-    )
-
+@limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
+@limiter.limit("200/hour", error_message='200 per hour')
+@app.route('/invite.json', methods=['GET', 'POST'])
+def json_invite():
+    """Return all invites from current user, or create a new one."""
+    current_user = User.query.filter(User.id==3).first()
+    if request.method == 'POST':
+        try:
+            Invite.create(current_user)
+        except ValueError as e:
+            print(e)
+            return "{}".format(e), 403
+    invites = Invite.get_invites_from_user(current_user).all()
+    serialized = ([i.serialize for i in invites])
+    return jsonify({
+        'invites': serialized,
+        'base_url': url_for('get_invite')
+        })
 
 @app.route('/products.json')
 # @limiter.limit("1/second", error_message='Èn per sekund')
@@ -328,8 +376,8 @@ def json_fill_document():
             dictionary['firma_adresse1'] = current_user.company.address.linje1
             dictionary['firma_adresse2'] = current_user.company.address.linje2
             dictionary['firma_poststed'] = current_user.company.address.postal
-            dictionary['firma_postnummer'] = current_user.company.address.postnumber
-    print(dictionary.get('mohm_a'))
+            dictionary[
+                'firma_postnummer'] = current_user.company.address.postnumber
     form = FormField(manufacturor)
     form.set_fields_from_dict(dictionary)
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
@@ -354,18 +402,6 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'manufacturor':  "Nexans"
         }
     return render_template('form.html')
-
-
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    """Errorhandler for ratelimiting."""
-    return jsonify(
-        error_message=(
-            "Ta det med ro, vennligst ikke hamre i vei på serveren. "
-            "Du har nådd grensen for maks antall innsendinger: {}"
-        ).format(e.description),
-        status=429
-    )
 
 
 # hook up extensions to app

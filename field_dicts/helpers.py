@@ -21,9 +21,18 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 
 def group_number(n, grouping=3, seperator=' '):
-    r = []
-    for i, c in enumerate(reversed(str(n))):
-        if i and (not (i % grouping)):
-            r.insert(0, seperator)
-        r.insert(0, c)
-    return ''.join(r)
+    """Returns a pretty, grouped number."""
+    # 10x performance
+    if grouping == 3:
+        s = format(n, ',')
+        if seperator == ',':
+            return s
+        return s.replace(',', seperator)
+    # Slow, general grouping
+    else:
+        r = []
+        for i, c in enumerate(reversed(str(n))):
+            if i and (not (i % grouping)):
+                r.insert(0, seperator)
+            r.insert(0, c)
+        return ''.join(r)

@@ -120,6 +120,44 @@ class Invite(db.Model):
 
         return rand
 
+    @classmethod
+    def get_invites_from_user(cls, inviter):
+        return Invite.query.filter(
+            Invite.inviter_user_id == inviter.id,
+            Invite.invitee_user_id == None)
+
+    @classmethod
+    def get_invite_from_id(cls, invite_id):
+        return Invite.query.filter(
+            Invite.id == invite_id,
+            Invite.invitee_user_id == None).first()
+
+
+    @classmethod
+    def create(cls, inviter):
+        """Create a new invite."""
+        invites = cls.get_invites_from_user(inviter).count()
+        if invites < 10:
+            invite = Invite(
+                id=cls.get_random_unique_invite_id(),
+                company=inviter.company,
+                inviter=inviter,
+            )
+            db.session.add(invite)
+            db.session.commit()
+        else:
+            raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.") # noqa
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        dictionary = {
+            'url': self.id,
+            'company_name': self.company.name,
+        }
+        return dictionary
+
 
 class OAuth(db.Model, OAuthConsumerMixin):
     """Oath-table."""

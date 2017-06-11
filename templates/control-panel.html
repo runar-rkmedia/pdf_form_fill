@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Kontrollpanel</h2>
+
+      {% if current_user.company %}
+        Du er medlem av
+        <a href="{{url_for('control_panel_company')}}">{{ current_user.company.name }}</a>
+      {% else %}
+        Du er ikke medlem av et team eller firma enda. Dette krever invitasjon fra et medlem.
+      {% endif %}
+    </div>
+  </div>
+<div class="row">
+<div class="col-xs-12">
+  <h2>Signatur</h2>
+  {% if current_user.signature %}
+    <div>Du har lagret din signatur.</div>
+    <div class="col-xs-4">
+      <img class="img-responsive" src="data:image/png;base64,{{ signature }}">
+    </div>
+  {% else %}
+    Du har ikke lagret din signatur.
+  {% endif %}
+  <a href="#" onclick="showSign()">Trykk her for å endre det.</a>
+  <div class="invisible signature">
+    <div>Tegn inn din signatur i feltet nedenfor:</div>
+    <div>
+      <canvas id="canvas"></canvas>
+    </div>
+    <div>
+      <button class="btn-saveSign btn-primary" type="button" name="button">Lagre min signatur</button>
+      <button class="btn-clearSign btn-default" type="button" name="button">Tøm signaturfelt</button>
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+  <script src="{{url_for('static', filename='js/signature_pad.js')}}"></script>
+  <script type="text/javascript">
+    function showSign() {
+      $('.signature').toggleClass('invisible')
+    }
+  </script>
+{% endblock %}
