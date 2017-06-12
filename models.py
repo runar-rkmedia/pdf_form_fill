@@ -7,14 +7,14 @@ from flask_dance.consumer.backend.sqla import (
 from flask_login import (
     UserMixin,
 )
-import bleach
+# import bleach
 import enum
-db = SQLAlchemy()
-
 from field_dicts.helpers import id_generator
+db = SQLAlchemy()
 
 
 class ContactType(enum.Enum):
+    """Enumeration for types of contactfields."""
     phone = 1,
     email = 2,
     mobile = 3
@@ -120,16 +120,17 @@ class Invite(db.Model):
 
     @classmethod
     def get_invites_from_user(cls, inviter):
+        """Return all invites from user which are still valid for signup."""
         return Invite.query.filter(
             Invite.inviter_user_id == inviter.id,
             Invite.invitee_user_id == None)
 
     @classmethod
     def get_invite_from_id(cls, invite_id):
+        """Return a valid invite from an id."""
         return Invite.query.filter(
             Invite.id == invite_id,
             Invite.invitee_user_id == None).first()
-
 
     @classmethod
     def create(cls, inviter):

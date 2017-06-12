@@ -1,16 +1,16 @@
 #!venv/bin/python
+# -*- coding: utf-8 -*-
 # Because of bug in Atom Beta or Atom Runnar, virtualenv is not activated.
 # Please remove the above shebang, and use the one below in production.
 # !/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Part of smart pdf-form-filler (wip)"""
+# import subprocess
+# import sys
+import os
+from subprocess import check_output
 import pdffields.fields
 from field_dicts import nexans, oegleand
 from field_dicts.helpers import NumberTypes, get_image_size
-from subprocess import check_output
-import subprocess
-import sys
-import os
 
 
 def setLoggerOptions(msg_type, enabled):
@@ -64,7 +64,8 @@ class FormField(object):
         'Øglænd': oegleand
     }
 
-    def __init__(self, manufacturor, standard_data=standard_data):
+    def __init__(self, manufacturor, standard_dict=None):
+        standard_dict = standard_dict or self.standard_data
         form_data = self.form_data_dict.get(manufacturor)
         if not form_data:
             raise ValueError(
@@ -76,7 +77,7 @@ class FormField(object):
         self.translator = form_data.translator
         self.signature_location_size = form_data.signature_location_size
         self.checkbox_value = form_data.checkbox_value
-        self.set_fields_from_dict(standard_data)
+        self.set_fields_from_dict(standard_dict)
 
     def set_fields_from_pdf(self):
         """Return all fields in the pdf."""
@@ -176,6 +177,7 @@ class FormField(object):
             newfilename = '{}_s{}'.format(filename, ext)
             output_path = os.path.join(path, newfilename)
         return output_path
+
 
 if __name__ == '__main__':
     pass
