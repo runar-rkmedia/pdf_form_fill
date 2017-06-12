@@ -2,8 +2,6 @@
 # pylama:ignore=W0512
 
 import os
-import random
-import string
 import decimal
 import re
 import base64
@@ -31,7 +29,7 @@ from flask_limiter.util import get_remote_address
 
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.consumer import oauth_authorized, oauth_error
+from flask_dance.consumer import oauth_authorized
 from flask_dance.consumer.backend.sqla import (
     SQLAlchemyBackend
 )
@@ -60,7 +58,7 @@ configure_app(app)
 
 
 assets = Environment(app)
-js_main= Bundle(
+js_main = Bundle(
     'js/ko-bootstrap-typeahead.js',
     'js/ko.js',
     filters='jsmin',
@@ -101,9 +99,12 @@ login_manager.init_app(app)
 # setup SQLAlchemy backend
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 
+
 @app.before_request
 def make_session_permanent():
-    session.permanent = True
+    """Keep sessions alive after closing browser."""
+    session.permanent = True  # Default 31 days
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -114,23 +115,22 @@ def load_user(user_id):
 @app.route("/login")
 def login():
     """Login."""
-    print('hello')
-    next = request.args.get('next')
-    session['next'] = next
-    print('sdfsdsdfsdwe4r2354')
+    next_redirect = request.args.get('next')
+    session['next'] = next_redirect
     if not google.authorized:
         return redirect(
             url_for("google.login",
-                    redirect_url=next or url_for('view_form')))
+                    redirect_url=next_redirect or url_for('view_form')))
     resp = google.get("/oauth2/v2/userinfo")
     assert resp.ok, resp.text
     return "You are {email} on Google".format(email=resp.json()["email"])
 
+
 @oauth_authorized.connect
-def logged_in(blueprint, token):
-    next = session.get('next')
-    print('next {}'.format(next))
-    return redirect(next or url_for('view_form'))
+def logged_in(blueprint_, token):
+    """User logged in."""
+    next_redirect = session.get('next')
+    return redirect(next_redirect or url_for('view_form'))
 
 
 @oauth_authorized.connect_via(blueprint)
@@ -142,6 +142,8 @@ def google_logged_in(blueprint, token):  # noqa
         return
     # figure out who the user is
     resp = blueprint.session.get("/oauth2/v2/userinfo")
+    from pprint import pprint
+    pprint(resp)
     if resp.ok:
         name = resp.json()["name"]
         email = resp.json()["email"]
@@ -244,7 +246,6 @@ def set_fields_from_product(dictionary, product, specs=None):
 
 def validate_fields(request_form):
     """Validate the input from a form."""
-    print('validate/...')
     error_fields = []
     required_fields = {
         'strings': [
@@ -270,6 +271,7 @@ def validate_fields(request_form):
                 error_fields.append(key)
     return error_fields
 
+
 @app.route('/invite/<invite_id>', methods=['GET', 'POST'])
 @app.route('/invite/')
 @login_required
@@ -277,8 +279,8 @@ def get_invite(invite_id):
     """Route for getting an invite."""
     invite = Invite.get_invite_from_id(invite_id)
     if request.method == 'POST' and invite:
-        invite.invitee=current_user
-        current_user.company=invite.company
+        invite.invitee = current_user
+        current_user.company = invite.company
         db.session.commit()
         return render_template('invite.html', invite=invite, newly_invite=True)
     return render_template('invite.html', invite=invite)
@@ -307,17 +309,16 @@ def download(filename):
     directory = os.path.join(app.root_path, app.config['USER_FILES'])
     return send_from_directory(directory=directory, filename=filename)
 
+
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 @app.route('/invite.json', methods=['GET', 'POST'])
 def json_invite():
     """Return all invites from current user, or create a new one."""
-    current_user = User.query.filter(User.id==3).first()
     if request.method == 'POST':
         try:
             Invite.create(current_user)
         except ValueError as e:
-            print(e)
             return "{}".format(e), 403
     invites = Invite.get_invites_from_user(current_user).all()
     serialized = ([i.serialize for i in invites])
@@ -325,6 +326,7 @@ def json_invite():
         'invites': serialized,
         'base_url': url_for('get_invite')
         })
+
 
 @app.route('/products.json')
 # @limiter.limit("1/second", error_message='Èn per sekund')

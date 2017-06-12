@@ -154,7 +154,6 @@ class FormField(object):
                 image_size[0]*72/signature_location_size['sizex'],
                 image_size[1]*72/signature_location_size['sizey']
             )
-            print(dpi)
             call = [
                 'java',
                 '-jar',
@@ -171,7 +170,6 @@ class FormField(object):
                 '-e',
                 's',
                 output_path]
-            print(call)
             check_output(call).decode('utf8')
             path, filename = os.path.split(output_path)
             filename, ext = os.path.splitext(filename)

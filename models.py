@@ -29,8 +29,6 @@ def lookup_vk(manufacturor, watt_per_meter, watt_total):
         .join(ProductType.manufacturor, aliased=True)\
         .filter_by(name=manufacturor)\
         .all()
-    for p in products:
-        print(p.name)
     return products
 
 
