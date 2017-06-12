@@ -143,6 +143,9 @@ $(function() {
     self.Products = ko.observable();
     self.selected_vk = ko.observable();
 
+    self.address_id = ko.observable();
+    self.filled_form_id = ko.observable();
+
     self.init = function() {
       self.Products(new ProductModel(self));
       self.Products().getProducts();
@@ -162,7 +165,6 @@ $(function() {
     self.post_form = function(e, t) {
       self.form_args($('#form').serialize());
       if (self.form_changed()) {
-        console.log('sending...');
         // self.file_download(false);
         self.loading(true);
         $.post("/json/heating/", {
@@ -178,7 +180,9 @@ $(function() {
             'ohm_a': self.ohm_a(),
             'ohm_b': self.ohm_b(),
             'ohm_c': self.ohm_c(),
-            'product_id': self.selected_vk()
+            'product_id': self.selected_vk(),
+            'address_id': self.address_id(),
+            'filled_form_id': self.filled_form_id()
 
           })
           .done(function(result) {
@@ -189,6 +193,8 @@ $(function() {
             }
             if (result.file_download) {
               self.file_download(result.file_download);
+              self.address_id(result.address_id);
+              self.filled_form_id(result.filled_form_id);
             }
             if (result.error_message) {
               self.error_message(result.error_message);

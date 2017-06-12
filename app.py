@@ -8,7 +8,16 @@ import base64
 
 from config import configure_app
 from field_dicts.helpers import commafloat, id_generator
-from models import (db, Manufacturor, Product, User, OAuth, Invite)
+from models import (db,
+                    Manufacturor,
+                    Product,
+                    User,
+                    OAuth,
+                    Invite,
+                    FilledFormModified,
+                    FilledForm,
+                    Address
+                    )
 from vk_objects import FormField
 
 from flask import (
@@ -370,6 +379,7 @@ def json_fill_document():
                 "Om dette er en feil, bør dette rapporteres."
             ).format(manufacturor),
             status=400)
+    # TODO: Fix this.
     if dictionary.get('mohm_a') == 'true':
         dictionary['mohm_a'] = 999
     else:
@@ -393,10 +403,35 @@ def json_fill_document():
                 'firma_postnummer'] = current_user.company.address.postnumber
     form = FormField(manufacturor)
     form.set_fields_from_dict(dictionary)
+
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_dir = user_file_path(create_random_dir=True)
     output_pdf = os.path.join(output_dir, filename)
     form.create_filled_pdf(output_pdf)
+    address = Address.update_or_create(
+        address_id=dictionary.get('address_id'),
+        linje1=dictionary['anleggs_adresse'],
+        linje2=None,
+        postnumber=dictionary['anleggs_postnummer'],
+        postal=dictionary['anleggs_poststed']
+    )
+    save_form = FilledForm.update_or_create(
+        filled_form_id=dictionary.get('filled_form_id'),
+        name=dictionary.get('rom_navn'),
+        customer_name=dictionary.get('kunde_navn'),
+        data=dictionary,
+        company=current_user.company,
+        address=address
+    )
+
+    modification = FilledFormModified.update_or_create(
+        user=current_user,
+        filled_form=save_form
+    )
+    db.session.add(save_form)
+    db.session.add(modification)
+    db.session.add(address)
+    db.session.commit()
     if current_user.is_authenticated and current_user.signature:
 
         image = os.path.join(output_dir, 'sign.png')
@@ -410,7 +445,10 @@ def json_fill_document():
 
     return jsonify(
         file_download=os.path.relpath(output_pdf),
-        status=200)
+        status=200,
+        filled_form_id=save_form.id,
+        address_id=address.id,
+        )
 
 
 @app.route('/')

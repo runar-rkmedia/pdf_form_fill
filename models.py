@@ -1,6 +1,7 @@
 """Database-structure for item-catalog."""
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc, or_, text
 from flask_dance.consumer.backend.sqla import (
     OAuthConsumerMixin,
 )
@@ -10,6 +11,7 @@ from flask_login import (
 # import bleach
 import enum
 from field_dicts.helpers import id_generator
+from datetime import datetime, timedelta
 db = SQLAlchemy()
 
 
@@ -40,6 +42,26 @@ class Address(db.Model):
     linje2 = db.Column(db.String(200))
     postnumber = db.Column(db.SmallInteger)
     postal = db.Column(db.String(200))
+
+    @classmethod
+    def update_or_create(cls, address_id, linje1, linje2, postnumber, postal):
+        """Update if exists, else create Address."""
+        address = Address.query.filter_by(
+            id=address_id
+        ).first()
+        if not address:
+            address = Address(
+                linje1=linje1,
+                linje2=linje2,
+                postnumber=postnumber,
+                postal=postal
+            )
+        else:
+            address.linje1 = linje1
+            address.linje2 = linje2
+            address.postnumber = postnumber
+            address.postal = postal
+        return address
 
 
 class Contact(db.Model):
@@ -124,14 +146,14 @@ class Invite(db.Model):
         """Return all invites from user which are still valid for signup."""
         return Invite.query.filter(
             Invite.inviter_user_id == inviter.id,
-            Invite.invitee_user_id == None)
+            Invite.invitee_user_id == None)  # noqa
 
     @classmethod
     def get_invite_from_id(cls, invite_id):
         """Return a valid invite from an id."""
         return Invite.query.filter(
             Invite.id == invite_id,
-            Invite.invitee_user_id == None).first()
+            Invite.invitee_user_id == None).first()  # noqa
 
     @classmethod
     def create(cls, inviter):
@@ -146,7 +168,7 @@ class Invite(db.Model):
             db.session.add(invite)
             db.session.commit()
         else:
-            raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.") # noqa
+            raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.")  # noqa
 
     @property
     def serialize(self):
@@ -278,3 +300,74 @@ class ProductSpec(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
     product = db.relationship(
         Product, primaryjoin='ProductSpec.product_id==Product.id')
+
+
+class FilledForm(db.Model):
+    """Table of forms filled by users."""
+    __tablename__ = 'filledform'
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    name = db.Column(db.String(50))
+    customer_name = db.Column(db.String(250))
+    data = db.Column(db.JSON)
+    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    company = db.relationship(
+        Company, primaryjoin='FilledForm.company_id==Company.id')
+    address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
+    address = db.relationship(
+        Address, primaryjoin='FilledForm.address_id==Address.id')
+
+    @classmethod
+    def update_or_create(
+            cls, filled_form_id, name, customer_name, data, company, address):
+        """Update if exists, else create FilledForm."""
+        filled_form = FilledForm.query.filter(
+            FilledForm.id == filled_form_id
+        ).first()
+        if not filled_form:
+            filled_form = FilledForm(
+                name=name,
+                customer_name=customer_name,
+                data=data,
+                company=company,
+                address=address
+            )
+        else:
+            filled_form.name = name
+            filled_form.customer_name = customer_name
+            filled_form.data = data
+            filled_form.company = company
+            filled_form.address = address
+        return filled_form
+
+
+class FilledFormModified(db.Model):
+    """Table of modification-dated for FilledForm-model."""
+    __tablename__ = 'filledformmodified'
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = db.relationship(
+        User, primaryjoin='FilledFormModified.user_id==User.id')
+    filled_form_id = db.Column(db.Integer, db.ForeignKey(FilledForm.id))
+    filled_form = db.relationship(
+        FilledForm, primaryjoin='FilledFormModified.filled_form_id==FilledForm.id')  # noqa
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    @classmethod
+    def update_or_create(cls, user, filled_form):
+        """
+        Create modification-date if last update was either not made by
+        current user, or within the last 5 minutes."""
+        last_modified = FilledFormModified.query.filter(
+            FilledFormModified.filled_form == filled_form).order_by(
+                desc(FilledFormModified.date)).filter(
+                    or_(
+                        FilledFormModified.user != user,
+                        FilledFormModified.date >= (
+                            datetime.utcnow() - timedelta(minutes=30))
+                    )).first()
+        if not last_modified:
+            last_modified = FilledFormModified(
+                user=user,
+                filled_form=filled_form,
+            )
+        return last_modified
