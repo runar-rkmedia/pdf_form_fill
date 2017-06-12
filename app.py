@@ -142,10 +142,9 @@ def google_logged_in(blueprint, token):  # noqa
         return
     # figure out who the user is
     resp = blueprint.session.get("/oauth2/v2/userinfo")
-    from pprint import pprint
-    pprint(resp)
     if resp.ok:
-        name = resp.json()["name"]
+        family_name = resp.json()["family_name"]
+        given_name = resp.json()["given_name"]
         email = resp.json()["email"]
         query = User.query.filter_by(email=email)
         try:
@@ -153,7 +152,8 @@ def google_logged_in(blueprint, token):  # noqa
         except NoResultFound:
             # create a user
             user = User(
-                name=name,
+                family_name=family_name,
+                given_name=given_name,
                 email=email,
             )
             db.session.add(user)
@@ -278,6 +278,7 @@ def validate_fields(request_form):
 def get_invite(invite_id):
     """Route for getting an invite."""
     invite = Invite.get_invite_from_id(invite_id)
+    print(invite)
     if request.method == 'POST' and invite:
         invite.invitee = current_user
         current_user.company = invite.company

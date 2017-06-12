@@ -74,7 +74,8 @@ class User(db.Model, UserMixin):
     """User-table for users."""
     __tablename__ = 'vk_user'
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(100))
+    given_name = db.Column(db.String(50))
+    family_name = db.Column(db.String(50))
     email = db.Column(db.String(100))
     title = db.Column(db.String(50))
     signature = db.Column(db.Binary())
