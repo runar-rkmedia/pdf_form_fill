@@ -61,7 +61,6 @@ class Address(db.Model):
             address.postnumber = postnumber
             address.postal = postal
             db.session.add(address)
-        # db.session.commit()
         return address
 
 
@@ -82,6 +81,14 @@ class Company(db.Model):
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
 
+    def get_forms(self, limit=10):
+        """Return all filled forms created by user."""
+        query = FilledFormModified.query\
+            .join(FilledForm, aliased=True)\
+            .filter(FilledForm.company==self)\
+            .all()
+        return query
+
 
 class CompanyContact(db.Model):
     """Associations-table for company and contacts."""
@@ -92,6 +99,7 @@ class CompanyContact(db.Model):
 
 class User(db.Model, UserMixin):
     """User-table for users."""
+    __tablename__ = 'vk_users'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     given_name = db.Column(db.String(50))
     family_name = db.Column(db.String(50))
@@ -101,6 +109,14 @@ class User(db.Model, UserMixin):
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='User.company_id==Company.id')
+
+
+    def get_forms(self, limit=10):
+        """Return all filled forms created by user."""
+        query = FilledFormModified.query\
+            .filter(FilledFormModified.user==self)\
+            .all()
+        return query
 
     def addContact(self, contact_type, contact_value):
         """Description."""
@@ -162,7 +178,7 @@ class Invite(db.Model):
                 inviter=inviter,
             )
             db.session.add(invite)
-            # db.session.commit()
+
         else:
             raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.")  # noqa
 
@@ -223,10 +239,10 @@ class ProductType(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
-    mainSpec = db.Column(db.String(25)) # Betegnelse
+    mainSpec = db.Column(db.String(25))  # Betegnelse
     watt_per_meter = db.Column(db.Numeric(6))
     watt_per_square_meter = db.Column(db.Numeric(6))
-    secondSpec = db.Column(db.Integer) # antall ledere
+    secondSpec = db.Column(db.Integer)  # antall ledere
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
@@ -310,6 +326,7 @@ class FilledForm(db.Model):
     address = db.relationship(
         Address, primaryjoin='FilledForm.address_id==Address.id')
 
+
     @classmethod
     def update_or_create(
             cls, filled_form_id, user, name, customer_name, data, company, address):
@@ -335,7 +352,6 @@ class FilledForm(db.Model):
             filled_form.address = address
 
         db.session.add(filled_form)
-        # db.session.commit()
         FilledFormModified.update_or_create(
             user=user,
             filled_form=filled_form)
@@ -358,19 +374,36 @@ class FilledFormModified(db.Model):
         """
         Create modification-date if last update was either not made by
         current user, or within the last 5 minutes."""
-        last_modified = FilledFormModified.query.filter(
-            FilledFormModified.filled_form == filled_form).order_by(
-                desc(FilledFormModified.date)).filter(
-                    or_(
-                        FilledFormModified.user != user,
-                        FilledFormModified.date >= (
-                            datetime.utcnow() - timedelta(minutes=30))
-                    )).first()
+        if not user:
+            ValueError('Expected a user, got {}'.format(user))
+        if not filled_form:
+            ValueError('Expected a filled_form, got {}'.format(filled_form))
+        last_modified = None
+        if user.id:
+            last_modified = FilledFormModified.query.filter(
+                FilledFormModified.filled_form == filled_form).order_by(
+                    desc(FilledFormModified.date)).filter(
+                        or_(
+                            FilledFormModified.user != user,
+                            FilledFormModified.date >= (
+                                datetime.utcnow() - timedelta(minutes=30))
+                        )).first()
         if not last_modified:
             last_modified = FilledFormModified(
                 user=user,
                 filled_form=filled_form,
             )
         db.session.add(last_modified)
-        # db.session.commit()
         return last_modified
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        dictionary = {
+            'customer': self.filled_form.customer_name,
+            'name': self.filled_form.name,
+            'address': self.filled_form.address.line1,
+            'company_name': self.company.name,
+        }
+        return dictionary
