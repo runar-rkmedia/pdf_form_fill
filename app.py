@@ -363,11 +363,11 @@ def json_fill_document():
             error_message='Noen felt var ikke tilstrekkelig utfylt',
             status=400
         )
-
     product_id = request.form['product_id']
     product = Product.get_by_id(product_id)
     manufacturor = product.product_type.manufacturor.name
     dictionary = request.form.copy()
+
     if product:
         specs = product.get_specs()
         dictionary = set_fields_from_product(
@@ -410,10 +410,10 @@ def json_fill_document():
     form.create_filled_pdf(output_pdf)
     address = Address.update_or_create(
         address_id=dictionary.get('address_id'),
-        linje1=dictionary['anleggs_adresse'],
+        linje1=dictionary.get('anleggs_adresse'),
         linje2=None,
-        postnumber=dictionary['anleggs_postnummer'],
-        postal=dictionary['anleggs_poststed']
+        postnumber=dictionary.get('anleggs_postnummer'),
+        postal=dictionary.get('anleggs_poststed')
     )
     save_form = FilledForm.update_or_create(
         filled_form_id=dictionary.get('filled_form_id'),
@@ -423,11 +423,11 @@ def json_fill_document():
         company=current_user.company,
         address=address
     )
-
     modification = FilledFormModified.update_or_create(
         user=current_user,
         filled_form=save_form
     )
+
     db.session.add(save_form)
     db.session.add(modification)
     db.session.add(address)
