@@ -36,7 +36,6 @@ def lookup_vk(manufacturor, watt_per_meter, watt_total):
 
 class Address(db.Model):
     """Address-table for users."""
-    __tablename__ = 'address'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     linje1 = db.Column(db.String(200))
     linje2 = db.Column(db.String(200))
@@ -66,7 +65,6 @@ class Address(db.Model):
 
 class Contact(db.Model):
     """Contact-table for users, like phone, email"""
-    __tablename__ = 'contact'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     type = db.Column(db.Enum(ContactType))
     value = db.Column(db.String(200))
@@ -74,7 +72,6 @@ class Contact(db.Model):
 
 class Company(db.Model):
     """Company-table for users."""
-    __tablename__ = 'company'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
@@ -86,7 +83,6 @@ class Company(db.Model):
 
 class CompanyContact(db.Model):
     """Associations-table for company and contacts."""
-    __tablename__ = 'company_contact'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
@@ -94,7 +90,6 @@ class CompanyContact(db.Model):
 
 class User(db.Model, UserMixin):
     """User-table for users."""
-    __tablename__ = 'vk_user'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     given_name = db.Column(db.String(50))
     family_name = db.Column(db.String(50))
@@ -118,7 +113,6 @@ class User(db.Model, UserMixin):
 
 class Invite(db.Model):
     """Invite-table for users."""
-    __tablename__ = 'invite'
 
     id = db.Column(db.String, unique=True, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
@@ -202,7 +196,7 @@ class UserContact(db.Model):
 
 class Manufacturor(db.Model):
     """Manufacturor-table."""
-    __tablename__ = 'manufacturors'
+    __bind_key__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
@@ -224,7 +218,7 @@ class Manufacturor(db.Model):
 
 class ProductType(db.Model):
     """ProcuctTypes-table."""
-    __tablename__ = 'product_types'
+    __bind_key__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
@@ -259,7 +253,7 @@ class ProductType(db.Model):
 
 class Product(db.Model):
     """Product-table."""
-    __tablename__ = 'products'
+    __bind_key__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     effekt = db.Column(db.Numeric(8))
@@ -293,7 +287,7 @@ class Product(db.Model):
 
 class ProductSpec(db.Model):
     """ProductSpec-table."""
-    __tablename__ = 'product_specs'
+    __bind_key__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     key = db.Column(db.String(25))
     value = db.Column(db.String(50))
@@ -304,7 +298,6 @@ class ProductSpec(db.Model):
 
 class FilledForm(db.Model):
     """Table of forms filled by users."""
-    __tablename__ = 'filledform'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     customer_name = db.Column(db.String(250))
@@ -342,7 +335,6 @@ class FilledForm(db.Model):
 
 class FilledFormModified(db.Model):
     """Table of modification-dated for FilledForm-model."""
-    __tablename__ = 'filledformmodified'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(

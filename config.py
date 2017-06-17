@@ -9,6 +9,9 @@ class BaseConfig(object):
     PORT = int(os.environ.get("PORT", 5000))
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgres:///varmekabler')
+    SQLALCHEMY_BINDS = {
+        'products':        'postgres:///vk_products',
+    }
     G_CLIENT_ID = os.environ.get(
         'G_CLIENT_ID', 'postgres:///varmekabler')
     G_CLIENT_SECRET = os.environ.get(
@@ -31,6 +34,9 @@ class DevelopmentConfig(BaseConfig):
 
 class TestingConfig(BaseConfig):
     """Configuration for testing."""
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL', 'postgres:///test_varmekabler')
+    SECRET_KEY = 'test'
     DEBUG = False
     TESTING = True
 
@@ -42,9 +48,9 @@ config = {
 }
 
 
-def configure_app(app):
+def configure_app(app, configuration=None):
     """Retrieve configuration based on situation(dev,testing,production)."""
-    config_name = os.getenv('FLASK_CONFIGURATION', 'default')
+    config_name = os.getenv('FLASK_CONFIGURATION', configuration or 'default')
     print("Configuring app with '{}'-config.".format(config_name))
     app.config.from_object(config[config_name])
     required_keys = ['SQLALCHEMY_DATABASE_URI']
@@ -53,4 +59,4 @@ def configure_app(app):
         if not app.config[key]:
             raise ValueError(
                 "Required key '{}' missing. See Readme".format(key)
-                )
+            )
