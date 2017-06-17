@@ -10,7 +10,8 @@ class BaseConfig(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgres:///varmekabler')
     SQLALCHEMY_BINDS = {
-        'products':        'postgres:///vk_products',
+        'products': os.environ.get(
+            'PRODUCT_DATABASE_URL', 'postgres:///vk_products'),
     }
     G_CLIENT_ID = os.environ.get(
         'G_CLIENT_ID', 'postgres:///varmekabler')

@@ -100,6 +100,7 @@ $(function() {
           $('#form').serialize())
         .done(function(result) {
           self.products(result);
+          rootModel.selected_vk(rootModel.forced_selected_vk())
         })
         .fail(function(e) {
           console.log('Could not retrieve data = Error ' + e.status);
@@ -142,9 +143,28 @@ $(function() {
 
     self.Products = ko.observable();
     self.selected_vk = ko.observable();
+    self.forced_selected_vk = ko.observable()
 
     self.address_id = ko.observable();
     self.filled_form_id = ko.observable();
+
+    self.prefill = false
+
+    if (self.prefill) {
+        self.anleggs_adresse('Kingsroad 1')
+        self.anleggs_postnummer(4321)
+        self.anleggs_poststed('Kings place')
+        self.rom_navn('Kings room')
+        self.areal(1000)
+        self.oppvarmet_areal(900)
+        self.forced_selected_vk(3)
+        self.ohm_a(1)
+        self.ohm_b(2)
+        self.ohm_c(3)
+        self.mohm_a(true)
+        self.mohm_b(true)
+        self.mohm_c(true)
+    }
 
     self.init = function() {
       self.Products(new ProductModel(self));
