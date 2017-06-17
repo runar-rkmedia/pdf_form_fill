@@ -235,7 +235,7 @@ def set_fields_from_product(dictionary, product, specs=None):
     """Set multiple fields from a Product-table."""
     dictionary["Betegnelse"] = product.product_type.name
     # legg til enleder/toleder
-    ledere = product.product_type.ledere
+    ledere = product.product_type.secondSpec
     if ledere == 2:
         dictionary['check-toleder'] = True
     elif ledere == 1:
@@ -263,7 +263,7 @@ def validate_fields(request_form):
         ],
         'digits': [
             'product_id',
-            'oppvarmet_areal'
+            'oppvarmet_areal',
         ]}
     for key in required_fields['strings']:
         field = request_form.get(key)
@@ -396,8 +396,8 @@ def json_fill_document():
         if current_user.company:
             dictionary['firma_navn'] = current_user.company.name
             dictionary['firma_orgnr'] = current_user.company.orgnumber
-            dictionary['firma_adresse1'] = current_user.company.address.linje1
-            dictionary['firma_adresse2'] = current_user.company.address.linje2
+            dictionary['firma_adresse1'] = current_user.company.address.line1
+            dictionary['firma_adresse2'] = current_user.company.address.line2
             dictionary['firma_poststed'] = current_user.company.address.postal
             dictionary[
                 'firma_postnummer'] = current_user.company.address.postnumber
@@ -410,28 +410,22 @@ def json_fill_document():
     form.create_filled_pdf(output_pdf)
     address = Address.update_or_create(
         address_id=dictionary.get('address_id'),
-        linje1=dictionary.get('anleggs_adresse'),
-        linje2=None,
+        line1=dictionary.get('anleggs_adresse'),
+        line2=None,
         postnumber=dictionary.get('anleggs_postnummer'),
         postal=dictionary.get('anleggs_poststed')
     )
     save_form = FilledForm.update_or_create(
         filled_form_id=dictionary.get('filled_form_id'),
+        user=current_user,
         name=dictionary.get('rom_navn'),
         customer_name=dictionary.get('kunde_navn'),
         data=dictionary,
         company=current_user.company,
         address=address
     )
-    modification = FilledFormModified.update_or_create(
-        user=current_user,
-        filled_form=save_form
-    )
-
-    db.session.add(save_form)
-    db.session.add(modification)
-    db.session.add(address)
     db.session.commit()
+
     if current_user.is_authenticated and current_user.signature:
 
         image = os.path.join(output_dir, 'sign.png')

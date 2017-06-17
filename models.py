@@ -25,7 +25,7 @@ class ContactType(enum.Enum):
 def lookup_vk(manufacturor, watt_per_meter, watt_total):
     """Return a specific heating_cable from a generic lookup."""
     products = Product.query\
-        .filter_by(effekt=watt_total)\
+        .filter_by(effect=watt_total)\
         .join(ProductType, aliased=True)\
         .filter_by(watt_per_meter=watt_per_meter)\
         .join(ProductType.manufacturor, aliased=True)\
@@ -37,29 +37,31 @@ def lookup_vk(manufacturor, watt_per_meter, watt_total):
 class Address(db.Model):
     """Address-table for users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    linje1 = db.Column(db.String(200))
-    linje2 = db.Column(db.String(200))
+    line1 = db.Column(db.String(200))
+    line2 = db.Column(db.String(200))
     postnumber = db.Column(db.SmallInteger)
     postal = db.Column(db.String(200))
 
     @classmethod
-    def update_or_create(cls, address_id, linje1, linje2, postnumber, postal):
+    def update_or_create(cls, address_id, line1, line2, postnumber, postal):
         """Update if exists, else create Address."""
         address = Address.query.filter_by(
             id=address_id
         ).first()
         if not address:
             address = Address(
-                linje1=linje1,
-                linje2=linje2,
+                line1=line1,
+                line2=line2,
                 postnumber=postnumber,
                 postal=postal
             )
         else:
-            address.linje1 = linje1
-            address.linje2 = linje2
+            address.line1 = line1
+            address.line2 = line2
             address.postnumber = postnumber
             address.postal = postal
+            db.session.add(address)
+        # db.session.commit()
         return address
 
 
@@ -160,7 +162,7 @@ class Invite(db.Model):
                 inviter=inviter,
             )
             db.session.add(invite)
-            db.session.commit()
+            # db.session.commit()
         else:
             raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.")  # noqa
 
@@ -184,7 +186,6 @@ class OAuth(db.Model, OAuthConsumerMixin):
 
 class UserContact(db.Model):
     """Associations-table for user and contacts."""
-    __tablename__ = 'user_contact'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
@@ -222,10 +223,10 @@ class ProductType(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
-    mainSpec = db.Column(db.String(25))
+    mainSpec = db.Column(db.String(25)) # Betegnelse
     watt_per_meter = db.Column(db.Numeric(6))
     watt_per_square_meter = db.Column(db.Numeric(6))
-    ledere = db.Column(db.Integer)
+    secondSpec = db.Column(db.Integer) # antall ledere
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
@@ -240,7 +241,7 @@ class ProductType(db.Model):
         dictionary = {
             'id': self.id,
             'name': self.name,
-            'ledere': self.ledere,
+            'secondSpec': self.secondSpec,
             'products': products_dict
         }
         if self.watt_per_meter:
@@ -256,7 +257,7 @@ class Product(db.Model):
     __bind_key__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
-    effekt = db.Column(db.Numeric(8))
+    effect = db.Column(db.Numeric(8))
     product_type_id = db.Column(db.Integer, db.ForeignKey(ProductType.id))
     product_type = db.relationship(
         ProductType, primaryjoin='Product.product_type_id==ProductType.id')
@@ -280,7 +281,7 @@ class Product(db.Model):
         """Return object data in easily serializeable format"""
         dictionary = {
             'id': self.id,
-            'effect': self.effekt
+            'effect': self.effect
         }
         return dictionary
 
@@ -311,11 +312,13 @@ class FilledForm(db.Model):
 
     @classmethod
     def update_or_create(
-            cls, filled_form_id, name, customer_name, data, company, address):
+            cls, filled_form_id, user, name, customer_name, data, company, address):
         """Update if exists, else create FilledForm."""
-        filled_form = FilledForm.query.filter(
-            FilledForm.id == filled_form_id
-        ).first()
+        filled_form = None
+        if filled_form_id:
+            filled_form = FilledForm.query.filter(
+                FilledForm.id == filled_form_id
+            ).first()
         if not filled_form:
             filled_form = FilledForm(
                 name=name,
@@ -330,6 +333,12 @@ class FilledForm(db.Model):
             filled_form.data = data
             filled_form.company = company
             filled_form.address = address
+
+        db.session.add(filled_form)
+        # db.session.commit()
+        FilledFormModified.update_or_create(
+            user=user,
+            filled_form=filled_form)
         return filled_form
 
 
@@ -362,4 +371,6 @@ class FilledFormModified(db.Model):
                 user=user,
                 filled_form=filled_form,
             )
+        db.session.add(last_modified)
+        # db.session.commit()
         return last_modified

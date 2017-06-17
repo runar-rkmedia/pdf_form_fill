@@ -5,10 +5,10 @@
     <div class="col-xs-12">
       <h2>{{current_user.company.name}}</h2>
       Adresse:
-      {{current_user.company.address.linje1}}
-      {% if current_user.company.address.linje2 %}
+      {{current_user.company.address.line1}}
+      {% if current_user.company.address.line2 %}
         ,
-        {{current_user.company.address.linje2}}
+        {{current_user.company.address.line2}}
       {% endif %}
       {{current_user.company.address.postnumber}}
       {{current_user.company.address.postal}}
