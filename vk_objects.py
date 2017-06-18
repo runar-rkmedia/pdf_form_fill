@@ -10,7 +10,9 @@ import os
 from subprocess import check_output
 import pdffields.fields
 from field_dicts import nexans, oegleand
-from field_dicts.helpers import NumberTypes, get_image_size
+from field_dicts.helpers import (NumberTypes,
+                                 get_image_size,
+                                 delete_empty_value)
 
 
 def setLoggerOptions(msg_type, enabled):
@@ -87,6 +89,7 @@ class FormField(object):
         """Creates a pdf with all fields filled."""
         pdffields.fields.write_pdf(
             self.pdf_path, self.fields, filename, flatten)
+        return delete_empty_value(self.fields)
 
     def set_field(self, fieldVariable, value, typeCheckBypass=False):
         """Set a field in the pdf to a value."""

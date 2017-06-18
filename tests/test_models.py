@@ -48,13 +48,17 @@ class FlaskrTestCase(unittest.TestCase):
                 name='Business',
                 address=self.BusinessAddress
             )
-            testForm = {"anleggs_adresse": "test", 'product_id': 129}
+            form_data = {"Adresse installasjonssted": "Kingsroad 1", "Firmanavn": "Kristiansand Elektro AS", "Organisasjonsnr": "980 489 590", "Adresse Installat\u00f8r": "Rigetj\u00f8nnveien 3, 4626 Kristiansand S", "Eks bad, gang": "Kings room", "gulv": "Ja", "Styr": "Ja", "Mont": "Ja", "Jord": "Ja", "Type kabel/matte": "\u00d8S-30-21-16Wm", "Areal m2": 900, "c/c": 6428.57,
+                         "Spenning V": 230, "Resistans min \u2126": 228, "Resistans max \u2126": 265, "Resistans \u2126 inst": 1, "Resistans \u2126 st\u00f8p": 2, "Isolasjonstest M\u2126 st\u00f8p": 999, "Resistans \u2126 tilk": 3, "Isolasjonstest M\u2126 inst": 999, "Isolasjonstest M\u2126 tilk": 999, "Eier": "Ja", "Doku": "Ja", "Dag": "18", "Mnd": "06", "\u00c5r": "2017"}
+            request_form = {"anleggs_adresse": "Kingsroad 1", "anleggs_poststed": "Kings place", "anleggs_postnummer": "4321", "rom_navn": "Kings room", "areal": "1000",
+                            "oppvarmet_areal": "900", "mohm_a": "true", "mohm_b": "true", "mohm_c": "true", "ohm_a": "1", "ohm_b": "2", "ohm_c": "3", "product_id": "3"}
             self.testForm = FilledForm.update_or_create(
                 filled_form_id=None,
                 user=self.John,
                 name='Awesome form',
                 customer_name='Awesome customer',
-                data=testForm,
+                request_form=request_form,
+                form_data=form_data,
                 company=self.Corporation,
                 address=self.CustomerAddress
             )
@@ -63,7 +67,8 @@ class FlaskrTestCase(unittest.TestCase):
                 user=self.Gary,
                 name='Boring form',
                 customer_name='Boring customer',
-                data=testForm,
+                request_form=request_form,
+                form_data=form_data,
                 company=self.Business,
                 address=self.CustomerAddress
             )
@@ -72,7 +77,8 @@ class FlaskrTestCase(unittest.TestCase):
                 user=self.Gary,
                 name='Ok form',
                 customer_name='form customer',
-                data=testForm,
+                request_form=request_form,
+                form_data=form_data,
                 company=self.Corporation,
                 address=self.CustomerAddress
             )
@@ -87,9 +93,12 @@ class FlaskrTestCase(unittest.TestCase):
             db.session.add(self.Gary)
             db.session.commit()
             self.John = User.query.filter(User.email == 'john@doe.com').first()
-            self.Gary = User.query.filter(User.email == 'gary@mcqueen.com').first()
-            self.Corporation = Company.query.filter(Company.name == 'Corporation').first()
-            self.Business = Company.query.filter(Company.name == 'Business').first()
+            self.Gary = User.query.filter(
+                User.email == 'gary@mcqueen.com').first()
+            self.Corporation = Company.query.filter(
+                Company.name == 'Corporation').first()
+            self.Business = Company.query.filter(
+                Company.name == 'Business').first()
 
     def tearDown(self):
         # self.app = app.test_client()
@@ -110,8 +119,22 @@ class FlaskrTestCase(unittest.TestCase):
         with self.app.app_context():
             result = self.Business.get_forms()
             self.assertEqual(len(result), 1)
-            self.assertEqual(result[0].filled_form.name, 'Boring form')
-            self.assertEqual(result[0].user.email, 'gary@mcqueen.com')
+            self.assertEqual(
+                result[0]
+                .filled_form.name,
+                'Boring form')
+            self.assertEqual(
+                result[0]
+                .user.email,
+                'gary@mcqueen.com')
+            self.assertEqual(
+                result[0]
+                .filled_form_data.request_form['anleggs_adresse'],
+                'Kingsroad 1')
+            self.assertEqual(
+                result[0]
+                .filled_form_data.form_data['Adresse installasjonssted'],
+                'Kingsroad 1')
             result = self.Corporation.get_forms()
             self.assertEqual(len(result), 2)
 

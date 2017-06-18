@@ -12,6 +12,8 @@ class BaseConfig(object):
     SQLALCHEMY_BINDS = {
         'products': os.environ.get(
             'PRODUCT_DATABASE_URL', 'postgres:///vk_products'),
+        'forms': os.environ.get(
+            'FORM_DATABASE_URL', 'postgres:///vk_forms'),
     }
     G_CLIENT_ID = os.environ.get(
         'G_CLIENT_ID', 'postgres:///varmekabler')
@@ -37,6 +39,12 @@ class TestingConfig(BaseConfig):
     """Configuration for testing."""
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgres:///test_varmekabler')
+    SQLALCHEMY_BINDS = {
+        'products': os.environ.get(
+            'PRODUCT_DATABASE_URL', 'postgres:///vk_products'),
+        'forms': os.environ.get(
+            'FORM_DATABASE_URL', 'postgres:///test_vk_forms'),
+    }
     SECRET_KEY = 'test'
     DEBUG = False
     TESTING = True

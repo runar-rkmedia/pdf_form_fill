@@ -100,7 +100,7 @@ $(function() {
           $('#form').serialize())
         .done(function(result) {
           self.products(result);
-          rootModel.selected_vk(rootModel.forced_selected_vk())
+          rootModel.selected_vk(rootModel.forced_selected_vk());
         })
         .fail(function(e) {
           console.log('Could not retrieve data = Error ' + e.status);
@@ -143,27 +143,29 @@ $(function() {
 
     self.Products = ko.observable();
     self.selected_vk = ko.observable();
-    self.forced_selected_vk = ko.observable()
+    self.forced_selected_vk = ko.observable();
 
     self.address_id = ko.observable();
     self.filled_form_id = ko.observable();
 
-    self.prefill = false
+    self.user_forms = ko.observableArray();
+
+    self.prefill = false;
 
     if (self.prefill) {
-        self.anleggs_adresse('Kingsroad 1')
-        self.anleggs_postnummer(4321)
-        self.anleggs_poststed('Kings place')
-        self.rom_navn('Kings room')
-        self.areal(1000)
-        self.oppvarmet_areal(900)
-        self.forced_selected_vk(3)
-        self.ohm_a(1)
-        self.ohm_b(2)
-        self.ohm_c(3)
-        self.mohm_a(true)
-        self.mohm_b(true)
-        self.mohm_c(true)
+      self.anleggs_adresse('Kingsroad 1');
+      self.anleggs_postnummer(4321);
+      self.anleggs_poststed('Kings place');
+      self.rom_navn('Kings room');
+      self.areal(1000);
+      self.oppvarmet_areal(900);
+      self.forced_selected_vk(3);
+      self.ohm_a(1);
+      self.ohm_b(2);
+      self.ohm_c(3);
+      self.mohm_a(true);
+      self.mohm_b(true);
+      self.mohm_c(true);
     }
 
     self.init = function() {
@@ -182,6 +184,51 @@ $(function() {
     }, this);
 
 
+    ko.computed(function() {
+      try {
+        var f = self.Products().flat_products();
+        if (f.length > 0) {
+          get_user_forms();
+        }
+      } catch (e) {
+
+      } finally {
+
+      }
+    });
+
+    function get_user_forms() {
+      $.get("/forms.json", {}).done(function(result) {
+        console.log(result);
+        self.user_forms(result);
+      });
+    }
+    self.get_product_by_id = function(id) {
+      var f = self.Products().flat_products();
+      for (var i = 0; i < f.length; i++) {
+        if (f[i].id == id) {
+          return f[i];
+        }
+      }
+    };
+    self.edit_form = function(e) {
+      var f = e.request_form;
+      self.filled_form_id(e.id);
+      self.anleggs_adresse(f.anleggs_adresse);
+      self.anleggs_postnummer(f.anleggs_postnummer);
+      self.anleggs_poststed(f.anleggs_poststed);
+      self.rom_navn(f.rom_navn);
+      self.areal(f.areal);
+      self.oppvarmet_areal(f.oppvarmet_areal);
+      self.selected_vk(f.product_id);
+      self.ohm_a(f.ohm_a);
+      self.ohm_b(f.ohm_b);
+      self.ohm_c(f.ohm_c);
+      self.mohm_a(f.mohm_a);
+      self.mohm_b(f.ohm_b);
+      self.mohm_c(f.ohm_c);
+    };
+    $('#collapse-form-forms').collapse();
     self.post_form = function(e, t) {
       self.form_args($('#form').serialize());
       if (self.form_changed()) {
@@ -219,8 +266,6 @@ $(function() {
             if (result.error_message) {
               self.error_message(result.error_message);
             }
-
-
           });
       }
     };
@@ -244,3 +289,29 @@ $(function() {
   myApp.init();
   ko.applyBindings(myApp);
 });
+
+self.format_date = function(dateString) {
+  var d_names = new Array("Søndag", "Mandag", "Tirsdag",
+    "Onsdag", "Torsdag", "Fredag", "Søndag");
+
+  var m_names = new Array("januar", "februar", "mars",
+    "april", "mai", "juni", "juli", "august", "september",
+    "october", "november", "december");
+//
+  // var d = new Date(dateString).toISOString()
+  var d = new Date(dateString);
+  var curr_day = d.getDay();
+  var curr_date = d.getDate();
+  var curr_month = d.getMonth();
+  var curr_year = d.getFullYear();
+  var curr_hour = d.getHours();
+  var curr_minute = d.getMinutes();
+  return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
+  pad(curr_hour, 2) + ':' + pad(curr_minute, 2)
+}
+
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}

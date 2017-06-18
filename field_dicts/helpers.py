@@ -20,6 +20,11 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+def delete_empty_value(dictionary):
+    """Remove all keys from a dictionary where values are empty."""
+    return {k: v for k, v in dictionary.items() if v != None and v != ''}
+
+
 def group_number(n, grouping=3, seperator=' '):
     """Returns a pretty, grouped number."""
     # 10x performance
@@ -69,7 +74,7 @@ def get_image_size(fname):
                 # We are at a SOFn block
                 fhandle.seek(1, 1)  # Skip `precision' byte.
                 height, width = struct.unpack('>HH', fhandle.read(4))
-            except Exception:  # IGNORE:W0703
+            except Exception:  # IGNORE: W0703
                 return
         else:
             return

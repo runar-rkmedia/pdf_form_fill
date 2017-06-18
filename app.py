@@ -7,7 +7,7 @@ import re
 import base64
 
 from config import configure_app
-from field_dicts.helpers import commafloat, id_generator
+from field_dicts.helpers import (commafloat, id_generator, )
 from models import (db,
                     Manufacturor,
                     Product,
@@ -49,6 +49,7 @@ from flask_login import (
     login_user,
     logout_user
 )
+from datetime import datetime
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -58,6 +59,8 @@ class MyJSONEncoder(JSONEncoder):
         if isinstance(obj, decimal.Decimal):
             # Convert decimal instances to strings.
             return str(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
         return super(MyJSONEncoder, self).default(obj)
 
 
@@ -297,6 +300,7 @@ def get_invite(invite_id):
 
 
 @app.route('/set_sign', methods=['POST'])
+@login_required
 def save_image():
     """Save an image from a data-string."""
     image_b64 = request.values['imageBase64']
@@ -314,6 +318,7 @@ def save_image():
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
+@login_required
 def download(filename):
     """Serve a file for downloading."""
     directory = os.path.join(app.root_path, app.config['USER_FILES'])
@@ -335,7 +340,7 @@ def json_invite():
     return jsonify({
         'invites': serialized,
         'base_url': url_for('get_invite')
-        })
+    })
 
 
 @app.route('/products.json')
@@ -347,6 +352,20 @@ def json_products():
     manufacturors = Manufacturor.query.all()
 
     return jsonify([i.serialize for i in manufacturors])
+
+
+@app.route('/forms.json')
+# @limiter.limit("1/second", error_message='Èn per sekund')
+@limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
+@limiter.limit("200/hour", error_message='200 per hour')
+@login_required
+def json_user_forms():
+    """Return a json-object of all the users forms."""
+    forms = current_user.get_forms()
+    print(forms)
+    print(current_user)
+
+    return jsonify([i.serialize for i in forms])
 
 
 @app.route('/json/heating/', methods=['POST'])
@@ -407,7 +426,7 @@ def json_fill_document():
     filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
     output_dir = user_file_path(create_random_dir=True)
     output_pdf = os.path.join(output_dir, filename)
-    form.create_filled_pdf(output_pdf)
+    complete_dictionary = form.create_filled_pdf(output_pdf)
     address = Address.update_or_create(
         address_id=dictionary.get('address_id'),
         line1=dictionary.get('anleggs_adresse'),
@@ -420,7 +439,8 @@ def json_fill_document():
         user=current_user,
         name=dictionary.get('rom_navn'),
         customer_name=dictionary.get('kunde_navn'),
-        data=dictionary,
+        request_form=request.form,
+        form_data=complete_dictionary,
         company=current_user.company,
         address=address
     )
@@ -442,7 +462,7 @@ def json_fill_document():
         status=200,
         filled_form_id=save_form.id,
         address_id=address.id,
-        )
+    )
 
 
 @app.route('/')

@@ -85,7 +85,7 @@ class Company(db.Model):
         """Return all filled forms created by user."""
         query = FilledFormModified.query\
             .join(FilledForm, aliased=True)\
-            .filter(FilledForm.company==self)\
+            .filter(FilledForm.company == self)\
             .all()
         return query
 
@@ -110,11 +110,11 @@ class User(db.Model, UserMixin):
     company = db.relationship(
         Company, primaryjoin='User.company_id==Company.id')
 
-
     def get_forms(self, limit=10):
         """Return all filled forms created by user."""
         query = FilledFormModified.query\
-            .filter(FilledFormModified.user==self)\
+            .filter(FilledFormModified.user == self)\
+            .order_by(desc(FilledFormModified.date))\
             .all()
         return query
 
@@ -316,9 +316,8 @@ class ProductSpec(db.Model):
 class FilledForm(db.Model):
     """Table of forms filled by users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50))  # e.g. room name
     customer_name = db.Column(db.String(250))
-    data = db.Column(db.JSON)
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='FilledForm.company_id==Company.id')
@@ -326,10 +325,17 @@ class FilledForm(db.Model):
     address = db.relationship(
         Address, primaryjoin='FilledForm.address_id==Address.id')
 
-
     @classmethod
     def update_or_create(
-            cls, filled_form_id, user, name, customer_name, data, company, address):
+            cls,
+            filled_form_id,
+            user,
+            name,
+            customer_name,
+            request_form,
+            form_data,
+            company,
+            address):
         """Update if exists, else create FilledForm."""
         filled_form = None
         if filled_form_id:
@@ -340,22 +346,31 @@ class FilledForm(db.Model):
             filled_form = FilledForm(
                 name=name,
                 customer_name=customer_name,
-                data=data,
                 company=company,
                 address=address
             )
         else:
             filled_form.name = name
             filled_form.customer_name = customer_name
-            filled_form.data = data
             filled_form.company = company
             filled_form.address = address
 
         db.session.add(filled_form)
         FilledFormModified.update_or_create(
             user=user,
-            filled_form=filled_form)
+            filled_form=filled_form,
+            request_form=request_form,
+            form_data=form_data)
         return filled_form
+
+
+class FilledFormData(db.Model):
+    """Table of json-data for forms."""
+    # __bind_key__ = 'forms'
+    __tablename__ = 'filled_form_data'
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    request_form = db.Column(db.JSON)  # All data from the users-form
+    form_data = db.Column(db.JSON)  # All data actually used to fill the pdf.
 
 
 class FilledFormModified(db.Model):
@@ -368,9 +383,14 @@ class FilledFormModified(db.Model):
     filled_form = db.relationship(
         FilledForm, primaryjoin='FilledFormModified.filled_form_id==FilledForm.id')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    filled_form_data_id = db.Column(
+        db.Integer, db.ForeignKey(FilledFormData.id))
+    filled_form_data = db.relationship(
+        FilledFormData, primaryjoin='FilledFormModified.filled_form_data_id==FilledFormData.id')  # noqa
+    info = {'bind_key': 'forms'}
 
     @classmethod
-    def update_or_create(cls, user, filled_form):
+    def update_or_create(cls, user, filled_form, request_form, form_data):
         """
         Create modification-date if last update was either not made by
         current user, or within the last 5 minutes."""
@@ -391,8 +411,13 @@ class FilledFormModified(db.Model):
         if not last_modified:
             last_modified = FilledFormModified(
                 user=user,
-                filled_form=filled_form,
+                filled_form=filled_form
             )
+        if not last_modified.filled_form_data:
+            last_modified.filled_form_data = FilledFormData()
+            db.session.add(last_modified.filled_form_data)
+        last_modified.filled_form_data.request_form = request_form
+        last_modified.filled_form_data.form_data = form_data
         db.session.add(last_modified)
         return last_modified
 
@@ -401,9 +426,9 @@ class FilledFormModified(db.Model):
         """Return object data in easily serializeable format"""
 
         dictionary = {
-            'customer': self.filled_form.customer_name,
-            'name': self.filled_form.name,
-            'address': self.filled_form.address.line1,
-            'company_name': self.company.name,
+            'id': self.id,
+            'date': self.date
         }
+        if self.filled_form:
+            dictionary['request_form'] = self.filled_form_data.request_form
         return dictionary
