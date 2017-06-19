@@ -1,9 +1,9 @@
 <header>
-    <a href="{{url_for('view_form')}}"><h1>Smartere varmekabel-dokumentasjon</h1></a>
-    <p>Et prosjekt i utvikling. Henter inn og fyller ut dokumentasjon basert på de mest essensielle feltene, så slipper du å skrive inn produkt-data, gjøre utregninger, fylle ut dato osv. Du kan selfølgelig gjøre manuelle endringer i skjemaet i ettertid.</p>
+    <a href="{{url_for('view_form')}}"><h1>VarmeDok</h1></a>
+    <!-- <p>Et prosjekt i utvikling. Henter inn og fyller ut dokumentasjon basert på de mest essensielle feltene, så slipper du å skrive inn produkt-data, gjøre utregninger, fylle ut dato osv. Du kan selfølgelig gjøre manuelle endringer i skjemaet i ettertid.</p> -->
     {% include 'includes/messages.html' %}
     {% if current_user.is_authenticated %}
-      Du er logget inn som <a href="{{url_for('control_panel')}}">{{ current_user.given_name + ' ' + current_user.family_name }}</a>!
+      Hei <a href="{{url_for('control_panel')}}">{{ current_user.given_name + ' ' + current_user.family_name }}</a>!
       <a href="{{ url_for("logout") }}">Logg ut</a>
     {% else %}
       Du er ikke logget inn.

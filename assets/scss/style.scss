@@ -27,4 +27,11 @@ canvas{
     from { -webkit-transform: rotate(0deg); }
     to { -webkit-transform: rotate(360deg); }
 }
+.row-flex{
+  display: flex;
+  justify-content: space-between;
+}
+.pointer{
+  cursor: pointer;
+}
 @import "form";

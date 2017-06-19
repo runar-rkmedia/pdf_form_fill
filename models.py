@@ -2,6 +2,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc, or_, text
+from sqlalchemy.sql.expression import func
 from flask_dance.consumer.backend.sqla import (
     OAuthConsumerMixin,
 )
@@ -48,6 +49,13 @@ class Address(db.Model):
         address = Address.query.filter_by(
             id=address_id
         ).first()
+        try:
+            postnumber = int(postnumber)
+        except TypeError as e:
+            raise ValueError(
+                'Expected postnumber to be an integer, got {}'
+                .format(postnumber))
+
         if not address:
             address = Address(
                 line1=line1,
@@ -56,11 +64,18 @@ class Address(db.Model):
                 postal=postal
             )
         else:
-            address.line1 = line1
-            address.line2 = line2
-            address.postnumber = postnumber
-            address.postal = postal
-            db.session.add(address)
+            if (
+                address.line1 != line1 or
+                address.line2 != line2 or
+                address.postnumber != postnumber or
+                address.postal != postal
+            ):
+                address.line1 = line1
+                address.line2 = line2
+                address.postnumber = postnumber
+                address.postal = postal
+                db.session.add(address)
+
         return address
 
 
@@ -112,9 +127,9 @@ class User(db.Model, UserMixin):
 
     def get_forms(self, limit=10):
         """Return all filled forms created by user."""
-        query = FilledFormModified.query\
-            .filter(FilledFormModified.user == self)\
-            .order_by(desc(FilledFormModified.date))\
+        query = FilledForm\
+            .query\
+            .filter(FilledForm.modifications.any(user=self))\
             .all()
         return query
 
@@ -315,6 +330,7 @@ class ProductSpec(db.Model):
 
 class FilledForm(db.Model):
     """Table of forms filled by users."""
+    __tablename__ = 'filled_form'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     customer_name = db.Column(db.String(250))
@@ -338,6 +354,7 @@ class FilledForm(db.Model):
             address):
         """Update if exists, else create FilledForm."""
         filled_form = None
+        print('form:', filled_form_id)
         if filled_form_id:
             filled_form = FilledForm.query.filter(
                 FilledForm.id == filled_form_id
@@ -363,6 +380,19 @@ class FilledForm(db.Model):
             form_data=form_data)
         return filled_form
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        mod = self.modifications[0]
+
+        dictionary = {
+            'id': self.id,
+            'date': mod.date
+        }
+        dictionary['request_form'] = mod.filled_form_data.request_form
+        dictionary['address_id'] = self.address.id
+        return dictionary
+
 
 class FilledFormData(db.Model):
     """Table of json-data for forms."""
@@ -373,21 +403,30 @@ class FilledFormData(db.Model):
     form_data = db.Column(db.JSON)  # All data actually used to fill the pdf.
 
 
+
+
 class FilledFormModified(db.Model):
     """Table of modification-dated for FilledForm-model."""
+    __tablename__ = 'filled_form_modified'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(
         User, primaryjoin='FilledFormModified.user_id==User.id')
     filled_form_id = db.Column(db.Integer, db.ForeignKey(FilledForm.id))
     filled_form = db.relationship(
-        FilledForm, primaryjoin='FilledFormModified.filled_form_id==FilledForm.id')  # noqa
+        FilledForm,
+        primaryjoin='FilledFormModified.filled_form_id==FilledForm.id',
+        backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
     filled_form_data_id = db.Column(
         db.Integer, db.ForeignKey(FilledFormData.id))
     filled_form_data = db.relationship(
         FilledFormData, primaryjoin='FilledFormModified.filled_form_data_id==FilledFormData.id')  # noqa
     info = {'bind_key': 'forms'}
+
+    __mapper_args__ = {
+        "order_by":date.desc()
+    }
 
     @classmethod
     def update_or_create(cls, user, filled_form, request_form, form_data):
@@ -406,7 +445,7 @@ class FilledFormModified(db.Model):
                         or_(
                             FilledFormModified.user != user,
                             FilledFormModified.date >= (
-                                datetime.utcnow() - timedelta(minutes=30))
+                                datetime.utcnow() - timedelta(seconds=1))
                         )).first()
         if not last_modified:
             last_modified = FilledFormModified(
@@ -426,9 +465,10 @@ class FilledFormModified(db.Model):
         """Return object data in easily serializeable format"""
 
         dictionary = {
-            'id': self.id,
+            'id': self.filled_form.id,
             'date': self.date
         }
         if self.filled_form:
             dictionary['request_form'] = self.filled_form_data.request_form
+            dictionary['address_id'] = self.filled_form.address.id
         return dictionary

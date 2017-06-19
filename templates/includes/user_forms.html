@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<div class="col-xs-12">
+  <h2>Mine varmekabler</h2>
+  <p>Her kan du se en list over alle varmekablene du har lagt inn. Trykk på overskriften for å gjøre endringer.</p>
+  <div class="col-xs-12"></div>
+  <!-- ko foreach: user_forms -->
+  <div class="filled_form panel panel-default">
+    <div class="panel-heading pointer" data-bind="click: $root.edit_form">
+      <div>
+        <h5 class="row-flex">
+          <span data-bind="text: request_form.anleggs_adresse"></span>
+          <span data-bind="text: request_form.rom_navn"></span>
+        </h5>
+      </div>
+      <div class="row-flex small">
+        <div data-bind="text: format_date(date)"></div>
+        <div data-bind="text: $root.get_product_by_id(request_form.product_id).effect + 'W'"></div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div data-bind="text: $root.get_product_by_id(request_form.product_id).name"></div>
+    </div>
+  </div>
+  <!-- /ko -->
+</div>
+<div></div>

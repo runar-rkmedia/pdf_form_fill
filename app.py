@@ -362,8 +362,6 @@ def json_products():
 def json_user_forms():
     """Return a json-object of all the users forms."""
     forms = current_user.get_forms()
-    print(forms)
-    print(current_user)
 
     return jsonify([i.serialize for i in forms])
 
@@ -374,6 +372,7 @@ def json_user_forms():
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_fill_document():
     """Return a json-object of all products."""
+    current_user.get_forms()
     error_fields = validate_fields(request.form)
 
     if error_fields:
@@ -386,6 +385,8 @@ def json_fill_document():
     product = Product.get_by_id(product_id)
     manufacturor = product.product_type.manufacturor.name
     dictionary = request.form.copy()
+    from pprint import pprint
+    pprint(request.form)
 
     if product:
         specs = product.get_specs()
@@ -476,7 +477,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    return render_template('form.html')
+    return render_template('main.html')
 
 
 # hook up extensions to app

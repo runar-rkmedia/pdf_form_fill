@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<form id="form" class="" action="nexans.html" method="post" data-bind="submit: post_form">
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+      <div class="panel-heading bg-info" role="tab" id="form-kunde">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form-kunde" aria-expanded="true" aria-controls="collapse-form-kunde">Kundeinformasjon</a>
+        </h4>
+      </div>
+      <div div id="collapse-form-kunde" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form-kunde">
+        <div class="panel-body row">
+          <div class="col-xs-12">
+            <label for="input-anleggs_adresse">Anleggsadresse</label>
+            <input class="form-control" type="text" name="anleggs_adresse" id="input-anleggs_adresse" data-bind="textInput: anleggs_adresse">
+          </div>
+          <div class="col-xs-3 col-sm-2 ">
+            <label for="input-anleggs_postnummer">Postnummer</label>
+            <input class="form-control" type="number" min="0" name="anleggs_postnummer" id="input-anleggs_postnummer" data-bind="textInput: anleggs_postnummer">
+          </div>
+          <div class=" col-xs-7 col-xs-offset-2 col-sm-10 col-sm-offset-0  col-md-offset-0">
+            <label for="input-anleggs_poststed">Poststed</label>
+            <input class="form-control" type="text" name="anleggs_poststed" id="input-anleggs_poststed" data-bind="textInput: anleggs_poststed">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="form_vk">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_vk" aria-expanded="true" aria-controls="collapse-form_vk">Spesifikasjoner varmekabel</a>
+        </h4>
+      </div>
+      <div div id="collapse-form_vk" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form_vk">
+        <div class="panel-body row">
+          <div class="form-group col-xs-12">
+            <fieldset>
+              <legend>Fabrikant</legend>
+              <!-- ko foreach: Products().products -->
+              <label class="radio-inline">
+                <input type="radio" name="manufacturor" data-bind="checked: $root.manufacturor, value: name">
+                <!-- ko text: name  -->
+                <!-- /ko -->
+              </label>
+              <!-- /ko -->
+            </fieldset>
+          </div>
+          <!-- ko with: Products() -->
+          <div class="form-group col-xs-12">
+            <fieldset>
+              <legend>Watt per meter</legend>
+              <!-- ko foreach: spec_groups().watt_per_meter -->
+              <label class="radio-inline">
+                <input type="radio" name="meterEffekt" data-bind="checked: $root.watt_per_meter, value: $data">
+                <!-- ko text: $data + ' W/m' -->
+                <!-- /ko -->
+              </label>
+              <!-- /ko -->
+            </fieldset>
+          </div>
+          <div class="form-group col-xs-12">
+            <select
+              class="form-control"
+              data-bind="options: filtered_products,
+                    optionsText: 'name',
+                    optionsValue: 'id',
+                    value: $root.selected_vk,
+                    optionsCaption: 'Velg en vamekabel her...'"></select>
+          </div>
+          <!-- /ko -->
+          <div class="form-group col-xs-6">
+            <label for="input-rom_navn">Romnavn</label>
+            <input class="form-control" type="text" name="rom_navn" id="input-rom_navn" data-bind="textInput: rom_navn">
+          </div>
+          <div class="form-group col-xs-6">
+            <label for="input-areal">Areal</label>
+            <input class="form-control" type="number" step="0.01" min="0" name="areal" id="input-areal" data-bind="textInput: areal">
+          </div>
+          <div class="form-group col-xs-6">
+            <label for="input-areal">Oppvarmet areal</label>
+            <input class="form-control" type="number" step="0.01" min="0" name="oppvarmet_areal" id="input-oppvarmet_areal" data-bind="textInput: oppvarmet_areal">
+          </div>
+          <div class="form-group col-xs-6">
+            <label for="input-effekt">Effekt</label>
+            <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="textInput: effect">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="form_maalinger">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_maalinger" aria-expanded="true" aria-controls="collapse-form_maalinger">Målinger</a>
+        </h4>
+      </div>
+      <div id="collapse-form_maalinger" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form_maalinger">
+        <div class="panel-body row">
+          <div class="form-group col-xs-4">
+            <label for="input-ohm_a">Før installasjon</label>
+            <input class="form-control" type="number" step="0.01" min="0" name="ohm_a" id="input-ohm_a" data-bind="textInput: ohm_a">
+          </div>
+          <div class="form-group col-xs-4">
+            <label for="input-ohm_b">Før støping</label>
+            <input class="form-control" type="number" step="0.01" min="0" name="ohm_b" id="input-ohm_b" data-bind="textInput: ohm_b">
+          </div>
+          <div class="form-group col-xs-4">
+            <label for="input-ohm_c">Før tilkobling</label>
+            <input class="form-control" type="number" step="0.01" min="0" name="ohm_c" id="input-ohm_c" data-bind="textInput: ohm_c">
+          </div>
+          <fieldset class="col-xs-12">
+            <legend>Isolasjonsmotstand</legend>
+            <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
+            <div class="col-xs-4 col-sm-3 col-md-2">
+              <label class="checkbox-inline">
+                <input type="checkbox" name="mohm_a" value="999" data-bind="checked: mohm_a">
+                Før installasjon
+              </label>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2">
+              <label class="checkbox-inline">
+                <input type="checkbox" name="mohm_b" value="999" data-bind="checked: mohm_b">
+                Før støping
+              </label>
+            </div>
+            <div class="col-xs-4 col-sm-3 col-md-2">
+              <label class="checkbox-inline">
+                <input type="checkbox" name="mohm_c" value="999" data-bind="checked: mohm_c">
+                Før tilkobling
+              </label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, enable: form_changed">
+    <div class="Loading" data-bind="if: loading">
+      <span class="glyphicon glyphicon-refresh spinning"></span>
+      Fyller ut skjema...
+    </div>
+    <div class="file_download" data-bind="if: file_download, enable: loading, css: {
+      'bg-danger': loading(),
+      'bg-info': !loading(),
+    }">
+      <div class="message" data-bind="ifnot: form_changed">Ditt skjema er ferdig utfyllt.</div>
+      <a target="vk_pdf" data-bind="attr: { href: file_download}" title="Utfylt skjema">Klikk her for å laste det ned.</a>
+
+      <p>Hvis du vil gjøre endringer, kan du gjøre det på denne siden, eller i det nedlastede skjemaet.</p>
+
+      <p class="bg-danger">MERK: Filen ovenfor er bare tilgjengelig i en kort periode.
+        <br>Hvis du vil sende filen til noen, anbefales det å laste den ned først.</p>
+      <p class="bg-danger" id="warning"></p>
+    </div>
+  </div>
+</form>

@@ -221,14 +221,19 @@ $(function() {
       self.areal(f.areal);
       self.oppvarmet_areal(f.oppvarmet_areal);
       self.selected_vk(f.product_id);
+      self.address_id(e.address_id);
+      self.filled_form_id(e.id);
       self.ohm_a(f.ohm_a);
       self.ohm_b(f.ohm_b);
       self.ohm_c(f.ohm_c);
       self.mohm_a(f.mohm_a);
       self.mohm_b(f.ohm_b);
       self.mohm_c(f.ohm_c);
+      $('.nav-tabs a[href="#main_form"]').tab('show');
+      console.log('adress' + e.address_id)
+      console.log('filled_form_id' + e.id)
+      console.log(f);
     };
-    $('#collapse-form-forms').collapse();
     self.post_form = function(e, t) {
       self.form_args($('#form').serialize());
       if (self.form_changed()) {
