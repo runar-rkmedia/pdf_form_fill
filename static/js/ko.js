@@ -176,7 +176,7 @@ $(function() {
 
     self.rom_navn = ko.observable().extend({
       required: true,
-      minLength: 4,
+      minLength: 2,
     });
     self.areal = ko.observable().extend({
       number: true,
@@ -231,7 +231,7 @@ $(function() {
     self.prefill = false;
 
 
-        self.validation_errors = ko.validation.group(self);
+    self.validation_errors = ko.validation.group(self);
 
 
     if (self.prefill) {
@@ -310,6 +310,8 @@ $(function() {
       self.mohm_a(f.mohm_a);
       self.mohm_b(f.ohm_b);
       self.mohm_c(f.ohm_c);
+      self.last_sent_args($('#form').serialize());
+      self.form_args($('#form').serialize());
       $('.nav-tabs a[href="#main_form"]').tab('show');
     };
     self.post_form = function(e, t) {
@@ -337,44 +339,53 @@ $(function() {
             'product_id': self.selected_vk(),
             'address_id': self.address_id(),
             'filled_form_id': self.filled_form_id()
-
           })
           .done(function(result) {
-            self.loading(false);
-            self.last_sent_args(self.form_args());
-            if (result.error_fields) {
-              self.error_fields(result.error_fields);
-            }
-            if (result.file_download) {
-              self.file_download(result.file_download);
-              self.address_id(result.address_id);
-              self.filled_form_id(result.filled_form_id);
-            }
-            if (result.error_message) {
-              self.error_message(result.error_message);
-            }
+            parse_form_download(result);
           });
+      } else {
+        self.loading(true);
+        $.get("/json/heating/", {
+          'filled_form_id': self.filled_form_id()
+        }).done(function(result) {
+          parse_form_download(result);
+        });
       }
     };
 
-    self.loading = ko.observable(false); // true to show 'Loading...'
-    self.suggestion = ko.observable(""); // the selected suggestion
-    self.suggestions = ko.observableArray([]); // the selections available
-    self.query = function(term) { // called to query for the data and to update the suggestions
-      self.loading(true);
-      service.query(term).then(function(data) {
-        self.loading(false);
-        self.suggestions(data);
-      });
-    };
+    function parse_form_download(result) {
+      console.log(result);
+      self.loading(false);
+      self.last_sent_args(self.form_args());
+      if (result.error_fields) {
+        self.error_fields(result.error_fields);
+      }
+      if (result.file_download) {
+        self.file_download(result.file_download);
+        self.address_id(result.address_id);
+        self.filled_form_id(result.filled_form_id);
+      }
+      if (result.error_message) {
+        self.error_message(result.error_message);
+      }
   }
 
-  // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
-  //   AppViewModel.suggestions([]);
-  // });
-  var myApp = new AppViewModel();
-  myApp.init();
-  ko.applyBindings(myApp);
+  self.loading = ko.observable(false); // true to show 'Loading...'
+  self.suggestion = ko.observable(""); // the selected suggestion
+  self.suggestions = ko.observableArray([]); // the selections available
+  self.query = function(term) { // called to query for the data and to update the suggestions
+    self.loading(true);
+    service.query(term).then(function(data) {
+      self.loading(false);
+      self.suggestions(data);
+    });
+  };
+}
+
+// AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
+//   AppViewModel.suggestions([]);
+// });
+var myApp = new AppViewModel(); myApp.init(); ko.applyBindings(myApp);
 });
 
 self.format_date = function(dateString) {

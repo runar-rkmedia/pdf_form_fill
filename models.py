@@ -481,7 +481,7 @@ class FilledFormModified(db.Model):
             .first()
 
         dictionary = {
-            'id': self.filled_form.id,
+            'id': self.id,
             'date': self.date
         }
         if creation_time:

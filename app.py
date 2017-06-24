@@ -371,104 +371,133 @@ def json_user_forms():
 
 
 
-@app.route('/json/heating/', methods=['POST'])
+@app.route('/json/heating/', methods=['POST','GET'])
 @limiter.limit("1/second", error_message='Èn per sekund')
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_fill_document():
     """Return a json-object of all products."""
-    current_user.get_forms()
-    error_fields = validate_fields(request.form)
+    if request.method == 'GET':
+        filled_form_id = request.args.get('filled_form_id')
+        filled_form = FilledFormModified\
+            .query\
+            .filter(
+                FilledFormModified.id==filled_form_id
+            )\
+            .first()
+        # form = FormField(manufacturor)
+        # form.set_fields_from_dict(dictionary)
+        form_data = filled_form.filled_form_data.form_data
+        request_form = filled_form.filled_form_data.request_form
+        product = Product\
+            .query\
+            .filter(
+                Product.id == request_form['product_id']
+            ).first()
+        manufacturor = product.product_type.manufacturor.name
+        form = FormField(manufacturor)
+        form.fields = form_data
 
-    if error_fields:
+        filename = request_form.get('anleggs_adresse', 'output') + '.pdf'
+        output_dir = user_file_path(create_random_dir=True)
+        output_pdf = os.path.join(output_dir, filename)
+        form.create_filled_pdf(output_pdf)
         return jsonify(
-            error_fields=error_fields,
-            error_message='Noen felt var ikke tilstrekkelig utfylt',
-            status=400
+            file_download=os.path.relpath(output_pdf),
         )
-    product_id = request.form['product_id']
-    product = Product.get_by_id(product_id)
-    manufacturor = product.product_type.manufacturor.name
-    dictionary = request.form.copy()
-    from pprint import pprint
-    pprint(request.form)
+    if request.method == 'POST':
+        current_user.get_forms()
+        error_fields = validate_fields(request.form)
 
-    if product:
-        specs = product.get_specs()
-        dictionary = set_fields_from_product(
-            dictionary, product, specs)
-    else:
+        if error_fields:
+            return jsonify(
+                error_fields=error_fields,
+                error_message='Noen felt var ikke tilstrekkelig utfylt',
+                status=400
+            )
+        product_id = request.form['product_id']
+        product = Product.get_by_id(product_id)
+        manufacturor = product.product_type.manufacturor.name
+        dictionary = request.form.copy()
+        from pprint import pprint
+        pprint(request.form)
+
+        if product:
+            specs = product.get_specs()
+            dictionary = set_fields_from_product(
+                dictionary, product, specs)
+        else:
+            return jsonify(
+                error_message=(
+                    "Fant ingen varmekabler med denne id '{}'. "
+                    "Om dette er en feil, bør dette rapporteres."
+                ).format(manufacturor),
+                status=400)
+        # TODO: Fix this.
+        if dictionary.get('mohm_a') == 'true':
+            dictionary['mohm_a'] = 999
+        else:
+            dictionary['mohm_a'] = ''
+        if dictionary.get('mohm_b') == 'true':
+            dictionary['mohm_b'] = 999
+        else:
+            dictionary['mohm_b'] = ''
+        if dictionary.get('mohm_c') == 'true':
+            dictionary['mohm_c'] = 999
+        else:
+            dictionary['mohm_c'] = ''
+        if current_user.is_authenticated:
+            if current_user.company:
+                dictionary['firma_navn'] = current_user.company.name
+                dictionary['firma_orgnr'] = current_user.company.orgnumber
+                dictionary['firma_adresse1'] = current_user.company.address.line1
+                dictionary['firma_adresse2'] = current_user.company.address.line2
+                dictionary['firma_poststed'] = current_user.company.address.postal
+                dictionary[
+                    'firma_postnummer'] = current_user.company.address.postnumber
+        form = FormField(manufacturor)
+        form.set_fields_from_dict(dictionary)
+
+        filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
+        output_dir = user_file_path(create_random_dir=True)
+        output_pdf = os.path.join(output_dir, filename)
+        complete_dictionary = form.create_filled_pdf(output_pdf)
+        address = Address.update_or_create(
+            address_id=dictionary.get('address_id'),
+            line1=dictionary.get('anleggs_adresse'),
+            line2=None,
+            postnumber=dictionary.get('anleggs_postnummer'),
+            postal=dictionary.get('anleggs_poststed')
+        )
+        save_form = FilledForm.update_or_create(
+            filled_form_id=dictionary.get('filled_form_id'),
+            user=current_user,
+            name=dictionary.get('rom_navn'),
+            customer_name=dictionary.get('kunde_navn'),
+            request_form=request.form,
+            form_data=complete_dictionary,
+            company=current_user.company,
+            address=address
+        )
+        db.session.commit()
+
+        if current_user.is_authenticated and current_user.signature:
+
+            image = os.path.join(output_dir, 'sign.png')
+            with open(image, 'wb') as f:
+                f.write(current_user.signature)
+            stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
+            os.remove(image)
+            os.remove(output_pdf)
+            # output_pdf = stamped_pdf
+            os.rename(stamped_pdf, output_pdf)
+
         return jsonify(
-            error_message=(
-                "Fant ingen varmekabler med denne id '{}'. "
-                "Om dette er en feil, bør dette rapporteres."
-            ).format(manufacturor),
-            status=400)
-    # TODO: Fix this.
-    if dictionary.get('mohm_a') == 'true':
-        dictionary['mohm_a'] = 999
-    else:
-        dictionary['mohm_a'] = ''
-    if dictionary.get('mohm_b') == 'true':
-        dictionary['mohm_b'] = 999
-    else:
-        dictionary['mohm_b'] = ''
-    if dictionary.get('mohm_c') == 'true':
-        dictionary['mohm_c'] = 999
-    else:
-        dictionary['mohm_c'] = ''
-    if current_user.is_authenticated:
-        if current_user.company:
-            dictionary['firma_navn'] = current_user.company.name
-            dictionary['firma_orgnr'] = current_user.company.orgnumber
-            dictionary['firma_adresse1'] = current_user.company.address.line1
-            dictionary['firma_adresse2'] = current_user.company.address.line2
-            dictionary['firma_poststed'] = current_user.company.address.postal
-            dictionary[
-                'firma_postnummer'] = current_user.company.address.postnumber
-    form = FormField(manufacturor)
-    form.set_fields_from_dict(dictionary)
-
-    filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
-    output_dir = user_file_path(create_random_dir=True)
-    output_pdf = os.path.join(output_dir, filename)
-    complete_dictionary = form.create_filled_pdf(output_pdf)
-    address = Address.update_or_create(
-        address_id=dictionary.get('address_id'),
-        line1=dictionary.get('anleggs_adresse'),
-        line2=None,
-        postnumber=dictionary.get('anleggs_postnummer'),
-        postal=dictionary.get('anleggs_poststed')
-    )
-    save_form = FilledForm.update_or_create(
-        filled_form_id=dictionary.get('filled_form_id'),
-        user=current_user,
-        name=dictionary.get('rom_navn'),
-        customer_name=dictionary.get('kunde_navn'),
-        request_form=request.form,
-        form_data=complete_dictionary,
-        company=current_user.company,
-        address=address
-    )
-    db.session.commit()
-
-    if current_user.is_authenticated and current_user.signature:
-
-        image = os.path.join(output_dir, 'sign.png')
-        with open(image, 'wb') as f:
-            f.write(current_user.signature)
-        stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
-        os.remove(image)
-        os.remove(output_pdf)
-        # output_pdf = stamped_pdf
-        os.rename(stamped_pdf, output_pdf)
-
-    return jsonify(
-        file_download=os.path.relpath(output_pdf),
-        status=200,
-        filled_form_id=save_form.id,
-        address_id=address.id,
-    )
+            file_download=os.path.relpath(output_pdf),
+            status=200,
+            filled_form_id=save_form.id,
+            address_id=address.id,
+        )
 
 
 @app.route('/')
