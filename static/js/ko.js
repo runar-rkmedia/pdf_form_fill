@@ -35,7 +35,6 @@ $(function() {
           }
         }
       }
-      console.log(r);
       return r;
     }
 
@@ -70,8 +69,8 @@ $(function() {
         }
         return !(f_e || f_m || f_w);
       }).sort(function(a, b) {
-          return a.effect - b.effect;
-        });
+        return a.effect - b.effect;
+      });
     });
 
     // self.filtered_products_effect = ko.computed(function() {
@@ -128,22 +127,84 @@ $(function() {
 
     var self = this;
 
+    ko.validation.init({
+      decorateInputElement: true,
+      errorElementClass: 'has-error has-feedback',
+      // successElementClass: 'has-feedback has-success',
+          insertMessages: true,
+    decorateElement: true,
+    // errorElementClass: 'error',
+    errorMessageClass: 'bg-danger'
+    });
 
-    self.anleggs_adresse = ko.observable();
-    self.anleggs_poststed = ko.observable();
-    self.anleggs_postnummer = ko.observable();
+    // Add bootstrap-validation-css to parent of field
+    var init = ko.bindingHandlers['validationCore'].init;
+    ko.bindingHandlers['validationCore'].init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+      init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+      var config = ko.validation.utils.getConfigOptions(element);
+      // if requested, add binding to decorate element
+      if (config.decorateInputElement && ko.validation.utils.isValidatable(valueAccessor())) {
+        var parent = $(element).parent();
+        if (parent.length) {
+          ko.applyBindingsToNode(parent[0], {
+            validationElement: valueAccessor()
+          });
+        }
+      }
+    };
+
+
+    self.anleggs_adresse = ko.observable().extend({
+      required: true,
+      minLength: 3,
+    });
+    self.anleggs_poststed = ko.observable().extend({
+      required: true,
+      minLength: 3,
+    });
+    self.anleggs_postnummer = ko.observable().extend({
+      required: true,
+      minLength: 4,
+      number: true,
+      min: 0,
+      max: 9999,
+    });
 
     self.manufacturor = ko.observable();
     self.watt_per_meter = ko.observable();
 
-    self.rom_navn = ko.observable();
-    self.areal = ko.observable();
-    self.oppvarmet_areal = ko.observable();
-    self.effect = ko.observable();
+    self.rom_navn = ko.observable().extend({
+      required: true,
+      minLength: 4,
+    });
+    self.areal = ko.observable().extend({
+      number: true,
+      min: 0.1
+    });
+    self.oppvarmet_areal = ko.observable().extend({
+      required: true,
+      number: true,
+      min: 0.1
+    });
+    self.effect = ko.observable().extend({
+      number: true,
+    });
 
-    self.ohm_a = ko.observable();
-    self.ohm_b = ko.observable();
-    self.ohm_c = ko.observable();
+    self.ohm_a = ko.observable().extend({
+      number: true,
+      min: 0,
+      max: 1000,
+    });
+    self.ohm_b = ko.observable().extend({
+      number: true,
+      min: 0,
+      max: 1000,
+    });
+    self.ohm_c = ko.observable().extend({
+      number: true,
+      min: 0,
+      max: 1000,
+    });
 
     self.mohm_a = ko.observable();
     self.mohm_b = ko.observable();
@@ -215,7 +276,6 @@ $(function() {
 
     function get_user_forms() {
       $.get("/forms.json", {}).done(function(result) {
-        console.log(result);
         self.user_forms(result);
       });
     }
@@ -246,9 +306,6 @@ $(function() {
       self.mohm_b(f.ohm_b);
       self.mohm_c(f.ohm_c);
       $('.nav-tabs a[href="#main_form"]').tab('show');
-      console.log('adress' + e.address_id)
-      console.log('filled_form_id' + e.id)
-      console.log(f);
     };
     self.post_form = function(e, t) {
       self.form_args($('#form').serialize());
@@ -336,3 +393,9 @@ function pad(n, width, z) {
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
+
+$(function () {
+  $('input[type=tel]').on('input', function (e) {
+    this.value=this.value.replace(/\D/g,'');
+  })
+})
