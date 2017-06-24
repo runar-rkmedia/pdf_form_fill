@@ -362,7 +362,6 @@ class FilledForm(db.Model):
             address):
         """Update if exists, else create FilledForm."""
         filled_form = None
-        print('form:', filled_form_id)
         if filled_form_id:
             filled_form = FilledForm.query.filter(
                 FilledForm.id == filled_form_id
@@ -472,10 +471,21 @@ class FilledFormModified(db.Model):
     def serialize(self):
         """Return object data in easily serializeable format"""
 
+        creation_time = db.session\
+            .query(
+                FilledFormModified.date
+            )\
+            .filter(
+                FilledFormModified.filled_form_id == self.filled_form_id)\
+            .order_by(FilledFormModified.date)\
+            .first()
+
         dictionary = {
             'id': self.filled_form.id,
             'date': self.date
         }
+        if creation_time:
+            dictionary['creation_time'] = creation_time
         if self.filled_form:
             dictionary['request_form'] = self.filled_form_data.request_form
             dictionary['address_id'] = self.filled_form.address.id

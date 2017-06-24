@@ -13,7 +13,10 @@
         </h5>
       </div>
       <div class="row-flex small">
-        <div data-bind="text: format_date(date)"></div>
+        <div>
+          <span data-bind="text: 'Opprettet ' +  format_date(creation_time)"></span>
+          <span data-bind="text: ', sist endret: ' + format_date(date)"></span>
+        </div>
         <div data-bind="text: $root.get_product_by_id(request_form.product_id).effect + 'W'"></div>
       </div>
     </div>

@@ -364,8 +364,11 @@ def json_products():
 def json_user_forms():
     """Return a json-object of all the users forms."""
     forms = current_user.get_forms()
+    if forms:
+        return jsonify([i.serialize for i in forms])
+    else:
+        return jsonify({})
 
-    return jsonify([i.serialize for i in forms])
 
 
 @app.route('/json/heating/', methods=['POST'])
