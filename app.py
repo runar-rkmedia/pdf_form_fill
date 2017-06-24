@@ -433,8 +433,8 @@ def json_fill_document():
             .first()
         # form = FormField(manufacturor)
         # form.set_fields_from_dict(dictionary)
-        form_data = filled_form_modified.filled_form_data.form_data
-        request_form = filled_form_modified.filled_form_data.request_form
+        form_data = filled_form_modified.form_data
+        request_form = filled_form_modified.request_form
         product = Product\
             .query\
             .filter(

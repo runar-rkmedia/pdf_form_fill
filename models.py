@@ -411,18 +411,9 @@ class FilledForm(db.Model):
             'id': self.id,
             'date': mod.date
         }
-        dictionary['request_form'] = mod.filled_form_data.request_form
+        dictionary['request_form'] = mod.request_form
         dictionary['address_id'] = self.address.id
         return dictionary
-
-
-class FilledFormData(db.Model):
-    """Table of json-data for forms."""
-    # __bind_key__ = 'forms'
-    __tablename__ = 'filled_form_data'
-    id = db.Column(db.Integer, primary_key=True, unique=True)
-    request_form = db.Column(db.JSON)  # All data from the users-form
-    form_data = db.Column(db.JSON)  # All data actually used to fill the pdf.
 
 
 
@@ -440,10 +431,8 @@ class FilledFormModified(db.Model):
         primaryjoin='FilledFormModified.filled_form_id==FilledForm.id',
         backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    filled_form_data_id = db.Column(
-        db.Integer, db.ForeignKey(FilledFormData.id))
-    filled_form_data = db.relationship(
-        FilledFormData, primaryjoin='FilledFormModified.filled_form_data_id==FilledFormData.id')  # noqa
+    request_form = db.Column(db.JSON)  # All data from the users-form
+    form_data = db.Column(db.JSON)  # All data actually used to fill the pdf.
     info = {'bind_key': 'forms'}
 
     __mapper_args__ = {
@@ -474,11 +463,8 @@ class FilledFormModified(db.Model):
                 user=user,
                 filled_form=filled_form
             )
-        if not last_modified.filled_form_data:
-            last_modified.filled_form_data = FilledFormData()
-            db.session.add(last_modified.filled_form_data)
-        last_modified.filled_form_data.request_form = request_form
-        last_modified.filled_form_data.form_data = form_data
+        last_modified.request_form = request_form
+        last_modified.form_data = form_data
         db.session.add(last_modified)
         return last_modified
 
@@ -502,6 +488,6 @@ class FilledFormModified(db.Model):
         if creation_time:
             dictionary['creation_time'] = creation_time
         if self.filled_form:
-            dictionary['request_form'] = self.filled_form_data.request_form
+            dictionary['request_form'] = self.request_form
             dictionary['address_id'] = self.filled_form.address.id
         return dictionary
