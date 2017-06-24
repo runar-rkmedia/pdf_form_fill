@@ -51,6 +51,18 @@ translator = {
         '{}',
         lambda x: (currentDate(),)
     ],
+    'mohm_a': [
+        '{}',
+        lambda x: ('999' if x['mohm_a'] == 'true' else '',)
+    ],
+    'mohm_b': [
+        '{}',
+        lambda x: ('999' if x['mohm_b'] == 'true' else '',)
+    ],
+    'mohm_c': [
+        '{}',
+        lambda x: ('999' if x['mohm_c'] == 'true' else '',)
+    ],
 
 }
 
