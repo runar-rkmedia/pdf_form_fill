@@ -332,7 +332,7 @@ $(function() {
         self.validation_errors.showAllMessages();
         return false;
       }
-      if (self.form_changed() && self.filled_form_modified_id()) {
+      if (self.form_changed() || !self.filled_form_modified_id()) {
         // self.file_download(false);
         self.loading(true);
         $.post("/json/heating/", {
