@@ -48,3 +48,14 @@
           label {
             font-size: 12px;   }
 }
+
+input[type=radio] {
+  margin: 0; }
+
+  .wrap {
+    display: flex;
+    justify-content: space-between; }
+
+    .radio-Wm {
+      min-width: 65px;
+      display: inline; }

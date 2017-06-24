@@ -35,6 +35,7 @@ $(function() {
           }
         }
       }
+      console.log(r);
       return r;
     }
 
@@ -68,8 +69,23 @@ $(function() {
           }
         }
         return !(f_e || f_m || f_w);
-      });
+      }).sort(function(a, b) {
+          return a.effect - b.effect;
+        });
     });
+
+    // self.filtered_products_effect = ko.computed(function() {
+    //   var effects = [];
+    //   var fp = self.flat_products();
+    //   console.log('....');
+    //   for (var i = 0; i < fp.length; i++) {
+    //     var this_fp = fp[i].effect;
+    //     effects.push(this_fp);
+    //   }
+    //   return ko.utils.arrayGetDistinctValues(effects).sort(function(a, b) {
+    //     return a - b;
+    //   });
+    // });
 
 
     self.spec_groups = ko.computed(function() {
@@ -302,7 +318,7 @@ self.format_date = function(dateString) {
   var m_names = new Array("januar", "februar", "mars",
     "april", "mai", "juni", "juli", "august", "september",
     "october", "november", "december");
-//
+  //
   // var d = new Date(dateString).toISOString()
   var d = new Date(dateString);
   var curr_day = d.getDay();
@@ -312,7 +328,7 @@ self.format_date = function(dateString) {
   var curr_hour = d.getHours();
   var curr_minute = d.getMinutes();
   return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
-  pad(curr_hour, 2) + ':' + pad(curr_minute, 2)
+    pad(curr_hour, 2) + ':' + pad(curr_minute, 2)
 }
 
 function pad(n, width, z) {
