@@ -365,13 +365,46 @@ def json_products():
 @login_required
 def json_user_forms():
     """Return a json-object of all the users forms."""
-    forms = current_user.get_forms()
+    request_type = request.args.get('type')
+    page = request.args.get('page', 1)
+    if request_type == 'company':
+        forms, pages = current_user.company.get_forms(page=page)
+    else:
+        forms, pages = current_user.get_forms(page=page)
     if forms:
-        return jsonify([i.serialize for i in forms])
+        result = {}
+        result['forms'] = [i.serialize for i in forms]
+        result['pages'] = pages
+        return jsonify(result)
     else:
         return jsonify({})
 
+def create_form(manufacturor, dictionary=None,
+                request_form=None, form_data=None, user=current_user):
+    """Create a form."""
+    form = FormField(manufacturor)
+    if form_data:
+        form.fields = form_data
+    elif dictionary:
+        form.set_fields_from_dict(dictionary)
 
+    filename = request_form.get('anleggs_adresse', 'output') + '.pdf'
+    output_dir = user_file_path(create_random_dir=True)
+    output_pdf = os.path.join(output_dir, filename)
+    dictionary = form.create_filled_pdf(output_pdf)
+    stamp_with_user(user, output_pdf, form)
+    return output_pdf, dictionary, form
+
+def stamp_with_user(user, output_pdf, form):
+    """Description."""
+    if user.signature:
+        image = os.path.join(os.path.split(output_pdf)[0], 'sign.png')
+        with open(image, 'wb') as f:
+            f.write(user.signature)
+        stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
+        os.remove(image)
+        os.remove(output_pdf)
+        os.rename(stamped_pdf, output_pdf)
 
 @app.route('/json/heating/', methods=['POST','GET'])
 @limiter.limit("1/second", error_message='Èn per sekund')
@@ -380,30 +413,29 @@ def json_user_forms():
 def json_fill_document():
     """Return a json-object of all products."""
     if request.method == 'GET':
-        filled_form_id = request.args.get('filled_form_id')
-        filled_form = FilledFormModified\
+        filled_form_modified_id = request.args.get('filled_form_modified_id')
+        filled_form_modified = FilledFormModified\
             .query\
             .filter(
-                FilledFormModified.id==filled_form_id
+                FilledFormModified.id==filled_form_modified_id
             )\
             .first()
         # form = FormField(manufacturor)
         # form.set_fields_from_dict(dictionary)
-        form_data = filled_form.filled_form_data.form_data
-        request_form = filled_form.filled_form_data.request_form
+        form_data = filled_form_modified.filled_form_data.form_data
+        request_form = filled_form_modified.filled_form_data.request_form
         product = Product\
             .query\
             .filter(
                 Product.id == request_form['product_id']
             ).first()
         manufacturor = product.product_type.manufacturor.name
-        form = FormField(manufacturor)
-        form.fields = form_data
-
-        filename = request_form.get('anleggs_adresse', 'output') + '.pdf'
-        output_dir = user_file_path(create_random_dir=True)
-        output_pdf = os.path.join(output_dir, filename)
-        form.create_filled_pdf(output_pdf)
+        output_pdf, dictionary, form = create_form(
+            manufacturor=manufacturor,
+            form_data=form_data,
+            request_form=request_form,
+            user=filled_form_modified.user
+            )
         return jsonify(
             file_download=os.path.relpath(output_pdf),
         )
@@ -421,8 +453,6 @@ def json_fill_document():
         product = Product.get_by_id(product_id)
         manufacturor = product.product_type.manufacturor.name
         dictionary = request.form.copy()
-        from pprint import pprint
-        pprint(request.form)
 
         if product:
             specs = product.get_specs()
@@ -457,13 +487,12 @@ def json_fill_document():
                 dictionary['firma_poststed'] = current_user.company.address.postal
                 dictionary[
                     'firma_postnummer'] = current_user.company.address.postnumber
-        form = FormField(manufacturor)
-        form.set_fields_from_dict(dictionary)
 
-        filename = dictionary.get('anleggs_adresse', 'output') + '.pdf'
-        output_dir = user_file_path(create_random_dir=True)
-        output_pdf = os.path.join(output_dir, filename)
-        complete_dictionary = form.create_filled_pdf(output_pdf)
+        output_pdf, complete_dictionary, form = create_form(
+            manufacturor=manufacturor,
+            dictionary=dictionary,
+            request_form=request.form
+            )
         address = Address.update_or_create(
             address_id=dictionary.get('address_id'),
             line1=dictionary.get('anleggs_adresse'),
@@ -482,17 +511,6 @@ def json_fill_document():
             address=address
         )
         db.session.commit()
-
-        if current_user.is_authenticated and current_user.signature:
-
-            image = os.path.join(output_dir, 'sign.png')
-            with open(image, 'wb') as f:
-                f.write(current_user.signature)
-            stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
-            os.remove(image)
-            os.remove(output_pdf)
-            # output_pdf = stamped_pdf
-            os.rename(stamped_pdf, output_pdf)
 
         return jsonify(
             file_download=os.path.relpath(output_pdf),

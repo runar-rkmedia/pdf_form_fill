@@ -224,9 +224,10 @@ $(function() {
     self.forced_selected_vk = ko.observable();
 
     self.address_id = ko.observable();
-    self.filled_form_id = ko.observable();
+    self.filled_form_modified_id = ko.observable();
 
     self.user_forms = ko.observableArray();
+    self.company_forms = ko.observableArray();
 
     self.prefill = false;
 
@@ -271,6 +272,7 @@ $(function() {
         var f = self.Products().flat_products();
         if (f.length > 0) {
           get_user_forms();
+          get_company_forms();
         }
       } catch (e) {
 
@@ -281,7 +283,17 @@ $(function() {
 
     function get_user_forms() {
       $.get("/forms.json", {}).done(function(result) {
+        console.log(result);
         self.user_forms(result);
+      });
+    }
+
+    function get_company_forms() {
+      $.get("/forms.json", {
+        type: 'company'
+      }).done(function(result) {
+        console.log(result);
+        self.company_forms(result);
       });
     }
     self.get_product_by_id = function(id) {
@@ -294,7 +306,7 @@ $(function() {
     };
     self.edit_form = function(e) {
       var f = e.request_form;
-      self.filled_form_id(e.id);
+      self.filled_form_modified_id(e.id);
       self.anleggs_adresse(f.anleggs_adresse);
       self.anleggs_postnummer(f.anleggs_postnummer);
       self.anleggs_poststed(f.anleggs_poststed);
@@ -303,7 +315,7 @@ $(function() {
       self.oppvarmet_areal(f.oppvarmet_areal);
       self.selected_vk(f.product_id);
       self.address_id(e.address_id);
-      self.filled_form_id(e.id);
+      self.filled_form_modified_id(e.id);
       self.ohm_a(f.ohm_a);
       self.ohm_b(f.ohm_b);
       self.ohm_c(f.ohm_c);
@@ -320,7 +332,7 @@ $(function() {
         self.validation_errors.showAllMessages();
         return false;
       }
-      if (self.form_changed()) {
+      if (self.form_changed() && self.filled_form_modified_id()) {
         // self.file_download(false);
         self.loading(true);
         $.post("/json/heating/", {
@@ -338,15 +350,16 @@ $(function() {
             'ohm_c': self.ohm_c(),
             'product_id': self.selected_vk(),
             'address_id': self.address_id(),
-            'filled_form_id': self.filled_form_id()
+            'filled_form_modified_id': self.filled_form_modified_id()
           })
           .done(function(result) {
             parse_form_download(result);
           });
       } else {
+        console.log(self.form_changed());
         self.loading(true);
         $.get("/json/heating/", {
-          'filled_form_id': self.filled_form_id()
+          'filled_form_modified_id': self.filled_form_modified_id()
         }).done(function(result) {
           parse_form_download(result);
         });
@@ -362,30 +375,36 @@ $(function() {
       }
       if (result.file_download) {
         self.file_download(result.file_download);
-        self.address_id(result.address_id);
-        self.filled_form_id(result.filled_form_id);
+        if (result.address_id) {
+          self.address_id(result.address_id);
+        }
+        if (result.filled_form_modified_id) {
+          self.filled_form_modified_id(result.filled_form_modified_id);
+        }
       }
       if (result.error_message) {
         self.error_message(result.error_message);
       }
+    }
+
+    self.loading = ko.observable(false); // true to show 'Loading...'
+    self.suggestion = ko.observable(""); // the selected suggestion
+    self.suggestions = ko.observableArray([]); // the selections available
+    self.query = function(term) { // called to query for the data and to update the suggestions
+      self.loading(true);
+      service.query(term).then(function(data) {
+        self.loading(false);
+        self.suggestions(data);
+      });
+    };
   }
 
-  self.loading = ko.observable(false); // true to show 'Loading...'
-  self.suggestion = ko.observable(""); // the selected suggestion
-  self.suggestions = ko.observableArray([]); // the selections available
-  self.query = function(term) { // called to query for the data and to update the suggestions
-    self.loading(true);
-    service.query(term).then(function(data) {
-      self.loading(false);
-      self.suggestions(data);
-    });
-  };
-}
-
-// AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
-//   AppViewModel.suggestions([]);
-// });
-var myApp = new AppViewModel(); myApp.init(); ko.applyBindings(myApp);
+  // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
+  //   AppViewModel.suggestions([]);
+  // });
+  var myApp = new AppViewModel();
+  myApp.init();
+  ko.applyBindings(myApp);
 });
 
 self.format_date = function(dateString) {

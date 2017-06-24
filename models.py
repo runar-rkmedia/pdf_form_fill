@@ -15,6 +15,8 @@ from field_dicts.helpers import id_generator
 from datetime import datetime, timedelta
 db = SQLAlchemy()
 
+PER_PAGE = 5
+
 
 class ContactType(enum.Enum):
     """Enumeration for types of contactfields."""
@@ -96,13 +98,22 @@ class Company(db.Model):
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
 
-    def get_forms(self, limit=10):
+    def get_forms(self, per_page=PER_PAGE, page=1):
         """Return all filled forms created by user."""
-        query = FilledFormModified.query\
-            .join(FilledForm, aliased=True)\
-            .filter(FilledForm.company == self)\
-            .all()
-        return query
+        query = FilledForm\
+            .query\
+            .filter(FilledForm.company==self)\
+            .paginate(
+                page=page,
+                per_page=per_page,
+                error_out=True
+                )
+
+        modifications = []
+        for i in query.items:
+            modifications.append(i.modifications[0])
+
+        return modifications, query.pages
 
 
 class CompanyContact(db.Model):
@@ -125,7 +136,7 @@ class User(db.Model, UserMixin):
     company = db.relationship(
         Company, primaryjoin='User.company_id==Company.id')
 
-    def get_forms(self, limit=10):
+    def get_forms(self, per_page=PER_PAGE, page=1):
         """Return all filled forms created by user."""
         subq = db.session\
             .query(
@@ -134,12 +145,16 @@ class User(db.Model, UserMixin):
             .filter(FilledFormModified.user==self)\
             .group_by(FilledFormModified.filled_form_id)\
             .subquery()
-        query = db.session\
-            .query(FilledFormModified)\
+        query = FilledFormModified\
+            .query\
             .filter(FilledFormModified.id.in_(subq))\
-            .all()
+            .paginate(
+                page=page,
+                per_page=per_page,
+                error_out=True
+                )
 
-        return query
+        return query.items, query.pages
 
     def addContact(self, contact_type, contact_value):
         """Description."""

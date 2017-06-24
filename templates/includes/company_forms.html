@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <div class="col-xs-12">
-  <h2>Mine varmekabler</h2>
-  <p>Her kan du se en list over alle varmekablene du har lagt inn. Trykk på overskriften for å gjøre endringer.</p>
+  <h2>Våre varmekabler</h2>
+  <p>Her kan du se en list over alle varmekablene som er lagt inn av deg eller dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
   <div class="col-xs-12"></div>
-  <!-- ko if: user_forms() && user_forms().forms -->
-  <!-- ko foreach: user_forms().forms -->
+  <!-- ko if: company_forms() && company_forms().forms -->
+  <!-- ko foreach: company_forms().forms -->
   <div class="filled_form panel panel-default">
     <div class="panel-heading pointer" data-bind="click: $root.edit_form">
       <div>
