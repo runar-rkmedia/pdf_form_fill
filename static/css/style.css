@@ -59,3 +59,6 @@ input[type=radio] {
     .radio-Wm {
       min-width: 65px;
       display: inline; }
+
+      .opaque {
+        opacity: 0.5; }

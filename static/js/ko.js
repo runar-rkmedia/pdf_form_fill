@@ -131,10 +131,10 @@ $(function() {
       decorateInputElement: true,
       errorElementClass: 'has-error has-feedback',
       // successElementClass: 'has-feedback has-success',
-          insertMessages: true,
-    decorateElement: true,
-    // errorElementClass: 'error',
-    errorMessageClass: 'bg-danger'
+      insertMessages: true,
+      decorateElement: true,
+      // errorElementClass: 'error',
+      errorMessageClass: 'bg-danger'
     });
 
     // Add bootstrap-validation-css to parent of field
@@ -154,6 +154,7 @@ $(function() {
     };
 
 
+
     self.anleggs_adresse = ko.observable().extend({
       required: true,
       minLength: 3,
@@ -166,7 +167,7 @@ $(function() {
       required: true,
       minLength: 4,
       number: true,
-      min: 0,
+      min: 1000,
       max: 9999,
     });
 
@@ -228,6 +229,10 @@ $(function() {
     self.user_forms = ko.observableArray();
 
     self.prefill = false;
+
+
+        self.validation_errors = ko.validation.group(self);
+
 
     if (self.prefill) {
       self.anleggs_adresse('Kingsroad 1');
@@ -309,6 +314,10 @@ $(function() {
     };
     self.post_form = function(e, t) {
       self.form_args($('#form').serialize());
+      if (self.validation_errors().length > 0) {
+        self.validation_errors.showAllMessages();
+        return false;
+      }
       if (self.form_changed()) {
         // self.file_download(false);
         self.loading(true);
@@ -394,8 +403,8 @@ function pad(n, width, z) {
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
-$(function () {
-  $('input[type=tel]').on('input', function (e) {
-    this.value=this.value.replace(/\D/g,'');
+$(function() {
+  $('input[type=tel]').on('input', function(e) {
+    this.value = this.value.replace(/\D/g, '');
   })
 })

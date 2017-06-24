@@ -140,7 +140,7 @@
         </div>
       </div>
     </div>
-    <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, enable: form_changed">
+    <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, css: {opaque: validation_errors().length > 0}">
     <div class="Loading" data-bind="if: loading">
       <span class="glyphicon glyphicon-refresh spinning"></span>
       Fyller ut skjema...
