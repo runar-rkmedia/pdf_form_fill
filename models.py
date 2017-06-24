@@ -127,10 +127,18 @@ class User(db.Model, UserMixin):
 
     def get_forms(self, limit=10):
         """Return all filled forms created by user."""
-        query = FilledForm\
-            .query\
-            .filter(FilledForm.modifications.any(user=self))\
+        subq = db.session\
+            .query(
+                func.max(FilledFormModified.id)
+                )\
+            .filter(FilledFormModified.user==self)\
+            .group_by(FilledFormModified.filled_form_id)\
+            .subquery()
+        query = db.session\
+            .query(FilledFormModified)\
+            .filter(FilledFormModified.id.in_(subq))\
             .all()
+
         return query
 
     def addContact(self, contact_type, contact_value):
