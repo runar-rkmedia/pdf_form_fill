@@ -334,7 +334,9 @@ def json_invite():
     """Return all invites from current user, or create a new one."""
     if request.method == 'POST':
         try:
-            Invite.create(current_user)
+            invite = Invite.create(current_user)
+            db.session.add(invite)
+            db.session.commit()
         except ValueError as e:
             return "{}".format(e), 403
     invites = Invite.get_invites_from_user(current_user).all()

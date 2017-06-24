@@ -200,7 +200,7 @@ class Invite(db.Model):
                 company=inviter.company,
                 inviter=inviter,
             )
-            db.session.add(invite)
+            return invite
 
         else:
             raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.")  # noqa
