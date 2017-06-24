@@ -35,6 +35,7 @@ from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_compress import Compress
 
 from sqlalchemy.orm.exc import NoResultFound
 from flask_dance.contrib.google import make_google_blueprint, google
@@ -67,6 +68,7 @@ class MyJSONEncoder(JSONEncoder):
 app = Flask(__name__, instance_relative_config=True)
 app.json_encoder = MyJSONEncoder
 configure_app(app)
+Compress(app)
 
 
 assets = Environment(app)
