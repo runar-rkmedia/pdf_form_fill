@@ -406,12 +406,23 @@ def stamp_with_user(user, output_pdf, form):
         os.remove(output_pdf)
         os.rename(stamped_pdf, output_pdf)
 
+def add_company_info_to_dictionary(dictionary, company):
+    """Description."""
+    dictionary['firma_navn'] = current_user.company.name
+    dictionary['firma_orgnr'] = current_user.company.orgnumber
+    dictionary['firma_adresse1'] = current_user.company.address.line1
+    dictionary['firma_adresse2'] = current_user.company.address.line2
+    dictionary['firma_poststed'] = current_user.company.address.postal
+    dictionary[
+        'firma_postnummer'] = current_user.company.address.postnumber
+    return dictionary
+
 @app.route('/json/heating/', methods=['POST','GET'])
 @limiter.limit("1/second", error_message='Èn per sekund')
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_fill_document():
-    """Return a json-object of all products."""
+    """Fill a form from user."""
     if request.method == 'GET':
         filled_form_modified_id = request.args.get('filled_form_modified_id')
         filled_form_modified = FilledFormModified\
@@ -467,13 +478,7 @@ def json_fill_document():
                 status=400)
         if current_user.is_authenticated:
             if current_user.company:
-                dictionary['firma_navn'] = current_user.company.name
-                dictionary['firma_orgnr'] = current_user.company.orgnumber
-                dictionary['firma_adresse1'] = current_user.company.address.line1
-                dictionary['firma_adresse2'] = current_user.company.address.line2
-                dictionary['firma_poststed'] = current_user.company.address.postal
-                dictionary[
-                    'firma_postnummer'] = current_user.company.address.postnumber
+                dictionary = add_company_info_to_dictionary(dictionary, current_user.company)
 
         output_pdf, complete_dictionary, form = create_form(
             manufacturor=manufacturor,
