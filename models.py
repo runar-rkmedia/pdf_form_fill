@@ -67,10 +67,10 @@ class Address(db.Model):
             )
         else:
             if (
-                address.line1 != line1 or
-                address.line2 != line2 or
-                address.postnumber != postnumber or
-                address.postal != postal
+                    address.line1 != line1 or
+                    address.line2 != line2 or
+                    address.postnumber != postnumber or
+                    address.postal != postal
             ):
                 address.line1 = line1
                 address.line2 = line2
@@ -102,12 +102,12 @@ class Company(db.Model):
         """Return all filled forms created by user."""
         query = FilledForm\
             .query\
-            .filter(FilledForm.company==self)\
+            .filter(FilledForm.company == self)\
             .paginate(
                 page=page,
                 per_page=per_page,
                 error_out=True
-                )
+            )
 
         modifications = []
         for i in query.items:
@@ -141,8 +141,8 @@ class User(db.Model, UserMixin):
         subq = db.session\
             .query(
                 func.max(FilledFormModified.id)
-                )\
-            .filter(FilledFormModified.user==self)\
+            )\
+            .filter(FilledFormModified.user == self)\
             .group_by(FilledFormModified.filled_form_id)\
             .subquery()
         query = FilledFormModified\
@@ -152,7 +152,7 @@ class User(db.Model, UserMixin):
                 page=page,
                 per_page=per_page,
                 error_out=True
-                )
+            )
 
         return query.items, query.pages
 
@@ -315,15 +315,7 @@ class Product(db.Model):
     product_type_id = db.Column(db.Integer, db.ForeignKey(ProductType.id))
     product_type = db.relationship(
         ProductType, primaryjoin='Product.product_type_id==ProductType.id')
-
-    def add_keys_from_dict(self, dictionary):
-        """Will create ProducSpecs for this product from a dictionary."""
-        for key, val in dictionary.items():
-            db.session.add(ProductSpec(key=key, value=val, product=self))
-
-    def get_specs(self):
-        """Retrieve all specs for this product."""
-        return ProductSpec.query.filter_by(product_id=self.id).all()
+    specs = db.Column(db.JSON)
 
     @classmethod
     def get_by_id(cls, p_id):
@@ -338,17 +330,6 @@ class Product(db.Model):
             'effect': self.effect
         }
         return dictionary
-
-
-class ProductSpec(db.Model):
-    """ProductSpec-table."""
-    __bind_key__ = 'products'
-    id = db.Column(db.Integer, primary_key=True, unique=True)
-    key = db.Column(db.String(25))
-    value = db.Column(db.String(50))
-    product_id = db.Column(db.Integer, db.ForeignKey(Product.id))
-    product = db.relationship(
-        Product, primaryjoin='ProductSpec.product_id==Product.id')
 
 
 class FilledForm(db.Model):
@@ -416,8 +397,6 @@ class FilledForm(db.Model):
         return dictionary
 
 
-
-
 class FilledFormModified(db.Model):
     """Table of modification-dated for FilledForm-model."""
     __tablename__ = 'filled_form_modified'
@@ -436,7 +415,7 @@ class FilledFormModified(db.Model):
     info = {'bind_key': 'forms'}
 
     __mapper_args__ = {
-        "order_by":date.desc()
+        "order_by": date.desc()
     }
 
     @classmethod

@@ -246,15 +246,15 @@ def set_fields_from_product(dictionary, product, specs=None):
     elif ledere == 1:
         dictionary['check-enleder'] = True
 
-    for s in specs:
-        if s.key == 'Nominell elementmotstand':
-            dictionary['nominell_motstand'] = s.value
-        if s.key == 'Resistans_min':
-            dictionary['resistans_min'] = s.value
-        if s.key == 'Resistans_max':
-            dictionary['resistans_max'] = s.value
-        if s.key == 'Lengde':
-            dictionary['lengde'] = s.value
+    dictionary['nominell_motstand'] = product.specs.get(
+        'Nominell elementmotstand')
+    dictionary['resistans_min'] = product.specs.get(
+        'Resistans_min')
+    dictionary['resistans_max'] = product.specs.get(
+        'Resistans_max')
+    dictionary['lengde'] = product.specs.get(
+        'Lengde')
+
     return dictionary
 
 
@@ -466,9 +466,8 @@ def json_fill_document():
         dictionary = request.form.copy()
 
         if product:
-            specs = product.get_specs()
             dictionary = set_fields_from_product(
-                dictionary, product, specs)
+                dictionary, product)
         else:
             return jsonify(
                 error_message=(
