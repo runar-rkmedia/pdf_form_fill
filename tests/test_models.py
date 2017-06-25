@@ -3,11 +3,17 @@ from app import app
 import unittest
 import tempfile
 from config import configure_app
-from models import User, FilledForm, db, Company, Address
+from models import (User,
+                    FilledForm,
+                    FilledFormModified,
+                    db,
+                    Company,
+                    Address,
+                    NoAccess)
+from datetime import datetime
 
 
 class FlaskrTestCase(unittest.TestCase):
-    #
 
     def setUp(self):
         configure_app(app, configuration='testing')
@@ -53,7 +59,7 @@ class FlaskrTestCase(unittest.TestCase):
             request_form = {"anleggs_adresse": "Kingsroad 1", "anleggs_poststed": "Kings place", "anleggs_postnummer": "4321", "rom_navn": "Kings room", "areal": "1000",
                             "oppvarmet_areal": "900", "mohm_a": "true", "mohm_b": "true", "mohm_c": "true", "ohm_a": "1", "ohm_b": "2", "ohm_c": "3", "product_id": "3"}
             self.testForm = FilledForm.update_or_create(
-                filled_form_id=None,
+                filled_form_modified_id=None,
                 user=self.John,
                 name='Awesome form',
                 customer_name='Awesome customer',
@@ -63,7 +69,7 @@ class FlaskrTestCase(unittest.TestCase):
                 address=self.CustomerAddress
             )
             self.testForm2 = FilledForm.update_or_create(
-                filled_form_id=None,
+                filled_form_modified_id=None,
                 user=self.Gary,
                 name='Boring form',
                 customer_name='Boring customer',
@@ -73,7 +79,7 @@ class FlaskrTestCase(unittest.TestCase):
                 address=self.CustomerAddress
             )
             self.testForm3 = FilledForm.update_or_create(
-                filled_form_id=None,
+                filled_form_modified_id=None,
                 user=self.Gary,
                 name='Ok form',
                 customer_name='form customer',
@@ -92,6 +98,16 @@ class FlaskrTestCase(unittest.TestCase):
             db.session.add(self.John)
             db.session.add(self.Gary)
             db.session.commit()
+            self.modificated1 = FilledForm.update_or_create(
+                filled_form_modified_id=self.testForm.modifications[0].id,
+                user=self.Gary,
+                name='Modified form',
+                customer_name='form customer',
+                request_form=request_form,
+                form_data=form_data,
+                company=self.Corporation,
+                address=self.CustomerAddress
+            )
             self.John = User.query.filter(User.email == 'john@doe.com').first()
             self.Gary = User.query.filter(
                 User.email == 'gary@mcqueen.com').first()
@@ -107,15 +123,41 @@ class FlaskrTestCase(unittest.TestCase):
     def test_user_get_form(self):
         """user.getform should return all forms from user."""
         with self.app.app_context():
-            result = self.John.get_forms()
+            result = self.John.get_forms()[0]
             self.assertEqual(len(result), 1)
-            self.assertEqual(result[0].filled_form.name, 'Awesome form')
-            self.assertEqual(result[0].user.email, 'john@doe.com')
+            self.assertEqual(result[0].name, 'Awesome form')
+            self.assertEqual(result[0].modifications[
+                             0].user.email, 'john@doe.com')
             result = self.Gary.get_forms()
             self.assertEqual(len(result), 2)
 
+    def test_filled_form_modification_delete(self):
+        """Only users with access should be able to delete a modification."""
+        with self.app.app_context():
+            gary_modification = FilledFormModified\
+                .query\
+                .filter(
+                    FilledFormModified.user == self.Gary
+                ).first()
+            self.assertRaises(
+                NoAccess,
+                gary_modification.archive_this,
+                self.John
+            )
+            self.assertEquals(
+                gary_modification.archive_this(self.Gary),
+                True
+            )
+            gary_modification = FilledFormModified\
+                .query\
+                .filter(
+                    FilledFormModified.user == self.Gary
+                ).first()
+            print(gary_modification.archived)
+
     def test_company_get_form(self):
         """company.getform should return all forms from this company."""
+        return
         with self.app.app_context():
             result = self.Business.get_forms()
             self.assertEqual(len(result), 1)
@@ -129,11 +171,11 @@ class FlaskrTestCase(unittest.TestCase):
                 'gary@mcqueen.com')
             self.assertEqual(
                 result[0]
-                .filled_form_data.request_form['anleggs_adresse'],
+                .request_form['anleggs_adresse'],
                 'Kingsroad 1')
             self.assertEqual(
                 result[0]
-                .filled_form_data.form_data['Adresse installasjonssted'],
+                .form_data['Adresse installasjonssted'],
                 'Kingsroad 1')
             result = self.Corporation.get_forms()
             self.assertEqual(len(result), 2)

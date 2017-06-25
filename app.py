@@ -292,7 +292,6 @@ def validate_fields(request_form):
 def get_invite(invite_id):
     """Route for getting an invite."""
     invite = Invite.get_invite_from_id(invite_id)
-    print(invite)
     if request.method == 'POST' and invite:
         invite.invitee = current_user
         current_user.company = invite.company
@@ -379,6 +378,39 @@ def json_user_forms():
     else:
         return jsonify({})
 
+
+@app.route('/json/form/<form_id>', methods=['GET', 'DELETE'])
+@login_required
+def json_form(form_id):
+    """Return a json-object of a form."""
+    forms = FilledForm.by_id(current_user, form_id)
+    if request.method == 'GET':
+        if forms:
+            result = {}
+            result['forms'] = forms.serialize
+            return jsonify(result)
+        else:
+            return jsonify({})
+
+
+@app.route('/json/form_mod/<filled_form_modified_id>', methods=['GET', 'DELETE'])
+@login_required
+def json_form_modification(filled_form_modified_id):
+    """Return a json-object of a form-modfication."""
+    form = FilledFormModified.by_id(current_user, filled_form_modified_id)
+    if request.method == 'GET':
+        if form:
+            result = {}
+            result['form'] = form.serialize
+            return jsonify(result)
+        else:
+            return jsonify({})
+    elif request.method == 'DELETE':
+        form.archive_this(current_user)
+        return 'deleted'
+
+
+
 def create_form(manufacturor, dictionary=None,
                 request_form=None, form_data=None, user=current_user):
     """Create a form."""
@@ -451,7 +483,6 @@ def json_fill_document():
             file_download=os.path.relpath(output_pdf),
         )
     if request.method == 'POST':
-        current_user.get_forms()
         error_fields = validate_fields(request.form)
 
         if error_fields:
@@ -492,7 +523,7 @@ def json_fill_document():
             postal=dictionary.get('anleggs_poststed')
         )
         save_form = FilledForm.update_or_create(
-            filled_form_id=dictionary.get('filled_form_id'),
+            filled_form_modified_id=dictionary.get('filled_form_modified_id'),
             user=current_user,
             name=dictionary.get('rom_navn'),
             customer_name=dictionary.get('kunde_navn'),

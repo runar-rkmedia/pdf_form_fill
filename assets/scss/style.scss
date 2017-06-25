@@ -18,6 +18,17 @@ canvas{
     -webkit-animation: spin2 1s infinite linear;
 }
 
+.icons {
+    white-space: nowrap;
+    .glyphicon {
+        font-size: 1.25em;
+        white-space: nowrap;
+    }
+    .glyphicon:not(:last-child){
+        margin-right:0.3em
+    }
+}
+
 @keyframes spin {
     from { transform: scale(1) rotate(0deg); }
     to { transform: scale(1) rotate(360deg); }
@@ -33,5 +44,17 @@ canvas{
 }
 .pointer{
   cursor: pointer;
+}
+.flex{
+  display: flex;
+}
+.between{
+  justify-content: space-between;
+}
+.equal-four > *{
+    width: 25%;
+    *:last-child{
+        text-align: right;
+    }
 }
 @import "form";

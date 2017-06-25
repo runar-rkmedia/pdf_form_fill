@@ -15,7 +15,7 @@ import enum
 from field_dicts.helpers import id_generator
 db = SQLAlchemy()
 
-PER_PAGE = 5
+PER_PAGE = 500
 
 
 class ContactType(enum.Enum):
@@ -42,6 +42,23 @@ def lookup_vk(manufacturor, watt_per_meter, watt_total):
         .filter_by(name=manufacturor)\
         .all()
     return products
+
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+
+class NoAccess(Error):
+    '''
+    Raise when a user doesn't have access to the action or resource
+
+    https://stackoverflow.com/a/26938914/3493586
+    '''
+
+    def __init__(self, message, *args):
+        self.message = message
+        super(NoAccess, self).__init__(message, *args)
 
 
 class Address(db.Model):
@@ -105,6 +122,13 @@ class Company(db.Model):
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
 
+    def owns(self, model):
+        """Check if company has rights to access this."""
+        if model.comany == self:
+            return True
+        else:
+            raise NoAccess("Company does not have access to this resource.")
+
     def get_forms(self, per_page=PER_PAGE, page=1):
         """Return all filled forms created by user."""
         query = FilledForm\
@@ -150,7 +174,10 @@ class User(db.Model, UserMixin):
             .query(
                 func.max(FilledFormModified.id)
             )\
-            .filter(FilledFormModified.user == self)\
+            .filter(
+                (FilledFormModified.user == self) &
+                (FilledFormModified.archived != True)
+                )\
             .group_by(FilledFormModified.filled_form_id)\
             .subquery()
         query = FilledFormModified\
@@ -162,7 +189,19 @@ class User(db.Model, UserMixin):
                 error_out=True
             )
 
-        return query.items, query.pages
+        filled_forms = []
+        for mod in query.items:
+            if mod.filled_form and not mod.filled_form.archived:
+                filled_forms.append(mod.filled_form)
+
+        return filled_forms, query.pages
+
+    def owns(self, model):
+        """Check if user has rights to access this."""
+        if model.user == self:
+            return True
+        else:
+            raise NoAccess("You don't have access to this resource.")
 
     def addContact(self, contact_type, contact_value):
         """Description."""
@@ -346,6 +385,7 @@ class FilledForm(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     customer_name = db.Column(db.String(250))
+    archived = db.Column(db.Boolean)
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='FilledForm.company_id==Company.id')
@@ -353,10 +393,15 @@ class FilledForm(db.Model):
     address = db.relationship(
         Address, primaryjoin='FilledForm.address_id==Address.id')
 
+    def archive_this(self, user):
+        """Mark this as archived."""
+        if user.owns(self):
+            self.archived = True
+
     @classmethod
     def update_or_create(
             cls,
-            filled_form_id,
+            filled_form_modified_id,
             user,
             name,
             customer_name,
@@ -366,10 +411,13 @@ class FilledForm(db.Model):
             address):
         """Update if exists, else create FilledForm."""
         filled_form = None
-        if filled_form_id:
-            filled_form = FilledForm.query.filter(
-                FilledForm.id == filled_form_id
+        filled_form_modified = None
+        if filled_form_modified_id:
+            filled_form_modified = FilledFormModified.query.filter(
+                FilledFormModified.id == filled_form_modified_id
             ).first()
+        if filled_form_modified:
+            filled_form = filled_form_modified.filled_form
         if not filled_form:
             filled_form = FilledForm(
                 name=name,
@@ -391,17 +439,28 @@ class FilledForm(db.Model):
             form_data=form_data)
         return filled_form
 
+    @classmethod
+    def by_id(cls, user, filled_form_id):
+        """Return a filled_form by its ID (authenticate first)."""
+        # TODO: authenticate
+        query = FilledForm\
+            .query\
+            .filter(
+                FilledForm.id == filled_form_id
+            )\
+            .first()
+        return query
+
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
-        mod = self.modifications[0]
 
         dictionary = {
             'id': self.id,
-            'date': mod.date
+            'creation_time': self.modifications[-1].date,
+            'address_id': self.address.id,
+            'modifications': [i.serialize_b for i in self.modifications if not i.archived]
         }
-        dictionary['request_form'] = mod.request_form
-        dictionary['address_id'] = self.address.id
         return dictionary
 
 
@@ -413,6 +472,7 @@ class FilledFormModified(db.Model):
     user = db.relationship(
         User, primaryjoin='FilledFormModified.user_id==User.id')
     filled_form_id = db.Column(db.Integer, db.ForeignKey(FilledForm.id))
+    archived = db.Column(db.Boolean, default=False)
     filled_form = db.relationship(
         FilledForm,
         primaryjoin='FilledFormModified.filled_form_id==FilledForm.id',
@@ -425,6 +485,7 @@ class FilledFormModified(db.Model):
     __mapper_args__ = {
         "order_by": date.desc()
     }
+
 
     @classmethod
     def update_or_create(cls, user, filled_form, request_form, form_data):
@@ -455,6 +516,26 @@ class FilledFormModified(db.Model):
         db.session.add(last_modified)
         return last_modified
 
+    @classmethod
+    def by_id(cls, user, filled_form_modified_id):
+        """Return a filled_form_modified by its ID (authenticate first)."""
+        # TODO: authenticate
+        query = FilledFormModified\
+            .query\
+            .filter(
+                FilledFormModified.id == filled_form_modified_id
+            )\
+            .first()
+        return query
+
+    def archive_this(self, user):
+        """Mark this object as archived."""
+        if user.owns(self):
+            self.archived = True
+            db.session.add(self)
+            db.session.commit()
+            return True
+
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
@@ -477,4 +558,16 @@ class FilledFormModified(db.Model):
         if self.filled_form:
             dictionary['request_form'] = self.request_form
             dictionary['address_id'] = self.filled_form.address.id
+        return dictionary
+
+    @property
+    def serialize_b(self):
+        """Return object data in easily serializeable format"""
+
+        dictionary = {
+            'id': self.id,
+            'date': self.date,
+            'user': self.user.given_name
+        }
+        dictionary['request_form'] = self.request_form
         return dictionary

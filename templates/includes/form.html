@@ -57,7 +57,7 @@
           <div class="form-group col-xs-12">
             <fieldset>
               <legend>Watt per meter</legend>
-<div class="wrap"><!-- ko foreach: spec_groups().watt_per_meter -->
+<div class="flex between"><!-- ko foreach: spec_groups().watt_per_meter -->
   <div class="radio-Wm">
     <label class="radio-inline">
       <input type="radio" name="meterEffekt" data-bind="checked: $root.watt_per_meter, value: $data">
@@ -141,7 +141,8 @@
       </div>
     </div>
     <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, css: {opaque: validation_errors().length > 0}">
-    <div class="Loading" data-bind="if: loading">
+    <div class="Loading" data-bind="if: loading.indexOf('fill_form') > -1">
+
       <span class="glyphicon glyphicon-refresh spinning"></span>
       Fyller ut skjema...
     </div>

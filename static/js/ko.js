@@ -281,21 +281,27 @@ $(function() {
       }
     });
 
-    function get_user_forms() {
-      $.get("/forms.json", {}).done(function(result) {
+    function get_user_forms(loading) {
+    self.loading.push('user_form')
+      $.get("/forms.json", {})
+      .done(function(result) {
         console.log(result);
         self.user_forms(result);
+        self.loading.remove('user_form')
       });
     }
 
+
     function get_company_forms() {
+        return false
       $.get("/forms.json", {
         type: 'company'
-      }).done(function(result) {
-        console.log(result);
+    }).done(function(result,d) {
         self.company_forms(result);
       });
     }
+
+
     self.get_product_by_id = function(id) {
       var f = self.Products().flat_products();
       for (var i = 0; i < f.length; i++) {
@@ -303,6 +309,36 @@ $(function() {
           return f[i];
         }
       }
+    };
+    self.expand_mods = function (e,d) {
+        var t = $(d.target);
+        var m = t.siblings('.modifications-table');
+        var up = 'glyphicon-menu-up';
+        var down = 'glyphicon-menu-down';
+        m.toggleClass('hidden');
+        if (m.hasClass('hidden')) {
+            t.removeClass(up);
+            t.addClass(down);
+        } else {
+            t.removeClass(down);
+            t.addClass(up);
+        }
+
+    };
+    self.delete = ko.observable();
+
+    self.confirmed_delete = function (e,d) {
+        self.delete('');
+        self.loading.push('delete');
+        $.ajax({
+            url:'json/form_mod/' + e.id,
+            type:'DELETE',
+            id: e.id
+        })
+        .done(function (result,d) {
+            self.loading.remove('delete');
+            get_user_forms();
+        });
     };
     self.edit_form = function(e) {
       var f = e.request_form;
@@ -334,7 +370,7 @@ $(function() {
       }
       if (self.form_changed() || !self.filled_form_modified_id()) {
         // self.file_download(false);
-        self.loading(true);
+        self.loading.push('fill_form');
         $.post("/json/heating/", {
             'anleggs_adresse': self.anleggs_adresse(),
             'anleggs_poststed': self.anleggs_poststed(),
@@ -353,14 +389,16 @@ $(function() {
             'filled_form_modified_id': self.filled_form_modified_id()
           })
           .done(function(result) {
+              self.loading.remove('fill_form');
             parse_form_download(result);
           });
       } else {
         console.log(self.form_changed());
-        self.loading(true);
+        self.loading.push('fill_form');
         $.get("/json/heating/", {
           'filled_form_modified_id': self.filled_form_modified_id()
         }).done(function(result) {
+            self.loading.remove('fill_form');
           parse_form_download(result);
         });
       }
@@ -368,7 +406,6 @@ $(function() {
 
     function parse_form_download(result) {
       console.log(result);
-      self.loading(false);
       self.last_sent_args(self.form_args());
       if (result.error_fields) {
         self.error_fields(result.error_fields);
@@ -387,16 +424,7 @@ $(function() {
       }
     }
 
-    self.loading = ko.observable(false); // true to show 'Loading...'
-    self.suggestion = ko.observable(""); // the selected suggestion
-    self.suggestions = ko.observableArray([]); // the selections available
-    self.query = function(term) { // called to query for the data and to update the suggestions
-      self.loading(true);
-      service.query(term).then(function(data) {
-        self.loading(false);
-        self.suggestions(data);
-      });
-    };
+    self.loading = ko.observableArray();
   }
 
   // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
