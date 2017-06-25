@@ -1,7 +1,8 @@
 """Database-structure for item-catalog."""
 
+from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import desc, or_, text
+from sqlalchemy import desc, or_
 from sqlalchemy.sql.expression import func
 from flask_dance.consumer.backend.sqla import (
     OAuthConsumerMixin,
@@ -12,7 +13,6 @@ from flask_login import (
 # import bleach
 import enum
 from field_dicts.helpers import id_generator
-from datetime import datetime, timedelta
 db = SQLAlchemy()
 
 PER_PAGE = 5
@@ -23,6 +23,13 @@ class ContactType(enum.Enum):
     phone = 1,
     email = 2,
     mobile = 3
+
+
+class UserRole(enum.Enum):
+    """Enumeration for types of user-roles."""
+    user = 1,
+    companyAdmin = 2,
+    admin = 3
 
 
 def lookup_vk(manufacturor, watt_per_meter, watt_total):
@@ -53,7 +60,7 @@ class Address(db.Model):
         ).first()
         try:
             postnumber = int(postnumber)
-        except TypeError as e:
+        except TypeError:
             raise ValueError(
                 'Expected postnumber to be an integer, got {}'
                 .format(postnumber))
@@ -131,6 +138,7 @@ class User(db.Model, UserMixin):
     family_name = db.Column(db.String(50))
     email = db.Column(db.String(100))
     title = db.Column(db.String(50))
+    role = db.Column(db.Enum(UserRole), default='user')
     signature = db.Column(db.Binary())
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
