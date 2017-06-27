@@ -373,19 +373,19 @@ def json_user_forms():
     page = request.args.get('page', 1)
     user_forms, user_pages = current_user.\
         get_forms(page=page)
-    if user.company:
+    if current_user and current_user.company:
         company_forms, company_pages = current_user\
             .company\
             .get_forms(
                 user=current_user,
                 page=page
                 )
+        if company_forms:
+            result['company_forms'] = [i.serialize(current_user) for i in company_forms]
+            result['company_pages'] = company_pages
     if user_forms:
         result['user_forms'] = [i.serialize(current_user) for i in user_forms]
         result['user_pages'] = user_pages
-    if company_forms:
-        result['company_forms'] = [i.serialize(current_user) for i in company_forms]
-        result['company_pages'] = company_pages
     return jsonify(result)
 
 
