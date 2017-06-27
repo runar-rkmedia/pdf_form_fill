@@ -25,6 +25,12 @@ class ContactType(enum.Enum):
     mobile = 3
 
 
+class InviteType(enum.Enum):
+    """Enumeration for types of contactfields."""
+    company = 1,
+    create_company = 2,
+
+
 class UserRole(enum.Enum):
     """Enumeration for types of user-roles."""
     user = 1,
@@ -60,6 +66,18 @@ class NoAccess(Error):
         self.message = message
         super(NoAccess, self).__init__(message, *args)
 
+def verify_number(field_to_verify, name_of_field):
+    """Verify that input is number."""
+    try:
+        field_to_verify = int(field_to_verify)
+    except TypeError:
+        raise ValueError(
+            'Expected {} to be an integer, got {}'
+            .format(
+                name_of_field,
+                field_to_verify
+                )
+            )
 
 class Address(db.Model):
     """Address-table for users."""
@@ -70,20 +88,26 @@ class Address(db.Model):
     postal = db.Column(db.String(200))
 
     @classmethod
+    def add(cls, line1, line2, postnumber, postal):
+        """Add an address-entry."""
+        postnumber = verify_number(postnumber, 'postnumber')
+        return Address(
+            line1=line1,
+            line2=line2,
+            postnumber=postnumber,
+            postal=postal
+        )
+
+    @classmethod
     def update_or_create(cls, address_id, line1, line2, postnumber, postal):
         """Update if exists, else create Address."""
         address = Address.query.filter_by(
             id=address_id
         ).first()
-        try:
-            postnumber = int(postnumber)
-        except TypeError:
-            raise ValueError(
-                'Expected postnumber to be an integer, got {}'
-                .format(postnumber))
+        postnumber = verify_number(postnumber, 'postnumber')
 
         if not address:
-            address = Address(
+            address = Address.add(
                 line1=line1,
                 line2=line2,
                 postnumber=postnumber,
@@ -111,6 +135,14 @@ class Contact(db.Model):
     type = db.Column(db.Enum(ContactType))
     value = db.Column(db.String(200))
 
+    @classmethod
+    def add(cls, type, value):
+        """Add a contact-entry."""
+        return Contact(
+            type=type,
+            value=value,
+        )
+
 
 class Company(db.Model):
     """Company-table for users."""
@@ -121,6 +153,23 @@ class Company(db.Model):
     address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
+
+    @classmethod
+    def add(cls, name, description, orgnumber, address, contact_list=None):
+        """Add a -entry."""
+        orgnumber = verify_number(orgnumber, 'orgnumber')
+        for contact in contact_list:
+            company_contact = CompanyContact(
+                contact=contact,
+                company=self
+            )
+            db.session.add(company_contact)
+        return Address(
+            name=name,
+            description=description,
+            orgnumber=orgnumber,
+            address=address
+        )
 
     def owns(self, model):
         """Check if company has rights to access this."""
@@ -154,7 +203,12 @@ class CompanyContact(db.Model):
     """Associations-table for company and contacts."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
     contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
+    contact = db.relationship(
+        Contact, primaryjoin='CompanyContact.contact_id==Contact.id')
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    company = db.relationship(
+        Company, primaryjoin='CompanyContact.company_id==Company.id',
+        backref='contacts')
 
 
 class User(db.Model, UserMixin):
@@ -222,6 +276,7 @@ class Invite(db.Model):
 
     id = db.Column(db.String, unique=True, primary_key=True)
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    type = db.Column(db.Enum(InviteType), default='company')
     company = db.relationship(
         Company, primaryjoin='Invite.company_id==Company.id')
     inviter_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
@@ -504,7 +559,7 @@ class FilledFormModified(db.Model):
                 FilledFormModified.filled_form == filled_form).order_by(
                     desc(FilledFormModified.date)).filter(
                         or_(
-                            FilledFormModified.user == user,
+                            FilledFormModified.user != user,
                             FilledFormModified.date >= (
                                 datetime.utcnow() - timedelta(seconds=1))
                         )).first()
