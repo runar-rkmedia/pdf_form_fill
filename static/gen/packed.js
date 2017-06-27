@@ -138,7 +138,8 @@ if(result.file_download){self.file_download(result.file_download);if(result.addr
 if(result.filled_form_modified_id){self.filled_form_modified_id(result.filled_form_modified_id);}}
 if(result.error_message){self.error_message(result.error_message);}}
 self.loading=ko.observableArray();}
-var myApp=new AppViewModel();myApp.init();ko.applyBindings(myApp);});self.format_date=function(dateString){var d_names=new Array("Søndag","Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Søndag");var m_names=new Array("januar","februar","mars","april","mai","juni","juli","august","september","october","november","december");var d=new Date(dateString);var curr_day=d.getDay();var curr_date=d.getDate();var curr_month=d.getMonth();var curr_year=d.getFullYear();var curr_hour=d.getHours();var curr_minute=d.getMinutes();return curr_date+'. '+m_names[curr_month]+" "+curr_year+' '+
-pad(curr_hour,2)+':'+pad(curr_minute,2)}
-function pad(n,width,z){z=z||'0';n=n+'';return n.length>=width?n:new Array(width-n.length+1).join(z)+n;}
+var myApp=new AppViewModel();myApp.init();ko.applyBindings(myApp);});self.format_date=function(dateString,type){var d_names=new Array("Søndag","Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Søndag");var m_names=new Array("januar","februar","mars","april","mai","juni","juli","august","september","october","november","december");var d=new Date(dateString);var curr_day=d.getDay();var curr_date=d.getDate();var curr_month=d.getMonth();var curr_year=d.getFullYear();var curr_hour=d.getHours();var curr_minute=d.getMinutes();if(type==='short'){return curr_date+'/'+curr_month+"-"+String(curr_year).slice(2)+' '+
+pad(curr_hour,2)+':'+pad(curr_minute,2);}
+return curr_date+'. '+m_names[curr_month]+" "+curr_year+' '+
+pad(curr_hour,2)+':'+pad(curr_minute,2);};function pad(n,width,z){z=z||'0';n=n+'';return n.length>=width?n:new Array(width-n.length+1).join(z)+n;}
 $(function(){$('input[type=tel]').on('input',function(e){this.value=this.value.replace(/\D/g,'');})})

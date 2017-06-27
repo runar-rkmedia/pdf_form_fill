@@ -443,7 +443,7 @@ $(function() {
   ko.applyBindings(myApp);
 });
 
-self.format_date = function(dateString) {
+self.format_date = function(dateString, type) {
   var d_names = new Array("Søndag", "Mandag", "Tirsdag",
     "Onsdag", "Torsdag", "Fredag", "Søndag");
 
@@ -459,9 +459,13 @@ self.format_date = function(dateString) {
   var curr_year = d.getFullYear();
   var curr_hour = d.getHours();
   var curr_minute = d.getMinutes();
+  if (type === 'short') {
+  return curr_date + '/' + curr_month + "-" + String(curr_year).slice(2) + ' ' +
+    pad(curr_hour, 2) + ':' + pad(curr_minute, 2);
+  }
   return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
-    pad(curr_hour, 2) + ':' + pad(curr_minute, 2)
-}
+    pad(curr_hour, 2) + ':' + pad(curr_minute, 2);
+};
 
 function pad(n, width, z) {
   z = z || '0';
