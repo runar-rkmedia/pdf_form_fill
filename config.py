@@ -24,7 +24,8 @@ class BaseConfig(object):
     USER_FILES = os.environ.get(
         'user_files', 'user_files')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'dev'
+    SECRET_KEY = os.environ.get(
+        'SECRET_KEY', 'dev')
     USE_SESSION_FOR_NEXT = True
 
 

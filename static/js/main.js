@@ -1,11 +1,12 @@
 $(function() {
 
+    ko.validation.locale('nb-NO');
+
   "use strict";
 
   function sortNumber(a, b) {
     return a - b;
   }
-
   function ProductModel(rootModel) {
     var self = this;
     self.products = ko.observableArray();
@@ -286,8 +287,12 @@ $(function() {
       $.get("/forms.json", {})
       .done(function(result) {
         console.log(result);
-        self.user_forms(result);
+        result.user_forms.prefix = 'user_forms';
+        result.company_forms.prefix = 'company_forms';
+        self.user_forms(result.user_forms);
+        self.company_forms(result.company_forms);
         self.loading.remove('user_form')
+        console.log(self.user_forms());
       });
     }
 
@@ -340,8 +345,11 @@ $(function() {
             get_user_forms();
         });
     };
+    self.renamePrefix = function (e,d,f) {
+    }
     self.edit_form = function(e) {
       var f = e.request_form;
+      console.log('dd');
       self.filled_form_modified_id(e.id);
       self.anleggs_adresse(f.anleggs_adresse);
       self.anleggs_postnummer(f.anleggs_postnummer);

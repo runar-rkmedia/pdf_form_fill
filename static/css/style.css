@@ -54,18 +54,27 @@
           .equal-four > * *:last-child {
             text-align: right; }
 
-#input-anleggs_postnummer {
-  width: 100px; }
+.panel-heading a:after {
+  font-family: 'Glyphicons Halflings';
+  content: "";
+  float: right;
+  color: grey; }
 
-  legend {
-    font-size: 14px;
-    font-weight: 700;
-    border: 0;
-    margin-bottom: 5px; }
+  .panel-heading a.collapsed:after {
+    content: ""; }
 
-    @media screen and (max-width: 450px) {
-      label {
-        font-size: 12px;   }
+    #input-anleggs_postnummer {
+      width: 100px; }
+
+      legend {
+        font-size: 14px;
+        font-weight: 700;
+        border: 0;
+        margin-bottom: 5px; }
+
+        @media screen and (max-width: 450px) {
+          label {
+            font-size: 12px;   }
 }
 
 input[type=radio] {

@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <div class="col-xs-12">
+      <div class="Loading" data-bind="if: (loading.indexOf('user_form') > -1 || loading.indexOf('delete') > -1)">
+        <span class="glyphicon glyphicon-refresh spinning"></span>
+        Oppdaterer data...
+      </div>
   <h2>Våre varmekabler</h2>
-  <p>Her kan du se en list over alle varmekablene som er lagt inn av deg eller dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
-  <div class="col-xs-12"></div>
-  <!-- ko if: company_forms() && company_forms().forms -->
-  <!-- ko foreach: company_forms().forms -->
-  <div class="filled_form panel panel-default">
-    <div class="panel-heading pointer" data-bind="click: $root.edit_form">
-      <div>
-        <h5 class="row-flex">
-          <span data-bind="text: request_form.anleggs_adresse"></span>
-          <span data-bind="text: request_form.rom_navn"></span>
-        </h5>
-      </div>
-      <div class="row-flex small">
-        <div>
-          <span data-bind="text: 'Opprettet ' +  format_date(creation_time)"></span>
-          <span data-bind="text: ', sist endret: ' + format_date(date)"></span>
-        </div>
-        <div data-bind="text: $root.get_product_by_id(request_form.product_id).effect + 'W'"></div>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div data-bind="text: $root.get_product_by_id(request_form.product_id).name"></div>
-    </div>
-  </div>
-  <!-- /ko -->
-  <!-- /ko -->
+  <p>Her kan du se en list over alle varmekablene som er lagt av dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
+    <div class="col-xs-12"></div>
+    <!-- ko if: company_forms()-->
+    <!-- ko template: { name: 'form_template', data: company_forms} -->
+    <!-- /ko -->
+    <!-- /ko -->
 </div>
-<div></div>

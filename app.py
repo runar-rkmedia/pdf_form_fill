@@ -73,8 +73,9 @@ Compress(app)
 
 assets = Environment(app)
 js_main = Bundle(
-    'js/ko-bootstrap-typeahead.js',
-    'js/ko.js',
+    'js/knockout.validation.js',
+    'js/nb-NO.js',
+    'js/main.js',
     filters='jsmin',
     output='gen/packed.js')
 assets.register('js_main', js_main)
@@ -366,17 +367,25 @@ def json_user_forms():
     """Return a json-object of all the users forms."""
     request_type = request.args.get('type')
     page = request.args.get('page', 1)
-    if request_type == 'company':
-        forms, pages = current_user.company.get_forms(page=page)
-    else:
-        forms, pages = current_user.get_forms(page=page)
-    if forms:
-        result = {}
-        result['forms'] = [i.serialize for i in forms]
-        result['pages'] = pages
-        return jsonify(result)
-    else:
-        return jsonify({})
+    user_forms, user_pages = current_user.\
+        get_forms(page=page)
+    company_forms, company_pages = current_user\
+        .company\
+        .get_forms(
+            user=current_user,
+            page=page
+            )
+    result = {
+        'user_forms': [],
+        'company_forms': []
+    }
+    if user_forms:
+        result['user_forms'] = [i.serialize(current_user) for i in user_forms]
+        result['user_pages'] = user_pages
+    if company_forms:
+        result['company_forms'] = [i.serialize(current_user) for i in company_forms]
+        result['company_pages'] = company_pages
+    return jsonify(result)
 
 
 @app.route('/json/form/<form_id>', methods=['GET', 'DELETE'])

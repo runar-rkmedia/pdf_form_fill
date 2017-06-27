@@ -1,53 +1,55 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% block body %}
-  <div class="row">
-    <!-- ko if: error_message || error_fields -->
-    <div class="error bg-danger col-xs-12">
-      <p data-bind="text:error_message"></p>
-      <!-- ko foreach:{data: error_fields, as :'item'} -->
-      <strong data-bind="text: $data"></strong><!-- ko if: ($index() !== ($parent.error_fields().length - 1)) -->,
-      <!-- /ko -->
-      <!-- /ko -->
+    <div class="row">
+        <!-- ko if: error_message || error_fields -->
+        <div class="error bg-danger col-xs-12">
+            <p data-bind="text:error_message"></p>
+            <!-- ko foreach:{data: error_fields, as :'item'} -->
+            <strong data-bind="text: $data"></strong><!-- ko if: ($index() !== ($parent.error_fields().length - 1)) -->,
+            <!-- /ko -->
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+        <div class="Loading" data-bind="if: loading.indexOf('fill_form') > -1">
+            <span class="glyphicon glyphicon-refresh spinning"></span>
+            Fyller ut skjema...
+        </div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#main_form" aria-controls="main_form" role="tab" data-toggle="tab">Skjema</a>
+            </li>
+            {% if current_user.is_authenticated %}
+                <li role="presentation">
+                    <a href="#user_forms" aria-controls="user_forms" role="tab" data-toggle="tab">Mine</a>
+                </li>
+                {% if current_user.company.name %}
+                    <li role="presentation">
+                        <a href="#company" aria-controls="company" role="tab" data-toggle="tab">Våre</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        </ul>
     </div>
-    <!-- /ko -->
-    <div class="Loading" data-bind="if: loading.indexOf('fill_form') > -1">
-      <span class="glyphicon glyphicon-refresh spinning"></span>
-      Fyller ut skjema...
-    </div>
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active">
-        <a href="#main_form" aria-controls="main_form" role="tab" data-toggle="tab">Skjema</a>
-      </li>
-      {% if current_user.is_authenticated%}
-      <li role="presentation">
-        <a href="#user_forms" aria-controls="user_forms" role="tab" data-toggle="tab">Mine</a>
-      </li>
-      {% if current_user.company.name  %}
-      <li role="presentation">
-        <a href="#company" aria-controls="company" role="tab" data-toggle="tab">Våre</a>
-      </li>
-      {% endif %}
-      {% endif %}
-    </ul>
-  </div>
     <!-- Tab panes -->
-  <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="main_form">
-      {% include 'includes/form.html' %}
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="main_form">
+            {% include 'includes/form.html' %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="user_forms">
+            {% include 'includes/user_forms.html' %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="company">
+            {% include 'includes/company_forms.html' %}
+        </div>
     </div>
-    <div role="tabpanel" class="tab-pane" id="user_forms">
-      {% include 'includes/user_forms.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="company">
-      {% include 'includes/company_forms.html' %}
-    </div>
-  </div>
-  {% include 'includes/footer.html' %}
+
+    {% include 'includes/footer.html' %}
 {% endblock %}
 {% block script %}
-  {% assets "js_main" %}
-  <script src="{{ASSET_URL}}"></script>
-  {% endassets %}
+    {% assets "js_main" %}
+    <script src="{{ASSET_URL}}"></script>
+    {% endassets %}
+    {% include 'includes/form_template.html' %}
 {% endblock %}

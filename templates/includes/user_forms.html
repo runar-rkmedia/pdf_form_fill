@@ -1,75 +1,16 @@
 <!DOCTYPE html>
 <div class="col-xs-12">
-      <div class="Loading" data-bind="if: (loading.indexOf('user_form') > -1 || loading.indexOf('delete') > -1)">
+    <div class="Loading" data-bind="if: (loading.indexOf('user_form') > -1 || loading.indexOf('delete') > -1)">
         <span class="glyphicon glyphicon-refresh spinning"></span>
         Oppdaterer data...
-      </div>
+    </div>
     <h2>Mine varmekabler</h2>
     <p>Her kan du se en list over alle varmekablene du har lagt inn. Trykk på overskriften for å gjøre endringer.</p>
     <div class="col-xs-12"></div>
-    <!-- ko if: user_forms() && user_forms().forms -->
-    <!-- ko template: { name: 'form-template',
-                                  foreach: user_forms().forms,
-                                  as: 'forms' } -->
-    <!-- /ko -->
+    <!-- ko if: user_forms()-->
+    <div class="panel-group" role="tablist" aria-multiselectable="true">
+        <!-- ko template: { name: 'form_template', data: user_forms} -->
+        <!-- /ko -->
+    </div>
     <!-- /ko -->
 </div>
-<div></div>
-
-<script type="text/html" id="form-template">
-    <div class="filled_form panel panel-default">
-        <div class="panel-heading pointer" data-bind="click: $root.edit_form">
-            <div>
-                <h5 class="row-flex">
-                    <span data-bind="text: modifications[0].request_form.anleggs_adresse"></span>
-                    <span data-bind="text: modifications[0].request_form.rom_navn"></span>
-                </h5>
-            </div>
-            <div class="row-flex small">
-                <div>
-                    <span data-bind="text: 'Opprettet ' +  format_date(creation_time)"></span>
-                </div>
-                <div data-bind="text: $root.get_product_by_id(modifications[0].request_form.product_id).effect + 'W'"></div>
-            </div>
-        </div>
-        <div class="panel-body">
-            <span data-bind="text: $root.get_product_by_id(modifications[0].request_form.product_id).name"></span>
-            <!-- ko if: $data.modifications.length > 0 -->
-            <!-- <span data-bind="click: $root.expand_mods" class="pull-right glyphicon glyphicon-menu-down"></span> -->
-            <span data-toggle="collapse" data-bind="attr: {'data-target': '#collapse_' + $index()}" aria-expanded="false" aria-controls="collapseExample" class="pull-right glyphicon glyphicon-menu-down"></span>
-
-            <!-- /ko -->
-            <!-- ko if: $data.modifications.length > 0 -->
-            <div div class="collapse modifications-table collapse" data-bind="attr: {'id': 'collapse_' + $index()}">
-              <!-- ko foreach: $data.modifications-->
-                <div class="mod-row">
-                  <div class="flex equal-four">
-                          <div data-bind="text: request_form.anleggs_adresse"></div>
-                          <div data-bind="text: format_date(date)"></div>
-                          <div data-bind="text: user"></div>
-                          <div>
-                              <div class="icons">
-                                  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                  <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
-                                  <span class="glyphicon glyphicon-trash pointer" aria-hidden="true" data-bind="click: $root.delete.bind($data, id)"></span>
-                              </div>
-                          </div>
-                  </div>
-                </div>
-                <!-- ko if: $root.delete() == id -->
-                <div class="alert alert-danger alert-dismissible fade in">
-                  <button type="button" class="close" data-bind="click: $root.delete.bind()" aria-label="Close"><span aria-hidden="true">×</span></button>
-                  Er du helt sikker på at du virkelig vil slette dette utfylte skjermaet?
-                  <hr>
-                  <div>
-                    <button type="button" class="btn btn-danger" data-bind="click: $root.confirmed_delete">Ja, slett denne</button>
-                    <button type="button" data-bind="click: $root.delete.bind()" class="btn btn-default">Nei, ikke gjør det</button>
-                  </div>
-                </div>
-                <!-- /ko -->
-                <!-- /ko -->
-            </div>
-            <!-- /ko -->
-        </div>
-    </div>
-</script>

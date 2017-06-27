@@ -16,7 +16,7 @@
 <div class="row">
 <div class="col-xs-12">
   <h2>Signatur</h2>
-  <p class="bg-info"><strong>Merk:</strong> Denne funksjonen er ikke ferdig enda. Det jobbes med å automatisk signere. Du kan legge til signaturen her og lagre den, men per dags dato vil den ikke dukke opp i dokumentasjonen.</p>
+  <p class="bg-info">Du kan lagre din signatur her, så blir hvert skjema du lager signert av deg automatisk. Om du ikke vi lagre din signatur, kan du selfølgelig signere skjemaene manuelt.</p>
   {% if current_user.signature %}
     <div>Du har lagret din signatur.</div>
     <div class="col-xs-4">
@@ -25,7 +25,7 @@
   {% else %}
     Du har ikke lagret din signatur.
   {% endif %}
-  <a href="#" onclick="showSign()">Trykk her for å endre det.</a>
+  <a href="#" onclick="showSign()">Trykk her for å endre.</a>
   <div class="invisible signature">
     <div>Tegn inn din signatur i feltet nedenfor:</div>
     <div>

@@ -129,8 +129,8 @@ class Company(db.Model):
         else:
             raise NoAccess("Company does not have access to this resource.")
 
-    def get_forms(self, per_page=PER_PAGE, page=1):
-        """Return all filled forms created by user."""
+    def get_forms(self, user, per_page=PER_PAGE, page=1):
+        """Return all filled forms by company, not by current user."""
         query = FilledForm\
             .query\
             .filter(FilledForm.company == self)\
@@ -139,12 +139,15 @@ class Company(db.Model):
                 per_page=per_page,
                 error_out=True
             )
-
-        modifications = []
+        filled_forms = []
         for i in query.items:
-            modifications.append(i.modifications[0])
+            if (
+                any(True for mod in i.modifications if not mod.archived) and
+                any(True for mod in i.modifications if not mod.user == user)
+                ):
+                filled_forms.append(i)
 
-        return modifications, query.pages
+        return filled_forms, query.pages
 
 
 class CompanyContact(db.Model):
@@ -451,15 +454,14 @@ class FilledForm(db.Model):
             .first()
         return query
 
-    @property
-    def serialize(self):
+    def serialize(self, user=None):
         """Return object data in easily serializeable format"""
 
         dictionary = {
             'id': self.id,
             'creation_time': self.modifications[-1].date,
             'address_id': self.address.id,
-            'modifications': [i.serialize_b for i in self.modifications if not i.archived]
+            'modifications': [i.serialize_b(user) for i in self.modifications if not i.archived]
         }
         return dictionary
 
@@ -502,7 +504,7 @@ class FilledFormModified(db.Model):
                 FilledFormModified.filled_form == filled_form).order_by(
                     desc(FilledFormModified.date)).filter(
                         or_(
-                            FilledFormModified.user != user,
+                            FilledFormModified.user == user,
                             FilledFormModified.date >= (
                                 datetime.utcnow() - timedelta(seconds=1))
                         )).first()
@@ -560,14 +562,14 @@ class FilledFormModified(db.Model):
             dictionary['address_id'] = self.filled_form.address.id
         return dictionary
 
-    @property
-    def serialize_b(self):
+    def serialize_b(self, user=None):
         """Return object data in easily serializeable format"""
 
         dictionary = {
             'id': self.id,
             'date': self.date,
-            'user': self.user.given_name
         }
+        if self.user != user:
+            dictionary['user'] = self.user.email
         dictionary['request_form'] = self.request_form
         return dictionary
