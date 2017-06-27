@@ -365,20 +365,21 @@ def json_products():
 @login_required
 def json_user_forms():
     """Return a json-object of all the users forms."""
-    request_type = request.args.get('type')
-    page = request.args.get('page', 1)
-    user_forms, user_pages = current_user.\
-        get_forms(page=page)
-    company_forms, company_pages = current_user\
-        .company\
-        .get_forms(
-            user=current_user,
-            page=page
-            )
     result = {
         'user_forms': [],
         'company_forms': []
     }
+    request_type = request.args.get('type')
+    page = request.args.get('page', 1)
+    user_forms, user_pages = current_user.\
+        get_forms(page=page)
+    if user.company:
+        company_forms, company_pages = current_user\
+            .company\
+            .get_forms(
+                user=current_user,
+                page=page
+                )
     if user_forms:
         result['user_forms'] = [i.serialize(current_user) for i in user_forms]
         result['user_pages'] = user_pages
