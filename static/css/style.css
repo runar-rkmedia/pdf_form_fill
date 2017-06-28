@@ -63,18 +63,44 @@
   .panel-heading a.collapsed:after {
     content: ""; }
 
-    #input-anleggs_postnummer {
-      width: 100px; }
+    .row.no-gutters {
+      margin-right: 0;
+      margin-left: 0; }
+      .row.no-gutters > [class*=" col-"], .row.no-gutters > [class^="col-"] {
+        padding-right: 0;
+        padding-left: 0; }
+        .row.no-gutters > [class*=" col-"]:last-of-type,
+        .row.no-gutters > [class^="col-"]:last-of-type {
+          color: blue; }
 
-      legend {
-        font-size: 14px;
-        font-weight: 700;
-        border: 0;
-        margin-bottom: 5px; }
+@media only screen and (max-width: 768px) {
+  .zero-pad, .zero-pad-l, .zero-pad-r {
+    padding-right: 0;
+    padding-left: 0;   }
+}
 
-        @media screen and (max-width: 450px) {
-          label {
-            font-size: 12px;   }
+@media only screen and (min-width: 768px) {
+  .zero-pad-l {
+    padding-left: 0;   }
+}
+
+@media only screen and (min-width: 768px) {
+  .zero-pad-r {
+    padding-right: 0;   }
+}
+
+#input-anleggs_postnummer {
+  width: 100px; }
+
+  legend {
+    font-size: 14px;
+    font-weight: 700;
+    border: 0;
+    margin-bottom: 5px; }
+
+    @media screen and (max-width: 450px) {
+      label {
+        font-size: 12px;   }
 }
 
 input[type=radio] {

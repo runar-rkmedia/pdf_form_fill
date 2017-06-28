@@ -1,18 +1,76 @@
 $primary-color: #266cac;
+$break-sm: 768px;
+$break-md: 992px;
+$break-lg: 1200px;
+$break-small: 320px;
+$break-large: 1024px;
+@mixin respond-to($media) {
+     @if $media == xs{
+        @media only screen and (max-width: $break-sm) {
+             @content;
+        }
+    }
+    @else if $media == sm {
+         @media only screen and (min-width: $break-sm) and (max-width: $break-md ){
+            @content;
+        }
+    }
+    @else if $media == md {
+         @media only screen and (min-width: $break-md) and (max-width: $break-lg - 1){
+            @content;
+        }
+    }
+    @else if $media == lg {
+         @media only screen and (min-width: $break-lg){
+            @content;
+        }
+    }
+}
+@mixin media-min($media) {
+     @if $media == sm{
+        @media only screen and (min-width: $break-sm) {
+             @content;
+        }
+    }
+    @else if $media == md {
+         @media only screen and (min-width: $break-md){
+            @content;
+        }
+    }
+    @else if $media == lg {
+         @media only screen and (min-width: $break-lg){
+            @content;
+        }
+    }
+}
+@mixin media-max($media) {
+     @if $media == sm{
+        @media only screen and (max-width: $break-sm) {
+             @content;
+        }
+    }
+    @else if $media == md {
+         @media only screen and (max-width: $break-md){
+            @content;
+        }
+    }
+}
 
 .message-box {
     border: 3px solid $primary-color;
     padding: 8px 5px;
     margin: 15vh 4px 5px;
-    }
+}
 
-footer{
+footer {
     margin: 40px 0;
     text-align: center;
 }
-canvas{
+
+canvas {
     border: 1px solid black;
 }
+
 .glyphicon.spinning {
     animation: spin 1s infinite linear;
     -webkit-animation: spin2 1s infinite linear;
@@ -20,50 +78,103 @@ canvas{
 
 .icons {
     white-space: nowrap;
+
     .glyphicon {
         font-size: 1.25em;
         white-space: nowrap;
     }
-    .glyphicon:not(:last-child){
-        margin-right:0.3em
+
+    .glyphicon:not(:last-child) {
+        margin-right: 0.3em;
+    }
+}
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+@-webkit-keyframes spin2 {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
     }
 }
 
-@keyframes spin {
-    from { transform: scale(1) rotate(0deg); }
-    to { transform: scale(1) rotate(360deg); }
+.row-flex {
+    display: flex;
+    justify-content: space-between;
 }
 
-@-webkit-keyframes spin2 {
-    from { -webkit-transform: rotate(0deg); }
-    to { -webkit-transform: rotate(360deg); }
+.pointer {
+    cursor: pointer;
 }
-.row-flex{
-  display: flex;
-  justify-content: space-between;
+
+.flex {
+    display: flex;
 }
-.pointer{
-  cursor: pointer;
+
+.between {
+    justify-content: space-between;
 }
-.flex{
-  display: flex;
-}
-.between{
-  justify-content: space-between;
-}
-.equal-four > *{
+
+.equal-four > * {
     width: 25%;
-    *:last-child{
+
+    *:last-child {
         text-align: right;
     }
 }
+
 .panel-heading a:after {
-    font-family:'Glyphicons Halflings';
-    content:"\e114";
+    font-family: 'Glyphicons Halflings';
+    content: "\e114";
     float: right;
     color: grey;
 }
+
 .panel-heading a.collapsed:after {
-    content:"\e080";
+    content: "\e080";
+}
+
+.row.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+
+    & > [class*=" col-"],
+    & > [class^="col-"] {
+        &:last-of-type {
+            color: blue;
+        }
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+.zero-pad {
+    @include media-max(sm) {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+.zero-pad-l {
+    @include media-min(sm) {
+        padding-left: 0;
+    };
+    @extend .zero-pad;
+}
+
+.zero-pad-r {
+    @include media-min(sm) {
+        padding-right: 0;
+    };
+    @extend .zero-pad;
 }
 @import "form";

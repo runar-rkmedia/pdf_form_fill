@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+{% macro render_field(field, formgroup = True, no_label = False, label_class = None) %}
+    {% if formgroup %}
+        <div class="form-group">
+        {% endif %}
+        {% if not no_label %}
+            {% if label_class %}
+                {{ field.label(class_=label_class) }}
+            {% else %}
+                {{ field.label }}
+            {% endif %}
+        {% endif %}
+        {{ field(class_="form-control", **kwargs)|safe }}
+        {% if field.errors %}
+            <ul class="errors">
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if formgroup %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_field_group(field) %}
+    <div class="form-group">
+        {{ render_field(field, **kwargs) }}
+    </div>
+{% endmacro %}

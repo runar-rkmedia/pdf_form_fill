@@ -16,7 +16,11 @@ from models import (db,
                     Invite,
                     FilledFormModified,
                     FilledForm,
-                    Address
+                    InviteType,
+                    Address,
+                    Company,
+                    ContactType,
+                    UserRole
                     )
 from vk_objects import FormField
 
@@ -30,6 +34,7 @@ from flask import (
     send_from_directory,
     url_for
 )
+from forms import CreateCompany
 from flask.json import jsonify, JSONEncoder
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
@@ -293,12 +298,60 @@ def validate_fields(request_form):
 def get_invite(invite_id):
     """Route for getting an invite."""
     invite = Invite.get_invite_from_id(invite_id)
+    if not invite:
+        flash('Denne invitasjonsnøkkelen er ikke gyldig.')
+        return redirect(url_for('control_panel'))
+    if invite.type == InviteType.create_company:
+        return invite_create_company(invite, request)
+    elif invite.type == InviteType.company:
+        pass
+    if request.method == 'GET':
+            return render_template('invite.html', invite=invite)
+
     if request.method == 'POST' and invite:
-        invite.invitee = current_user
-        current_user.company = invite.company
-        db.session.commit()
-        return render_template('invite.html', invite=invite, newly_invite=True)
-    return render_template('invite.html', invite=invite)
+        if invite.type == InviteType.company:
+            invite.invitee = current_user
+            current_user.company = invite.company
+            db.session.commit()
+            return render_template('invite.html', invite=invite, newly_invite=True)
+
+            return render_template('create_company.html', invite=invite)
+
+def invite_create_company(invite, request):
+    """Handle invites for creating a company."""
+    form = CreateCompany()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+
+            address = Address(
+                line1=form.address1.data,
+                line2=form.address2.data,
+                postnumber=form.postnumber.data,
+                postal=form.postal.data
+            )
+            company = Company(
+                name=form.name.data,
+                description=form.description.data,
+                orgnumber=form.org_nr.data,
+                address=address
+            )
+            company.add_contact(
+                type=ContactType.email,
+                value=form.email.data,
+                description=form.contact_name.data
+            )
+            db.session.add(address)
+            db.session.add(company)
+            current_user.company = company
+            if current_user.role == UserRole.user:
+                current_user.role = UserRole.companyAdmin
+            invite.invitee=current_user
+            db.session.commit()
+            flash("Firmaet '{}' ble opprettet."\
+                  .format(company.name))
+            return redirect(url_for('control_panel_company'))
+    return render_template('create_company.html', invite=invite, form=form)
+
 
 
 @app.route('/set_sign', methods=['POST'])
@@ -493,6 +546,7 @@ def json_fill_document():
             file_download=os.path.relpath(output_pdf),
         )
     if request.method == 'POST':
+        print(request.form)
         error_fields = validate_fields(request.form)
 
         if error_fields:

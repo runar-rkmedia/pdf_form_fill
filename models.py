@@ -66,18 +66,6 @@ class NoAccess(Error):
         self.message = message
         super(NoAccess, self).__init__(message, *args)
 
-def verify_number(field_to_verify, name_of_field):
-    """Verify that input is number."""
-    try:
-        field_to_verify = int(field_to_verify)
-    except TypeError:
-        raise ValueError(
-            'Expected {} to be an integer, got {}'
-            .format(
-                name_of_field,
-                field_to_verify
-                )
-            )
 
 class Address(db.Model):
     """Address-table for users."""
@@ -87,16 +75,6 @@ class Address(db.Model):
     postnumber = db.Column(db.SmallInteger)
     postal = db.Column(db.String(200))
 
-    @classmethod
-    def add(cls, line1, line2, postnumber, postal):
-        """Add an address-entry."""
-        postnumber = verify_number(postnumber, 'postnumber')
-        return Address(
-            line1=line1,
-            line2=line2,
-            postnumber=postnumber,
-            postal=postal
-        )
 
     @classmethod
     def update_or_create(cls, address_id, line1, line2, postnumber, postal):
@@ -104,10 +82,9 @@ class Address(db.Model):
         address = Address.query.filter_by(
             id=address_id
         ).first()
-        postnumber = verify_number(postnumber, 'postnumber')
 
         if not address:
-            address = Address.add(
+            address = Address(
                 line1=line1,
                 line2=line2,
                 postnumber=postnumber,
@@ -134,14 +111,8 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     type = db.Column(db.Enum(ContactType))
     value = db.Column(db.String(200))
+    description = db.Column(db.String(200))
 
-    @classmethod
-    def add(cls, type, value):
-        """Add a contact-entry."""
-        return Contact(
-            type=type,
-            value=value,
-        )
 
 
 class Company(db.Model):
@@ -154,22 +125,21 @@ class Company(db.Model):
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
 
-    @classmethod
-    def add(cls, name, description, orgnumber, address, contact_list=None):
-        """Add a -entry."""
-        orgnumber = verify_number(orgnumber, 'orgnumber')
-        for contact in contact_list:
-            company_contact = CompanyContact(
-                contact=contact,
-                company=self
-            )
-            db.session.add(company_contact)
-        return Address(
-            name=name,
-            description=description,
-            orgnumber=orgnumber,
-            address=address
+    def add_contact(self, type, value, description):
+        """Add contact to this company."""
+        contact = Contact(
+            type=type,
+            value=value,
+            description=description
         )
+        company_contact = CompanyContact(
+            contact=contact,
+            company=self
+        )
+        db.session.add(contact)
+        db.session.add(company_contact)
+        return contact
+
 
     def owns(self, model):
         """Check if company has rights to access this."""
@@ -260,15 +230,20 @@ class User(db.Model, UserMixin):
         else:
             raise NoAccess("You don't have access to this resource.")
 
-    def addContact(self, contact_type, contact_value):
-        """Description."""
-        contact = Contact(type=contact_type, value=contact_value)
-        db.session.add(contact)
-        user_contact = UserContact(
+    def add_contact(self, type, value, description):
+        """Add contact to this user."""
+        contact = Contact(
+            type=type,
+            value=value,
+            description=description
+        )
+        company_contact = UserContact(
             contact=contact,
             user=self
         )
-        db.session.add(user_contact)
+        db.session.add(contact)
+        db.session.add(company_contact)
+        return contact
 
 
 class Invite(db.Model):
