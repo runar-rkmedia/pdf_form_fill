@@ -25,8 +25,15 @@ class ContactType(enum.Enum):
     mobile = 3
 
 
+
 class InviteType(enum.Enum):
-    """Enumeration for types of contactfields."""
+    """Enumeration for types of invites."""
+    company = 1,
+    create_company = 2,
+
+
+class InviteType(enum.Enum):
+    """Enumeration for types of invites."""
     company = 1,
     create_company = 2,
 
@@ -38,12 +45,35 @@ class UserRole(enum.Enum):
     admin = 3
 
 
-def lookup_vk(manufacturor, watt_per_meter, watt_total):
+class ProductCatagory(enum.Enum):
+    """Enumeration for catagories of products."""
+    cable_inside = 1,
+    cable_outside = 2,
+    mat_inside = 3
+    mat_outside = 4
+    single_inside = 5
+    single_outside = 6
+
+    @classmethod
+    def split(cls, enumObject):
+        """Split it."""
+        outside = False
+        catagory_type = ''
+        if enumObject in [cls.cable_inside, cls.cable_outside]:
+            catagory_type = 'cable'
+        elif enumObject in [cls.mat_inside, cls.mat_outside]:
+            catagory_type = 'mat'
+        elif enumObject in [cls.single_inside, cls.single_outside]:
+            catagory_type = 'single'
+        return catagory_type, enumObject in [cls.cable_outside, cls.mat_outside, cls.single_outside]
+
+
+def lookup_vk(manufacturor, mainSpec, watt_total):
     """Return a specific heating_cable from a generic lookup."""
     products = Product.query\
         .filter_by(effect=watt_total)\
         .join(ProductType, aliased=True)\
-        .filter_by(watt_per_meter=watt_per_meter)\
+        .filter_by(mainSpec=mainSpec)\
         .join(ProductType.manufacturor, aliased=True)\
         .filter_by(name=manufacturor)\
         .all()
@@ -357,13 +387,12 @@ class ProductType(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(500))
-    mainSpec = db.Column(db.String(25))  # Betegnelse
-    watt_per_meter = db.Column(db.Numeric(6))
-    watt_per_square_meter = db.Column(db.Numeric(6))
-    secondSpec = db.Column(db.Integer)  # antall ledere
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
+    mainSpec = db.Column(db.SmallInteger)  # meterEffekt/kvadratMeterEffekt
+    secondarySpec = db.Column(db.SmallInteger)  # meterEffekt/kvadratMeterEffekt
+    catagory = db.Column(db.Enum(ProductCatagory))
 
     @property
     def serialize(self):
@@ -375,14 +404,11 @@ class ProductType(db.Model):
         dictionary = {
             'id': self.id,
             'name': self.name,
-            'secondSpec': self.secondSpec,
+            'mainSpec': self.mainSpec,
+            'secondarySpec': self.secondarySpec,
             'products': products_dict
         }
-        if self.watt_per_meter:
-            dictionary['watt_per_meter'] = self.watt_per_meter
-        if self.watt_per_square_meter:
-            dictionary[
-                'watt_per_square_meter'] = self.watt_per_square_meter
+        dictionary['type'], dictionary['inside'] = ProductCatagory.split(self.catagory)
         return dictionary
 
 
@@ -396,6 +422,7 @@ class Product(db.Model):
     product_type = db.relationship(
         ProductType, primaryjoin='Product.product_type_id==ProductType.id')
     specs = db.Column(db.JSON)
+    restrictions = db.Column(db.JSON)
 
     @classmethod
     def get_by_id(cls, p_id):
@@ -503,8 +530,8 @@ class FilledFormModified(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(
         User, primaryjoin='FilledFormModified.user_id==User.id')
-    filled_form_id = db.Column(db.Integer, db.ForeignKey(FilledForm.id))
     archived = db.Column(db.Boolean, default=False)
+    filled_form_id = db.Column(db.Integer, db.ForeignKey(FilledForm.id))
     filled_form = db.relationship(
         FilledForm,
         primaryjoin='FilledFormModified.filled_form_id==FilledForm.id',

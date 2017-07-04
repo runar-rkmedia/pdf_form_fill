@@ -7,7 +7,7 @@ import re
 import base64
 
 from config import configure_app
-from field_dicts.helpers import (commafloat, id_generator, )
+from field_dicts.helpers import (commafloat, id_generator)
 from models import (db,
                     Manufacturor,
                     Product,
@@ -245,21 +245,13 @@ def user_file_path(filename=None, create_random_dir=False):
 def set_fields_from_product(dictionary, product, specs=None):
     """Set multiple fields from a Product-table."""
     dictionary["Betegnelse"] = product.product_type.name
-    # legg til enleder/toleder
-    ledere = product.product_type.secondSpec
-    if ledere == 2:
-        dictionary['check-toleder'] = True
-    elif ledere == 1:
-        dictionary['check-enleder'] = True
 
-    dictionary['nominell_motstand'] = product.specs.get(
-        'Nominell elementmotstand')
-    dictionary['resistans_min'] = product.specs.get(
-        'Resistans_min')
-    dictionary['resistans_max'] = product.specs.get(
-        'Resistans_max')
-    dictionary['lengde'] = product.specs.get(
-        'Lengde')
+
+    dictionary.update(product.specs)
+    print(dictionary)
+    print('dsssssssss')
+
+
 
     return dictionary
 
@@ -548,6 +540,7 @@ def json_fill_document():
     if request.method == 'POST':
         print(request.form)
         error_fields = validate_fields(request.form)
+
 
         if error_fields:
             return jsonify(

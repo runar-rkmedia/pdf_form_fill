@@ -24,6 +24,10 @@ def delete_empty_value(dictionary):
     """Remove all keys from a dictionary where values are empty."""
     return {k: v for k, v in dictionary.items() if v != None and v != ''}
 
+def dictionary_subset(dictionary, list_of_keys):
+    """Only return the data we want from a dictionary."""
+    return {k: dictionary[k] for k in dictionary.keys() & list_of_keys if dictionary[k] is not ""}
+
 
 def group_number(n, grouping=3, seperator=' '):
     """Returns a pretty, grouped number."""

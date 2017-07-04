@@ -40,7 +40,7 @@ translator = {
     ],
     'cc': [
         '{:.2f}',
-        lambda x: (commafloat(x['oppvarmet_areal']) / commafloat(x['lengde']) * 100,)
+        lambda x: (commafloat(x['oppvarmet_areal']) / commafloat(x['Length']) * 100,)
     ],
     'dato-År': [
         '{}',
