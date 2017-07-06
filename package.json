@@ -1,0 +1,35 @@
+{
+  "name": "pdf_form_fill",
+  "version": "0.4.0",
+  "description": "Fill pdf-docuumetation easily ",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --watch",
+    "build:watch": "watch 'npm run build' ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://runartrollet@bitbucket.org/runartrollet/pdf_form_fill.git"
+  },
+  "author": "Runar Kristoffersen",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/runartrollet/pdf_form_fill#readme",
+  "dependencies": {
+    "@types/jquery": "^3.2.6",
+    "@types/knockout": "^3.4.41",
+    "@types/knockout.validation": "0.0.33",
+    "jquery": "^3.2.1",
+    "knockout": "^3.4.2",
+    "knockout.validation": "^2.0.3",
+    "typescript": "^2.4.1"
+  },
+  "devDependencies": {
+    "ts-loader": "^2.2.2",
+    "watch": "^1.0.2",
+    "webpack": "^3.0.0"
+  }
+}

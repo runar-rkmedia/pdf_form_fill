@@ -78,8 +78,8 @@ Compress(app)
 
 assets = Environment(app)
 js_main = Bundle(
-    'js/knockout.validation.js',
-    'js/nb-NO.js',
+    'js/ext/knockout.validation.js',
+    'js/ext/nb-NO.js',
     'js/main.js',
     filters='jsmin',
     output='gen/packed.js')
