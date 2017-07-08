@@ -71,7 +71,7 @@ class FormField(object):
         form_data = self.form_data_dict.get(manufacturor)
         if not form_data:
             raise ValueError(
-                "Could not find '{}' in dictionary when gathering form_data.")
+                "Could not find 'manufacturor' in dictionary when gathering form_data. wrong id? object was {}".format(self.form_data_dict))
 
         self.pdf_path = form_data.pdf_path
         self.fields_dict = form_data.fields_dict

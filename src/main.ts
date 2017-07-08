@@ -2,6 +2,35 @@ import $ = require("jquery");
 import ko = require("knockout");
 import ko_validation = require("knockout.validation");
 
+var pad = (n:string, width:number, z:string = "0") => {
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+// webpack doesn't like to litter the global-namespace, so to force this function to be available there, we need to add the function to global. then typescript compains, so we need to add to it.
+(<any>window).format_date = (dateString:string, type:string) => {
+    var d_names = new Array("Søndag", "Mandag", "Tirsdag",
+        "Onsdag", "Torsdag", "Fredag", "Søndag");
+
+    var m_names = new Array("januar", "februar", "mars",
+        "april", "mai", "juni", "juli", "august", "september",
+        "october", "november", "december");
+    //
+    // var d = new Date(dateString).toISOString()
+    var d = new Date(dateString);
+    var curr_day = d.getDay();
+    var curr_date = d.getDate();
+    var curr_month = d.getMonth();
+    var curr_year = d.getFullYear();
+    var curr_hour = d.getHours();
+    var curr_minute = d.getMinutes();
+    if (type === 'short') {
+        return curr_date + '/' + curr_month + "-" + String(curr_year).slice(2) + ' ' +
+            pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
+    }
+    return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
+        pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
+};
+
 interface ProductInterface {
     effect: number;
     id: number;
@@ -9,7 +38,7 @@ interface ProductInterface {
     manufacturor?: string;
     type?: string;
     name?: string;
-    mainSpec?: number;
+    mainSpec: number;
     secondarySpec?: number;
 }
 
@@ -31,6 +60,38 @@ interface ManufacturorInterface {
 interface ArrayFylterInterface {
     value: any,
     mustEqual: any
+}
+
+interface UserFormInterface {
+    date: string;
+    id: number;
+    request_form: RequestFormInterface
+}
+
+interface RequestFormInterface {
+    anleggs_adresse: string
+    anleggs_postnummer: number
+    anleggs_poststed: string
+    rom_navn: string
+    areal: number
+    oppvarmet_areal: number
+    selected_vk: number
+    product_id: number
+    address_id: number
+    ohm_a: number
+    ohm_b: number
+    ohm_c: number
+    mohm_a: boolean
+    mohm_b: boolean
+    mohm_c: boolean
+}
+
+interface FileDownloadInterface {
+    address_id: number
+    file_download: string
+    filled_form_modified_id: number
+    error_fields?: Array<string>
+    error_message?: string
 }
 
 
@@ -109,15 +170,15 @@ class TSProductModel {
                     value: prod.manufacturor,
                     mustEqual: this.parentModel.manufacturor
                 },
-                    {
-                        value: prod.type,
-                        mustEqual: this.parentModel.vk_type
-                    }
+                {
+                    value: prod.type,
+                    mustEqual: this.parentModel.vk_type
+                }
 
                 ]
             );
 
-        }).sort(function(a, b) {
+        }).sort((a, b)=> {
             return a.effect - b.effect;
         });
     });
@@ -131,23 +192,23 @@ class TSProductModel {
                     value: prod.mainSpec,
                     mustEqual: this.parentModel.mainSpec
                 },
-                    {
-                        value: prod.effect,
-                        mustEqual: this.parentModel.effect
-                    }
+                {
+                    value: prod.effect,
+                    mustEqual: this.parentModel.effect
+                }
                 ]
             );
 
-        }).sort(function(a, b) {
+        }).sort((a, b)=> {
             return a.effect - b.effect;
         });
     });
 
 
     spec_groups = ko.computed(() => {
-        var filtered = this.filtered_products_no_mainSpec();
-        var flags = {};
-        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), function(entry) {
+        let filtered = this.filtered_products_no_mainSpec();
+        let flags:StrIndex<boolean> = {};
+        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface)=> {
             if (flags[entry.mainSpec]) {
                 return false;
             }
@@ -157,15 +218,21 @@ class TSProductModel {
     });
 };
 
+interface StrIndex<TValue> {
+    [key: string]: TValue
+}
+
 
 class TSAppViewModel {
     anleggs_adresse: KnockoutObservable<{}> = ko.observable().extend({
         required: true,
         minLength: 3,
+        maxLength: 50
     })
     anleggs_poststed: KnockoutObservable<{}> = ko.observable().extend({
         required: true,
         minLength: 3,
+        maxLength: 50
     });
     anleggs_postnummer: KnockoutObservable<{}> = ko.observable().extend({
         required: true,
@@ -180,6 +247,7 @@ class TSAppViewModel {
     rom_navn: KnockoutObservable<{}> = ko.observable().extend({
         required: true,
         minLength: 2,
+        maxLength: 50
     });
     areal: KnockoutObservable<{}> = ko.observable().extend({
         number: true,
@@ -217,14 +285,18 @@ class TSAppViewModel {
     last_sent_args: KnockoutObservable<string> = ko.observable();
     form_args: KnockoutObservable<string> = ko.observable($('#form').serialize());
     Products: KnockoutObservable<TSProductModel> = ko.observable();
-    selected_vk: KnockoutObservable<string> = ko.observable();
-    forced_selected_vk: KnockoutObservable<string> = ko.observable();
-    address_id: KnockoutObservable<string> = ko.observable();
-    filled_form_modified_id: KnockoutObservable<string> = ko.observable();
+    selected_vk: KnockoutObservable<number> = ko.observable();
+    forced_selected_vk: KnockoutObservable<number> = ko.observable();
+    address_id: KnockoutObservable<number> = ko.observable();
+    filled_form_modified_id: KnockoutObservable<number> = ko.observable();
     user_forms: KnockoutObservableArray<string> = ko.observableArray();
     company_forms: KnockoutObservableArray<string> = ko.observableArray();
     validation_errors: KnockoutValidationErrors = ko_validation.group(self);
     loading: KnockoutObservableArray<string> = ko.observableArray();
+
+    delete: KnockoutObservable<string> = ko.observable();
+
+    noname: any
 
     constructor() {
         ko_validation.init({
@@ -238,13 +310,13 @@ class TSAppViewModel {
         });
 
         // Add bootstrap-validation-css to parent of field
-        var init = ko.bindingHandlers['validationCore'].init;
-        ko.bindingHandlers['validationCore'].init = function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        let init = ko.bindingHandlers['validationCore'].init! ;
+        ko.bindingHandlers['validationCore'].init = (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext)=> {
             init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-            var config = ko_validation.utils.getConfigOptions(element);
+            let config = ko_validation.utils.getConfigOptions(element);
             // if requested, add binding to decorate element
             if (config.decorateInputElement && ko_validation.utils.isValidatable(valueAccessor())) {
-                var parent = $(element).parent();
+                let parent = $(element).parent();
                 if (parent.length) {
                     ko.applyBindingsToNode(parent[0], {
                         validationElement: valueAccessor()
@@ -254,131 +326,13 @@ class TSAppViewModel {
         };
         this.Products(new TSProductModel(this));
         this.Products().getProducts();
-    }
 
-
-
-form_changed = ko.computed(() => {
-    console.log(this)
-    // return this.form_args() !== this.last_sent_args();
-}, this);
-
-parse_form_download = (result) => {
-    this.last_sent_args(this.form_args());
-    if (result.error_fields) {
-        this.error_fields(result.error_fields);
-    }
-    if (result.file_download) {
-        this.file_download(result.file_download);
-        if (result.address_id) {
-            this.address_id(result.address_id);
-        }
-        if (result.filled_form_modified_id) {
-            this.filled_form_modified_id(result.filled_form_modified_id);
-        }
-    }
-    if (result.error_message) {
-        console.log('sdfsd')
-        this.error_message(result.error_message);
-    }
-}
-
-post_form = (e, t) => {
-    this.form_args($('#form').serialize());
-    if (this.validation_errors().length > 0) {
-        this.validation_errors.showAllMessages();
-        return false;
-    }
-    if (this.form_changed() || !this.filled_form_modified_id()) {
-        // this.file_download(false);
-        this.loading.push('fill_form');
-        $.post("/json/heating/", {
-            'anleggs_adresse': this.anleggs_adresse(),
-            'anleggs_poststed': this.anleggs_poststed(),
-            'anleggs_postnummer': this.anleggs_postnummer(),
-            'rom_navn': this.rom_navn(),
-            'areal': this.areal(),
-            'oppvarmet_areal': this.oppvarmet_areal(),
-            'mohm_a': this.mohm_a(),
-            'mohm_b': this.mohm_b(),
-            'mohm_c': this.mohm_c(),
-            'ohm_a': this.ohm_a(),
-            'ohm_b': this.ohm_b(),
-            'ohm_c': this.ohm_c(),
-            'product_id': this.selected_vk(),
-            'address_id': this.address_id(),
-            'filled_form_modified_id': this.filled_form_modified_id()
-        })
-            .done(function(result) {
-                this.loading.remove('fill_form');
-                this.parse_form_download(result);
-            });
-    } else {
-        this.loading.push('fill_form');
-        $.get("/json/heating/", {
-            'filled_form_modified_id': this.filled_form_modified_id()
-        }).done(function(result) {
-            this.loading.remove('fill_form');
-            this.parse_form_download(result);
-        });
-    }
-};
-
-$('body').on("change keyup paste click", 'input', function() {
-    this.form_args($('#form').serialize());
-});
-}
-
-$(function() {
-
-    // ko_validation.locale('nb-NO');
-
-    "use strict";
-
-    function sortNumber(a: number, b: number): number {
-        return a - b;
-    }
-
-
-    function AppViewModel() {
-
-
-
-
-
-
-
-        function findWithAttr(array, attr, value) {
-            for (var i = 0; i < array.length; i += 1) {
-                if (array[i][attr] === value) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        ko.computed(function() {
-            if (this.mainSpec()) {
-                try {
-                    var f = this.Products().spec_groups();
-                    if (findWithAttr(f, 'mainSpec', this.mainSpec()) < 0) {
-                        this.mainSpec(undefined);
-                    }
-                } catch (e) {
-
-                } finally {
-
-                }
-            }
-        });
-
-
-        ko.computed(function() {
+        this.noname = ko.computed(() => {
             try {
                 var f = this.Products().flat_products();
                 if (f.length > 0) {
-                    get_user_forms();
-                    get_company_forms();
+                    this.get_user_forms();
+                    // this.get_company_forms();
                 }
             } catch (e) {
 
@@ -387,134 +341,171 @@ $(function() {
             }
         });
 
-        function get_user_forms(loading) {
-            this.loading.push('user_form')
-            $.get("/forms.json", {})
-                .done(function(result) {
-                    result.user_forms.prefix = 'user_forms';
-                    result.company_forms.prefix = 'company_forms';
-                    this.user_forms(result.user_forms);
-                    this.company_forms(result.company_forms);
-                    this.loading.remove('user_form')
-                });
-        }
+        ko.computed(() => {
+            if (this.mainSpec()) {
+                try {
+                    var f = this.Products().spec_groups();
+                    if (this.findWithAttr(f, 'mainSpec', this.mainSpec()) < 0) {
+                        this.mainSpec(null);
+                    }
+                } catch (e) {
 
+                } finally {
 
-        function get_company_forms() {
-            return false
-            $.get("/forms.json", {
-                type: 'company'
-            }).done(function(result, d) {
-                this.company_forms(result);
-            });
-        }
-
-
-        this.get_product_by_id = function(id) {
-            var f = this.Products().flat_products();
-            for (var i = 0; i < f.length; i++) {
-                if (f[i].id == id) {
-                    return f[i];
                 }
             }
-        };
-        this.expand_mods = function(e, d) {
-            var t = $(d.target);
-            var m = t.siblings('.modifications-table');
-            var up = 'glyphicon-menu-up';
-            var down = 'glyphicon-menu-down';
-            m.toggleClass('hidden');
-            if (m.hasClass('hidden')) {
-                t.removeClass(up);
-                t.addClass(down);
-            } else {
-                t.removeClass(down);
-                t.addClass(up);
+        });
+    }
+
+
+
+    form_changed = ko.computed(() => {
+        return this.form_args() !== this.last_sent_args();
+    }, this);
+
+    parse_form_download = (result: FileDownloadInterface) => {
+        this.last_sent_args(this.form_args());
+        if (result.error_fields) {
+            this.error_fields(result.error_fields);
+        }
+        if (result.file_download) {
+            this.file_download(result.file_download);
+            if (result.address_id) {
+                this.address_id(result.address_id);
             }
+            if (result.filled_form_modified_id) {
+                this.filled_form_modified_id(result.filled_form_modified_id);
+            }
+        }
+        if (result.error_message) {
+            this.error_message(result.error_message);
+        }
+    }
 
-        };
-        this.delete = ko.observable();
-
-        this.confirmed_delete = function(e, d) {
-            this.delete('');
-            this.loading.push('delete');
-            $.ajax({
-                url: 'json/form_mod/' + e.id,
-                type: 'DELETE',
-                id: e.id
+    post_form = () => {
+        this.form_args($('#form').serialize());
+        if (this.validation_errors().length > 0) {
+            this.validation_errors.showAllMessages();
+            return false;
+        }
+        if (this.form_changed() || !this.filled_form_modified_id()) {
+            this.file_download(null);
+            this.loading.push('fill_form');
+            $.post("/json/heating/", {
+                'anleggs_adresse': this.anleggs_adresse(),
+                'anleggs_poststed': this.anleggs_poststed(),
+                'anleggs_postnummer': this.anleggs_postnummer(),
+                'rom_navn': this.rom_navn(),
+                'areal': this.areal(),
+                'oppvarmet_areal': this.oppvarmet_areal(),
+                'mohm_a': this.mohm_a(),
+                'mohm_b': this.mohm_b(),
+                'mohm_c': this.mohm_c(),
+                'ohm_a': this.ohm_a(),
+                'ohm_b': this.ohm_b(),
+                'ohm_c': this.ohm_c(),
+                'product_id': this.selected_vk(),
+                'address_id': this.address_id(),
+                'filled_form_modified_id': this.filled_form_modified_id()
             })
-                .done(function(result, d) {
-                    this.loading.remove('delete');
-                    get_user_forms();
+                .done((result: FileDownloadInterface) => {
+                    this.loading.remove('fill_form');
+                    this.parse_form_download(result);
                 });
-        };
-        this.renamePrefix = function(e, d, f) { }
-        this.edit_form = function(e) {
-            var f = e.request_form;
-            this.filled_form_modified_id(e.id);
-            this.anleggs_adresse(f.anleggs_adresse);
-            this.anleggs_postnummer(f.anleggs_postnummer);
-            this.anleggs_poststed(f.anleggs_poststed);
-            this.rom_navn(f.rom_navn);
-            this.areal(f.areal);
-            this.oppvarmet_areal(f.oppvarmet_areal);
-            this.selected_vk(f.product_id);
-            this.address_id(e.address_id);
-            this.filled_form_modified_id(e.id);
-            this.ohm_a(f.ohm_a);
-            this.ohm_b(f.ohm_b);
-            this.ohm_c(f.ohm_c);
-            this.mohm_a(f.mohm_a);
-            this.mohm_b(f.ohm_b);
-            this.mohm_c(f.ohm_c);
-            this.last_sent_args($('#form').serialize());
-            this.form_args($('#form').serialize());
-            $('.nav-tabs a[href="#main_form"]').tab('show');
-        };
-
-        this.loading = ko.observableArray();
+        } else {
+            this.loading.push('fill_form');
+            $.get("/json/heating/", {
+                'filled_form_modified_id': this.filled_form_modified_id()
+            }).done((result: FileDownloadInterface) => {
+                this.loading.remove('fill_form');
+                this.parse_form_download(result);
+            });
+        }
+    };
+    findWithAttr = (array: Array<any>, attr: string, value: any) => {
+        for (var i = 0; i < array.length; i += 1) {
+            if (array[i][attr] === value) {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
-    //   AppViewModel.suggestions([]);
-    // });
-    var myApp = new TSAppViewModel();
-    // myApp.init();
-    ko.applyBindings(myApp);
-});
-
-this.format_date = function(dateString, type) {
-    var d_names = new Array("Søndag", "Mandag", "Tirsdag",
-        "Onsdag", "Torsdag", "Fredag", "Søndag");
-
-    var m_names = new Array("januar", "februar", "mars",
-        "april", "mai", "juni", "juli", "august", "september",
-        "october", "november", "december");
-    //
-    // var d = new Date(dateString).toISOString()
-    var d = new Date(dateString);
-    var curr_day = d.getDay();
-    var curr_date = d.getDate();
-    var curr_month = d.getMonth();
-    var curr_year = d.getFullYear();
-    var curr_hour = d.getHours();
-    var curr_minute = d.getMinutes();
-    if (type === 'short') {
-        return curr_date + '/' + curr_month + "-" + String(curr_year).slice(2) + ' ' +
-            pad(curr_hour, 2) + ':' + pad(curr_minute, 2);
+    get_user_forms = () => {
+        this.loading.push('user_form')
+        $.get("/forms.json", {})
+            .done((result) => {
+                result.user_forms.prefix = 'user_forms';
+                result.company_forms.prefix = 'company_forms';
+                this.user_forms(result.user_forms);
+                this.company_forms(result.company_forms);
+                this.loading.remove('user_form')
+            });
     }
-    return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
-        pad(curr_hour, 2) + ':' + pad(curr_minute, 2);
-};
 
-function pad(n, width, z) {
-    z = z || '0';
-    n = n + '';
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    get_product_by_id = (id: number) => {
+        var f = this.Products().flat_products();
+        for (var i = 0; i < f.length; i++) {
+            if (f[i].id == id) {
+                return f[i];
+            }
+        }
+    };
+
+    confirmed_delete = (e: UserFormInterface) => {
+        this.delete('');
+        this.loading.push('delete');
+        $.ajax({
+            url: 'json/form_mod/' + e.id,
+            type: 'DELETE',
+            data: {
+                id: e.id
+            }
+        })
+            .done((result) => {
+                this.loading.remove('delete');
+                this.get_user_forms();
+            });
+    };
+
+    edit_form = (e: UserFormInterface) => {
+        console.log(e)
+        var f = e.request_form;
+        this.filled_form_modified_id(e.id);
+        this.anleggs_adresse(f.anleggs_adresse);
+        this.anleggs_postnummer(f.anleggs_postnummer);
+        this.anleggs_poststed(f.anleggs_poststed);
+        this.rom_navn(f.rom_navn);
+        this.areal(f.areal);
+        this.oppvarmet_areal(f.oppvarmet_areal);
+        this.selected_vk(f.product_id);
+        // this.address_id(e.address_id);
+        // TODO: fix address_id
+        this.ohm_a(f.ohm_a);
+        this.ohm_b(f.ohm_b);
+        this.ohm_c(f.ohm_c);
+        this.mohm_a(f.mohm_a);
+        this.mohm_b(f.ohm_b);
+        this.mohm_c(f.ohm_c);
+        this.last_sent_args($('#form').serialize());
+        this.form_args($('#form').serialize());
+        ($('.nav-tabs a[href="#main_form"]') as any).tab('show');
+    };
+
 }
 
 $(function() {
+    var myApp = new TSAppViewModel();
+    ko.applyBindings(myApp);
+
+    $('body').on("change keyup paste click", 'input', () => {
+        myApp.form_args($('#form').serialize());
+    });
+});
+
+$(function() {
     $('input[type=tel]').on('input', function(e) {
-        this.value = this.value.replace(/\D/g, '');
+        let inputfield = (<HTMLInputElement>this);
+        inputfield.value = inputfield.value.replace(/\D/g, '');
     })
 })

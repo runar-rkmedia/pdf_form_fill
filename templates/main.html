@@ -48,8 +48,6 @@
     {% include 'includes/footer.html' %}
 {% endblock %}
 {% block script %}
-    {% assets "js_main" %}
-    <script src="{{ASSET_URL}}"></script>
-    {% endassets %}
+    <script src="{{url_for('static', filename='js/main.js')}}"></script>
     {% include 'includes/form_template.html' %}
 {% endblock %}

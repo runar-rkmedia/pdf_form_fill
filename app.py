@@ -77,13 +77,13 @@ Compress(app)
 
 
 assets = Environment(app)
-js_main = Bundle(
-    # 'js/ext/knockout.validation.js',
-    # 'js/ext/nb-NO.js',
-    'js/main.js',
-    # filters='jsmin',
-    output='gen/packed.js')
-assets.register('js_main', js_main)
+# js_main = Bundle(
+#     # 'js/ext/knockout.validation.js',
+#     # 'js/ext/nb-NO.js',
+#     'js/main.js',
+#     # filters='jsmin',
+#     output='gen/packed.js')
+# assets.register('js_main', js_main)
 
 css = Bundle(
     # 'css/bootstrap.min.css',
@@ -368,6 +368,7 @@ def save_image():
 @login_required
 def download(filename):
     """Serve a file for downloading."""
+    # TODO: Make sure filename is valid. (bad input)
     directory = os.path.join(app.root_path, app.config['USER_FILES'])
     return send_from_directory(directory=directory, filename=filename)
 

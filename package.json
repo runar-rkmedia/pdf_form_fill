@@ -19,6 +19,7 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/runartrollet/pdf_form_fill#readme",
   "dependencies": {
+    "@types/bootstrap": "^3.3.34",
     "@types/jquery": "^3.2.6",
     "@types/knockout": "^3.4.41",
     "@types/knockout.validation": "0.0.33",
@@ -29,9 +30,11 @@
     "uglify-js": "^3.0.23"
   },
   "devDependencies": {
+    "fork-ts-checker-webpack-plugin": "^0.2.4",
     "ts-loader": "^2.2.2",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "watch": "^1.0.2",
-    "webpack": "^3.0.0"
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.1"
   }
 }

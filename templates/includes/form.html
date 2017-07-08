@@ -11,15 +11,15 @@
                 <div class="panel-body row">
                     <div class="col-xs-12 " data-bind="validationElement anleggs_adresse">
                         <label for="input-anleggs_adresse">Anleggsadresse</label>
-                        <input class="form-control" type="text" name="anleggs_adresse" id="input-anleggs_adresse" data-bind="value: anleggs_adresse" min="4">
+                        <input class="form-control" type="text" name="address1" id="input-anleggs_adresse" data-bind="value: anleggs_adresse" min="4" max="50">
                     </div>
                     <div class="col-xs-3 col-sm-2 ">
                         <label for="input-anleggs_postnummer">Postnummer</label>
-                        <input class="form-control" type="number" pattern="\d*" min="0" max="9999" name="anleggs_postnummer" id="input-anleggs_postnummer" data-bind="value: anleggs_postnummer">
+                        <input class="form-control" type="number" pattern="\d*" min="0" max="9999" name="postnummer" id="input-anleggs_postnummer" data-bind="value: anleggs_postnummer">
                     </div>
                     <div class=" col-xs-7 col-xs-offset-2 col-sm-10 col-sm-offset-0  col-md-offset-0">
                         <label for="input-anleggs_poststed">Poststed</label>
-                        <input class="form-control" type="text" name="anleggs_poststed" id="input-anleggs_poststed" data-bind="value: anleggs_poststed">
+                        <input class="form-control" type="text" name="poststed" id="input-anleggs_poststed" data-bind="value: anleggs_poststed" max="50">
                     </div>
                 </div>
             </div>
@@ -110,7 +110,7 @@
                     <div class="form-group col-xs-12">
                         <hr>
                         <label for="input-rom_navn">Romnavn</label>
-                        <input class="form-control" type="text" name="rom_navn" id="input-rom_navn" data-bind="value: rom_navn">
+                        <input class="form-control" type="text" name="romnavn" id="input-rom_navn" data-bind="value: rom_navn">
                     </div>
                     <div class="form-group col-xs-6">
                         <label for="input-areal">Areal</label>

@@ -15,8 +15,8 @@
             </div>
             <div class="row-flex small">
                 <div>
-                    <span class="hidden-xs" data-bind="text: 'Opprettet ' +  format_date(creation_time)"></span>
-                    <span class="visible-xs" data-bind="text: 'Opprettet ' +  format_date(creation_time, 'short')"></span>
+                    <span class="hidden-xs" data-bind="text: 'Opprettet ' +  'format_date(creation_time)'"></span>
+                    <span class="visible-xs" data-bind="text: 'Opprettet ' +  'format_date(creation_time', 'short')"></span>
                 </div>
                 <div data-bind="text: $root.get_product_by_id(modifications[0].request_form.product_id).effect + 'W'"></div>
             </div>
@@ -32,8 +32,8 @@
                         <div class="col-xs-7">
                             <div class="row">
                                 <div class="col-sm-12 col-md-4">
-                                    <span class="hidden-xs" data-bind="text: format_date(date)"></span>
-                                    <span class="visible-xs" data-bind="text: format_date(date, 'short')"></span>
+                                    <span class="hidden-xs" data-bind="text: date"></span>
+                                    <span class="visible-xs" data-bind="text: format_date(date)"></span>
                                 </div>
                                 <div class="col-sm-12 col-md-8">
                                     <!-- ko if: $data.user -->
