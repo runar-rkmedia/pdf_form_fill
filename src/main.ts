@@ -10,6 +10,7 @@ interface ProductInterface {
     type?: string;
     name?: string;
     mainSpec?: number;
+    secondarySpec?: number;
 }
 
 interface ProductTypeInterface {
@@ -34,16 +35,16 @@ interface ArrayFylterInterface {
 
 
 class TSProductModel {
-    products: KnockoutObservableArray<ManufacturorInterface>
+    products: KnockoutObservableArray<ManufacturorInterface> = ko.observableArray(<ManufacturorInterface[]>[])
 
-    constructor(private parentModel: any) {
-        // this.products = ko.observable()
+    constructor(private parentModel: TSAppViewModel) {
+        // this.products = ko.observableArray(<ManufacturorInterface[]>[])
     }
     // Used to filter an arrayFilter.
     myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
-        for (var i = 0; i < list_to_filter.length; i++) {
-            var f = list_to_filter[i]['value'];
-            var t = list_to_filter[i]['mustEqual']();
+        for (let current_filter of list_to_filter) {
+            let f = current_filter['value'];
+            let t = current_filter['mustEqual']();
             if (t && f != t) {
                 return false;
             }
@@ -51,7 +52,6 @@ class TSProductModel {
         return true;
     };
 
-    products = ko.observableArray();
     getProducts = () => {
         $.get("/products.json",
             $('#form').serialize())
@@ -109,10 +109,10 @@ class TSProductModel {
                     value: prod.manufacturor,
                     mustEqual: this.parentModel.manufacturor
                 },
-                {
-                    value: prod.type,
-                    mustEqual: this.parentModel.vk_type
-                }
+                    {
+                        value: prod.type,
+                        mustEqual: this.parentModel.vk_type
+                    }
 
                 ]
             );
@@ -131,10 +131,10 @@ class TSProductModel {
                     value: prod.mainSpec,
                     mustEqual: this.parentModel.mainSpec
                 },
-                {
-                    value: prod.effect,
-                    mustEqual: this.parentModel.effect
-                }
+                    {
+                        value: prod.effect,
+                        mustEqual: this.parentModel.effect
+                    }
                 ]
             );
 
@@ -159,36 +159,72 @@ class TSProductModel {
 
 
 class TSAppViewModel {
-    anleggs_adresse: KnockoutObservable<{}>
-    anleggs_poststed: KnockoutObservable<{}>
-    anleggs_postnummer: KnockoutObservable<{}>
-    manufacturor: KnockoutObservable<string>
-    vk_type: KnockoutObservable<string>
-    mainSpec: KnockoutObservable<string>
-    rom_navn: KnockoutObservable<{}>
-    areal: KnockoutObservable<{}>
-    oppvarmet_areal: KnockoutObservable<{}>
-    effect: KnockoutObservable<{}>
-    ohm_a: KnockoutObservable<{}>
-    ohm_b: KnockoutObservable<{}>
-    ohm_c: KnockoutObservable<{}>
-    mohm_a: KnockoutObservable<{}>
-    mohm_b: KnockoutObservable<{}>
-    mohm_c: KnockoutObservable<{}>
-    error_fields: KnockoutObservableArray<string>
-    error_message: KnockoutObservable<string>
-    file_download: KnockoutObservable<string>
-    last_sent_args: KnockoutObservable<string>
-    form_args: KnockoutObservable<string>
-    Products: KnockoutObservable<TSProductModel>
-    selected_vk: KnockoutObservable<string>
-    forced_selected_vk: KnockoutObservable<string>
-    address_id: KnockoutObservable<string>
-    filled_form_modified_id: KnockoutObservable<string>
-    user_forms: KnockoutObservableArray<string>
-    company_forms: KnockoutObservableArray<string>
-    validation_errors: KnockoutValidationErrors
-    loading: KnockoutObservableArray<string>
+    anleggs_adresse: KnockoutObservable<{}> = ko.observable().extend({
+        required: true,
+        minLength: 3,
+    })
+    anleggs_poststed: KnockoutObservable<{}> = ko.observable().extend({
+        required: true,
+        minLength: 3,
+    });
+    anleggs_postnummer: KnockoutObservable<{}> = ko.observable().extend({
+        required: true,
+        minLength: 4,
+        number: true,
+        min: 1000,
+        max: 9999,
+    });
+    manufacturor: KnockoutObservable<string> = ko.observable();
+    vk_type: KnockoutObservable<string> = ko.observable();
+    mainSpec: KnockoutObservable<string> = ko.observable();
+    rom_navn: KnockoutObservable<{}> = ko.observable().extend({
+        required: true,
+        minLength: 2,
+    });
+    areal: KnockoutObservable<{}> = ko.observable().extend({
+        number: true,
+        min: 0.1
+    });
+    oppvarmet_areal: KnockoutObservable<{}> = ko.observable().extend({
+        required: true,
+        number: true,
+        min: 0.1
+    });
+    effect: KnockoutObservable<{}> = ko.observable().extend({
+        number: true,
+    });
+    ohm_a: KnockoutObservable<{}> = ko.observable().extend({
+        number: true,
+        min: 0,
+        max: 1000,
+    });
+    ohm_b: KnockoutObservable<{}> = ko.observable().extend({
+        number: true,
+        min: 0,
+        max: 1000,
+    });
+    ohm_c: KnockoutObservable<{}> = ko.observable().extend({
+        number: true,
+        min: 0,
+        max: 1000,
+    });
+    mohm_a: KnockoutObservable<{}> = ko.observable();
+    mohm_b: KnockoutObservable<{}> = ko.observable();
+    mohm_c: KnockoutObservable<{}> = ko.observable();
+    error_fields: KnockoutObservableArray<string> = ko.observableArray();
+    error_message: KnockoutObservable<string> = ko.observable();
+    file_download: KnockoutObservable<string> = ko.observable();
+    last_sent_args: KnockoutObservable<string> = ko.observable();
+    form_args: KnockoutObservable<string> = ko.observable($('#form').serialize());
+    Products: KnockoutObservable<TSProductModel> = ko.observable();
+    selected_vk: KnockoutObservable<string> = ko.observable();
+    forced_selected_vk: KnockoutObservable<string> = ko.observable();
+    address_id: KnockoutObservable<string> = ko.observable();
+    filled_form_modified_id: KnockoutObservable<string> = ko.observable();
+    user_forms: KnockoutObservableArray<string> = ko.observableArray();
+    company_forms: KnockoutObservableArray<string> = ko.observableArray();
+    validation_errors: KnockoutValidationErrors = ko_validation.group(self);
+    loading: KnockoutObservableArray<string> = ko.observableArray();
 
     constructor() {
         ko_validation.init({
@@ -196,7 +232,7 @@ class TSAppViewModel {
             errorElementClass: 'has-error has-feedback',
             // successElementClass: 'has-feedback has-success',
             insertMessages: true,
-            decorateElement: true,
+            // decorateElement: true,
             // errorElementClass: 'error',
             errorMessageClass: 'bg-danger'
         });
@@ -216,130 +252,81 @@ class TSAppViewModel {
                 }
             }
         };
-        this.anleggs_adresse = ko.observable().extend({
-            required: true,
-            minLength: 3,
-        });
-        this.anleggs_poststed = ko.observable().extend({
-            required: true,
-            minLength: 3,
-        });
-        this.anleggs_postnummer = ko.observable().extend({
-            required: true,
-            minLength: 4,
-            number: true,
-            min: 1000,
-            max: 9999,
-        });
-
-        this.manufacturor = ko.observable();
-        this.vk_type = ko.observable();
-        this.mainSpec = ko.observable();
-
-        this.rom_navn = ko.observable().extend({
-            required: true,
-            minLength: 2,
-        });
-        this.areal = ko.observable().extend({
-            number: true,
-            min: 0.1
-        });
-        this.oppvarmet_areal = ko.observable().extend({
-            required: true,
-            number: true,
-            min: 0.1
-        });
-        this.effect = ko.observable().extend({
-            number: true,
-        });
-
-        this.ohm_a = ko.observable().extend({
-            number: true,
-            min: 0,
-            max: 1000,
-        });
-        this.ohm_b = ko.observable().extend({
-            number: true,
-            min: 0,
-            max: 1000,
-        });
-        this.ohm_c = ko.observable().extend({
-            number: true,
-            min: 0,
-            max: 1000,
-        });
-
-        this.mohm_a = ko.observable();
-        this.mohm_b = ko.observable();
-        this.mohm_c = ko.observable();
-
-        this.error_fields = ko.observableArray();
-        this.error_message = ko.observable();
-
-        this.file_download = ko.observable();
-
-        this.last_sent_args = ko.observable();
-        this.form_args = ko.observable($('#form').serialize());
-
-        this.Products = ko.observable();
-        this.selected_vk = ko.observable();
-        this.forced_selected_vk = ko.observable();
-
-        this.address_id = ko.observable();
-        this.filled_form_modified_id = ko.observable();
-
-        this.user_forms = ko.observableArray();
-        this.company_forms = ko.observableArray();
-
-        this.validation_errors = ko_validation.group(self);
-        this.loading = ko.observableArray();
-        var dsfsd = this
-        this.Products(new TSProductModel(dsfsd));
-        // var myApsp = new TSProductModel(dsfsd);
+        this.Products(new TSProductModel(this));
         this.Products().getProducts();
-
     }
 
-    post_form = function(e, t) {
-        this.form_args($('#form').serialize());
-        if (this.validation_errors().length > 0) {
-            this.validation_errors.showAllMessages();
-            return false;
+
+
+form_changed = ko.computed(() => {
+    console.log(this)
+    // return this.form_args() !== this.last_sent_args();
+}, this);
+
+parse_form_download = (result) => {
+    this.last_sent_args(this.form_args());
+    if (result.error_fields) {
+        this.error_fields(result.error_fields);
+    }
+    if (result.file_download) {
+        this.file_download(result.file_download);
+        if (result.address_id) {
+            this.address_id(result.address_id);
         }
-        if (this.form_changed() || !this.filled_form_modified_id()) {
-            // this.file_download(false);
-            this.loading.push('fill_form');
-            $.post("/json/heating/", {
-                'anleggs_adresse': this.anleggs_adresse(),
-                'anleggs_poststed': this.anleggs_poststed(),
-                'anleggs_postnummer': this.anleggs_postnummer(),
-                'rom_navn': this.rom_navn(),
-                'areal': this.areal(),
-                'oppvarmet_areal': this.oppvarmet_areal(),
-                'mohm_a': this.mohm_a(),
-                'mohm_b': this.mohm_b(),
-                'mohm_c': this.mohm_c(),
-                'ohm_a': this.ohm_a(),
-                'ohm_b': this.ohm_b(),
-                'ohm_c': this.ohm_c(),
-                'product_id': this.selected_vk(),
-                'address_id': this.address_id(),
-                'filled_form_modified_id': this.filled_form_modified_id()
-            })
-                .done(function(result) {
-                    this.loading.remove('fill_form');
-                    parse_form_download(result);
-                });
-        } else {
-            this.loading.push('fill_form');
-            $.get("/json/heating/", {
-                'filled_form_modified_id': this.filled_form_modified_id()
-            }).done(function(result) {
+        if (result.filled_form_modified_id) {
+            this.filled_form_modified_id(result.filled_form_modified_id);
+        }
+    }
+    if (result.error_message) {
+        console.log('sdfsd')
+        this.error_message(result.error_message);
+    }
+}
+
+post_form = (e, t) => {
+    this.form_args($('#form').serialize());
+    if (this.validation_errors().length > 0) {
+        this.validation_errors.showAllMessages();
+        return false;
+    }
+    if (this.form_changed() || !this.filled_form_modified_id()) {
+        // this.file_download(false);
+        this.loading.push('fill_form');
+        $.post("/json/heating/", {
+            'anleggs_adresse': this.anleggs_adresse(),
+            'anleggs_poststed': this.anleggs_poststed(),
+            'anleggs_postnummer': this.anleggs_postnummer(),
+            'rom_navn': this.rom_navn(),
+            'areal': this.areal(),
+            'oppvarmet_areal': this.oppvarmet_areal(),
+            'mohm_a': this.mohm_a(),
+            'mohm_b': this.mohm_b(),
+            'mohm_c': this.mohm_c(),
+            'ohm_a': this.ohm_a(),
+            'ohm_b': this.ohm_b(),
+            'ohm_c': this.ohm_c(),
+            'product_id': this.selected_vk(),
+            'address_id': this.address_id(),
+            'filled_form_modified_id': this.filled_form_modified_id()
+        })
+            .done(function(result) {
                 this.loading.remove('fill_form');
-                parse_form_download(result);
+                this.parse_form_download(result);
             });
-        }
-    };
+    } else {
+        this.loading.push('fill_form');
+        $.get("/json/heating/", {
+            'filled_form_modified_id': this.filled_form_modified_id()
+        }).done(function(result) {
+            this.loading.remove('fill_form');
+            this.parse_form_download(result);
+        });
+    }
+};
+
+$('body').on("change keyup paste click", 'input', function() {
+    this.form_args($('#form').serialize());
+});
 }
 
 $(function() {
@@ -359,12 +346,7 @@ $(function() {
 
 
 
-        $('body').on("change keyup paste click", 'input', function() {
-            this.form_args($('#form').serialize());
-        });
-        this.form_changed = ko.computed(function() {
-            return this.form_args() !== this.last_sent_args();
-        }, this);
+
 
         function findWithAttr(array, attr, value) {
             for (var i = 0; i < array.length; i += 1) {
@@ -489,27 +471,6 @@ $(function() {
             this.form_args($('#form').serialize());
             $('.nav-tabs a[href="#main_form"]').tab('show');
         };
-
-
-        function parse_form_download(result) {
-            this.last_sent_args(this.form_args());
-            if (result.error_fields) {
-                this.error_fields(result.error_fields);
-            }
-            if (result.file_download) {
-                this.file_download(result.file_download);
-                if (result.address_id) {
-                    this.address_id(result.address_id);
-                }
-                if (result.filled_form_modified_id) {
-                    this.filled_form_modified_id(result.filled_form_modified_id);
-                }
-            }
-            if (result.error_message) {
-                console.log('sdfsd')
-                this.error_message(result.error_message);
-            }
-        }
 
         this.loading = ko.observableArray();
     }
