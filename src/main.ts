@@ -2,17 +2,48 @@ import $ = require("jquery");
 import ko = require("knockout");
 import ko_validation = require("knockout.validation");
 
+interface ProductInterface {
+    effect: number;
+    id: number;
+    // These only exist on flatten products
+    manufacturor?: string;
+    type?: string;
+    name?: string;
+    mainSpec?: number;
+}
+
+interface ProductTypeInterface {
+    id: number;
+    mainSpec: number;
+    secondarySpec: number
+    type: string
+    products: ProductInterface[]
+    name: string
+}
+
+interface ManufacturorInterface {
+    id: number;
+    name: string;
+    product_types: ProductTypeInterface[]
+}
+
+interface ArrayFylterInterface {
+    value: any,
+    mustEqual: any
+}
+
+
 class TSProductModel {
-    products: KnockoutObservableArray<string>
+    products: KnockoutObservableArray<ManufacturorInterface>
 
     constructor(private parentModel: any) {
         // this.products = ko.observable()
     }
     // Used to filter an arrayFilter.
-    myArrayFilter = (list_to_filter)=> {
+    myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
         for (var i = 0; i < list_to_filter.length; i++) {
-            var f = list_to_filter[i][0];
-            var t = list_to_filter[i][1]();
+            var f = list_to_filter[i]['value'];
+            var t = list_to_filter[i]['mustEqual']();
             if (t && f != t) {
                 return false;
             }
@@ -21,22 +52,22 @@ class TSProductModel {
     };
 
     products = ko.observableArray();
-    getProducts = ()=> {
+    getProducts = () => {
         $.get("/products.json",
             $('#form').serialize())
-            .done((result)=> {
+            .done((result: ManufacturorInterface[]) => {
                 this.products(result);
                 this.parentModel.selected_vk(this.parentModel.forced_selected_vk());
             })
-            .fail(function(e) {
+            .fail((e) => {
                 console.log('Could not retrieve data = Error ' + e.status);
             });
     };
-    flatten_products = (products)=>{
+    flatten_products = (products_to_parse: ManufacturorInterface[]) => {
         var r = [];
-        if (products) {
-            for (var i = 0; i < products.length; i++) {
-                var m = products[i];
+        if (products_to_parse) {
+            for (var i = 0; i < products_to_parse.length; i++) {
+                var m = products_to_parse[i];
                 for (var j = 0; j < m.product_types.length; j++) {
                     var d = m.product_types[j];
                     for (var k = 0; k < d.products.length; k++) {
@@ -66,31 +97,46 @@ class TSProductModel {
         }
         return r;
     };
-    flat_products = ko.computed(()=> {
+    flat_products = ko.computed(() => {
         return this.flatten_products(this.products());
     });
-    filtered_products_no_mainSpec = ko.computed(()=> {
+    filtered_products_no_mainSpec = ko.computed(() => {
         if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
         }
-        return ko.utils.arrayFilter(this.flat_products(), (prod)=> {
-            return this.myArrayFilter([
-                [prod.manufacturor, this.parentModel.manufacturor],
-                [prod.type, this.parentModel.vk_type]
-            ]);
+        return ko.utils.arrayFilter(this.flat_products(), (prod) => {
+            return this.myArrayFilter(
+                [{
+                    value: prod.manufacturor,
+                    mustEqual: this.parentModel.manufacturor
+                },
+                {
+                    value: prod.type,
+                    mustEqual: this.parentModel.vk_type
+                }
+
+                ]
+            );
 
         }).sort(function(a, b) {
             return a.effect - b.effect;
         });
     });
-    filtered_products = ko.computed(()=>{
+    filtered_products = ko.computed(() => {
         if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
             return this.filtered_products_no_mainSpec();
         }
-        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod)=> {
-            return this.myArrayFilter([
-                [prod.mainSpec, this.parentModel.mainSpec],
-                [prod.effect, this.parentModel.effect]
-            ]);
+        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
+            return this.myArrayFilter(
+                [{
+                    value: prod.mainSpec,
+                    mustEqual: this.parentModel.mainSpec
+                },
+                {
+                    value: prod.effect,
+                    mustEqual: this.parentModel.effect
+                }
+                ]
+            );
 
         }).sort(function(a, b) {
             return a.effect - b.effect;
@@ -98,7 +144,7 @@ class TSProductModel {
     });
 
 
-    spec_groups = ko.computed(()=> {
+    spec_groups = ko.computed(() => {
         var filtered = this.filtered_products_no_mainSpec();
         var flags = {};
         return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), function(entry) {
