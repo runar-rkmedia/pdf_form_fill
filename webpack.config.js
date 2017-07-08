@@ -4,7 +4,7 @@ var webpack = require('webpack'),
     jsOutPath = path.join('static', 'js'),
     UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
     ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-// TODO: serve knockout and kncokout.validation from CDN instead of bundling it.
+// TODO: serve kncokout.validation from CDN instead of bundling it.
 
 module.exports = {
     // context: __dirname, // to automatically find tsconfig.json
@@ -18,6 +18,8 @@ module.exports = {
         // require("jquery") is external and available
         //  on the global var jQuery
         "jquery": 'jQuery',
+        "knockout": 'ko',
+        // "kv": 'knockout_validation'
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
@@ -38,7 +40,7 @@ module.exports = {
         ]
     },
     plugins: [
-        // new UglifyJSPlugin()
+        // new UglifyJSPlugin(),
         new ForkTsCheckerWebpackPlugin()
     ]
 }
