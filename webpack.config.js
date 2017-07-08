@@ -1,9 +1,21 @@
-var path = require('path');
+var webpack = require('webpack'),
+    path = require('path'),
+    srcPath = path.join(__dirname, 'src')
+jsOutPath = path.join('static', 'js')
+UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+// TODO: serve knockout and kncokout.validation from CDN instead of bundling it.
 
 module.exports = {
-    entry: "./src/main.ts",
+    target: 'web',
+    cache: true,
+    entry: path.join(srcPath, "/main.ts"),
     output: {
-        filename: "./static/js/main.js"
+        filename: path.join(jsOutPath, "/main.js")
+    },
+    externals: {
+        // require("jquery") is external and available
+        //  on the global var jQuery
+        "jquery": 'jQuery',
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
@@ -12,7 +24,13 @@ module.exports = {
     module: {
         loaders: [
             // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
-            { test: /\.tsx?$/, loader: "ts-loader" }
+            {
+                test: /\.tsx?$/,
+                loader: "ts-loader"
+            }
         ]
-    }
+    },
+    plugins: [
+        new UglifyJSPlugin()
+    ]
 }

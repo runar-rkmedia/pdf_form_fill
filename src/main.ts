@@ -2,130 +2,149 @@ import $ = require("jquery");
 import ko = require("knockout");
 import ko_validation = require("knockout.validation");
 
-$(function() {
+class TSProductModel {
+    products: KnockoutObservableArray<string>
 
-    // ko_validation.locale('nb-NO');
-
-    "use strict";
-
-    function sortNumber(a:number, b:number): number {
-        return a - b;
+    constructor(private parentModel: any) {
+        // this.products = ko.observable()
     }
+    // Used to filter an arrayFilter.
+    myArrayFilter = (list_to_filter)=> {
+        for (var i = 0; i < list_to_filter.length; i++) {
+            var f = list_to_filter[i][0];
+            var t = list_to_filter[i][1]();
+            if (t && f != t) {
+                return false;
+            }
+        }
+        return true;
+    };
 
-    function ProductModel(rootModel) {
-        var self = this;
-        self.products = ko.observableArray();
-        self.flat_products = ko.computed(function() {
-            return flatten_products(self.products());
-        });
-
-        function flatten_products(products) {
-            var r = [];
-            if (products) {
-                for (var i = 0; i < products.length; i++) {
-                    var m = products[i];
-                    for (var j = 0; j < m.product_types.length; j++) {
-                        var d = m.product_types[j];
-                        for (var k = 0; k < d.products.length; k++) {
-                            var p = d.products[k];
-                            p.manufacturor = m.name;
-                            p.type = d.type;
-                            p.name = m.name + " " + d.name;
-                            if (p.effect) {
-                                p.name +=  " " + p.effect + "W";
-                            }
-                            if (d.mainSpec) {
-                                p.name +=  " " + d.mainSpec + "W/m";
-                            }
-                            if (d.type == 'mat') {
-                                p.name +=  "²";
-                            }
-                            if ('mainSpec' in d) {
-                                p.mainSpec = d.mainSpec;
-                            }
-                            if ('secondarySpec' in d) {
-                                p.secondarySpec = d.secondarySpec;
-                            }
-                            r.push(p);
+    products = ko.observableArray();
+    getProducts = ()=> {
+        $.get("/products.json",
+            $('#form').serialize())
+            .done((result)=> {
+                this.products(result);
+                this.parentModel.selected_vk(this.parentModel.forced_selected_vk());
+            })
+            .fail(function(e) {
+                console.log('Could not retrieve data = Error ' + e.status);
+            });
+    };
+    flatten_products = (products)=>{
+        var r = [];
+        if (products) {
+            for (var i = 0; i < products.length; i++) {
+                var m = products[i];
+                for (var j = 0; j < m.product_types.length; j++) {
+                    var d = m.product_types[j];
+                    for (var k = 0; k < d.products.length; k++) {
+                        var p = d.products[k];
+                        p.manufacturor = m.name;
+                        p.type = d.type;
+                        p.name = m.name + " " + d.name;
+                        if (p.effect) {
+                            p.name += " " + p.effect + "W";
                         }
+                        if (d.mainSpec) {
+                            p.name += " " + d.mainSpec + "W/m";
+                        }
+                        if (d.type == 'mat') {
+                            p.name += "²";
+                        }
+                        if ('mainSpec' in d) {
+                            p.mainSpec = d.mainSpec;
+                        }
+                        if ('secondarySpec' in d) {
+                            p.secondarySpec = d.secondarySpec;
+                        }
+                        r.push(p);
                     }
                 }
             }
-            return r;
         }
-        // Used to filter an arrayFilter.
-        self.myArrayFilter = function(list_to_filter) {
-            for (var i = 0; i < list_to_filter.length; i++) {
-                f = list_to_filter[i][0];
-                t = list_to_filter[i][1]();
-                if (t && f != t) {
-                    return false;
-                }
+        return r;
+    };
+    flat_products = ko.computed(()=> {
+        return this.flatten_products(this.products());
+    });
+    filtered_products_no_mainSpec = ko.computed(()=> {
+        if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
+        }
+        return ko.utils.arrayFilter(this.flat_products(), (prod)=> {
+            return this.myArrayFilter([
+                [prod.manufacturor, this.parentModel.manufacturor],
+                [prod.type, this.parentModel.vk_type]
+            ]);
+
+        }).sort(function(a, b) {
+            return a.effect - b.effect;
+        });
+    });
+    filtered_products = ko.computed(()=>{
+        if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
+            return this.filtered_products_no_mainSpec();
+        }
+        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod)=> {
+            return this.myArrayFilter([
+                [prod.mainSpec, this.parentModel.mainSpec],
+                [prod.effect, this.parentModel.effect]
+            ]);
+
+        }).sort(function(a, b) {
+            return a.effect - b.effect;
+        });
+    });
+
+
+    spec_groups = ko.computed(()=> {
+        var filtered = this.filtered_products_no_mainSpec();
+        var flags = {};
+        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), function(entry) {
+            if (flags[entry.mainSpec]) {
+                return false;
             }
+            flags[entry.mainSpec] = true;
             return true;
-        };
-
-        self.filtered_products_no_mainSpec = ko.computed(function() {
-            if (!rootModel.effect() && !rootModel.manufacturor() && !rootModel.mainSpec() && !rootModel.vk_type()) {
-                return self.flat_products();
-            }
-            return ko.utils.arrayFilter(self.flat_products(), function(prod) {
-                return self.myArrayFilter([
-                    [prod.manufacturor, rootModel.manufacturor],
-                    [prod.type, rootModel.vk_type]
-                ]);
-
-            }).sort(function(a, b) {
-                return a.effect - b.effect;
-            });
         });
-
-        self.spec_groups = ko.computed(function() {
-            var filtered = self.filtered_products_no_mainSpec();
-            var flags = {};
-            return ko.utils.arrayFilter(self.filtered_products_no_mainSpec(), function(entry) {
-                if (flags[entry.mainSpec]) {
-                    return false;
-                }
-                flags[entry.mainSpec] = true;
-                return true;
-            });
-        });
+    });
+};
 
 
+class TSAppViewModel {
+    anleggs_adresse: KnockoutObservable<{}>
+    anleggs_poststed: KnockoutObservable<{}>
+    anleggs_postnummer: KnockoutObservable<{}>
+    manufacturor: KnockoutObservable<string>
+    vk_type: KnockoutObservable<string>
+    mainSpec: KnockoutObservable<string>
+    rom_navn: KnockoutObservable<{}>
+    areal: KnockoutObservable<{}>
+    oppvarmet_areal: KnockoutObservable<{}>
+    effect: KnockoutObservable<{}>
+    ohm_a: KnockoutObservable<{}>
+    ohm_b: KnockoutObservable<{}>
+    ohm_c: KnockoutObservable<{}>
+    mohm_a: KnockoutObservable<{}>
+    mohm_b: KnockoutObservable<{}>
+    mohm_c: KnockoutObservable<{}>
+    error_fields: KnockoutObservableArray<string>
+    error_message: KnockoutObservable<string>
+    file_download: KnockoutObservable<string>
+    last_sent_args: KnockoutObservable<string>
+    form_args: KnockoutObservable<string>
+    Products: KnockoutObservable<TSProductModel>
+    selected_vk: KnockoutObservable<string>
+    forced_selected_vk: KnockoutObservable<string>
+    address_id: KnockoutObservable<string>
+    filled_form_modified_id: KnockoutObservable<string>
+    user_forms: KnockoutObservableArray<string>
+    company_forms: KnockoutObservableArray<string>
+    validation_errors: KnockoutValidationErrors
+    loading: KnockoutObservableArray<string>
 
-        self.filtered_products = ko.computed(function() {
-            if (!rootModel.effect() && !rootModel.manufacturor() && !rootModel.mainSpec() && !rootModel.vk_type()) {
-                return self.filtered_products_no_mainSpec();
-            }
-            return ko.utils.arrayFilter(self.filtered_products_no_mainSpec(), function(prod) {
-                return self.myArrayFilter([
-                    [prod.mainSpec, rootModel.mainSpec],
-                    [prod.effect, rootModel.effect]
-                ]);
-
-            }).sort(function(a, b) {
-                return a.effect - b.effect;
-            });
-        });
-
-        self.getProducts = function() {
-            $.get("/products.json",
-                    $('#form').serialize())
-                .done(function(result) {
-                    self.products(result);
-                    rootModel.selected_vk(rootModel.forced_selected_vk());
-                })
-                .fail(function(e) {
-                    console.log('Could not retrieve data = Error ' + e.status);
-                });
-        };
-    }
-
-    function AppViewModel() {
-
-        var self = this;
-
+    constructor() {
         ko_validation.init({
             decorateInputElement: true,
             errorElementClass: 'has-error has-feedback',
@@ -151,18 +170,15 @@ $(function() {
                 }
             }
         };
-
-
-
-        self.anleggs_adresse = ko.observable().extend({
+        this.anleggs_adresse = ko.observable().extend({
             required: true,
             minLength: 3,
         });
-        self.anleggs_poststed = ko.observable().extend({
+        this.anleggs_poststed = ko.observable().extend({
             required: true,
             minLength: 3,
         });
-        self.anleggs_postnummer = ko.observable().extend({
+        this.anleggs_postnummer = ko.observable().extend({
             required: true,
             minLength: 4,
             number: true,
@@ -170,100 +186,138 @@ $(function() {
             max: 9999,
         });
 
-        self.manufacturor = ko.observable();
-        self.vk_type = ko.observable();
-        self.mainSpec = ko.observable();
+        this.manufacturor = ko.observable();
+        this.vk_type = ko.observable();
+        this.mainSpec = ko.observable();
 
-        self.rom_navn = ko.observable().extend({
+        this.rom_navn = ko.observable().extend({
             required: true,
             minLength: 2,
         });
-        self.areal = ko.observable().extend({
+        this.areal = ko.observable().extend({
             number: true,
             min: 0.1
         });
-        self.oppvarmet_areal = ko.observable().extend({
+        this.oppvarmet_areal = ko.observable().extend({
             required: true,
             number: true,
             min: 0.1
         });
-        self.effect = ko.observable().extend({
+        this.effect = ko.observable().extend({
             number: true,
         });
 
-        self.ohm_a = ko.observable().extend({
-            number: true,
-            min: 0,
-            max: 1000,
-        });
-        self.ohm_b = ko.observable().extend({
+        this.ohm_a = ko.observable().extend({
             number: true,
             min: 0,
             max: 1000,
         });
-        self.ohm_c = ko.observable().extend({
+        this.ohm_b = ko.observable().extend({
+            number: true,
+            min: 0,
+            max: 1000,
+        });
+        this.ohm_c = ko.observable().extend({
             number: true,
             min: 0,
             max: 1000,
         });
 
-        self.mohm_a = ko.observable();
-        self.mohm_b = ko.observable();
-        self.mohm_c = ko.observable();
+        this.mohm_a = ko.observable();
+        this.mohm_b = ko.observable();
+        this.mohm_c = ko.observable();
 
-        self.error_fields = ko.observableArray();
-        self.error_message = ko.observable();
+        this.error_fields = ko.observableArray();
+        this.error_message = ko.observable();
 
-        self.file_download = ko.observable();
+        this.file_download = ko.observable();
 
-        self.last_sent_args = ko.observable();
-        self.form_args = ko.observable($('#form').serialize());
+        this.last_sent_args = ko.observable();
+        this.form_args = ko.observable($('#form').serialize());
 
-        self.Products = ko.observable();
-        self.selected_vk = ko.observable();
-        self.forced_selected_vk = ko.observable();
+        this.Products = ko.observable();
+        this.selected_vk = ko.observable();
+        this.forced_selected_vk = ko.observable();
 
-        self.address_id = ko.observable();
-        self.filled_form_modified_id = ko.observable();
+        this.address_id = ko.observable();
+        this.filled_form_modified_id = ko.observable();
 
-        self.user_forms = ko.observableArray();
-        self.company_forms = ko.observableArray();
+        this.user_forms = ko.observableArray();
+        this.company_forms = ko.observableArray();
 
-        self.prefill = false;
+        this.validation_errors = ko_validation.group(self);
+        this.loading = ko.observableArray();
+        var dsfsd = this
+        this.Products(new TSProductModel(dsfsd));
+        // var myApsp = new TSProductModel(dsfsd);
+        this.Products().getProducts();
 
+    }
 
-        self.validation_errors = ko_validation.group(self);
-
-
-        if (self.prefill) {
-            self.anleggs_adresse('Kingsroad 1');
-            self.anleggs_postnummer(4321);
-            self.anleggs_poststed('Kings place');
-            self.rom_navn('Kings room');
-            self.areal(1000);
-            self.oppvarmet_areal(900);
-            self.forced_selected_vk(3);
-            self.ohm_a(1);
-            self.ohm_b(2);
-            self.ohm_c(3);
-            self.mohm_a(true);
-            self.mohm_b(true);
-            self.mohm_c(true);
+    post_form = function(e, t) {
+        this.form_args($('#form').serialize());
+        if (this.validation_errors().length > 0) {
+            this.validation_errors.showAllMessages();
+            return false;
         }
+        if (this.form_changed() || !this.filled_form_modified_id()) {
+            // this.file_download(false);
+            this.loading.push('fill_form');
+            $.post("/json/heating/", {
+                'anleggs_adresse': this.anleggs_adresse(),
+                'anleggs_poststed': this.anleggs_poststed(),
+                'anleggs_postnummer': this.anleggs_postnummer(),
+                'rom_navn': this.rom_navn(),
+                'areal': this.areal(),
+                'oppvarmet_areal': this.oppvarmet_areal(),
+                'mohm_a': this.mohm_a(),
+                'mohm_b': this.mohm_b(),
+                'mohm_c': this.mohm_c(),
+                'ohm_a': this.ohm_a(),
+                'ohm_b': this.ohm_b(),
+                'ohm_c': this.ohm_c(),
+                'product_id': this.selected_vk(),
+                'address_id': this.address_id(),
+                'filled_form_modified_id': this.filled_form_modified_id()
+            })
+                .done(function(result) {
+                    this.loading.remove('fill_form');
+                    parse_form_download(result);
+                });
+        } else {
+            this.loading.push('fill_form');
+            $.get("/json/heating/", {
+                'filled_form_modified_id': this.filled_form_modified_id()
+            }).done(function(result) {
+                this.loading.remove('fill_form');
+                parse_form_download(result);
+            });
+        }
+    };
+}
 
-        self.init = function() {
-            self.Products(new ProductModel(self));
-            self.Products().getProducts();
-        };
+$(function() {
+
+    // ko_validation.locale('nb-NO');
+
+    "use strict";
+
+    function sortNumber(a: number, b: number): number {
+        return a - b;
+    }
+
+
+    function AppViewModel() {
+
 
 
 
 
         $('body').on("change keyup paste click", 'input', function() {
-            self.form_args($('#form').serialize());
+            this.form_args($('#form').serialize());
         });
-        self.form_changed = ko.computed(function() {
-            return self.form_args() !== self.last_sent_args();
+        this.form_changed = ko.computed(function() {
+            return this.form_args() !== this.last_sent_args();
         }, this);
 
         function findWithAttr(array, attr, value) {
@@ -276,11 +330,11 @@ $(function() {
         }
 
         ko.computed(function() {
-            if (self.mainSpec()) {
+            if (this.mainSpec()) {
                 try {
-                    var f = self.Products().spec_groups();
-                    if (findWithAttr(f, 'mainSpec', self.mainSpec()) < 0) {
-                        self.mainSpec(undefined);
+                    var f = this.Products().spec_groups();
+                    if (findWithAttr(f, 'mainSpec', this.mainSpec()) < 0) {
+                        this.mainSpec(undefined);
                     }
                 } catch (e) {
 
@@ -293,7 +347,7 @@ $(function() {
 
         ko.computed(function() {
             try {
-                var f = self.Products().flat_products();
+                var f = this.Products().flat_products();
                 if (f.length > 0) {
                     get_user_forms();
                     get_company_forms();
@@ -306,14 +360,14 @@ $(function() {
         });
 
         function get_user_forms(loading) {
-            self.loading.push('user_form')
+            this.loading.push('user_form')
             $.get("/forms.json", {})
                 .done(function(result) {
                     result.user_forms.prefix = 'user_forms';
                     result.company_forms.prefix = 'company_forms';
-                    self.user_forms(result.user_forms);
-                    self.company_forms(result.company_forms);
-                    self.loading.remove('user_form')
+                    this.user_forms(result.user_forms);
+                    this.company_forms(result.company_forms);
+                    this.loading.remove('user_form')
                 });
         }
 
@@ -323,20 +377,20 @@ $(function() {
             $.get("/forms.json", {
                 type: 'company'
             }).done(function(result, d) {
-                self.company_forms(result);
+                this.company_forms(result);
             });
         }
 
 
-        self.get_product_by_id = function(id) {
-            var f = self.Products().flat_products();
+        this.get_product_by_id = function(id) {
+            var f = this.Products().flat_products();
             for (var i = 0; i < f.length; i++) {
                 if (f[i].id == id) {
                     return f[i];
                 }
             }
         };
-        self.expand_mods = function(e, d) {
+        this.expand_mods = function(e, d) {
             var t = $(d.target);
             var m = t.siblings('.modifications-table');
             var up = 'glyphicon-menu-up';
@@ -351,116 +405,78 @@ $(function() {
             }
 
         };
-        self.delete = ko.observable();
+        this.delete = ko.observable();
 
-        self.confirmed_delete = function(e, d) {
-            self.delete('');
-            self.loading.push('delete');
+        this.confirmed_delete = function(e, d) {
+            this.delete('');
+            this.loading.push('delete');
             $.ajax({
-                    url: 'json/form_mod/' + e.id,
-                    type: 'DELETE',
-                    id: e.id
-                })
+                url: 'json/form_mod/' + e.id,
+                type: 'DELETE',
+                id: e.id
+            })
                 .done(function(result, d) {
-                    self.loading.remove('delete');
+                    this.loading.remove('delete');
                     get_user_forms();
                 });
         };
-        self.renamePrefix = function(e, d, f) {}
-        self.edit_form = function(e) {
+        this.renamePrefix = function(e, d, f) { }
+        this.edit_form = function(e) {
             var f = e.request_form;
-            self.filled_form_modified_id(e.id);
-            self.anleggs_adresse(f.anleggs_adresse);
-            self.anleggs_postnummer(f.anleggs_postnummer);
-            self.anleggs_poststed(f.anleggs_poststed);
-            self.rom_navn(f.rom_navn);
-            self.areal(f.areal);
-            self.oppvarmet_areal(f.oppvarmet_areal);
-            self.selected_vk(f.product_id);
-            self.address_id(e.address_id);
-            self.filled_form_modified_id(e.id);
-            self.ohm_a(f.ohm_a);
-            self.ohm_b(f.ohm_b);
-            self.ohm_c(f.ohm_c);
-            self.mohm_a(f.mohm_a);
-            self.mohm_b(f.ohm_b);
-            self.mohm_c(f.ohm_c);
-            self.last_sent_args($('#form').serialize());
-            self.form_args($('#form').serialize());
+            this.filled_form_modified_id(e.id);
+            this.anleggs_adresse(f.anleggs_adresse);
+            this.anleggs_postnummer(f.anleggs_postnummer);
+            this.anleggs_poststed(f.anleggs_poststed);
+            this.rom_navn(f.rom_navn);
+            this.areal(f.areal);
+            this.oppvarmet_areal(f.oppvarmet_areal);
+            this.selected_vk(f.product_id);
+            this.address_id(e.address_id);
+            this.filled_form_modified_id(e.id);
+            this.ohm_a(f.ohm_a);
+            this.ohm_b(f.ohm_b);
+            this.ohm_c(f.ohm_c);
+            this.mohm_a(f.mohm_a);
+            this.mohm_b(f.ohm_b);
+            this.mohm_c(f.ohm_c);
+            this.last_sent_args($('#form').serialize());
+            this.form_args($('#form').serialize());
             $('.nav-tabs a[href="#main_form"]').tab('show');
         };
-        self.post_form = function(e, t) {
-            self.form_args($('#form').serialize());
-            if (self.validation_errors().length > 0) {
-                self.validation_errors.showAllMessages();
-                return false;
-            }
-            if (self.form_changed() || !self.filled_form_modified_id()) {
-                // self.file_download(false);
-                self.loading.push('fill_form');
-                $.post("/json/heating/", {
-                        'anleggs_adresse': self.anleggs_adresse(),
-                        'anleggs_poststed': self.anleggs_poststed(),
-                        'anleggs_postnummer': self.anleggs_postnummer(),
-                        'rom_navn': self.rom_navn(),
-                        'areal': self.areal(),
-                        'oppvarmet_areal': self.oppvarmet_areal(),
-                        'mohm_a': self.mohm_a(),
-                        'mohm_b': self.mohm_b(),
-                        'mohm_c': self.mohm_c(),
-                        'ohm_a': self.ohm_a(),
-                        'ohm_b': self.ohm_b(),
-                        'ohm_c': self.ohm_c(),
-                        'product_id': self.selected_vk(),
-                        'address_id': self.address_id(),
-                        'filled_form_modified_id': self.filled_form_modified_id()
-                    })
-                    .done(function(result) {
-                        self.loading.remove('fill_form');
-                        parse_form_download(result);
-                    });
-            } else {
-                self.loading.push('fill_form');
-                $.get("/json/heating/", {
-                    'filled_form_modified_id': self.filled_form_modified_id()
-                }).done(function(result) {
-                    self.loading.remove('fill_form');
-                    parse_form_download(result);
-                });
-            }
-        };
+
 
         function parse_form_download(result) {
-            self.last_sent_args(self.form_args());
+            this.last_sent_args(this.form_args());
             if (result.error_fields) {
-                self.error_fields(result.error_fields);
+                this.error_fields(result.error_fields);
             }
             if (result.file_download) {
-                self.file_download(result.file_download);
+                this.file_download(result.file_download);
                 if (result.address_id) {
-                    self.address_id(result.address_id);
+                    this.address_id(result.address_id);
                 }
                 if (result.filled_form_modified_id) {
-                    self.filled_form_modified_id(result.filled_form_modified_id);
+                    this.filled_form_modified_id(result.filled_form_modified_id);
                 }
             }
             if (result.error_message) {
-                self.error_message(result.error_message);
+                console.log('sdfsd')
+                this.error_message(result.error_message);
             }
         }
 
-        self.loading = ko.observableArray();
+        this.loading = ko.observableArray();
     }
 
     // AppViewModel.suggestion.subscribe(function() { // called when an suggestion is selected to clear the suggestions
     //   AppViewModel.suggestions([]);
     // });
-    var myApp = new AppViewModel();
-    myApp.init();
+    var myApp = new TSAppViewModel();
+    // myApp.init();
     ko.applyBindings(myApp);
 });
 
-self.format_date = function(dateString, type) {
+this.format_date = function(dateString, type) {
     var d_names = new Array("Søndag", "Mandag", "Tirsdag",
         "Onsdag", "Torsdag", "Fredag", "Søndag");
 

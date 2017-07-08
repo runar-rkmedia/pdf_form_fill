@@ -25,10 +25,12 @@
     "jquery": "^3.2.1",
     "knockout": "^3.4.2",
     "knockout.validation": "^2.0.3",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.1",
+    "uglify-js": "^3.0.23"
   },
   "devDependencies": {
     "ts-loader": "^2.2.2",
+    "uglifyjs-webpack-plugin": "^0.4.6",
     "watch": "^1.0.2",
     "webpack": "^3.0.0"
   }
