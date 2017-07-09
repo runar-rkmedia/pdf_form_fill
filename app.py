@@ -29,6 +29,7 @@ from models import (db,
                     )
 from vk_objects import FormField
 
+
 from flask import (
     Flask,
     request,
@@ -616,7 +617,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    test = get_address_from_street_name('Bergto')
+    test = get_address_from_street_name('Bergtor')
     return render_template('main.html', test=test)
 
 
