@@ -3,15 +3,8 @@ import nb_NO  = require('./../../node_modules/knockout.validation/localization/n
 import kv = require("knockout.validation");
 import { StrIndex } from "./Common"
 import ko = require("knockout");
-
-// Load localization file
-// import s = require('knockout.validation/localization/nb-NO');
-
-// Load localization file
-// import {*} from
-// import * as Fuck from ('../npknockout.validation/localization/ro-RO');
-
-// Switch locale
+import $ = require("jquery");
+// Switch locale for knockout.validation
 kv.defineLocale('no-NO',nb_NO);
 kv.locale('nb-NO')
 
@@ -68,7 +61,7 @@ export class TSAppViewModel {
     });
     manufacturor: KnockoutObservable<string> = ko.observable();
     vk_type: KnockoutObservable<string> = ko.observable();
-    mainSpec: KnockoutObservable<string> = ko.observable();
+    mainSpec: KnockoutObservable<number> = ko.observable();
     rom_navn: KnockoutObservable<{}> = ko.observable().extend({
         required: true,
         minLength: 2,
@@ -157,7 +150,6 @@ export class TSAppViewModel {
                 var f = this.Products().flat_products();
                 if (f.length > 0) {
                     this.get_user_forms();
-                    // this.get_company_forms();
                 }
             } catch (e) {
 
@@ -169,7 +161,10 @@ export class TSAppViewModel {
         ko.computed(() => {
             if (this.mainSpec()) {
                 try {
-                    var f = this.Products().spec_groups();
+                    let f = this.Products().spec_groups();
+                    if (f.find(item => item.mainSpec === this.mainSpec()){
+
+                    }
                     if (this.findWithAttr(f, 'mainSpec', this.mainSpec()) < 0) {
                         this.mainSpec(null);
                     }
@@ -267,13 +262,9 @@ export class TSAppViewModel {
     }
 
     get_product_by_id = (id: number) => {
-        var f = this.Products().flat_products();
-        for (var i = 0; i < f.length; i++) {
-            if (f[i].id == id) {
-                return f[i];
-            }
-        }
-    };
+        let f = this.Products().flat_products();
+        return f.find(myObj => myObj.id === Number(id));
+}
 
     confirmed_delete = (e: UserFormInterface) => {
         this.delete('');
@@ -292,7 +283,6 @@ export class TSAppViewModel {
     };
 
     edit_form = (e: UserFormInterface) => {
-        console.log(e)
         var f = e.request_form;
         this.filled_form_modified_id(e.id);
         this.anleggs_adresse(f.anleggs_adresse);

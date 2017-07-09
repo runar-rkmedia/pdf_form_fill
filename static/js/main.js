@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,465 +71,12 @@ module.exports = ko;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var pad = function (n, width, z) {
-        if (z === void 0) { z = "0"; }
-        // Pad a string(n), to a certain (width), and pad with (z)
-        n = n + '';
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-    };
-    // webpack doesn't like to litter the global-namespace, so to force this function to be available there, we need to add the function to global. then typescript compains, so we need to add to it.
-    window.format_date = function (dateString, type) {
-        var d_names = new Array("Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Søndag");
-        var m_names = new Array("januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "october", "november", "december");
-        //
-        // var d = new Date(dateString).toISOString()
-        var d = new Date(dateString);
-        var curr_day = d.getDay();
-        var curr_date = d.getDate();
-        var curr_month = d.getMonth();
-        var curr_year = d.getFullYear();
-        var curr_hour = d.getHours();
-        var curr_minute = d.getMinutes();
-        if (type === 'short') {
-            return curr_date + '/' + curr_month + "-" + String(curr_year).slice(2) + ' ' +
-                pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
-        }
-        return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
-            pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
-    };
-    $(function () {
-        var myApp = new AppViewModel_1.TSAppViewModel();
-        ko.applyBindings(myApp);
-        $('body').on("change keyup paste click", 'input', function () {
-            myApp.form_args($('#form').serialize());
-        });
-        $('input[type=tel]').on('input', function (e) {
-            var inputfield = this;
-            inputfield.value = inputfield.value.replace(/\D/g, '');
-        });
-    });
-    var myObject = {};
-    var mySecondReference = myObject;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(4), __webpack_require__(6), __webpack_require__(5), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, ko) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    // Load localization file
-    // import s = require('knockout.validation/localization/nb-NO');
-    // Load localization file
-    // import {*} from
-    // import * as Fuck from ('../npknockout.validation/localization/ro-RO');
-    // Switch locale
-    kv.defineLocale('no-NO', nb_NO);
-    kv.locale('nb-NO');
-    var TSAppViewModel = (function () {
-        function TSAppViewModel() {
-            var _this = this;
-            this.anleggs_adresse = ko.observable().extend({
-                required: true,
-                minLength: 3,
-                maxLength: 50
-            });
-            this.anleggs_poststed = ko.observable().extend({
-                required: true,
-                minLength: 3,
-                maxLength: 50
-            });
-            this.anleggs_postnummer = ko.observable().extend({
-                required: true,
-                minLength: 4,
-                number: true,
-                min: 1000,
-                max: 9999,
-            });
-            this.manufacturor = ko.observable();
-            this.vk_type = ko.observable();
-            this.mainSpec = ko.observable();
-            this.rom_navn = ko.observable().extend({
-                required: true,
-                minLength: 2,
-                maxLength: 50
-            });
-            this.areal = ko.observable().extend({
-                number: true,
-                min: 0.1
-            });
-            this.oppvarmet_areal = ko.observable().extend({
-                required: true,
-                number: true,
-                min: 0.1
-            });
-            this.effect = ko.observable().extend({
-                number: true,
-            });
-            this.ohm_a = ko.observable().extend({
-                number: true,
-                min: 0,
-                max: 1000,
-            });
-            this.ohm_b = ko.observable().extend({
-                number: true,
-                min: 0,
-                max: 1000,
-            });
-            this.ohm_c = ko.observable().extend({
-                number: true,
-                min: 0,
-                max: 1000,
-            });
-            this.mohm_a = ko.observable();
-            this.mohm_b = ko.observable();
-            this.mohm_c = ko.observable();
-            this.error_fields = ko.observableArray();
-            this.error_message = ko.observable();
-            this.file_download = ko.observable();
-            this.last_sent_args = ko.observable();
-            this.form_args = ko.observable($('#form').serialize());
-            this.Products = ko.observable();
-            this.selected_vk = ko.observable();
-            this.forced_selected_vk = ko.observable();
-            this.address_id = ko.observable();
-            this.filled_form_modified_id = ko.observable();
-            this.user_forms = ko.observableArray();
-            this.company_forms = ko.observableArray();
-            this.validation_errors = kv.group(self);
-            this.loading = ko.observableArray();
-            this.delete = ko.observable();
-            this.form_changed = ko.computed(function () {
-                return _this.form_args() !== _this.last_sent_args();
-            }, this);
-            this.parse_form_download = function (result) {
-                _this.last_sent_args(_this.form_args());
-                if (result.error_fields) {
-                    _this.error_fields(result.error_fields);
-                }
-                if (result.file_download) {
-                    _this.file_download(result.file_download);
-                    if (result.address_id) {
-                        _this.address_id(result.address_id);
-                    }
-                    if (result.filled_form_modified_id) {
-                        _this.filled_form_modified_id(result.filled_form_modified_id);
-                    }
-                }
-                if (result.error_message) {
-                    _this.error_message(result.error_message);
-                }
-            };
-            this.post_form = function () {
-                _this.form_args($('#form').serialize());
-                if (_this.validation_errors().length > 0) {
-                    _this.validation_errors.showAllMessages();
-                    return false;
-                }
-                if (_this.form_changed() || !_this.filled_form_modified_id()) {
-                    _this.file_download(null);
-                    _this.loading.push('fill_form');
-                    $.post("/json/heating/", {
-                        'anleggs_adresse': _this.anleggs_adresse(),
-                        'anleggs_poststed': _this.anleggs_poststed(),
-                        'anleggs_postnummer': _this.anleggs_postnummer(),
-                        'rom_navn': _this.rom_navn(),
-                        'areal': _this.areal(),
-                        'oppvarmet_areal': _this.oppvarmet_areal(),
-                        'mohm_a': _this.mohm_a(),
-                        'mohm_b': _this.mohm_b(),
-                        'mohm_c': _this.mohm_c(),
-                        'ohm_a': _this.ohm_a(),
-                        'ohm_b': _this.ohm_b(),
-                        'ohm_c': _this.ohm_c(),
-                        'product_id': _this.selected_vk(),
-                        'address_id': _this.address_id(),
-                        'filled_form_modified_id': _this.filled_form_modified_id()
-                    })
-                        .done(function (result) {
-                        _this.loading.remove('fill_form');
-                        _this.parse_form_download(result);
-                    });
-                }
-                else {
-                    _this.loading.push('fill_form');
-                    $.get("/json/heating/", {
-                        'filled_form_modified_id': _this.filled_form_modified_id()
-                    }).done(function (result) {
-                        _this.loading.remove('fill_form');
-                        _this.parse_form_download(result);
-                    });
-                }
-            };
-            this.findWithAttr = function (array, attr, value) {
-                for (var i = 0; i < array.length; i += 1) {
-                    if (array[i][attr] === value) {
-                        return i;
-                    }
-                }
-                return -1;
-            };
-            this.get_user_forms = function () {
-                _this.loading.push('user_form');
-                $.get("/forms.json", {})
-                    .done(function (result) {
-                    result.user_forms.prefix = 'user_forms';
-                    result.company_forms.prefix = 'company_forms';
-                    _this.user_forms(result.user_forms);
-                    _this.company_forms(result.company_forms);
-                    _this.loading.remove('user_form');
-                });
-            };
-            this.get_product_by_id = function (id) {
-                var f = _this.Products().flat_products();
-                for (var i = 0; i < f.length; i++) {
-                    if (f[i].id == id) {
-                        return f[i];
-                    }
-                }
-            };
-            this.confirmed_delete = function (e) {
-                _this.delete('');
-                _this.loading.push('delete');
-                $.ajax({
-                    url: 'json/form_mod/' + e.id,
-                    type: 'DELETE',
-                    data: {
-                        id: e.id
-                    }
-                })
-                    .done(function (result) {
-                    _this.loading.remove('delete');
-                    _this.get_user_forms();
-                });
-            };
-            this.edit_form = function (e) {
-                console.log(e);
-                var f = e.request_form;
-                _this.filled_form_modified_id(e.id);
-                _this.anleggs_adresse(f.anleggs_adresse);
-                _this.anleggs_postnummer(f.anleggs_postnummer);
-                _this.anleggs_poststed(f.anleggs_poststed);
-                _this.rom_navn(f.rom_navn);
-                _this.areal(f.areal);
-                _this.oppvarmet_areal(f.oppvarmet_areal);
-                _this.selected_vk(f.product_id);
-                // this.address_id(e.address_id);
-                // TODO: fix address_id
-                _this.ohm_a(f.ohm_a);
-                _this.ohm_b(f.ohm_b);
-                _this.ohm_c(f.ohm_c);
-                _this.mohm_a(f.mohm_a);
-                _this.mohm_b(f.ohm_b);
-                _this.mohm_c(f.ohm_c);
-                _this.last_sent_args($('#form').serialize());
-                _this.form_args($('#form').serialize());
-                $('.nav-tabs a[href="#main_form"]').tab('show');
-            };
-            kv.init({
-                decorateInputElement: true,
-                errorElementClass: 'has-error has-feedback',
-                // successElementClass: 'has-feedback has-success',
-                insertMessages: true,
-                // decorateElement: true,
-                // errorElementClass: 'error',
-                errorMessageClass: 'bg-danger'
-            });
-            // Add bootstrap-validation-css to parent of field
-            var init = ko.bindingHandlers['validationCore'].init;
-            ko.bindingHandlers['validationCore'].init = function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-                init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-                var config = kv.utils.getConfigOptions(element);
-                // if requested, add binding to decorate element
-                if (config.decorateInputElement && kv.utils.isValidatable(valueAccessor())) {
-                    var parent = $(element).parent();
-                    if (parent.length) {
-                        ko.applyBindingsToNode(parent[0], {
-                            validationElement: valueAccessor()
-                        });
-                    }
-                }
-            };
-            this.Products(new ProductModel_1.TSProductModel(this));
-            this.Products().getProducts();
-            this.noname = ko.computed(function () {
-                try {
-                    var f = _this.Products().flat_products();
-                    if (f.length > 0) {
-                        _this.get_user_forms();
-                        // this.get_company_forms();
-                    }
-                }
-                catch (e) {
-                }
-                finally {
-                }
-            });
-            ko.computed(function () {
-                if (_this.mainSpec()) {
-                    try {
-                        var f = _this.Products().spec_groups();
-                        if (_this.findWithAttr(f, 'mainSpec', _this.mainSpec()) < 0) {
-                            _this.mainSpec(null);
-                        }
-                    }
-                    catch (e) {
-                    }
-                    finally {
-                    }
-                }
-            });
-        }
-        return TSAppViewModel;
-    }());
-    exports.TSAppViewModel = TSAppViewModel;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ko) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var TSProductModel = (function () {
-        function TSProductModel(parentModel) {
-            var _this = this;
-            this.parentModel = parentModel;
-            this.products = ko.observableArray([]);
-            // Used to filter an arrayFilter.
-            this.myArrayFilter = function (list_to_filter) {
-                for (var _i = 0, list_to_filter_1 = list_to_filter; _i < list_to_filter_1.length; _i++) {
-                    var current_filter = list_to_filter_1[_i];
-                    var f = current_filter['value'];
-                    var t = current_filter['mustEqual']();
-                    if (t && f != t) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-            this.getProducts = function () {
-                $.get("/products.json", $('#form').serialize())
-                    .done(function (result) {
-                    _this.products(result);
-                    _this.parentModel.selected_vk(_this.parentModel.forced_selected_vk());
-                })
-                    .fail(function (e) {
-                    console.log('Could not retrieve data = Error ' + e.status);
-                });
-            };
-            this.flatten_products = function (products_to_parse) {
-                var r = [];
-                if (products_to_parse) {
-                    for (var i = 0; i < products_to_parse.length; i++) {
-                        var m = products_to_parse[i];
-                        for (var j = 0; j < m.product_types.length; j++) {
-                            var d = m.product_types[j];
-                            for (var k = 0; k < d.products.length; k++) {
-                                var p = d.products[k];
-                                p.manufacturor = m.name;
-                                p.type = d.type;
-                                p.name = m.name + " " + d.name;
-                                if (p.effect) {
-                                    p.name += " " + p.effect + "W";
-                                }
-                                if (d.mainSpec) {
-                                    p.name += " " + d.mainSpec + "W/m";
-                                }
-                                if (d.type == 'mat') {
-                                    p.name += "²";
-                                }
-                                if ('mainSpec' in d) {
-                                    p.mainSpec = d.mainSpec;
-                                }
-                                if ('secondarySpec' in d) {
-                                    p.secondarySpec = d.secondarySpec;
-                                }
-                                r.push(p);
-                            }
-                        }
-                    }
-                }
-                return r;
-            };
-            this.flat_products = ko.computed(function () {
-                return _this.flatten_products(_this.products());
-            });
-            this.filtered_products_no_mainSpec = ko.computed(function () {
-                if (!_this.parentModel.effect() && !_this.parentModel.manufacturor() && !_this.parentModel.mainSpec() && !_this.parentModel.vk_type()) {
-                }
-                return ko.utils.arrayFilter(_this.flat_products(), function (prod) {
-                    return _this.myArrayFilter([{
-                            value: prod.manufacturor,
-                            mustEqual: _this.parentModel.manufacturor
-                        },
-                        {
-                            value: prod.type,
-                            mustEqual: _this.parentModel.vk_type
-                        }
-                    ]);
-                }).sort(function (a, b) {
-                    return a.effect - b.effect;
-                });
-            });
-            this.filtered_products = ko.computed(function () {
-                if (!_this.parentModel.effect() && !_this.parentModel.manufacturor() && !_this.parentModel.mainSpec() && !_this.parentModel.vk_type()) {
-                    return _this.filtered_products_no_mainSpec();
-                }
-                return ko.utils.arrayFilter(_this.filtered_products_no_mainSpec(), function (prod) {
-                    return _this.myArrayFilter([{
-                            value: prod.mainSpec,
-                            mustEqual: _this.parentModel.mainSpec
-                        },
-                        {
-                            value: prod.effect,
-                            mustEqual: _this.parentModel.effect
-                        }
-                    ]);
-                }).sort(function (a, b) {
-                    return a.effect - b.effect;
-                });
-            });
-            this.spec_groups = ko.computed(function () {
-                var filtered = _this.filtered_products_no_mainSpec();
-                var flags = {};
-                return ko.utils.arrayFilter(_this.filtered_products_no_mainSpec(), function (entry) {
-                    if (flags[entry.mainSpec]) {
-                        return false;
-                    }
-                    flags[entry.mainSpec] = true;
-                    return true;
-                });
-            });
-            // this.products = ko.observableArray(<ManufacturorInterface[]>[])
-        }
-        return TSProductModel;
-    }());
-    exports.TSProductModel = TSProductModel;
-    ;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
-/* 5 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*=============================================================================
@@ -2045,6 +1592,450 @@ ko.validatedObservable = function (initialValue, options) {
 ;}));
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(4)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var pad = function (n, width, z) {
+        if (z === void 0) { z = "0"; }
+        // Pad a string(n), to a certain (width), and pad with (z)
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    };
+    // webpack doesn't like to litter the global-namespace, so to force this function to be available there, we need to add the function to global. then typescript compains, so we need to add to it.
+    window.format_date = function (dateString, type) {
+        var d_names = new Array("Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Søndag");
+        var m_names = new Array("januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "october", "november", "december");
+        //
+        // var d = new Date(dateString).toISOString()
+        var d = new Date(dateString);
+        var curr_day = d.getDay();
+        var curr_date = d.getDate();
+        var curr_month = d.getMonth();
+        var curr_year = d.getFullYear();
+        var curr_hour = d.getHours();
+        var curr_minute = d.getMinutes();
+        if (type === 'short') {
+            return curr_date + '/' + curr_month + "-" + String(curr_year).slice(2) + ' ' +
+                pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
+        }
+        return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
+            pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
+    };
+    $(function () {
+        var myApp = new AppViewModel_1.TSAppViewModel();
+        ko.applyBindings(myApp);
+        $('body').on("change keyup paste click", 'input', function () {
+            myApp.form_args($('#form').serialize());
+        });
+        $('input[type=tel]').on('input', function (e) {
+            var inputfield = this;
+            inputfield.value = inputfield.value.replace(/\D/g, '');
+        });
+    });
+    var myObject = {};
+    var mySecondReference = myObject;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(5), __webpack_require__(6), __webpack_require__(2), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, ko, $) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    // Switch locale for knockout.validation
+    kv.defineLocale('no-NO', nb_NO);
+    kv.locale('nb-NO');
+    var TSAppViewModel = (function () {
+        function TSAppViewModel() {
+            var _this = this;
+            this.anleggs_adresse = ko.observable().extend({
+                required: true,
+                minLength: 3,
+                maxLength: 50
+            });
+            this.anleggs_poststed = ko.observable().extend({
+                required: true,
+                minLength: 3,
+                maxLength: 50
+            });
+            this.anleggs_postnummer = ko.observable().extend({
+                required: true,
+                minLength: 4,
+                number: true,
+                min: 1000,
+                max: 9999,
+            });
+            this.manufacturor = ko.observable();
+            this.vk_type = ko.observable();
+            this.mainSpec = ko.observable();
+            this.rom_navn = ko.observable().extend({
+                required: true,
+                minLength: 2,
+                maxLength: 50
+            });
+            this.areal = ko.observable().extend({
+                number: true,
+                min: 0.1
+            });
+            this.oppvarmet_areal = ko.observable().extend({
+                required: true,
+                number: true,
+                min: 0.1
+            });
+            this.effect = ko.observable().extend({
+                number: true,
+            });
+            this.ohm_a = ko.observable().extend({
+                number: true,
+                min: 0,
+                max: 1000,
+            });
+            this.ohm_b = ko.observable().extend({
+                number: true,
+                min: 0,
+                max: 1000,
+            });
+            this.ohm_c = ko.observable().extend({
+                number: true,
+                min: 0,
+                max: 1000,
+            });
+            this.mohm_a = ko.observable();
+            this.mohm_b = ko.observable();
+            this.mohm_c = ko.observable();
+            this.error_fields = ko.observableArray();
+            this.error_message = ko.observable();
+            this.file_download = ko.observable();
+            this.last_sent_args = ko.observable();
+            this.form_args = ko.observable($('#form').serialize());
+            this.Products = ko.observable();
+            this.selected_vk = ko.observable();
+            this.forced_selected_vk = ko.observable();
+            this.address_id = ko.observable();
+            this.filled_form_modified_id = ko.observable();
+            this.user_forms = ko.observableArray();
+            this.company_forms = ko.observableArray();
+            this.validation_errors = kv.group(self);
+            this.loading = ko.observableArray();
+            this.delete = ko.observable();
+            this.form_changed = ko.computed(function () {
+                return _this.form_args() !== _this.last_sent_args();
+            }, this);
+            this.parse_form_download = function (result) {
+                _this.last_sent_args(_this.form_args());
+                if (result.error_fields) {
+                    _this.error_fields(result.error_fields);
+                }
+                if (result.file_download) {
+                    _this.file_download(result.file_download);
+                    if (result.address_id) {
+                        _this.address_id(result.address_id);
+                    }
+                    if (result.filled_form_modified_id) {
+                        _this.filled_form_modified_id(result.filled_form_modified_id);
+                    }
+                }
+                if (result.error_message) {
+                    _this.error_message(result.error_message);
+                }
+            };
+            this.post_form = function () {
+                _this.form_args($('#form').serialize());
+                if (_this.validation_errors().length > 0) {
+                    _this.validation_errors.showAllMessages();
+                    return false;
+                }
+                if (_this.form_changed() || !_this.filled_form_modified_id()) {
+                    _this.file_download(null);
+                    _this.loading.push('fill_form');
+                    $.post("/json/heating/", {
+                        'anleggs_adresse': _this.anleggs_adresse(),
+                        'anleggs_poststed': _this.anleggs_poststed(),
+                        'anleggs_postnummer': _this.anleggs_postnummer(),
+                        'rom_navn': _this.rom_navn(),
+                        'areal': _this.areal(),
+                        'oppvarmet_areal': _this.oppvarmet_areal(),
+                        'mohm_a': _this.mohm_a(),
+                        'mohm_b': _this.mohm_b(),
+                        'mohm_c': _this.mohm_c(),
+                        'ohm_a': _this.ohm_a(),
+                        'ohm_b': _this.ohm_b(),
+                        'ohm_c': _this.ohm_c(),
+                        'product_id': _this.selected_vk(),
+                        'address_id': _this.address_id(),
+                        'filled_form_modified_id': _this.filled_form_modified_id()
+                    })
+                        .done(function (result) {
+                        _this.loading.remove('fill_form');
+                        _this.parse_form_download(result);
+                    });
+                }
+                else {
+                    _this.loading.push('fill_form');
+                    $.get("/json/heating/", {
+                        'filled_form_modified_id': _this.filled_form_modified_id()
+                    }).done(function (result) {
+                        _this.loading.remove('fill_form');
+                        _this.parse_form_download(result);
+                    });
+                }
+            };
+            this.findWithAttr = function (array, attr, value) {
+                for (var i = 0; i < array.length; i += 1) {
+                    if (array[i][attr] === value) {
+                        return i;
+                    }
+                }
+                return -1;
+            };
+            this.get_user_forms = function () {
+                _this.loading.push('user_form');
+                $.get("/forms.json", {})
+                    .done(function (result) {
+                    result.user_forms.prefix = 'user_forms';
+                    result.company_forms.prefix = 'company_forms';
+                    _this.user_forms(result.user_forms);
+                    _this.company_forms(result.company_forms);
+                    _this.loading.remove('user_form');
+                });
+            };
+            this.get_product_by_id = function (id) {
+                var f = _this.Products().flat_products();
+                return f.find(function (myObj) { return myObj.id === Number(id); });
+            };
+            this.confirmed_delete = function (e) {
+                _this.delete('');
+                _this.loading.push('delete');
+                $.ajax({
+                    url: 'json/form_mod/' + e.id,
+                    type: 'DELETE',
+                    data: {
+                        id: e.id
+                    }
+                })
+                    .done(function (result) {
+                    _this.loading.remove('delete');
+                    _this.get_user_forms();
+                });
+            };
+            this.edit_form = function (e) {
+                var f = e.request_form;
+                _this.filled_form_modified_id(e.id);
+                _this.anleggs_adresse(f.anleggs_adresse);
+                _this.anleggs_postnummer(f.anleggs_postnummer);
+                _this.anleggs_poststed(f.anleggs_poststed);
+                _this.rom_navn(f.rom_navn);
+                _this.areal(f.areal);
+                _this.oppvarmet_areal(f.oppvarmet_areal);
+                _this.selected_vk(f.product_id);
+                // this.address_id(e.address_id);
+                // TODO: fix address_id
+                _this.ohm_a(f.ohm_a);
+                _this.ohm_b(f.ohm_b);
+                _this.ohm_c(f.ohm_c);
+                _this.mohm_a(f.mohm_a);
+                _this.mohm_b(f.ohm_b);
+                _this.mohm_c(f.ohm_c);
+                _this.last_sent_args($('#form').serialize());
+                _this.form_args($('#form').serialize());
+                $('.nav-tabs a[href="#main_form"]').tab('show');
+            };
+            kv.init({
+                decorateInputElement: true,
+                errorElementClass: 'has-error has-feedback',
+                // successElementClass: 'has-feedback has-success',
+                insertMessages: true,
+                // decorateElement: true,
+                // errorElementClass: 'error',
+                errorMessageClass: 'bg-danger'
+            });
+            // Add bootstrap-validation-css to parent of field
+            var init = ko.bindingHandlers['validationCore'].init;
+            ko.bindingHandlers['validationCore'].init = function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+                var config = kv.utils.getConfigOptions(element);
+                // if requested, add binding to decorate element
+                if (config.decorateInputElement && kv.utils.isValidatable(valueAccessor())) {
+                    var parent = $(element).parent();
+                    if (parent.length) {
+                        ko.applyBindingsToNode(parent[0], {
+                            validationElement: valueAccessor()
+                        });
+                    }
+                }
+            };
+            this.Products(new ProductModel_1.TSProductModel(this));
+            this.Products().getProducts();
+            this.noname = ko.computed(function () {
+                try {
+                    var f = _this.Products().flat_products();
+                    if (f.length > 0) {
+                        _this.get_user_forms();
+                    }
+                }
+                catch (e) {
+                }
+                finally {
+                }
+            });
+            ko.computed(function () {
+                if (_this.mainSpec()) {
+                    try {
+                        var f = _this.Products().spec_groups();
+                        if (f.find(function (item) { return item.mainSpec === _this.mainSpec(); })) {
+                        }
+                        if (_this.findWithAttr(f, 'mainSpec', _this.mainSpec()) < 0) {
+                            _this.mainSpec(null);
+                        }
+                    }
+                    catch (e) {
+                    }
+                    finally {
+                    }
+                }
+            });
+        }
+        return TSAppViewModel;
+    }());
+    exports.TSAppViewModel = TSAppViewModel;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ko) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var TSProductModel = (function () {
+        function TSProductModel(parentModel) {
+            var _this = this;
+            this.parentModel = parentModel;
+            this.products = ko.observableArray([]);
+            // Used to filter an arrayFilter.
+            this.myArrayFilter = function (list_to_filter) {
+                for (var _i = 0, list_to_filter_1 = list_to_filter; _i < list_to_filter_1.length; _i++) {
+                    var current_filter = list_to_filter_1[_i];
+                    var f = current_filter['value'];
+                    var t = current_filter['mustEqual']();
+                    if (t && f != t) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+            this.getProducts = function () {
+                $.get("/products.json", $('#form').serialize())
+                    .done(function (result) {
+                    _this.products(result);
+                    _this.parentModel.selected_vk(_this.parentModel.forced_selected_vk());
+                })
+                    .fail(function (e) {
+                    console.log('Could not retrieve data = Error ' + e.status);
+                });
+            };
+            this.flatten_products = function (products_to_parse) {
+                var r = [];
+                if (products_to_parse) {
+                    for (var i = 0; i < products_to_parse.length; i++) {
+                        var m = products_to_parse[i];
+                        for (var j = 0; j < m.product_types.length; j++) {
+                            var d = m.product_types[j];
+                            for (var k = 0; k < d.products.length; k++) {
+                                var p = d.products[k];
+                                p.manufacturor = m.name;
+                                p.type = d.type;
+                                p.name = m.name + " " + d.name;
+                                if (p.effect) {
+                                    p.name += " " + p.effect + "W";
+                                }
+                                if (d.mainSpec) {
+                                    p.name += " " + d.mainSpec + "W/m";
+                                }
+                                if (d.type == 'mat') {
+                                    p.name += "²";
+                                }
+                                if ('mainSpec' in d) {
+                                    p.mainSpec = d.mainSpec;
+                                }
+                                if ('secondarySpec' in d) {
+                                    p.secondarySpec = d.secondarySpec;
+                                }
+                                r.push(p);
+                            }
+                        }
+                    }
+                }
+                return r;
+            };
+            this.flat_products = ko.computed(function () {
+                return _this.flatten_products(_this.products());
+            });
+            this.filtered_products_no_mainSpec = ko.computed(function () {
+                if (!_this.parentModel.effect() && !_this.parentModel.manufacturor() && !_this.parentModel.mainSpec() && !_this.parentModel.vk_type()) {
+                }
+                return ko.utils.arrayFilter(_this.flat_products(), function (prod) {
+                    return _this.myArrayFilter([{
+                            value: prod.manufacturor,
+                            mustEqual: _this.parentModel.manufacturor
+                        },
+                        {
+                            value: prod.type,
+                            mustEqual: _this.parentModel.vk_type
+                        }
+                    ]);
+                }).sort(function (a, b) {
+                    return a.effect - b.effect;
+                });
+            });
+            this.filtered_products = ko.computed(function () {
+                if (!_this.parentModel.effect() && !_this.parentModel.manufacturor() && !_this.parentModel.mainSpec() && !_this.parentModel.vk_type()) {
+                    return _this.filtered_products_no_mainSpec();
+                }
+                return ko.utils.arrayFilter(_this.filtered_products_no_mainSpec(), function (prod) {
+                    return _this.myArrayFilter([{
+                            value: prod.mainSpec,
+                            mustEqual: _this.parentModel.mainSpec
+                        },
+                        {
+                            value: prod.effect,
+                            mustEqual: _this.parentModel.effect
+                        }
+                    ]);
+                }).sort(function (a, b) {
+                    return a.effect - b.effect;
+                });
+            });
+            this.spec_groups = ko.computed(function () {
+                var filtered = _this.filtered_products_no_mainSpec();
+                var flags = {};
+                return ko.utils.arrayFilter(_this.filtered_products_no_mainSpec(), function (entry) {
+                    if (flags[entry.mainSpec]) {
+                        return false;
+                    }
+                    flags[entry.mainSpec] = true;
+                    return true;
+                });
+            });
+            // this.products = ko.observableArray(<ManufacturorInterface[]>[])
+        }
+        return TSProductModel;
+    }());
+    exports.TSProductModel = TSProductModel;
+    ;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2056,7 +2047,7 @@ ko.validatedObservable = function (initialValue, options) {
     /*global require,ko.validation,define,module*/
     if (true) {
         // CommonJS or Node
-        module.exports = factory(__webpack_require__(5));
+        module.exports = factory(__webpack_require__(2));
     } else if (typeof define === 'function' && define['amd']) {
         // AMD anonymous module
         define(['knockout.validation'], factory);
