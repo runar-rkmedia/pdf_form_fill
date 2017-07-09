@@ -6,6 +6,11 @@ import decimal
 import re
 import base64
 
+from addresses.address_pymongo import (
+    get_post_area_for_post_code,
+    get_address_from_street_name,
+    get_post_code_for_post_area
+)
 from config import configure_app
 from field_dicts.helpers import (commafloat, id_generator)
 from models import (db,
@@ -246,12 +251,9 @@ def set_fields_from_product(dictionary, product, specs=None):
     """Set multiple fields from a Product-table."""
     dictionary["Betegnelse"] = product.product_type.name
 
-
     dictionary.update(product.specs)
     print(dictionary)
     print('dsssssssss')
-
-
 
     return dictionary
 
@@ -298,7 +300,7 @@ def get_invite(invite_id):
     elif invite.type == InviteType.company:
         pass
     if request.method == 'GET':
-            return render_template('invite.html', invite=invite)
+        return render_template('invite.html', invite=invite)
 
     if request.method == 'POST' and invite:
         if invite.type == InviteType.company:
@@ -308,6 +310,7 @@ def get_invite(invite_id):
             return render_template('invite.html', invite=invite, newly_invite=True)
 
             return render_template('create_company.html', invite=invite)
+
 
 def invite_create_company(invite, request):
     """Handle invites for creating a company."""
@@ -337,13 +340,12 @@ def invite_create_company(invite, request):
             current_user.company = company
             if current_user.role == UserRole.user:
                 current_user.role = UserRole.companyAdmin
-            invite.invitee=current_user
+            invite.invitee = current_user
             db.session.commit()
-            flash("Firmaet '{}' ble opprettet."\
+            flash("Firmaet '{}' ble opprettet."
                   .format(company.name))
             return redirect(url_for('control_panel_company'))
     return render_template('create_company.html', invite=invite, form=form)
-
 
 
 @app.route('/set_sign', methods=['POST'])
@@ -425,9 +427,10 @@ def json_user_forms():
             .get_forms(
                 user=current_user,
                 page=page
-                )
+            )
         if company_forms:
-            result['company_forms'] = [i.serialize(current_user) for i in company_forms]
+            result['company_forms'] = [i.serialize(
+                current_user) for i in company_forms]
             result['company_pages'] = company_pages
     if user_forms:
         result['user_forms'] = [i.serialize(current_user) for i in user_forms]
@@ -466,7 +469,6 @@ def json_form_modification(filled_form_modified_id):
         return 'deleted'
 
 
-
 def create_form(manufacturor, dictionary=None,
                 request_form=None, form_data=None, user=current_user):
     """Create a form."""
@@ -483,6 +485,7 @@ def create_form(manufacturor, dictionary=None,
     stamp_with_user(user, output_pdf, form)
     return output_pdf, dictionary, form
 
+
 def stamp_with_user(user, output_pdf, form):
     """Description."""
     if user.signature:
@@ -493,6 +496,7 @@ def stamp_with_user(user, output_pdf, form):
         os.remove(image)
         os.remove(output_pdf)
         os.rename(stamped_pdf, output_pdf)
+
 
 def add_company_info_to_dictionary(dictionary, company):
     """Description."""
@@ -505,7 +509,8 @@ def add_company_info_to_dictionary(dictionary, company):
         'firma_postnummer'] = current_user.company.address.postnumber
     return dictionary
 
-@app.route('/json/heating/', methods=['POST','GET'])
+
+@app.route('/json/heating/', methods=['POST', 'GET'])
 @limiter.limit("1/second", error_message='Èn per sekund')
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
@@ -516,7 +521,7 @@ def json_fill_document():
         filled_form_modified = FilledFormModified\
             .query\
             .filter(
-                FilledFormModified.id==filled_form_modified_id
+                FilledFormModified.id == filled_form_modified_id
             )\
             .first()
         # form = FormField(manufacturor)
@@ -534,14 +539,13 @@ def json_fill_document():
             form_data=form_data,
             request_form=request_form,
             user=filled_form_modified.user
-            )
+        )
         return jsonify(
             file_download=os.path.relpath(output_pdf),
         )
     if request.method == 'POST':
         print(request.form)
         error_fields = validate_fields(request.form)
-
 
         if error_fields:
             return jsonify(
@@ -566,13 +570,14 @@ def json_fill_document():
                 status=400)
         if current_user.is_authenticated:
             if current_user.company:
-                dictionary = add_company_info_to_dictionary(dictionary, current_user.company)
+                dictionary = add_company_info_to_dictionary(
+                    dictionary, current_user.company)
 
         output_pdf, complete_dictionary, form = create_form(
             manufacturor=manufacturor,
             dictionary=dictionary,
             request_form=request.form
-            )
+        )
         address = Address.update_or_create(
             address_id=dictionary.get('address_id'),
             line1=dictionary.get('anleggs_adresse'),
@@ -611,7 +616,8 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    return render_template('main.html')
+    test = get_address_from_street_name('Bergto')
+    return render_template('main.html', test=test)
 
 
 # hook up extensions to app
