@@ -620,6 +620,34 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
     test = get_address_from_street_name('Bergtor')
     return render_template('main.html', test=test)
 
+@login_required
+@app.route('/address/')
+def search_address():
+    """Search a partial address (near user)."""
+    near_post_code = 0
+    if current_user.company:
+        near_post_code = current_user.company.address.postnumber
+    try:
+        post_number = request.args.get('p')
+        if post_number:
+            near_post_code = int(post_number)
+    except ValueError:
+        pass
+    print(near_post_code)
+    from pprint import pprint
+    search_query = request.args.get('q')
+    results = get_address_from_street_name(search_query, near_post_code=near_post_code)
+    formated_result = []
+    for result in results:
+        formated_result.append({
+            'post_area': result['post_area'],
+            'post_code': result['post_code'],
+            'street_name': result['street_name'],
+        })
+    pprint(formated_result)
+    return jsonify(formated_result)
+
+
 
 # hook up extensions to app
 if __name__ == "__main__":

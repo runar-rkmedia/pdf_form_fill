@@ -1885,6 +1885,22 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 }
             });
             ko.computed(function () {
+                _this.anleggs_adresse();
+                console.log(_this.anleggs_adresse());
+                if (_this.anleggs_adresse()) {
+                    $.getJSON('/address/', {
+                        q: _this.anleggs_adresse(),
+                        p: _this.anleggs_postnummer()
+                    })
+                        .done(function (result) {
+                        for (var _i = 0, result_1 = result; _i < result_1.length; _i++) {
+                            var test = result_1[_i];
+                            console.log(test.street_name + " " + test.post_code);
+                        }
+                    });
+                }
+            });
+            ko.computed(function () {
                 if (_this.mainSpec()) {
                     try {
                         var f = _this.Products().spec_groups();

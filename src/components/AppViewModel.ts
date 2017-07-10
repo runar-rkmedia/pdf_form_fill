@@ -158,6 +158,24 @@ export class TSAppViewModel {
             }
         });
 
+        ko.computed(()=>{
+            this.anleggs_adresse()
+            console.log(this.anleggs_adresse())
+            if(this.anleggs_adresse()){
+                $.getJSON('/address/', {
+                    q: this.anleggs_adresse(),
+                    p: this.anleggs_postnummer()
+                }
+            )
+            .done((result)=>{
+                for (let test of result) {
+                    console.log(test.street_name + " " + test.post_code)
+                }
+            })
+
+            }
+        })
+
         ko.computed(() => {
             if (this.mainSpec()) {
                 try {
