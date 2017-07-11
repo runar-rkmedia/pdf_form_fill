@@ -25,13 +25,6 @@ class ContactType(enum.Enum):
     mobile = 3
 
 
-
-class InviteType(enum.Enum):
-    """Enumeration for types of invites."""
-    company = 1,
-    create_company = 2,
-
-
 class InviteType(enum.Enum):
     """Enumeration for types of invites."""
     company = 1,
@@ -57,7 +50,6 @@ class ProductCatagory(enum.Enum):
     @classmethod
     def split(cls, enumObject):
         """Split it."""
-        outside = False
         catagory_type = ''
         if enumObject in [cls.cable_inside, cls.cable_outside]:
             catagory_type = 'cable'
@@ -105,7 +97,6 @@ class Address(db.Model):
     postnumber = db.Column(db.SmallInteger)
     postal = db.Column(db.String(200))
 
-
     @classmethod
     def update_or_create(cls, address_id, line1, line2, postnumber, postal):
         """Update if exists, else create Address."""
@@ -144,7 +135,6 @@ class Contact(db.Model):
     description = db.Column(db.String(200))
 
 
-
 class Company(db.Model):
     """Company-table for users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -154,11 +144,13 @@ class Company(db.Model):
     address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
+    lat = db.Column(db.Numeric(8,6))
+    lng = db.Column(db.Numeric(9,6))
 
-    def add_contact(self, type, value, description):
+    def add_contact(self, c_type, value, description):
         """Add contact to this company."""
         contact = Contact(
-            type=type,
+            type=c_type,
             value=value,
             description=description
         )
@@ -169,7 +161,6 @@ class Company(db.Model):
         db.session.add(contact)
         db.session.add(company_contact)
         return contact
-
 
     def owns(self, model):
         """Check if company has rights to access this."""
@@ -191,9 +182,9 @@ class Company(db.Model):
         filled_forms = []
         for i in query.items:
             if (
-                any(True for mod in i.modifications if not mod.archived) and
-                any(True for mod in i.modifications if not mod.user == user)
-                ):
+                    any(True for mod in i.modifications if not mod.archived) and
+                    any(True for mod in i.modifications if not mod.user == user)
+            ):
                 filled_forms.append(i)
 
         return filled_forms, query.pages
@@ -234,7 +225,7 @@ class User(db.Model, UserMixin):
             .filter(
                 (FilledFormModified.user == self) &
                 (FilledFormModified.archived != True)
-                )\
+            )\
             .group_by(FilledFormModified.filled_form_id)\
             .subquery()
         query = FilledFormModified\
@@ -260,10 +251,10 @@ class User(db.Model, UserMixin):
         else:
             raise NoAccess("You don't have access to this resource.")
 
-    def add_contact(self, type, value, description):
+    def add_contact(self, c_type, value, description):
         """Add contact to this user."""
         contact = Contact(
-            type=type,
+            type=c_type,
             value=value,
             description=description
         )
@@ -391,7 +382,8 @@ class ProductType(db.Model):
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
     mainSpec = db.Column(db.SmallInteger)  # meterEffekt/kvadratMeterEffekt
-    secondarySpec = db.Column(db.SmallInteger)  # meterEffekt/kvadratMeterEffekt
+    # meterEffekt/kvadratMeterEffekt
+    secondarySpec = db.Column(db.SmallInteger)
     catagory = db.Column(db.Enum(ProductCatagory))
 
     @property
@@ -408,7 +400,8 @@ class ProductType(db.Model):
             'secondarySpec': self.secondarySpec,
             'products': products_dict
         }
-        dictionary['type'], dictionary['inside'] = ProductCatagory.split(self.catagory)
+        dictionary['type'], dictionary[
+            'inside'] = ProductCatagory.split(self.catagory)
         return dictionary
 
 
@@ -544,7 +537,6 @@ class FilledFormModified(db.Model):
     __mapper_args__ = {
         "order_by": date.desc()
     }
-
 
     @classmethod
     def update_or_create(cls, user, filled_form, request_form, form_data):

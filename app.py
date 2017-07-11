@@ -6,27 +6,30 @@ import decimal
 import re
 import base64
 
-from addresses.address_pymongo import (
-    get_post_area_for_post_code,
-    get_address_from_street_name,
-    get_post_code_for_post_area
-)
 from config import configure_app
+from datetime import datetime
+from addresses.address_pymongo import (
+    # get_post_area_for_post_code,
+    get_address_from_street_name,
+    # get_post_code_for_post_area,
+    get_location_from_address
+)
 from field_dicts.helpers import (commafloat, id_generator)
-from models import (db,
-                    Manufacturor,
-                    Product,
-                    User,
-                    OAuth,
-                    Invite,
-                    FilledFormModified,
-                    FilledForm,
-                    InviteType,
-                    Address,
-                    Company,
-                    ContactType,
-                    UserRole
-                    )
+from models import (
+    db,
+    Manufacturor,
+    Product,
+    User,
+    OAuth,
+    Invite,
+    FilledFormModified,
+    FilledForm,
+    InviteType,
+    Address,
+    Company,
+    ContactType,
+    UserRole
+)
 from vk_objects import FormField
 
 
@@ -40,8 +43,8 @@ from flask import (
     send_from_directory,
     url_for
 )
-from forms import CreateCompany
 from flask.json import jsonify, JSONEncoder
+from forms import CreateCompany
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
@@ -61,7 +64,6 @@ from flask_login import (
     login_user,
     logout_user
 )
-from datetime import datetime
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -107,7 +109,6 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["2000 per day", "500 per hour"]
 )
-
 blueprint = make_google_blueprint(
     client_id=app.config['G_CLIENT_ID'],
     client_secret=app.config['G_CLIENT_SECRET'],
@@ -310,13 +311,11 @@ def get_invite(invite_id):
             db.session.commit()
             return render_template('invite.html', invite=invite, newly_invite=True)
 
-            return render_template('create_company.html', invite=invite)
 
-
-def invite_create_company(invite, request):
+def invite_create_company(invite, request_):
     """Handle invites for creating a company."""
     form = CreateCompany()
-    if request.method == 'POST':
+    if request_.method == 'POST':
         if form.validate_on_submit():
 
             address = Address(
@@ -325,14 +324,26 @@ def invite_create_company(invite, request):
                 postnumber=form.postnumber.data,
                 postal=form.postal.data
             )
+            location = get_location_from_address(
+                form.address1.data,
+                form.postnumber.data
+            )
+            print(location)
+            if not location:
+                flash(
+                    "Kunne ikke finne denne adressen i Norge. Om dette er feil, vennligst rapporter dette.") # noqa
+                return render_template('create_company.html', invite=invite, form=form)
+
             company = Company(
                 name=form.name.data,
                 description=form.description.data,
                 orgnumber=form.org_nr.data,
-                address=address
+                address=address,
+                lat=location[0],
+                lng=location[1]
             )
             company.add_contact(
-                type=ContactType.email,
+                c_type=ContactType.email,
                 value=form.email.data,
                 description=form.contact_name.data
             )
@@ -418,7 +429,6 @@ def json_user_forms():
         'user_forms': [],
         'company_forms': []
     }
-    request_type = request.args.get('type')
     page = request.args.get('page', 1)
     user_forms, user_pages = current_user.\
         get_forms(page=page)
@@ -535,7 +545,7 @@ def json_fill_document():
                 Product.id == request_form['product_id']
             ).first()
         manufacturor = product.product_type.manufacturor.name
-        output_pdf, dictionary, form = create_form(
+        output_pdf, dictionary, form = create_form( # noqa
             manufacturor=manufacturor,
             form_data=form_data,
             request_form=request_form,
@@ -617,26 +627,37 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    test = get_address_from_street_name('Bergtor')
-    return render_template('main.html', test=test)
+    return render_template('main.html')
+
 
 @login_required
+@limiter.limit("1/second", error_message='Èn per sekund')
 @app.route('/address/')
 def search_address():
     """Search a partial address (near user)."""
-    near_post_code = 0
+    kwargs = {}
     if current_user.company:
-        near_post_code = current_user.company.address.postnumber
+        if False and current_user.company.lat and current_user.company.lng:
+            kwargs['near_geo'] = [
+                float(current_user.company.lat),
+                float(current_user.company.lng)
+            ]
+        else:
+            kwargs['near_post_code'] = current_user.company.address.postnumber
+    # Make sure 'post_code' is an int.
     try:
-        post_number = request.args.get('p')
-        if post_number:
-            near_post_code = int(post_number)
+        post_code = request.args.get('p')
+        if post_code:
+            kwargs['near_post_code'] = int(post_code)
     except ValueError:
         pass
-    print(near_post_code)
-    from pprint import pprint
-    search_query = request.args.get('q')
-    results = get_address_from_street_name(search_query, near_post_code=near_post_code)
+    kwargs['street_name'] = request.args.get('q')
+    # Try to get a valid address from search-query
+    print(kwargs)
+    try:
+        results = get_address_from_street_name(**kwargs)
+    except ValueError:
+        return jsonify(None)
     formated_result = []
     for result in results:
         formated_result.append({
@@ -644,9 +665,7 @@ def search_address():
             'post_code': result['post_code'],
             'street_name': result['street_name'],
         })
-    pprint(formated_result)
     return jsonify(formated_result)
-
 
 
 # hook up extensions to app
