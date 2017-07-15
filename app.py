@@ -631,7 +631,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
 
 
 @login_required
-@limiter.limit("1/second", error_message='Èn per sekund')
+@limiter.limit("200/minute", error_message='200 per minutt')
 @app.route('/address/')
 def search_address():
     """Search a partial address (near user)."""

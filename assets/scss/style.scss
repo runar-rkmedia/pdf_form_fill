@@ -193,4 +193,7 @@ canvas {
         column-count: 5;
     }
 }
+.title-case{
+    text-transform: capitalize;
+}
 @import "form";

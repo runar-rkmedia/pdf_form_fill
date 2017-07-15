@@ -23,7 +23,7 @@ module.exports = {
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
-        extensions: ["*", ".webpack.js", ".web.js", ".ts"]
+        extensions: ["*", ".webpack.js", ".web.js", ".ts", '.js', '.jsx']
     },
     module: {
         loaders: [
@@ -36,11 +36,21 @@ module.exports = {
                     // disable type checker - we will use it in fork plugin
                     transpileOnly: true
                 }
+            },
+            {
+                test: /\.less$/,
+                use: [{
+                    loader: "style-loader" // creates style nodes from JS strings
+                }, {
+                    loader: "css-loader" // translates CSS into CommonJS
+                }, {
+                    loader: "less-loader" // compiles Less to CSS
+                }]
             }
         ]
     },
     plugins: [
-        // new UglifyJSPlugin(),
+        new UglifyJSPlugin(),
         new ForkTsCheckerWebpackPlugin()
     ]
 }

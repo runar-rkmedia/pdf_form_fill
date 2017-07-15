@@ -4,9 +4,19 @@ import kv = require("knockout.validation");
 import { StrIndex } from "./Common"
 import ko = require("knockout");
 import $ = require("jquery");
+var titleCase = require('title-case')
+
+require("knockout.typeahead");
+require("knockout-template-loader?name=suggestion-template!html-loader?-minimize!./suggestion.html");
 // Switch locale for knockout.validation
 kv.defineLocale('no-NO',nb_NO);
 kv.locale('nb-NO')
+
+interface AddressInterface {
+    post_area: string;
+    post_code: number;
+    street_name: string;
+}
 
 interface UserFormInterface {
     date: string;
@@ -111,6 +121,7 @@ export class TSAppViewModel {
     company_forms: KnockoutObservableArray<string> = ko.observableArray();
     validation_errors: KnockoutValidationErrors = kv.group(self);
     loading: KnockoutObservableArray<string> = ko.observableArray();
+    autocompleteAddress: string;
 
     delete: KnockoutObservable<string> = ko.observable();
 
@@ -158,29 +169,13 @@ export class TSAppViewModel {
             }
         });
 
-        ko.computed(()=>{
-            this.anleggs_adresse()
-            console.log(this.anleggs_adresse())
-            if(this.anleggs_adresse()){
-                $.getJSON('/address/', {
-                    q: this.anleggs_adresse(),
-                    p: this.anleggs_postnummer()
-                }
-            )
-            .done((result)=>{
-                for (let test of result) {
-                    console.log(test.street_name + " " + test.post_code)
-                }
-            })
-
-            }
-        })
+        this.autocompleteAddress = '/address/?q=%QUERY'
 
         ko.computed(() => {
             if (this.mainSpec()) {
                 try {
                     let f = this.Products().spec_groups();
-                    if (f.find(item => item.mainSpec === this.mainSpec()){
+                    if (f.find(item => item.mainSpec === this.mainSpec())){
 
                     }
                     if (this.findWithAttr(f, 'mainSpec', this.mainSpec()) < 0) {
@@ -193,6 +188,15 @@ export class TSAppViewModel {
                 }
             }
         });
+    }
+
+
+    suggestionOnSelect = (
+      value: KnockoutObservable<{}>,
+      address: AddressInterface)  => {
+        value(titleCase(address.street_name))
+        this.anleggs_postnummer(address.post_code)
+        this.anleggs_poststed(address.post_area.toUpperCase())
     }
 
     form_changed = ko.computed(() => {
