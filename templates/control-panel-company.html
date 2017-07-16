@@ -12,6 +12,9 @@
       {% endif %}
       {{current_user.company.address.postnumber}}
       {{current_user.company.address.postal}}
+<div>
+  <a class="btn btn-primary" href="{{url_for('edit_company', company_id=current_user.company.id)}}">Endre informasjon</a>
+</div>
       <h3>Medlemmer</h3>
       <ul>
         {% for member in memmbers %}
@@ -23,7 +26,7 @@
       <p>Du kan invitere kollegaer til dette firmaet. Merk at all medlemmer av ditt firma kan se gjennom og endre dokumentasjonen som dere har lagret, på lik linje med deg selv.</p>
 
       <p>For å invitere en kollega, trykk nedenfor, og du vil få en ny invitasjons-lenke. Send så denne lenken til din kollega.</p>
-      <button class="btn-primary" data-bind="click: createInvite">Inviter kollega</button>
+      <button class="btn btn-primary" data-bind="click: createInvite">Inviter kollega</button>
       <!-- ko foreach: invites -->
       <div>
         <a data-bind="text: document.location.origin + $root.base_url() + url, attr: {href: $root.base_url() + url}"></a>

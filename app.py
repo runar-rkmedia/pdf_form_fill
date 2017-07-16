@@ -32,6 +32,7 @@ from models import (
 )
 from vk_objects import FormField
 
+from my_exceptions import LocationException
 
 from flask import (
     Flask,
@@ -298,7 +299,7 @@ def get_invite(invite_id):
         flash('Denne invitasjonsnøkkelen er ikke gyldig.')
         return redirect(url_for('control_panel'))
     if invite.type == InviteType.create_company:
-        return invite_create_company(invite, request)
+        return invite_create_company(invite)
     elif invite.type == InviteType.company:
         pass
     if request.method == 'GET':
@@ -309,54 +310,63 @@ def get_invite(invite_id):
             invite.invitee = current_user
             current_user.company = invite.company
             db.session.commit()
-            return render_template('invite.html', invite=invite, newly_invite=True)
+            return render_template(
+                'invite.html', invite=invite, newly_invite=True)
 
 
-def invite_create_company(invite, request_):
+def invite_create_company(invite):
     """Handle invites for creating a company."""
     form = CreateCompany()
-    if request_.method == 'POST':
+    if request.method == 'POST':
         if form.validate_on_submit():
-
-            address = Address(
-                line1=form.address1.data,
-                line2=form.address2.data,
-                postnumber=form.postnumber.data,
-                postal=form.postal.data
-            )
-            location = get_location_from_address(
-                form.address1.data,
-                form.postnumber.data
-            )
-            print(location)
-            if not location:
-                flash(
-                    "Kunne ikke finne denne adressen i Norge. Om dette er feil, vennligst rapporter dette.") # noqa
-                return render_template('create_company.html', invite=invite, form=form)
-
-            company = Company(
-                name=form.name.data,
-                description=form.description.data,
-                orgnumber=form.org_nr.data,
-                address=address,
-                lat=location[0],
-                lng=location[1]
-            )
-            company.add_contact(
-                c_type=ContactType.email,
-                value=form.email.data,
-                description=form.contact_name.data
-            )
-            db.session.add(address)
-            db.session.add(company)
-            current_user.company = company
+            try:
+                current_user.company = Company.update_or_create_all(form)
+            except LocationException as e:
+                flash(e, 'error')
+                return render_template(
+                    'create_company.html', invite=invite, form=form)
             if current_user.role == UserRole.user:
                 current_user.role = UserRole.companyAdmin
             invite.invitee = current_user
             db.session.commit()
             flash("Firmaet '{}' ble opprettet."
-                  .format(company.name))
+                  .format(current_user.company.name))
             return redirect(url_for('control_panel_company'))
+    return render_template('create_company.html', invite=invite, form=form)
+
+
+@app.route('/company/<company_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_company(company_id=None, invite=None):
+    """Description."""
+    form = CreateCompany()
+    company = Company.query.filter_by(id=company_id).first()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            try:
+                current_user.company = Company.update_or_create_all(
+                    form,
+                    company)
+            except LocationException as e:
+                flash(e, 'error')
+                return render_template(
+                    'create_company.html', invite=invite, form=form)
+            db.session.commit()
+            return redirect(url_for('control_panel_company'))
+        return render_template('create_company.html', invite=invite, form=form)
+
+    form.name.data = current_user.company.name
+    form.org_nr.data = current_user.company.orgnumber
+    form.description.data = current_user.company.description
+    # TODO: contact needs fix
+    form.contact_name.data = current_user.company.contacts[
+        0].contact.description
+    form.email.data = current_user.company.contacts[0].contact.value
+    form.address.address1.data = current_user.company.address.line1
+    form.address.address2.data = current_user.company.address.line2
+    form.address.postal.data = current_user.company.address.postal
+    form.address.postnumber.data = current_user.company.address.postnumber
+
     return render_template('create_company.html', invite=invite, form=form)
 
 
@@ -545,7 +555,7 @@ def json_fill_document():
                 Product.id == request_form['product_id']
             ).first()
         manufacturor = product.product_type.manufacturor.name
-        output_pdf, dictionary, form = create_form( # noqa
+        output_pdf, dictionary, form = create_form(  # noqa
             manufacturor=manufacturor,
             form_data=form_data,
             request_form=request_form,

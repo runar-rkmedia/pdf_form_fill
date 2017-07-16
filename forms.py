@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField
+from wtforms import StringField, IntegerField, FormField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms_html5 import AutoAttrMeta
 from wtforms.validators import DataRequired, Email, Length, NumberRange, ValidationError, Regexp
@@ -25,58 +25,7 @@ class Unique(object):
             raise ValidationError(self.message)
 
 
-class CreateCompany(FlaskForm):
-    class Meta(AutoAttrMeta):
-        pass
-
-    name = StringField('Firma navn',
-                       validators=[DataRequired('Feltet er påkrevd'),
-                                   Length(min=2,
-                                          max=180),
-                                   Unique(Company,
-                                          Company.name,
-                                          'Dette firma-navnet eksisterer allerede.')])
-    description = StringField('Beskrivelse',
-                              validators=[Length(max=500)])
-    org_nr = IntegerField(
-        'Organisasjonsnummer',
-        validators=[
-            NumberRange(
-                min=100000000,
-                max=999999999,
-                message='Organisasjonsnummer skal ha totalt 9 siffer.'),
-            Unique(
-                Company,
-                Company.orgnumber,
-                'Dette nummeret er allerede i bruk.'
-            )
-        ]
-    )
-    contact_name = StringField(
-        'Kontaktperson',
-        validators=[
-            DataRequired('Feltet er påkrevd'),
-            Length(
-                min=2,
-                message="Minst %(min)d tegn her."
-            ),
-            Length(
-                max=180,
-                message="Maksimalt %(max)d tegn her."
-            )
-        ]
-    )
-    email = EmailField(
-        'Epost',
-        validators=[
-            DataRequired('Feltet er påkrevd'),
-            Length(
-                min=6,
-                max=70,
-                message="Epost-adressen bør være mellom %(min)d og %(max)d tegn."
-            )
-        ]
-    )
+class AddressForm(FlaskForm):
     address1 = StringField(
         'Adresse',
         validators=[
@@ -118,3 +67,52 @@ class CreateCompany(FlaskForm):
             )
         ]
     )
+
+
+
+class CreateCompany(FlaskForm):
+
+    class Meta(AutoAttrMeta):
+        pass
+
+    name = StringField('Firma navn',
+                       validators=[DataRequired('Feltet er påkrevd'),
+                                   Length(min=2,
+                                          max=180)])
+    description = StringField('Beskrivelse',
+                              validators=[Length(max=500)])
+    org_nr = IntegerField(
+        'Organisasjonsnummer',
+        validators=[
+            NumberRange(
+                min=100000000,
+                max=999999999,
+                message='Organisasjonsnummer skal ha totalt 9 siffer.')
+        ]
+    )
+    contact_name = StringField(
+        'Kontaktperson',
+        validators=[
+            DataRequired('Feltet er påkrevd'),
+            Length(
+                min=2,
+                message="Minst %(min)d tegn her."
+            ),
+            Length(
+                max=180,
+                message="Maksimalt %(max)d tegn her."
+            )
+        ]
+    )
+    email = EmailField(
+        'Epost',
+        validators=[
+            DataRequired('Feltet er påkrevd'),
+            Length(
+                min=6,
+                max=70,
+                message="Epost-adressen bør være mellom %(min)d og %(max)d tegn."
+            )
+        ]
+    )
+    address = FormField(AddressForm)

@@ -10,6 +10,10 @@ from flask_dance.consumer.backend.sqla import (
 from flask_login import (
     UserMixin,
 )
+from addresses.address_pymongo import (
+    get_location_from_address
+)
+from my_exceptions import LocationException
 # import bleach
 import enum
 from field_dicts.helpers import id_generator
@@ -57,7 +61,9 @@ class ProductCatagory(enum.Enum):
             catagory_type = 'mat'
         elif enumObject in [cls.single_inside, cls.single_outside]:
             catagory_type = 'single'
-        return catagory_type, enumObject in [cls.cable_outside, cls.mat_outside, cls.single_outside]
+        return catagory_type, enumObject in [
+            cls.cable_outside, cls.mat_outside, cls.single_outside
+        ]
 
 
 def lookup_vk(manufacturor, mainSpec, watt_total):
@@ -138,14 +144,14 @@ class Contact(db.Model):
 class Company(db.Model):
     """Company-table for users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), unique=True)
     description = db.Column(db.String(500))
-    orgnumber = db.Column(db.Integer)
+    orgnumber = db.Column(db.Integer, unique=True)
     address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
     address = db.relationship(
         Address, primaryjoin='Company.address_id==Address.id')
-    lat = db.Column(db.Numeric(8,6))
-    lng = db.Column(db.Numeric(9,6))
+    lat = db.Column(db.Numeric(8, 6))
+    lng = db.Column(db.Numeric(9, 6))
 
     def add_contact(self, c_type, value, description):
         """Add contact to this company."""
@@ -188,6 +194,77 @@ class Company(db.Model):
                 filled_forms.append(i)
 
         return filled_forms, query.pages
+
+    @classmethod
+    def update_or_create(
+            cls, company_id, name, description, orgnumber, address, lat, lng):
+        """Update if exists, else create Company."""
+        if not isinstance(address, Address):
+            raise ValueError(
+                "Did not recieve an Address-type, got '{}'".format(address))
+        company = Company.query.filter_by(
+            id=company_id
+        ).first()
+
+        if not company:
+            company = Company()
+        company.name = name
+        company.description = description
+        company.orgnumber = orgnumber
+        company.address = address
+        company.lat = lat
+        company.lng = lng
+        db.session.add(company)
+
+        return company
+
+    @classmethod
+    def update_or_create_all(cls, form, company=None):
+        """up."""
+        if company:
+            company_id = company.id
+        else:
+            company_id = None
+        if company and company.address:
+            address_id = company.address.id
+        else:
+            address_id = None
+        address = Address.update_or_create(
+            address_id=address_id,
+            line1=form.address.address1.data,
+            line2=form.address.address2.data,
+            postnumber=form.address.postnumber.data,
+            postal=form.address.postal.data,
+        )
+
+        location = get_location_from_address(
+            form.address.address1.data,
+            form.address.postnumber.data
+        )
+        if not location:
+            raise LocationException('Fant ikke adressen i databasen')
+
+        company = Company.update_or_create(
+            company_id=company_id,
+            name=form.name.data,
+            description=form.description.data,
+            orgnumber=form.org_nr.data,
+            address=address,
+            lat=location[0],
+            lng=location[1]
+        )
+        if company.contacts:
+            # print(company.contacts[0].value)
+            company.contacts[0].contact.value = form.email.data
+            company.contacts[0].contact.description = form.contact_name.data
+            db.session.add(company.contacts[0])
+        else:
+            company.add_contact(
+                c_type=ContactType.email,
+                value=form.email.data,
+                description=form.contact_name.data
+            )
+        return company
 
 
 class CompanyContact(db.Model):

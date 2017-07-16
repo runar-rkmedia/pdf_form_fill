@@ -18,16 +18,17 @@
                 render_field_group %}
                 <form method="post" role="form">
                     {{ form.csrf_token }}
+                    {{ form.address.csrf_token }}
                     <div class="col-sm-8 zero-pad-l">{{ render_field(form.name) }}</div>
                     <div class="col-sm-4 zero-pad-r">{{ render_field(form.org_nr) }}</div>
                     {{ render_field(form.description) }}
                     {{ render_field(form.contact_name) }}
                     {{ render_field(form.email) }}
                     <fieldset>
-                        <div class="form-group">{{ render_field(form.address1, False) }}
-                            {{ render_field(form.address2, False, no_label=True) }}</div>
-                        <div class="col-xs-4 zero-pad-l">{{ render_field(form.postnumber) }}</div>
-                        <div class="col-xs-8 zero-pad-r">{{ render_field(form.postal) }}</div>
+                        <div class="form-group">{{ render_field(form.address.address1, False) }}
+                            {{ render_field(form.address.address2, False, no_label=True) }}</div>
+                        <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.postnumber) }}</div>
+                        <div class="col-xs-8 zero-pad-r">{{ render_field(form.address.postal) }}</div>
                     </fieldset>
                     <button type="submit" class="btn btn-primary">Lagre</button>
                 </form>
