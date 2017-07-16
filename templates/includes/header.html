@@ -3,7 +3,11 @@
     <!-- <p>Et prosjekt i utvikling. Henter inn og fyller ut dokumentasjon basert på de mest essensielle feltene, så slipper du å skrive inn produkt-data, gjøre utregninger, fylle ut dato osv. Du kan selfølgelig gjøre manuelle endringer i skjemaet i ettertid.</p> -->
     {% include 'includes/messages.html' %}
     {% if current_user.is_authenticated %}
-      Hei <a href="{{url_for('control_panel')}}">{{ current_user.given_name + ' ' + current_user.family_name }}</a>!
+      Hei <a href="{{url_for('control_panel')}}">
+        {% if current_user.role == UserRole.companyAdmin %}
+          <span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
+        {% endif %}
+        {{ current_user.given_name + ' ' + current_user.family_name }}</a>!
       <a href="{{ url_for("logout") }}">Logg ut</a>
     {% else %}
       Du er ikke logget inn.

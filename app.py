@@ -128,6 +128,11 @@ login_manager.init_app(app)
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 
 
+@app.context_processor
+def include_user_roles():
+    return {'UserRole': UserRole}
+
+
 @app.before_request
 def make_session_permanent():
     """Keep sessions alive after closing browser."""
