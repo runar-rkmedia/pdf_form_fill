@@ -2,6 +2,7 @@
 # pylama:ignore=W0512
 
 import os
+import sys
 import decimal
 import re
 import base64
@@ -65,6 +66,8 @@ from flask_login import (
     login_user,
     logout_user
 )
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -83,6 +86,9 @@ app = Flask(__name__, instance_relative_config=True)
 app.json_encoder = MyJSONEncoder
 configure_app(app)
 Compress(app)
+migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 
 assets = Environment(app)
@@ -685,6 +691,9 @@ def search_address():
 
 # hook up extensions to app
 if __name__ == "__main__":
-    if app.config['DEBUG'] is True:
-        Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
-    app.run(host='0.0.0.0', port=app.config['PORT'])
+    if 'db' in sys.argv:
+        manager.run()
+    else:
+        if app.config['DEBUG'] is True:
+            Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
+            # app.run(host='0.0.0.0', port=app.config['PORT'])

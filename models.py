@@ -267,6 +267,19 @@ class Company(db.Model):
         return company
 
 
+# class Room(db.Model):
+#     """
+#     Room-table for heating-cables.
+#
+#     Note that this can also be an area, like 'garage', or 'outside front door'
+#     """
+#     id = db.Column(db.Integer, primary_key=True, unique=True)
+#     name = db.Column(db.String(100))
+#     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+#     company = db.relationship(
+#         Company, primaryjoin='Room.company_id==Company.id')
+
+
 class CompanyContact(db.Model):
     """Associations-table for company and contacts."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -609,7 +622,6 @@ class FilledFormModified(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     request_form = db.Column(db.JSON)  # All data from the users-form
     form_data = db.Column(db.JSON)  # All data actually used to fill the pdf.
-    info = {'bind_key': 'forms'}
 
     __mapper_args__ = {
         "order_by": date.desc()
