@@ -267,17 +267,17 @@ class Company(db.Model):
         return company
 
 
-# class Room(db.Model):
-#     """
-#     Room-table for heating-cables.
-#
-#     Note that this can also be an area, like 'garage', or 'outside front door'
-#     """
-#     id = db.Column(db.Integer, primary_key=True, unique=True)
-#     name = db.Column(db.String(100))
-#     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
-#     company = db.relationship(
-#         Company, primaryjoin='Room.company_id==Company.id')
+class Room(db.Model):
+    """
+    Room-table for heating-cables.
+
+    Note that this can also be an area, like 'garage', or 'outside front door'
+    """
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    name = db.Column(db.String(100))
+    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    company = db.relationship(
+        Company, primaryjoin='Room.company_id==Company.id')
 
 
 class CompanyContact(db.Model):

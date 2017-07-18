@@ -1,13 +1,13 @@
 """empty message
 
 Revision ID: a0792ed2ba6a
-Revises: 
+Revises:
 Create Date: 2017-07-18 19:23:04.306260
 
 """
 from alembic import op
 import sqlalchemy as sa
-
+import sqlalchemy_utils
 
 # revision identifiers, used by Alembic.
 revision = 'a0792ed2ba6a'
@@ -196,4 +196,3 @@ def downgrade_products():
     op.drop_table('product_type')
     op.drop_table('manufacturor')
     # ### end Alembic commands ###
-
