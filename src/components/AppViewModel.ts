@@ -121,7 +121,7 @@ export class TSAppViewModel {
     company_forms: KnockoutObservableArray<string> = ko.observableArray();
     validation_errors: KnockoutValidationErrors = kv.group(self);
     loading: KnockoutObservableArray<string> = ko.observableArray();
-    autocompleteAddress: string;
+    autocompleteAddress: KnockoutComputed<string>;
 
     delete: KnockoutObservable<string> = ko.observable();
 
@@ -169,7 +169,15 @@ export class TSAppViewModel {
             }
         });
 
-        this.autocompleteAddress = '/address/?q=%QUERY'
+        this.autocompleteAddress = ko.computed(()  =>  {
+           let url: string = '/address/?q=%QUERY'
+           if (this.anleggs_postnummer()) {
+             url += '&p=' + this.anleggs_postnummer()
+           }
+           console.log(url)
+          return url
+        })
+        // '/address/?q=%QUERY&p=' + this.anleggs_postnummer()
 
         ko.computed(() => {
             if (this.mainSpec()) {

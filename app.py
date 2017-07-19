@@ -666,6 +666,7 @@ def search_address():
         else:
             kwargs['near_post_code'] = current_user.company.address.postnumber
     # Make sure 'post_code' is an int.
+    print( request.args.get('p'))
     try:
         post_code = request.args.get('p')
         if post_code:
@@ -696,4 +697,4 @@ if __name__ == "__main__":
     else:
         if app.config['DEBUG'] is True:
             Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
-            # app.run(host='0.0.0.0', port=app.config['PORT'])
+            app.run(host='0.0.0.0', port=app.config['PORT'])
