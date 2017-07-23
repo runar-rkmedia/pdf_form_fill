@@ -38,7 +38,7 @@ class Unique(object):
 
 class RoomForm(FlaskForm):
     """Input form for room."""
-    rom_name = StringField(
+    room_name = StringField(
         'Rom/stednavn',
         validators=[
             DataRequired('Feltet er påkrevd.'),
@@ -52,7 +52,7 @@ class RoomForm(FlaskForm):
     outside = BooleanField(
         'Innvendig'
     )
-    areal = DecimalField(
+    area = DecimalField(
         'Areal',
         validators=[
             DataRequired('Feltet er påkrevd.'),
@@ -62,7 +62,7 @@ class RoomForm(FlaskForm):
             )
         ]
     )
-    oppvarmet_areal = DecimalField(
+    heated_area = DecimalField(
         'Oppvarmet Areal',
         validators=[
             DataRequired('Feltet er påkrevd.'),

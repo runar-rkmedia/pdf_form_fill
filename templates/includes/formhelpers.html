@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 
-{% macro render_field(field, formgroup = True, no_label = False, label_class = None) %}
+{% macro render_field(field, formgroup = 'form-group', no_label = False, label_class = None, class_="form-control") %}
     {% if formgroup %}
-        <div class="form-group">
+        <div class="{{ formgroup }}">
         {% endif %}
         {% if not no_label %}
             {% if label_class %}
@@ -11,7 +11,7 @@
                 {{ field.label }}
             {% endif %}
         {% endif %}
-        {{ field(class_="form-control", **kwargs)|safe }}
+        {{ field(class_=class_, **kwargs)|safe }}
         {% if field.errors %}
             <ul class="errors">
                 {% for error in field.errors %}
