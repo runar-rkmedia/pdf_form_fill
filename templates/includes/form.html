@@ -1,60 +1,67 @@
 <!DOCTYPE html>
-<form id="form" class="" action="nexans.html" method="post" data-bind="submit: post_form" autocomplete="off">
-  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+<form
+  id="form"
+  class=""
+  action="nexans.html"
+  method="post"
+  data-bind="submit: post_form"
+  autocomplete="off"
+>
+  <div
+    class="panel-group"
+    id="accordion"
+    role="tablist"
+    aria-multiselectable="true"
+  >
     <div class="panel panel-default">
-      <div class="panel-heading bg-info" role="tab" id="form-kunde">
+      <div
+        class="panel-heading bg-info"
+        role="tab"
+        id="form-kunde"
+      >
         <h4 class="panel-title">
           <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form-kunde" aria-expanded="true" aria-controls="collapse-form-kunde">Kundeinformasjon</a>
         </h4>
-      </div>
-      <div div id="collapse-form-kunde" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form-kunde">
-        {% from "includes/formhelpers.html" import render_field,
-        render_field_group %}
-        {{ form.csrf_token }}
-        {{ form.address.csrf_token }}
-
-        <div class="panel-body row">
-
-          {{ render_field(form.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: anleggs_adresse, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }}
-          {{ render_field(form.address.address2, 'form-group, col-xs-12', no_label=True, **{'data-bind':"
-    value: anleggs_adresse2
-    "}) }}
-          {{ render_field(form.address.postnumber, 'form-group col-xs-4 col-sm-2', **{'data-bind':"
-    value: anleggs_postnummer"}) }}
-          {{ render_field(form.address.postal,'form-group col-xs-8 col-sm-10' , **{'data-bind':
-  "value: anleggs_poststed", 'disabled':'disabled'}) }}
-          <div class="formgroup col-xs-12">
-            <hr class="col-sm-12"/>
-            {{render_field(form.room.room_name, False, **{'data-bind':"
-              value: rom_navn
-            "}) }}
-          </div>
-          {{render_field(
-              form.room.area,
-              formgroup='form-group col-xs-6',
-              **{'data-bind':"value: areal"}) }}
-
-          {{render_field(
-              form.room.heated_area,
-              formgroup='form-group col-xs-6',
-              **{'data-bind':"value: oppvarmet_areal"}) }}
-
-          {{render_field(
-              form.room.outside,
-              formgroup=False,
-              label_class='checkbox-inline',
-              class_='',
-              **{'data-bind':"value: oppvarmet_areal"}) }}
-        </div>
-      </div>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading" role="tab" id="form_vk">
-        <h4 class="panel-title">
+    <div
+      div
+      id="collapse-form-kunde"
+      class="panel-collapse collapse in"
+      role="tabpanel"
+      aria-labelledby="form-kunde"
+    >
+      {% from "includes/formhelpers.html" import render_field, render_field_group %} {{ form.csrf_token }} {{ form.address.csrf_token }}
+
+      <div class="panel-body row">
+
+        {{ render_field(form.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: anleggs_adresse, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }} {{ render_field(form.address.address2,
+        'form-group, col-xs-12', no_label=True, **{'data-bind':" value: anleggs_adresse2 "}) }} {{ render_field(form.address.postnumber, 'form-group col-xs-4 col-sm-2', **{'data-bind':" value: anleggs_postnummer"}) }} {{ render_field(form.address.postal,'form-group
+        col-xs-8 col-sm-10' , **{'data-bind': "value: anleggs_poststed", 'disabled':'disabled'}) }}
+        <div class="formgroup col-xs-12">
+          <hr class="col-sm-12" /> {{render_field(form.room.room_name, False, **{'data-bind':" value: rom_navn, typeahead: suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: roomSuggestionOnSelect"}) }}
+        </div>
+        {{render_field( form.room.area, formgroup='form-group col-xs-6', **{'data-bind':"value: areal"}) }} {{render_field( form.room.heated_area, formgroup='form-group col-xs-6', **{'data-bind':"value: oppvarmet_areal"}) }} {{render_field( form.room.outside,
+        formgroup=False, label_class='checkbox-inline', class_='', **{'data-bind':"checked: outside"}) }}
+      </div>
+      </div>
+      </div>
+      <div class="panel panel-default">
+        <div
+          class="panel-heading"
+          role="tab"
+          id="form_vk"
+        >
+          <h4 class="panel-title">
           <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_vk" aria-expanded="true" aria-controls="collapse-form_vk">Spesifikasjoner varmekabel</a>
         </h4>
       </div>
-      <div div id="collapse-form_vk" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form_vk">
+      <div
+        div
+        id="collapse-form_vk"
+        class="panel-collapse collapse in"
+        role="tabpanel"
+        aria-labelledby="form_vk"
+      >
         <div class="panel-body row">
           <div class="col-xs-12">
             <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
@@ -93,7 +100,14 @@
           </div>
           <div class="form-group form-group-sm col-xs-6">
             <label for="input-effekt">Effekt</label>
-            <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: effect">
+            <input
+              class="form-control"
+              type="number"
+              min="0"
+              name="effekt"
+              id="input-effekt"
+              data-bind="value: effect"
+            >
           </div>
           <!-- ko with: Products() -->
           <div class="form-group col-xs-12">
@@ -129,75 +143,130 @@
                     optionsText: 'name',
                     optionsValue: 'id',
                     value: $root.selected_vk,
-                    optionsCaption: 'Velg en vamekabel her... (' + filtered_products().length + ')'"></select>
+                    optionsCaption: 'Velg en vamekabel her... (' + filtered_products().length + ')'"
+            ></select>
           </div>
           <!-- /ko -->
         </div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading" role="tab" id="form_maalinger">
-        <h4 class="panel-title">
+        </div>
+        </div>
+        <div class="panel panel-default">
+          <div
+            class="panel-heading"
+            role="tab"
+            id="form_maalinger"
+          >
+            <h4 class="panel-title">
           <a role="button" data-toggle="collapse" data-parent="#acc-form" href="#collapse-form_maalinger" aria-expanded="true" aria-controls="collapse-form_maalinger">Målinger</a>
         </h4>
-      </div>
-      <div id="collapse-form_maalinger" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form_maalinger">
-        <div class="panel-body row">
-          <div class="form-group col-xs-4">
-            <label for="input-ohm_a">Før installasjon</label>
-            <input class="form-control" type="number" step="0.01" min="0" name="ohm_a" id="input-ohm_a" data-bind="value: ohm_a">
-          </div>
-          <div class="form-group col-xs-4">
-            <label for="input-ohm_b">Før støping</label>
-            <input class="form-control" type="number" step="0.01" min="0" name="ohm_b" id="input-ohm_b" data-bind="value: ohm_b">
-          </div>
-          <div class="form-group col-xs-4">
-            <label for="input-ohm_c">Før tilkobling</label>
-            <input class="form-control" type="number" step="0.01" min="0" name="ohm_c" id="input-ohm_c" data-bind="value: ohm_c">
-          </div>
-          <fieldset class="col-xs-12">
-            <legend>Isolasjonsmotstand</legend>
-            <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
-            <div class="col-xs-4 col-sm-3 col-md-2">
-              <label class="checkbox-inline">
+        </div>
+        <div
+          id="collapse-form_maalinger"
+          class="panel-collapse collapse in"
+          role="tabpanel"
+          aria-labelledby="form_maalinger"
+        >
+          <div class="panel-body row">
+            <div class="form-group col-xs-4">
+              <label for="input-ohm_a">Før installasjon</label>
+              <input
+                class="form-control"
+                type="number"
+                step="0.01"
+                min="0"
+                name="ohm_a"
+                id="input-ohm_a"
+                data-bind="value: ohm_a"
+              >
+            </div>
+            <div class="form-group col-xs-4">
+              <label for="input-ohm_b">Før støping</label>
+              <input
+                class="form-control"
+                type="number"
+                step="0.01"
+                min="0"
+                name="ohm_b"
+                id="input-ohm_b"
+                data-bind="value: ohm_b"
+              >
+            </div>
+            <div class="form-group col-xs-4">
+              <label for="input-ohm_c">Før tilkobling</label>
+              <input
+                class="form-control"
+                type="number"
+                step="0.01"
+                min="0"
+                name="ohm_c"
+                id="input-ohm_c"
+                data-bind="value: ohm_c"
+              >
+            </div>
+            <fieldset class="col-xs-12">
+              <legend>Isolasjonsmotstand</legend>
+              <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
+              <div class="col-xs-4 col-sm-3 col-md-2">
+                <label class="checkbox-inline">
                 <input type="checkbox" name="mohm_a" value="999" data-bind="checked: mohm_a">
                 Før installasjon
               </label>
-            </div>
-            <div class="col-xs-4 col-sm-3 col-md-2">
-              <label class="checkbox-inline">
+              </div>
+              <div class="col-xs-4 col-sm-3 col-md-2">
+                <label class="checkbox-inline">
                 <input type="checkbox" name="mohm_b" value="999" data-bind="checked: mohm_b">
                 Før støping
               </label>
-            </div>
-            <div class="col-xs-4 col-sm-3 col-md-2">
-              <label class="checkbox-inline">
+              </div>
+              <div class="col-xs-4 col-sm-3 col-md-2">
+                <label class="checkbox-inline">
                 <input type="checkbox" name="mohm_c" value="999" data-bind="checked: mohm_c">
                 Før tilkobling
               </label>
-            </div>
-          </fieldset>
-        </div>
-      </div>
-    </div>
-    <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, css: {opaque: validation_errors().length > 0}">
-    <div class="Loading" data-bind="if: loading.indexOf('fill_form') > -1">
+              </div>
+            </fieldset>
+          </div>
+          </div>
+          </div>
+          <input
+            class="btn btn-primary"
+            type="submit"
+            value="Fyll inn i skjema"
+            data-bind="click: post_form, css: {opaque: validation_errors().length > 0}"
+          >
+            <div
+              class="Loading"
+              data-bind="if: loading.indexOf('fill_form') > -1"
+            >
 
-      <span class="glyphicon glyphicon-refresh spinning"></span>
-      Fyller ut skjema...
-    </div>
-    <div class="file_download" data-bind="if: file_download, enable: loading, css: {
+              <span class="glyphicon glyphicon-refresh spinning"></span> Fyller ut skjema...
+              </div>
+              <div
+                class="file_download"
+                data-bind="if: file_download, enable: loading, css: {
       'bg-danger': loading(),
       'bg-info': !loading(),
-    }">
-      <div class="message" data-bind="ifnot: form_changed">Ditt skjema er ferdig utfyllt.</div>
-      <a target="vk_pdf" data-bind="attr: { href: file_download}" title="Utfylt skjema">Klikk her for å laste det ned.</a>
+    }"
+              >
+                <div
+                  class="message"
+                  data-bind="ifnot: form_changed"
+                >Ditt skjema er ferdig utfyllt.</div>
+                  <a
+                    target="vk_pdf"
+                    data-bind="attr: { href: file_download}"
+                    title="Utfylt skjema"
+                  >Klikk her for å laste det ned.</a>
 
-      <p>Hvis du vil gjøre endringer, kan du gjøre det på denne siden, eller i det nedlastede skjemaet.</p>
+                    <p>Hvis du vil gjøre endringer, kan du gjøre det på denne siden, eller i det nedlastede skjemaet.
+                    </p>
 
-      <p class="bg-danger">MERK: Filen ovenfor er bare tilgjengelig i en kort periode.
-        <br>Hvis du vil sende filen til noen, anbefales det å laste den ned først.</p>
-      <p class="bg-danger" id="warning"></p>
-    </div>
-  </div>
-</form>
+                    <p class="bg-danger">MERK: Filen ovenfor er bare tilgjengelig i en kort periode.
+                      <br>Hvis du vil sende filen til noen, anbefales det å laste den ned først.</p>
+                    <p
+                      class="bg-danger"
+                      id="warning"
+                    ></p>
+                      </div>
+                      </div>
+                      </form>

@@ -50,7 +50,7 @@ class RoomForm(FlaskForm):
         ]
     )
     outside = BooleanField(
-        'Innvendig'
+        'Utvendig'
     )
     area = DecimalField(
         'Areal',
