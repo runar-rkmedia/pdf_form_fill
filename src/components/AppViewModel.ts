@@ -26,6 +26,7 @@ interface UserFormInterface {
 
 interface RequestFormInterface {
     anleggs_adresse: string
+    anleggs_adresse2: string
     anleggs_postnummer: number
     anleggs_poststed: string
     rom_navn: string
@@ -54,6 +55,11 @@ interface FileDownloadInterface {
 export class TSAppViewModel {
     anleggs_adresse: KnockoutObservable<{}> = ko.observable().extend({
         required: true,
+        minLength: 3,
+        maxLength: 50
+    })
+    anleggs_adresse2: KnockoutObservable<{}> = ko.observable().extend({
+        required: false,
         minLength: 3,
         maxLength: 50
     })

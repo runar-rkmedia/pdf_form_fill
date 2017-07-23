@@ -129,16 +129,19 @@ export class TSProductModel {
                 [{
                     value: prod.mainSpec,
                     mustEqual: this.parentModel.mainSpec
-                },
-                {
-                    value: prod.effect,
-                    mustEqual: this.parentModel.effect
                 }
                 ]
             );
 
         }).sort((a, b)=> {
-            return a.effect - b.effect;
+          let effect = parentModel.effect();
+          if (effect) {
+              let diffA = Math.abs(effect - a.effect)
+              let diffB = Math.abs(effect - b.effect)
+              return diffA-diffB
+          } else {
+            return (a.effect) - (b.effect);
+          }
         });
     });
 

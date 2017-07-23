@@ -1,8 +1,19 @@
+"""Forms used for HTML.."""
+# -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, FormField
-from wtforms.fields.html5 import EmailField, IntegerField
+from wtforms import (
+    StringField,
+    FormField,
+    BooleanField,
+    RadioField
+)
+from wtforms.fields.html5 import EmailField, IntegerField, DecimalField
 from wtforms_html5 import AutoAttrMeta
-from wtforms.validators import DataRequired, Email, Length, NumberRange, ValidationError, Regexp
+from wtforms.validators import (DataRequired,
+                                Email,
+                                Length,
+                                NumberRange,
+                                ValidationError)
 
 from models import (
     Company
@@ -25,7 +36,48 @@ class Unique(object):
             raise ValidationError(self.message)
 
 
+class RoomForm(FlaskForm):
+    """Input form for room."""
+    rom_name = StringField(
+        'Rom/stednavn',
+        validators=[
+            DataRequired('Feltet er påkrevd.'),
+            Length(
+                min=2,
+                max=100,
+                message="Navnet bør være mellom %(min)d og %(max)d tegn."
+            )
+        ]
+    )
+    outside = BooleanField(
+        'Innvendig'
+    )
+    areal = DecimalField(
+        'Areal',
+        validators=[
+            DataRequired('Feltet er påkrevd.'),
+            NumberRange(
+                min=0.1,
+                max=1000
+            )
+        ]
+    )
+    oppvarmet_areal = DecimalField(
+        'Oppvarmet Areal',
+        validators=[
+            DataRequired('Feltet er påkrevd.'),
+            NumberRange(
+                min=0.1,
+                max=1000
+            )
+        ]
+    )
+
+
+
+
 class AddressForm(FlaskForm):
+    """Input-form for Adresses."""
     address1 = StringField(
         'Adresse',
         validators=[
@@ -69,8 +121,14 @@ class AddressForm(FlaskForm):
     )
 
 
+class HeatingForm(FlaskForm):
+    """Form for filling out a heaating-cable."""
+    address = FormField(AddressForm)
+    room = FormField(RoomForm)
+
 
 class CreateCompany(FlaskForm):
+    """Input-form for creating a company."""
 
     class Meta(AutoAttrMeta):
         pass

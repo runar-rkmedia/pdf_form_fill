@@ -46,7 +46,7 @@ from flask import (
     url_for
 )
 from flask.json import jsonify, JSONEncoder
-from forms import CreateCompany
+from forms import CreateCompany, AddressForm, RoomForm, HeatingForm
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
@@ -548,6 +548,7 @@ def add_company_info_to_dictionary(dictionary, company):
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_fill_document():
     """Fill a form from user."""
+    form = HeatingForm()
     if request.method == 'GET':
         filled_form_modified_id = request.args.get('filled_form_modified_id')
         filled_form_modified = FilledFormModified\
@@ -641,6 +642,7 @@ def json_fill_document():
 def view_form(dictionary=None, error_fields=None, error_message=None):
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
+    form = HeatingForm()
     if dictionary is None:
         dictionary = {
             'anleggs_postnummer': 4626,
@@ -648,7 +650,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    return render_template('main.html')
+    return render_template('main.html', form=form)
 
 
 @login_required
