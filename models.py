@@ -98,13 +98,13 @@ class NoAccess(Error):
 class Address(db.Model):
     """Address-table for users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    line1 = db.Column(db.String(200), nullable=False)
-    line2 = db.Column(db.String(200))
-    postnumber = db.Column(db.SmallInteger, nullable=False)
-    postal = db.Column(db.String(200))
+    address1 = db.Column(db.String(200), nullable=False)
+    address2 = db.Column(db.String(200))
+    post_area = db.Column(db.SmallInteger, nullable=False)
+    post_code = db.Column(db.String(200))
 
     @classmethod
-    def update_or_create(cls, address_id, line1, line2, postnumber, postal):
+    def update_or_create(cls, address_id, address1, address2, post_area, post_code):
         """Update if exists, else create Address."""
         address = Address.query.filter_by(
             id=address_id
@@ -112,22 +112,22 @@ class Address(db.Model):
 
         if not address:
             address = Address(
-                line1=line1,
-                line2=line2,
-                postnumber=postnumber,
-                postal=postal
+                address1=address1,
+                address2=address2,
+                post_area=post_area,
+                post_code=post_code
             )
         else:
             if (
-                    address.line1 != line1 or
-                    address.line2 != line2 or
-                    address.postnumber != postnumber or
-                    address.postal != postal
+                    address.address1 != address1 or
+                    address.address2 != address2 or
+                    address.post_area != post_area or
+                    address.post_area != post_area
             ):
-                address.line1 = line1
-                address.line2 = line2
-                address.postnumber = postnumber
-                address.postal = postal
+                address.address1 = address1
+                address.address2 = address2
+                address.post_area = post_area
+                address.post_area = post_area
                 db.session.add(address)
 
         return address
@@ -187,6 +187,8 @@ class Company(db.Model):
 
     def get_forms(self, user, per_page=PER_PAGE, page=1):
         """Return all filled forms by company, not by current user."""
+        return None, None
+    #TODO: Fix this again
         query = Room\
             .query\
             .filter(Room.customer.company == self)\
@@ -241,15 +243,15 @@ class Company(db.Model):
             address_id = None
         address = Address.update_or_create(
             address_id=address_id,
-            line1=form.address.address1.data,
-            line2=form.address.address2.data,
-            postnumber=form.address.postnumber.data,
-            postal=form.address.postal.data,
+            address1=form.address.address1.data,
+            address2=form.address.address1.data,
+            post_area=form.address.post_area.data,
+            post_code=form.address.post_code.data,
         )
 
         location = get_location_from_address(
             form.address.address1.data,
-            form.address.postnumber.data
+            form.address.post_area.data
         )
         if not location:
             raise LocationException('Fant ikke adressen i databasen')
@@ -538,9 +540,15 @@ class Customer(db.Model):
     company = db.relationship(
         Company, primaryjoin='Customer.company_id==Company.id')
 
+    @classmethod
+    def by_id(cls, this_id):
+        """Return a customer by its id."""
+        return cls.query.filter(cls.id == this_id).first()
+
+
 class Room(db.Model):
     """Table of forms filled by users."""
-    __tablename__ = 'room'
+    # __tablename__ = 'room'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     archived = db.Column(db.Boolean)
