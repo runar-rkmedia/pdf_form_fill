@@ -541,9 +541,19 @@ class Customer(db.Model):
         Company, primaryjoin='Customer.company_id==Company.id')
 
     @classmethod
-    def by_id(cls, this_id):
+    def by_id(cls, this_id, user):
         """Return a customer by its id."""
+        # TODO: authenticate
         return cls.query.filter(cls.id == this_id).first()
+
+    @property
+    def serialize(self):
+        return {
+        'name': self.name,
+        'address_id':self.address_id,
+        'company_id': self.company_id,
+        'id': self.id
+    }
 
 
 class Room(db.Model):

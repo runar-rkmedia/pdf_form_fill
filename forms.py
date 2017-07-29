@@ -5,7 +5,8 @@ from wtforms import (
     StringField,
     FormField,
     BooleanField,
-    RadioField
+    RadioField,
+    HiddenField
 )
 from wtforms.fields.html5 import EmailField, IntegerField, DecimalField
 from wtforms_html5 import AutoAttrMeta
@@ -74,8 +75,6 @@ class RoomForm(FlaskForm):
     )
 
 
-
-
 class AddressForm(FlaskForm):
     """Input-form for Adresses."""
     address1 = StringField(
@@ -98,7 +97,7 @@ class AddressForm(FlaskForm):
                    )
         ]
     )
-    postnumber = IntegerField(
+    post_code = IntegerField(
         'Postnummer',
         validators=[
             DataRequired('Feltet er påkrevd'),
@@ -109,7 +108,7 @@ class AddressForm(FlaskForm):
             )
         ]
     )
-    postal = StringField(
+    post_area = StringField(
         'Poststed',
         validators=[
             DataRequired('Feltet er påkrevd'),
@@ -120,6 +119,16 @@ class AddressForm(FlaskForm):
         ]
     )
 
+
+class CustomerForm(FlaskForm):
+    address = FormField(AddressForm)
+    customer_name = StringField(
+        'Kundenavn',
+        validators=[
+            Length(max=100)
+        ]
+    )
+    customer_id = HiddenField()
 
 class HeatingForm(FlaskForm):
     """Form for filling out a heaating-cable."""

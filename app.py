@@ -47,7 +47,7 @@ from flask import (
     url_for
 )
 from flask.json import jsonify, JSONEncoder
-from forms import CreateCompany, AddressForm, RoomForm, HeatingForm
+import forms
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
@@ -374,10 +374,10 @@ def edit_company(company_id=None, invite=None):
     form.contact_name.data = current_user.company.contacts[
         0].contact.description
     form.email.data = current_user.company.contacts[0].contact.value
-    form.address.address1.data = current_user.company.address.line1
-    form.address.address2.data = current_user.company.address.line2
-    form.address.postal.data = current_user.company.address.postal
-    form.address.postnumber.data = current_user.company.address.postnumber
+    form.address.address1.data = current_user.company.address.address1
+    form.address.address2.data = current_user.company.address.address2
+    form.address.post_area.data = current_user.company.address.post_area
+    form.address.post_code.data = current_user.company.address.post_code
 
     return render_template('create_company.html', invite=invite, form=form)
 
@@ -471,7 +471,60 @@ def json_user_forms():
     return jsonify(result)
 
 
-@app.route('/json/room/<room_id>', methods=['GET', 'DELETE'])
+@app.route('/json/v0/customer/', methods=['POST'])
+@login_required
+def json_create_customer():
+    """Create  customer-object"""
+    form = forms.AddressForm
+    if request.method == 'POST':
+        result = {}
+        # result['customer'] = customer.serialize
+        return jsonify(result)
+
+
+@app.route('/json/v1/customer/',
+           methods=[
+               'GET',
+               'POST',
+               'PUT',
+               'DELETE'
+           ])
+@login_required
+def json_edit_customer():
+    """Edit a customer-object"""
+    form = forms.CustomerForm(request.form)
+    if not form.validate_on_submit():
+        return 'incorrect data', 403
+    if request.method == 'POST':
+        address = Address(
+            address1=form.address.address1.data,
+            address2=form.address.address2.data,
+            post_code=form.address.post_code.data,
+            post_area=form.address.post_area.data,
+        )
+        customer = Customer(
+            name=form.customer_name.data,
+            address=address,
+            company=current_user.company
+        )
+        db.session.add(address)
+        db.session.add(customer)
+        db.session.commit()
+    else:
+        customer = Customer.by_id(form.customer_id.data, current_user)
+        if request.method == 'PUT':
+            customer.address.address1 = form.address.address1.data
+            customer.address.address2 = form.address.address2.data
+            customer.address.post_code = form.address.post_code.data
+            customer.address.post_area = form.address.post_area.data
+            customer.name = form.customer_name.data
+            db.session.commit()
+    if customer:
+        return jsonify({'customer_id': customer.id})
+    return jsonify({})
+
+
+@app.route('/json/v1/room/<room_id>', methods=['GET', 'DELETE'])
 @login_required
 def json_form(room_id):
     """Return a json-object of a form."""
@@ -534,11 +587,11 @@ def add_company_info_to_dictionary(dictionary, company):
     """Description."""
     dictionary['firma_navn'] = current_user.company.name
     dictionary['firma_orgnr'] = current_user.company.orgnumber
-    dictionary['firma_adresse1'] = current_user.company.address.line1
-    dictionary['firma_adresse2'] = current_user.company.address.line2
-    dictionary['firma_poststed'] = current_user.company.address.postal
+    dictionary['firma_adresse1'] = current_user.company.address.address1
+    dictionary['firma_adresse2'] = current_user.company.address.address2
+    dictionary['firma_poststed'] = current_user.company.address.post_area
     dictionary[
-        'firma_postnummer'] = current_user.company.address.postnumber
+        'firma_postnummer'] = current_user.company.address.post_code
     return dictionary
 
 
@@ -548,7 +601,7 @@ def add_company_info_to_dictionary(dictionary, company):
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_fill_document():
     """Fill a form from user."""
-    form = HeatingForm()
+    form = forms.HeatingFmrm()
     if request.method == 'GET':
         filled_form_modified_id = request.args.get('filled_form_modified_id')
         filled_form_modified = FilledFormModified\
@@ -613,10 +666,10 @@ def json_fill_document():
         )
         address = Address.update_or_create(
             address_id=dictionary.get('address_id'),
-            line1=dictionary.get('anleggs_adresse'),
-            line2=None,
-            postnumber=dictionary.get('anleggs_postnummer'),
-            postal=dictionary.get('anleggs_poststed')
+            address1=dictionary.get('anleggs_adresse'),
+            address2=None,
+            post_code=dictionary.get('anleggs_postnummer'),
+            post_area=dictionary.get('anleggs_poststed')
         )
         save_form = FilledForm.update_or_create(
             filled_form_modified_id=dictionary.get('filled_form_modified_id'),
@@ -642,7 +695,8 @@ def json_fill_document():
 def view_form(dictionary=None, error_fields=None, error_message=None):
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
-    form = HeatingForm()
+    form = forms.HeatingForm()
+    customerForm = forms.CustomerForm()
     if dictionary is None:
         dictionary = {
             'anleggs_postnummer': 4626,
@@ -650,7 +704,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    return render_template('main.html', form=form)
+    return render_template('main.html', form=form, customerForm=customerForm)
 
 
 @login_required
@@ -666,9 +720,9 @@ def search_address():
                 float(current_user.company.lng)
             ]
         else:
-            kwargs['near_post_code'] = current_user.company.address.postnumber
+            kwargs['near_post_code'] = current_user.company.address.post_code
     # Make sure 'post_code' is an int.
-    print( request.args.get('p'))
+    print(request.args.get('p'))
     try:
         post_code = request.args.get('p')
         if post_code:

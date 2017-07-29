@@ -125,6 +125,7 @@ export class TSAppViewModel {
   selected_vk: KnockoutObservable<number> = ko.observable();
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
+  customer_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
   company_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -133,6 +134,7 @@ export class TSAppViewModel {
   autocompleteAddress: KnockoutComputed<string>;
 
   delete: KnockoutObservable<string> = ko.observable();
+
 
   noname: any
 
@@ -186,7 +188,7 @@ export class TSAppViewModel {
       return url
       // We need a rateLimiter here so that the url doesn't change too early
       // when a user clicks a selection.
-    }).extend({rateLimit: 50})
+    }).extend({ rateLimit: 50 })
 
 
     ko.computed(() => {
@@ -264,6 +266,26 @@ export class TSAppViewModel {
     if (result.error_message) {
       this.error_message(result.error_message);
     }
+  }
+  post_customer_form = (e: any, event: any) => {
+    let button = $(event.target)
+    button.button('loading')
+    let type = 'POST'
+    if (this.customer_id()) {
+      type = 'PUT'
+    }
+    $.ajax({
+      url: '/json/v1/customer/',
+      type: type,
+      data: $('#customer_form').serialize()
+    }).done((result) => {
+      this.customer_id(result.customer_id)
+      setTimeout(() => {
+        button.text('Endre')
+      }, 20)
+    }).always(() => {
+      button.button('reset')
+    })
   }
 
   post_form = () => {
@@ -372,3 +394,11 @@ export class TSAppViewModel {
   };
 
 }
+// Inject our CSRF token into our AJAX request.
+$.ajaxSetup({
+  beforeSend: function(xhr, settings) {
+    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+      xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+    }
+  }
+})
