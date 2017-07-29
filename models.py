@@ -523,7 +523,7 @@ class Customer(db.Model):
 
 class Room(db.Model):
     """Table of forms filled by users."""
-    __tablename__ = 'filled_form'
+    __tablename__ = 'room'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     archived = db.Column(db.Boolean)
