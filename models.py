@@ -361,8 +361,7 @@ class Invite(db.Model):
     type = db.Column(db.Enum(InviteType), default='company')
     company_id = db.Column(
         db.Integer,
-        db.ForeignKey(Company.id),
-        nullable=False
+        db.ForeignKey(Company.id)
     )
     company = db.relationship(
         Company, primaryjoin='Invite.company_id==Company.id')
