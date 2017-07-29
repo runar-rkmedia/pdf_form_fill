@@ -98,9 +98,9 @@ class NoAccess(Error):
 class Address(db.Model):
     """Address-table for users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    line1 = db.Column(db.String(200))
+    line1 = db.Column(db.String(200), nullable=False)
     line2 = db.Column(db.String(200))
-    postnumber = db.Column(db.SmallInteger)
+    postnumber = db.Column(db.SmallInteger, nullable=False)
     postal = db.Column(db.String(200))
 
     @classmethod
@@ -143,13 +143,23 @@ class Contact(db.Model):
 
 class Company(db.Model):
     """Company-table for users."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(50), unique=True)
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   unique=True)
+    name = db.Column(db.String(50),
+                     unique=True,
+                     nullable=False)
     description = db.Column(db.String(500))
-    orgnumber = db.Column(db.Integer, unique=True)
-    address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
+    orgnumber = db.Column(db.Integer,
+                          unique=True,
+                          nullable=False)
+    address_id = db.Column(
+        db.Integer,
+        db.ForeignKey(Address.id),
+        nullable=False)
     address = db.relationship(
-        Address, primaryjoin='Company.address_id==Address.id')
+        Address,
+        primaryjoin='Company.address_id==Address.id')
     lat = db.Column(db.Numeric(8, 6))
     lng = db.Column(db.Numeric(9, 6))
 
@@ -179,7 +189,7 @@ class Company(db.Model):
         """Return all filled forms by company, not by current user."""
         query = Room\
             .query\
-            .filter(Room.company == self)\
+            .filter(Room.customer.company == self)\
             .paginate(
                 page=page,
                 per_page=per_page,
@@ -348,13 +358,19 @@ class Invite(db.Model):
     """Invite-table for users."""
 
     id = db.Column(db.String, unique=True, primary_key=True)
-    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     type = db.Column(db.Enum(InviteType), default='company')
+    company_id = db.Column(
+        db.Integer,
+        db.ForeignKey(Company.id),
+        nullable=False
+    )
     company = db.relationship(
         Company, primaryjoin='Invite.company_id==Company.id')
-    inviter_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    inviter_user_id = db.Column(
+        db.Integer, db.ForeignKey(User.id), nullable=False)
     inviter = db.relationship(
-        User, primaryjoin='Invite.inviter_user_id==User.id')
+        User,
+        primaryjoin='Invite.inviter_user_id==User.id')
     invitee_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     invitee = db.relationship(
         User, primaryjoin='Invite.invitee_user_id==User.id')
@@ -513,13 +529,15 @@ class Customer(db.Model):
     """Customer-table."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(100))
-    address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
+    address_id = db.Column(db.Integer,
+                           db.ForeignKey(Address.id),
+                           nullable=False)
     address = db.relationship(
         Address, primaryjoin='Customer.address_id==Address.id')
-    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    company_id = db.Column(
+        db.Integer, db.ForeignKey(Company.id), nullable=False)
     company = db.relationship(
         Company, primaryjoin='Customer.company_id==Company.id')
-
 
 class Room(db.Model):
     """Table of forms filled by users."""
@@ -527,9 +545,12 @@ class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     archived = db.Column(db.Boolean)
-    customer_id = db.Column(db.Integer, db.ForeignKey(Customer.id))
+    customer_id = db.Column(
+        db.Integer, db.ForeignKey(Customer.id), nullable=False)
     customer = db.relationship(
-        Customer, primaryjoin='Room.customer_id==Customer.id', backref='rooms')
+        Customer,
+        primaryjoin='Room.customer_id==Customer.id',
+        backref='rooms')
 
     def archive_this(self, user):
         """Mark this as archived."""
@@ -567,18 +588,20 @@ class FilledFormModified(db.Model):
     """Table of modification-dated for Room-model."""
     __tablename__ = 'filled_form_modified'
     id = db.Column(db.Integer, primary_key=True, unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(
         User, primaryjoin='FilledFormModified.user_id==User.id')
     archived = db.Column(db.Boolean, default=False)
-    room_id = db.Column(db.Integer, db.ForeignKey(Room.id))
+    room_id = db.Column(db.Integer, db.ForeignKey(Room.id), nullable=False)
     room = db.relationship(
         Room,
         primaryjoin='FilledFormModified.room_id==Room.id',
         backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    request_form = db.Column(db.JSON)  # All data from the users-form
-    form_data = db.Column(db.JSON)  # All data actually used to fill the pdf.
+    # All data from the users-form
+    request_form = db.Column(db.JSON, nullable=False)
+    # All data actually used to fill the pdf.
+    form_data = db.Column(db.JSON, nullable=False)
 
     __mapper_args__ = {
         "order_by": date.desc()
