@@ -24,7 +24,8 @@ from models import (
     OAuth,
     Invite,
     FilledFormModified,
-    FilledForm,
+    Room,
+    Customer,
     InviteType,
     Address,
     Company,
@@ -470,21 +471,21 @@ def json_user_forms():
     return jsonify(result)
 
 
-@app.route('/json/form/<form_id>', methods=['GET', 'DELETE'])
+@app.route('/json/room/<room_id>', methods=['GET', 'DELETE'])
 @login_required
-def json_form(form_id):
+def json_form(room_id):
     """Return a json-object of a form."""
-    forms = FilledForm.by_id(current_user, form_id)
+    room = Room.by_id(current_user, room_id)
     if request.method == 'GET':
-        if forms:
+        if room:
             result = {}
-            result['forms'] = forms.serialize
+            result['room'] = room.serialize
             return jsonify(result)
-        else:
-            return jsonify({})
+        return jsonify({})
 
 
-@app.route('/json/form_mod/<filled_form_modified_id>', methods=['GET', 'DELETE'])
+@app.route('/json/form_mod/<filled_form_modified_id>',
+           methods=['GET', 'DELETE'])
 @login_required
 def json_form_modification(filled_form_modified_id):
     """Return a json-object of a form-modfication."""
@@ -494,8 +495,7 @@ def json_form_modification(filled_form_modified_id):
             result = {}
             result['form'] = form.serialize
             return jsonify(result)
-        else:
-            return jsonify({})
+        return jsonify({})
     elif request.method == 'DELETE':
         form.archive_this(current_user)
         return 'deleted'

@@ -177,9 +177,9 @@ class Company(db.Model):
 
     def get_forms(self, user, per_page=PER_PAGE, page=1):
         """Return all filled forms by company, not by current user."""
-        query = FilledForm\
+        query = Room\
             .query\
-            .filter(FilledForm.company == self)\
+            .filter(Room.company == self)\
             .paginate(
                 page=page,
                 per_page=per_page,
@@ -267,19 +267,6 @@ class Company(db.Model):
         return company
 
 
-class Room(db.Model):
-    """
-    Room-table for heating-cables.
-
-    Note that this can also be an area, like 'garage', or 'outside front door'
-    """
-    id = db.Column(db.Integer, primary_key=True, unique=True)
-    name = db.Column(db.String(100))
-    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
-    company = db.relationship(
-        Company, primaryjoin='Room.company_id==Company.id')
-
-
 class CompanyContact(db.Model):
     """Associations-table for company and contacts."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -316,7 +303,7 @@ class User(db.Model, UserMixin):
                 (FilledFormModified.user == self) &
                 (FilledFormModified.archived != True)
             )\
-            .group_by(FilledFormModified.filled_form_id)\
+            .group_by(FilledFormModified.room_id)\
             .subquery()
         query = FilledFormModified\
             .query\
@@ -329,8 +316,8 @@ class User(db.Model, UserMixin):
 
         filled_forms = []
         for mod in query.items:
-            if mod.filled_form and not mod.filled_form.archived:
-                filled_forms.append(mod.filled_form)
+            if mod.room and not mod.room.archived:
+                filled_forms.append(mod.room)
 
         return filled_forms, query.pages
 
@@ -522,19 +509,27 @@ class Product(db.Model):
         return dictionary
 
 
-class FilledForm(db.Model):
+class Customer(db.Model):
+    """Customer-table."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    name = db.Column(db.String(100))
+    address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
+    address = db.relationship(
+        Address, primaryjoin='Customer.address_id==Address.id')
+    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
+    company = db.relationship(
+        Company, primaryjoin='Customer.company_id==Company.id')
+
+
+class Room(db.Model):
     """Table of forms filled by users."""
     __tablename__ = 'filled_form'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
-    customer_name = db.Column(db.String(250))
     archived = db.Column(db.Boolean)
-    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
-    company = db.relationship(
-        Company, primaryjoin='FilledForm.company_id==Company.id')
-    address_id = db.Column(db.Integer, db.ForeignKey(Address.id))
-    address = db.relationship(
-        Address, primaryjoin='FilledForm.address_id==Address.id')
+    customer_id = db.Column(db.Integer, db.ForeignKey(Customer.id))
+    customer = db.relationship(
+        Customer, primaryjoin='Room.customer_id==Customer.id', backref='rooms')
 
     def archive_this(self, user):
         """Mark this as archived."""
@@ -542,54 +537,13 @@ class FilledForm(db.Model):
             self.archived = True
 
     @classmethod
-    def update_or_create(
-            cls,
-            filled_form_modified_id,
-            user,
-            name,
-            customer_name,
-            request_form,
-            form_data,
-            company,
-            address):
-        """Update if exists, else create FilledForm."""
-        filled_form = None
-        filled_form_modified = None
-        if filled_form_modified_id:
-            filled_form_modified = FilledFormModified.query.filter(
-                FilledFormModified.id == filled_form_modified_id
-            ).first()
-        if filled_form_modified:
-            filled_form = filled_form_modified.filled_form
-        if not filled_form:
-            filled_form = FilledForm(
-                name=name,
-                customer_name=customer_name,
-                company=company,
-                address=address
-            )
-        else:
-            filled_form.name = name
-            filled_form.customer_name = customer_name
-            filled_form.company = company
-            filled_form.address = address
-
-        db.session.add(filled_form)
-        FilledFormModified.update_or_create(
-            user=user,
-            filled_form=filled_form,
-            request_form=request_form,
-            form_data=form_data)
-        return filled_form
-
-    @classmethod
-    def by_id(cls, user, filled_form_id):
-        """Return a filled_form by its ID (authenticate first)."""
+    def by_id(cls, user, room_id):
+        """Return a room by its ID (authenticate first)."""
         # TODO: authenticate
-        query = FilledForm\
+        query = Room\
             .query\
             .filter(
-                FilledForm.id == filled_form_id
+                Room.id == room_id
             )\
             .first()
         return query
@@ -601,23 +555,26 @@ class FilledForm(db.Model):
             'id': self.id,
             'creation_time': self.modifications[-1].date,
             'address_id': self.address.id,
-            'modifications': [i.serialize_b(user) for i in self.modifications if not i.archived]
+            'modifications': [
+                i.serialize_b(user)
+                for i in self.modifications
+                if not i.archived]
         }
         return dictionary
 
 
 class FilledFormModified(db.Model):
-    """Table of modification-dated for FilledForm-model."""
+    """Table of modification-dated for Room-model."""
     __tablename__ = 'filled_form_modified'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(
         User, primaryjoin='FilledFormModified.user_id==User.id')
     archived = db.Column(db.Boolean, default=False)
-    filled_form_id = db.Column(db.Integer, db.ForeignKey(FilledForm.id))
-    filled_form = db.relationship(
-        FilledForm,
-        primaryjoin='FilledFormModified.filled_form_id==FilledForm.id',
+    room_id = db.Column(db.Integer, db.ForeignKey(Room.id))
+    room = db.relationship(
+        Room,
+        primaryjoin='FilledFormModified.room_id==Room.id',
         backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
     request_form = db.Column(db.JSON)  # All data from the users-form
@@ -628,18 +585,18 @@ class FilledFormModified(db.Model):
     }
 
     @classmethod
-    def update_or_create(cls, user, filled_form, request_form, form_data):
+    def update_or_create(cls, user, room, request_form, form_data):
         """
         Create modification-date if last update was either not made by
         current user, or within the last 5 minutes."""
         if not user:
             ValueError('Expected a user, got {}'.format(user))
-        if not filled_form:
-            ValueError('Expected a filled_form, got {}'.format(filled_form))
+        if not room:
+            ValueError('Expected a room, got {}'.format(room))
         last_modified = None
         if user.id:
             last_modified = FilledFormModified.query.filter(
-                FilledFormModified.filled_form == filled_form).order_by(
+                FilledFormModified.room == room).order_by(
                     desc(FilledFormModified.date)).filter(
                         or_(
                             FilledFormModified.user != user,
@@ -649,7 +606,7 @@ class FilledFormModified(db.Model):
         if not last_modified:
             last_modified = FilledFormModified(
                 user=user,
-                filled_form=filled_form
+                room=room
             )
         last_modified.request_form = request_form
         last_modified.form_data = form_data
@@ -685,7 +642,7 @@ class FilledFormModified(db.Model):
                 FilledFormModified.date
             )\
             .filter(
-                FilledFormModified.filled_form_id == self.filled_form_id)\
+                FilledFormModified.room_id == self.room_id)\
             .order_by(FilledFormModified.date)\
             .first()
 
@@ -695,9 +652,9 @@ class FilledFormModified(db.Model):
         }
         if creation_time:
             dictionary['creation_time'] = creation_time
-        if self.filled_form:
+        if self.room:
             dictionary['request_form'] = self.request_form
-            dictionary['address_id'] = self.filled_form.address.id
+            dictionary['address_id'] = self.room.customer.address.id
         return dictionary
 
     def serialize_b(self, user=None):
