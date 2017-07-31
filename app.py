@@ -273,6 +273,13 @@ def set_fields_from_product(dictionary, product, specs=None):
     return dictionary
 
 
+def update_entity(entity, dictionary):
+    """Update an entity from a dictionary."""
+    for key, val, in dictionary.items():
+        setattr(entity, key, val)
+    return entity
+
+
 def validate_fields(request_form):
     """Validate the input from a form."""
     error_fields = []
@@ -471,70 +478,86 @@ def json_user_forms():
     return jsonify(result)
 
 
-@app.route('/json/v0/customer/', methods=['POST'])
+@app.route('/json/v1/room/',
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
-def json_create_customer():
-    """Create  customer-object"""
-    form = forms.AddressForm
+def json_room():
+    """Handle a room-object"""
+    form = forms.RoomForm(request.form)
+    customer_id = (request.args.get('customer_id')
+                   or request.form.get('customer_id'))
+    room_id = (request.args.get('room_id')
+               or request.args.get('room_id'))
+    print(customer_id, room_id, form.validate_on_submit())
+    print(request.form)
+    if customer_id:
+        customer = Customer.by_id(
+            customer_id,
+            current_user)
+    if room_id:
+        room = Room.by_id(
+            room_id,
+            current_user)
+    if not customer:
+        return jsonify({}), 403
+    if not form.validate_on_submit():
+        print(form.errors)
+        return jsonify(form.errors), 403
     if request.method == 'POST':
-        result = {}
-        # result['customer'] = customer.serialize
-        return jsonify(result)
+        room = Room()
+        db.session.add(room)
+    if not room:
+        return jsonify({}), 403
+    update_entity(room, {
+        'name': form.room_name.data,
+        'customer': customer,
+        'specs': {
+            'outside': form.outside.data,
+            'area': form.area.data,
+            'heated_area': form.heated_area
+        }
+    })
+    db.session.commit()
+    if customer:
+        return jsonify({'customer_id': customer.id})
+    return jsonify({}, 404)
 
 
 @app.route('/json/v1/customer/',
-           methods=[
-               'GET',
-               'POST',
-               'PUT',
-               'DELETE'
-           ])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
-def json_edit_customer():
-    """Edit a customer-object"""
+def json_customer():
+    """Handle a customer-object"""
     form = forms.CustomerForm(request.form)
+    customer_id = (request.form.get('id') or request.args.get('id'))
+    customer = Customer.by_id(
+        customer_id,
+        current_user)
+    if request.method == "GET" and customer:
+        return jsonify(customer.serialize)
+
     if not form.validate_on_submit():
         return 'incorrect data', 403
     if request.method == 'POST':
-        address = Address(
-            address1=form.address.address1.data,
-            address2=form.address.address2.data,
-            post_code=form.address.post_code.data,
-            post_area=form.address.post_area.data,
-        )
-        customer = Customer(
-            name=form.customer_name.data,
-            address=address,
-            company=current_user.company
-        )
+        address = Address()
+        customer = Customer()
+        customer.address = address
+        customer.company = current_user.company
         db.session.add(address)
         db.session.add(customer)
-        db.session.commit()
-    else:
-        customer = Customer.by_id(form.customer_id.data, current_user)
-        if request.method == 'PUT':
-            customer.address.address1 = form.address.address1.data
-            customer.address.address2 = form.address.address2.data
-            customer.address.post_code = form.address.post_code.data
-            customer.address.post_area = form.address.post_area.data
-            customer.name = form.customer_name.data
-            db.session.commit()
+    if not customer:
+        return jsonify({}), 403
+    update_entity(customer.address, {
+        'address1': form.address.address1.data,
+        'address2': form.address.address2.data,
+        'post_code': form.address.post_code.data,
+        'post_area': form.address.post_area.data,
+    })
+    customer.name = form.customer_name.data
+    db.session.commit()
     if customer:
         return jsonify({'customer_id': customer.id})
-    return jsonify({})
-
-
-@app.route('/json/v1/room/<room_id>', methods=['GET', 'DELETE'])
-@login_required
-def json_form(room_id):
-    """Return a json-object of a form."""
-    room = Room.by_id(current_user, room_id)
-    if request.method == 'GET':
-        if room:
-            result = {}
-            result['room'] = room.serialize
-            return jsonify(result)
-        return jsonify({})
+    return jsonify({}, 404)
 
 
 @app.route('/json/form_mod/<filled_form_modified_id>',
@@ -697,6 +720,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
     # Set up some defaults. (retrieve this from the user-config later.)
     form = forms.HeatingForm()
     customerForm = forms.CustomerForm()
+    roomForm = forms.RoomForm()
     if dictionary is None:
         dictionary = {
             'anleggs_postnummer': 4626,
@@ -704,7 +728,12 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
             'meterEffekt':  "17",
             'manufacturor':  "Nexans"
         }
-    return render_template('main.html', form=form, customerForm=customerForm)
+    return render_template(
+        'main.html',
+        form=form,
+        customerForm=customerForm,
+        roomForm=roomForm
+    )
 
 
 @login_required

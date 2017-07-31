@@ -73,6 +73,12 @@ class RoomForm(FlaskForm):
             )
         ]
     )
+    customer_id = HiddenField(
+        validators=[
+            DataRequired(
+                'Mottok ikke et kunde-objekt. Dette er sansynligvis en feil.')
+        ]
+    )
 
 
 class AddressForm(FlaskForm):
@@ -129,6 +135,7 @@ class CustomerForm(FlaskForm):
         ]
     )
     customer_id = HiddenField()
+
 
 class HeatingForm(FlaskForm):
     """Form for filling out a heaating-cable."""

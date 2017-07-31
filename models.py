@@ -13,7 +13,7 @@ from flask_login import (
 from addresses.address_pymongo import (
     get_location_from_address
 )
-from my_exceptions import LocationException
+from my_exceptions import LocationException, NotAuthorized
 # import bleach
 import enum
 from field_dicts.helpers import id_generator
@@ -94,6 +94,26 @@ class NoAccess(Error):
         self.message = message
         super(NoAccess, self).__init__(message, *args)
 
+class MyBaseModel(object):
+    """Basic functionality."""
+
+    def owns(self, user):
+        """Check if owner."""
+        raise NotImplementedError("{} missing owns-method".format(type(self)))
+
+    @classmethod
+    def by_id(cls, this_id, user):
+        """Return a entity by its id."""
+        try:
+            this_id = int(this_id)
+        except (ValueError, TypeError):
+            return None
+        entity = cls.query.filter(cls.id == this_id).first()
+        if not entity:
+            return None
+        entity.owns(user)
+        return entity
+
 
 class Address(db.Model):
     """Address-table for users."""
@@ -101,7 +121,7 @@ class Address(db.Model):
     address1 = db.Column(db.String(200), nullable=False)
     address2 = db.Column(db.String(200))
     post_area = db.Column(db.SmallInteger, nullable=False)
-    post_code = db.Column(db.String(200))
+    post_code = db.Column(db.String(200), nullable=False)
 
     @classmethod
     def update_or_create(cls, address_id, address1, address2, post_area, post_code):
@@ -180,7 +200,7 @@ class Company(db.Model):
 
     def owns(self, model):
         """Check if company has rights to access this."""
-        if model.comany == self:
+        if model.company == self:
             return True
         else:
             raise NoAccess("Company does not have access to this resource.")
@@ -188,7 +208,7 @@ class Company(db.Model):
     def get_forms(self, user, per_page=PER_PAGE, page=1):
         """Return all filled forms by company, not by current user."""
         return None, None
-    #TODO: Fix this again
+    # TODO: Fix this again
         query = Room\
             .query\
             .filter(Room.customer.company == self)\
@@ -526,7 +546,7 @@ class Product(db.Model):
         return dictionary
 
 
-class Customer(db.Model):
+class Customer(db.Model, MyBaseModel):
     """Customer-table."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(100))
@@ -540,28 +560,31 @@ class Customer(db.Model):
     company = db.relationship(
         Company, primaryjoin='Customer.company_id==Company.id')
 
-    @classmethod
-    def by_id(cls, this_id, user):
-        """Return a customer by its id."""
-        # TODO: authenticate
-        return cls.query.filter(cls.id == this_id).first()
+    def owns(self, user):
+        """Check that user has rights to this customer."""
+        user.company.owns(self)
 
     @property
     def serialize(self):
         return {
-        'name': self.name,
-        'address_id':self.address_id,
-        'company_id': self.company_id,
-        'id': self.id
-    }
+            'name': self.name,
+            'address': {
+                'address1': self.address.address1,
+                'address2': self.address.address2,
+                'post_code': self.address.post_code,
+                'post_area': self.address.post_area
+            },
+            'id': self.id
+        }
 
 
-class Room(db.Model):
+class Room(db.Model, MyBaseModel):
     """Table of forms filled by users."""
     # __tablename__ = 'room'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     archived = db.Column(db.Boolean)
+    specs = db.Column(db.JSON, nullable=False)
     customer_id = db.Column(
         db.Integer, db.ForeignKey(Customer.id), nullable=False)
     customer = db.relationship(
@@ -573,18 +596,6 @@ class Room(db.Model):
         """Mark this as archived."""
         if user.owns(self):
             self.archived = True
-
-    @classmethod
-    def by_id(cls, user, room_id):
-        """Return a room by its ID (authenticate first)."""
-        # TODO: authenticate
-        query = Room\
-            .query\
-            .filter(
-                Room.id == room_id
-            )\
-            .first()
-        return query
 
     def serialize(self, user=None):
         """Return object data in easily serializeable format"""
@@ -601,7 +612,7 @@ class Room(db.Model):
         return dictionary
 
 
-class FilledFormModified(db.Model):
+class FilledFormModified(db.Model, MyBaseModel):
     """Table of modification-dated for Room-model."""
     __tablename__ = 'filled_form_modified'
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -652,18 +663,6 @@ class FilledFormModified(db.Model):
         last_modified.form_data = form_data
         db.session.add(last_modified)
         return last_modified
-
-    @classmethod
-    def by_id(cls, user, filled_form_modified_id):
-        """Return a filled_form_modified by its ID (authenticate first)."""
-        # TODO: authenticate
-        query = FilledFormModified\
-            .query\
-            .filter(
-                FilledFormModified.id == filled_form_modified_id
-            )\
-            .first()
-        return query
 
     def archive_this(self, user):
         """Mark this object as archived."""

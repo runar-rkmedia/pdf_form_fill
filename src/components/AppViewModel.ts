@@ -20,6 +20,16 @@ interface AddressInterface {
   street_name: string;
 }
 
+interface AddressFullInterface extends AddressInterface{
+  address1: string;
+  address2: string;
+}
+interface CustomerInterface {
+    id: number;
+    name: string;
+    address: AddressFullInterface;
+}
+
 interface UserFormInterface {
   date: string;
   id: number;
@@ -126,6 +136,7 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
+  room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
   company_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -208,6 +219,15 @@ export class TSAppViewModel {
         }
       }
     });
+
+    $.get("/json/v1/customer/", {id: 51})
+    .done((result: CustomerInterface) => {
+      this.anleggs_adresse(result.address.address1)
+      this.anleggs_adresse2(result.address.address2)
+      this.anleggs_postnummer(result.address.post_code)
+      this.anleggs_poststed(result.address.post_area)
+      this.customer_id(result.id)
+    })
   }
 
   suggestRoom = () => {
@@ -271,13 +291,18 @@ export class TSAppViewModel {
     let button = $(event.target)
     button.button('loading')
     let type = 'POST'
+    let data = $('#customer_form').serializeArray()
+    if (this.customer_id()){
+      data.push({name: 'id', value: String(this.customer_id())})
+    }
+    console.log(data)
     if (this.customer_id()) {
       type = 'PUT'
     }
     $.ajax({
       url: '/json/v1/customer/',
       type: type,
-      data: $('#customer_form').serialize()
+      data: data
     }).done((result) => {
       this.customer_id(result.customer_id)
       setTimeout(() => {
@@ -286,6 +311,35 @@ export class TSAppViewModel {
     }).always(() => {
       button.button('reset')
     })
+  }
+  post_room_form = (e: any, event: any) => {
+    let button = $(event.target)
+    button.button('loading')
+    let type = 'POST'
+    let data = $('#room_form').serializeArray()
+    if (this.customer_id()) {
+      data.push({name: 'customer_id', value: String(this.customer_id())})
+    }
+    if (this.room_id()) {
+      data.push({name: 'room_id', value: String(this.room_id())})
+    }
+    if (this.room_id()) {
+      type = 'PUT'
+    }
+    if (this.customer_id()) {
+      $.ajax({
+        url: '/json/v1/room/',
+        type: type,
+        data: data
+      }).done((result) => {
+        this.room_id(result.room_id)
+        setTimeout(() => {
+          button.text('Endre')
+        }, 20)
+      }).always(() => {
+        button.button('reset')
+      })
+    }
   }
 
   post_form = () => {
