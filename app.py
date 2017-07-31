@@ -487,9 +487,7 @@ def json_room():
     customer_id = (request.args.get('customer_id')
                    or request.form.get('customer_id'))
     room_id = (request.args.get('room_id')
-               or request.args.get('room_id'))
-    print(customer_id, room_id, form.validate_on_submit())
-    print(request.form)
+               or request.form.get('room_id'))
     if customer_id:
         customer = Customer.by_id(
             customer_id,
@@ -513,13 +511,13 @@ def json_room():
         'customer': customer,
         'specs': {
             'outside': form.outside.data,
-            'area': form.area.data,
-            'heated_area': form.heated_area
+            'area': float(form.area.data),
+            'heated_area': float(form.heated_area.data)
         }
     })
     db.session.commit()
     if customer:
-        return jsonify({'customer_id': customer.id})
+        return jsonify({'room_id': room.id})
     return jsonify({}, 404)
 
 

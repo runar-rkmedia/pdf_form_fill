@@ -592,6 +592,10 @@ class Room(db.Model, MyBaseModel):
         primaryjoin='Room.customer_id==Customer.id',
         backref='rooms')
 
+    def owns(self, user):
+        """Check that user has rights to this room."""
+        user.company.owns(self.customer)
+
     def archive_this(self, user):
         """Mark this as archived."""
         if user.owns(self):

@@ -220,14 +220,14 @@ export class TSAppViewModel {
       }
     });
 
-    $.get("/json/v1/customer/", {id: 51})
-    .done((result: CustomerInterface) => {
-      this.anleggs_adresse(result.address.address1)
-      this.anleggs_adresse2(result.address.address2)
-      this.anleggs_postnummer(result.address.post_code)
-      this.anleggs_poststed(result.address.post_area)
-      this.customer_id(result.id)
-    })
+    // $.get("/json/v1/customer/", {id: 51})
+    // .done((result: CustomerInterface) => {
+    //   this.anleggs_adresse(result.address.address1)
+    //   this.anleggs_adresse2(result.address.address2)
+    //   this.anleggs_postnummer(result.address.post_code)
+    //   this.anleggs_poststed(result.address.post_area)
+    //   this.customer_id(result.id)
+    // })
   }
 
   suggestRoom = () => {
@@ -295,7 +295,6 @@ export class TSAppViewModel {
     if (this.customer_id()){
       data.push({name: 'id', value: String(this.customer_id())})
     }
-    console.log(data)
     if (this.customer_id()) {
       type = 'PUT'
     }
@@ -321,6 +320,7 @@ export class TSAppViewModel {
       data.push({name: 'customer_id', value: String(this.customer_id())})
     }
     if (this.room_id()) {
+      console.log(this.room_id())
       data.push({name: 'room_id', value: String(this.room_id())})
     }
     if (this.room_id()) {
