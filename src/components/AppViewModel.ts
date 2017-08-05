@@ -148,9 +148,7 @@ export class TSAppViewModel {
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
   rooms: KnockoutObservableArray<RoomInterface> = ko.observableArray();
-  new_room: KnockoutObservable<RoomInterface> = ko.observable(<RoomInterface>{
-    specs: <RoomSpecsInterface>{}
-  });
+  new_room: KnockoutObservable<RoomInterface> = ko.observable();
   room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -234,6 +232,7 @@ export class TSAppViewModel {
         }
       }
     });
+    this.clear_new_room()
 
     $.get("/json/v1/customer/", { id: 50 })
       .done((result: CustomerInterface) => {
@@ -265,6 +264,14 @@ export class TSAppViewModel {
     })
     return listOfRooms
   };
+
+  clear_new_room = () => {
+    this.new_room(<RoomInterface>{
+      name: '',
+
+      specs: <RoomSpecsInterface>{}
+    })
+  }
 
   roomSuggestionOnSelect = (
     value: KnockoutObservable<string>,
@@ -353,6 +360,7 @@ export class TSAppViewModel {
         if (type == 'POST') {
           this.rooms.push(result)
           $(form).parent().collapse("hide")
+          this.clear_new_room()
         }
         setTimeout(() => {
           button.text('Endre')
