@@ -40,7 +40,7 @@ export let Rooms: RoomSmartFill[] = [
   }
 ]
 
-export interface RoomInterface {
+export interface RoomSuggestionInterface {
   name: string,
   id: number
 }

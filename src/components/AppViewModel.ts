@@ -1,5 +1,5 @@
 import { TSProductModel } from './ProductModel'
-import { RoomInterface, Rooms} from './InterfaceRoom'
+import { RoomSuggestionInterface, Rooms} from './InterfaceRoom'
 import nb_NO = require('./../../node_modules/knockout.validation/localization/nb-NO.js')
 import kv = require("knockout.validation");
 import { StrIndex } from "./Common"
@@ -20,7 +20,7 @@ interface AddressInterface {
   street_name: string;
 }
 
-interface AddressFullInterface extends AddressInterface{
+interface AddressFullInterface extends AddressInterface {
   address1: string;
   address2: string;
 }
@@ -35,10 +35,10 @@ interface RoomInterface {
   specs: RoomSpecsInterface;
 }
 interface CustomerInterface {
-    id: number;
-    name: string;
-    address: AddressFullInterface;
-    rooms: RoomInterface[];
+  id: number;
+  name: string;
+  address: AddressFullInterface;
+  rooms: RoomInterface[];
 }
 
 interface UserFormInterface {
@@ -148,6 +148,9 @@ export class TSAppViewModel {
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
   rooms: KnockoutObservableArray<RoomInterface> = ko.observableArray();
+  new_room: KnockoutObservable<RoomInterface> = ko.observable(<RoomInterface>{
+    specs: <RoomSpecsInterface>{}
+  });
   room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -232,20 +235,20 @@ export class TSAppViewModel {
       }
     });
 
-    $.get("/json/v1/customer/", {id: 51})
-    .done((result: CustomerInterface) => {
-      this.anleggs_adresse(result.address.address1)
-      this.anleggs_adresse2(result.address.address2)
-      this.anleggs_postnummer(result.address.post_code)
-      this.anleggs_poststed(result.address.post_area)
-      this.customer_id(result.id)
-      this.rooms(result.rooms)
-      console.log(result)
-    })
+    $.get("/json/v1/customer/", { id: 50 })
+      .done((result: CustomerInterface) => {
+        this.anleggs_adresse(result.address.address1)
+        this.anleggs_adresse2(result.address.address2)
+        this.anleggs_postnummer(result.address.post_code)
+        this.anleggs_poststed(result.address.post_area)
+        this.customer_id(result.id)
+        this.rooms(result.rooms)
+        console.log(result)
+      })
   }
 
   suggestRoom = () => {
-    let listOfRooms: RoomInterface[] = []
+    let listOfRooms: RoomSuggestionInterface[] = []
     Rooms.forEach((room, index) => {
       listOfRooms.push({
         name: room.name,
@@ -306,8 +309,8 @@ export class TSAppViewModel {
     button.button('loading')
     let type = 'POST'
     let data = $('#customer_form').serializeArray()
-    if (this.customer_id()){
-      data.push({name: 'id', value: String(this.customer_id())})
+    if (this.customer_id()) {
+      data.push({ name: 'id', value: String(this.customer_id()) })
     }
     if (this.customer_id()) {
       type = 'PUT'
@@ -329,13 +332,14 @@ export class TSAppViewModel {
     let button = $(event.target)
     button.button('loading')
     let type = 'POST'
-    let data = $('#room_form').serializeArray()
+    let form =  button.closest('form')
+    let data = form.serializeArray()
     if (this.customer_id()) {
-      data.push({name: 'customer_id', value: String(this.customer_id())})
+      data.push({ name: 'customer_id', value: String(this.customer_id()) })
     }
     if (this.room_id()) {
       console.log(this.room_id())
-      data.push({name: 'room_id', value: String(this.room_id())})
+      data.push({ name: 'room_id', value: String(this.room_id()) })
     }
     if (this.room_id()) {
       type = 'PUT'
@@ -345,8 +349,11 @@ export class TSAppViewModel {
         url: '/json/v1/room/',
         type: type,
         data: data
-      }).done((result) => {
-        this.room_id(result.room_id)
+      }).done((result: RoomInterface) => {
+        if (type == 'POST') {
+          this.rooms.push(result)
+          $(form).parent().collapse("hide")
+        }
         setTimeout(() => {
           button.text('Endre')
         }, 20)

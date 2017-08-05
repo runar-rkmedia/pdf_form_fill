@@ -517,7 +517,7 @@ def json_room():
     })
     db.session.commit()
     if customer:
-        return jsonify({'room_id': room.id})
+        return jsonify(room.serialize)
     return jsonify({}, 404)
 
 
