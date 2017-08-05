@@ -24,10 +24,21 @@ interface AddressFullInterface extends AddressInterface{
   address1: string;
   address2: string;
 }
+interface RoomSpecsInterface {
+  area: number;
+  heated_area: number;
+  outside: boolean;
+}
+interface RoomInterface {
+  name: string;
+  id: number;
+  specs: RoomSpecsInterface;
+}
 interface CustomerInterface {
     id: number;
     name: string;
     address: AddressFullInterface;
+    rooms: RoomInterface[];
 }
 
 interface UserFormInterface {
@@ -136,6 +147,7 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
+  rooms: KnockoutObservableArray<RoomInterface> = ko.observableArray();
   room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -220,14 +232,16 @@ export class TSAppViewModel {
       }
     });
 
-    // $.get("/json/v1/customer/", {id: 51})
-    // .done((result: CustomerInterface) => {
-    //   this.anleggs_adresse(result.address.address1)
-    //   this.anleggs_adresse2(result.address.address2)
-    //   this.anleggs_postnummer(result.address.post_code)
-    //   this.anleggs_poststed(result.address.post_area)
-    //   this.customer_id(result.id)
-    // })
+    $.get("/json/v1/customer/", {id: 51})
+    .done((result: CustomerInterface) => {
+      this.anleggs_adresse(result.address.address1)
+      this.anleggs_adresse2(result.address.address2)
+      this.anleggs_postnummer(result.address.post_code)
+      this.anleggs_poststed(result.address.post_area)
+      this.customer_id(result.id)
+      this.rooms(result.rooms)
+      console.log(result)
+    })
   }
 
   suggestRoom = () => {

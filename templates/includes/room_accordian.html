@@ -1,0 +1,33 @@
+<!DOCTYPE html> {% from "includes/formhelpers.html" import render_field, render_field_group %} {{ form.csrf_token }}
+<script type="text/html" id="room-accordian">
+  <!-- ko foreach: $data -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div>
+        <h3 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + $index(), 'href': '#room' + $index()}">
+                        <span data-bind="text: name"></span>
+                    </a>
+                </h4>
+            </div>
+        </div>
+        <div class="panel-collapse collapse" data-bind="attr: {'id': 'room' + $index()}" role="tabpanel">
+            <div class="panel-body">
+                      <form id="room_form" autocomplete="off">
+                        {{ roomForm.csrf_token }}
+                        <div class="formgroup col-xs-12">
+                          {{render_field(roomForm.room_name, False, **{'data-bind':" value: name, typeahead: $root.suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: $root.roomSuggestionOnSelect"}) }}
+                        </div>
+                        {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"value: specs.area"}) }} {{render_field( roomForm.heated_area, formgroup='form-group col-xs-6', **{'data-bind':"value: specs.heated_area"}) }} {{render_field( roomForm.outside, formgroup=False,
+                        label_class='checkbox-inline', class_='', **{'data-bind':"checked: specs.outside"}) }}
+                        <div class="col-xs-12">
+                          <button type="button" class="btn btn-primary pull-right" data-bind="click: $root.post_room_form, css: {opaque: $root.validation_errors().length > 0}, enable: true" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
+                        <span data-bind="text: $root.room_id() ? 'Endre' : 'Lagre'"></span>
+                        </button>
+                        </div>
+                      </form>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</script>

@@ -574,6 +574,7 @@ class Customer(db.Model, MyBaseModel):
                 'post_code': self.address.post_code,
                 'post_area': self.address.post_area
             },
+            'rooms': [i.serialize for i in self.rooms],
             'id': self.id
         }
 
@@ -601,17 +602,14 @@ class Room(db.Model, MyBaseModel):
         if user.owns(self):
             self.archived = True
 
+    @property
     def serialize(self, user=None):
         """Return object data in easily serializeable format"""
 
         dictionary = {
             'id': self.id,
-            'creation_time': self.modifications[-1].date,
-            'address_id': self.address.id,
-            'modifications': [
-                i.serialize_b(user)
-                for i in self.modifications
-                if not i.archived]
+            'name': self.name,
+            'specs': self.specs,
         }
         return dictionary
 
