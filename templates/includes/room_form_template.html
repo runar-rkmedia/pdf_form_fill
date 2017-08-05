@@ -5,6 +5,9 @@
   {{ form.csrf_token }}
   <form id="room_form" autocomplete="off">
     {{ roomForm.csrf_token }}
+    <!-- ko if: id -->
+    {{ roomForm.id(**{'data-bind':"value: id"})}}
+    <!-- /ko -->
     <div class="formgroup col-xs-12">
       {{render_field(roomForm.room_name, False, **{'data-bind':" value: name, typeahead: $root.suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: $root.roomSuggestionOnSelect"}) }}
     </div>

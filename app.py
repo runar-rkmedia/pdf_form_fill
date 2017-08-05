@@ -486,8 +486,8 @@ def json_room():
     form = forms.RoomForm(request.form)
     customer_id = (request.args.get('customer_id')
                    or request.form.get('customer_id'))
-    room_id = (request.args.get('room_id')
-               or request.form.get('room_id'))
+    room_id = (request.args.get('id')
+               or request.form.get('id'))
     if customer_id:
         customer = Customer.by_id(
             customer_id,

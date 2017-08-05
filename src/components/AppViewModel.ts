@@ -41,6 +41,18 @@ interface CustomerInterface {
   rooms: RoomInterface[];
 }
 
+class Room  {
+  name = ko.observable()
+  id = ko.observable()
+  specs: RoomSpecsInterface
+
+  constructor(room: RoomInterface) {
+    this.name(room.name)
+    this.id(room.id)
+    this.specs = room.specs
+  }
+}
+
 interface UserFormInterface {
   date: string;
   id: number;
@@ -147,7 +159,7 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
-  rooms: KnockoutObservableArray<RoomInterface> = ko.observableArray();
+  rooms: KnockoutObservableArray<Room> = ko.observableArray()
   new_room: KnockoutObservable<RoomInterface> = ko.observable();
   room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
@@ -234,15 +246,16 @@ export class TSAppViewModel {
     });
     this.clear_new_room()
 
-    $.get("/json/v1/customer/", { id: 50 })
+    $.get("/json/v1/customer/", { id: 51 })
       .done((result: CustomerInterface) => {
         this.anleggs_adresse(result.address.address1)
         this.anleggs_adresse2(result.address.address2)
         this.anleggs_postnummer(result.address.post_code)
         this.anleggs_poststed(result.address.post_area)
         this.customer_id(result.id)
-        this.rooms(result.rooms)
-        console.log(result)
+        this.rooms(result.rooms.map(function(x) {
+          return new Room(x)
+        }))
       })
   }
 
@@ -341,14 +354,20 @@ export class TSAppViewModel {
     let type = 'POST'
     let form =  button.closest('form')
     let data = form.serializeArray()
+    // Get the room_id from the form.
+    let room_field = this.findWithAttr(data, 'name', 'id')
+    let room_id = null
+    if (room_field >= 0) {
+      let x = Number(data[room_field].value)
+      if (!isNaN(x)) {
+        room_id = x
+      }
+    }
     if (this.customer_id()) {
       data.push({ name: 'customer_id', value: String(this.customer_id()) })
     }
-    if (this.room_id()) {
-      console.log(this.room_id())
+    if (room_id) {
       data.push({ name: 'room_id', value: String(this.room_id()) })
-    }
-    if (this.room_id()) {
       type = 'PUT'
     }
     if (this.customer_id()) {
@@ -358,9 +377,12 @@ export class TSAppViewModel {
         data: data
       }).done((result: RoomInterface) => {
         if (type == 'POST') {
-          this.rooms.push(result)
+          this.rooms.push(new Room(result))
           $(form).parent().collapse("hide")
           this.clear_new_room()
+        } else if (type == 'PUT') {
+          let test = this.findWithAttr(this.rooms(), 'id', result.id)
+          console.log(test)
         }
         setTimeout(() => {
           button.text('Endre')

@@ -79,6 +79,7 @@ class RoomForm(FlaskForm):
                 'Mottok ikke et kunde-objekt. Dette er sansynligvis en feil.')
         ]
     )
+    id = HiddenField()
 
 
 class AddressForm(FlaskForm):
