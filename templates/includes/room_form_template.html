@@ -12,7 +12,14 @@
     {{render_field( roomForm.outside,
     formgroup='col-xs-12', label_class='checkbox-inline', class_='', **{'data-bind':"checked: outside"}) }}
     <div class="col-xs-12">
-      <button type="button" class="btn btn-primary pull-right" data-bind="click: $data.post, css: {opaque: $root.validation_errors().length > 0}, enable: $data.modified" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
+      <button
+        type="button"
+        class="btn btn-primary pull-right"
+        data-bind="
+        click: $data.post,
+        css: {opaque: $root.validation_errors().length > 0},
+        Error: source does not appear to be markup.
+        data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
         <span data-bind="text: id() >= 0 ? 'Endre' : 'Lagre'"></span>
       </button>
     </div>

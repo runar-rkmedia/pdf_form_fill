@@ -1,5 +1,5 @@
 import { TSAppViewModel } from "./AppViewModel"
-import {StrIndex}  from "./Common"
+import {StrIndex, AddressFullInterface, HTTPVerbs}  from "./Common"
 import ko = require("knockout");
 
 export interface RoomInterface {
@@ -23,12 +23,22 @@ export class Room {
   outside: KnockoutObservable<boolean> = ko.observable()
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
+  validationModel = ko.validatedObservable({
+    name: this.name,
+    outside: this.outside,
+    area: this.area,
+    heated_area: this.heated_area
+  })
   parent: Rooms
   private last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
 
-  constructor(
-    parent: Rooms,
-    room: RoomInterface | undefined = undefined) {
+  constructor(parent: Rooms, room: RoomInterface | undefined = undefined) {
+    this.area.extend(
+      {required: true, number: true, min: 0.1, max: 1000});
+    this.heated_area.extend(
+      {required: true, number: true, min: 0.1, max: 1000});
+    this.name.extend(
+      {required: true, minLength: 2, maxLength: 100});
     this.parent = parent
     this.set(room)
   }
@@ -80,15 +90,14 @@ export class Room {
       customer_id: this.parent.parent.customer_id()
     }
   }
-  post = (r: Rooms,event: Event) => {
+  post = (r: Rooms, event: Event) => {
     let method: HTTPVerbs
     let btn = $(event.target)
     btn.button('loading')
     let form = btn.closest('form')
     let data = form.serializeArray()
-    data.push({name: 'customer_id', value: String(this.parent.parent.customer_id())})
-    data.push({name: 'id', value: String(this.id())})
-    console.log(data)
+    data.push({ name: 'customer_id', value: String(this.parent.parent.customer_id()) })
+    data.push({ name: 'id', value: String(this.id()) })
     if (this.id() >= 0) {
       method = HTTPVerbs.put
     } else {
