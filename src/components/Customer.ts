@@ -17,6 +17,26 @@ export interface CustomerInterface {
   rooms: RoomInterface[];
 }
 
+export class Customer {
+  name: KnockoutObservable<string> = ko.observable()
+  address1: KnockoutObservable<string> = ko.observable()
+  address2: KnockoutObservable<string> = ko.observable()
+  post_code: KnockoutObservable<number> = ko.observable()
+  post_area: KnockoutObservable<string> = ko.observable()
+  constructor () {
+    this.name.extend(
+      {required: false, minLength: 3, maxLength: 100});
+    this.address1.extend(
+      {required: true, minLength: 2, maxLength: 200});
+    this.address2.extend(
+      {required: false, maxLength: 200});
+    this.post_area.extend(
+      {required: true, minLength: 2, maxLength: 100});
+    this.post_code.extend(
+      {required: true, number: true, min: 0, max: 9999});
+  }
+}
+
 export class Room {
   id: KnockoutObservable<number> = ko.observable()
   name: KnockoutObservable<string> = ko.observable()
@@ -38,7 +58,7 @@ export class Room {
     this.heated_area.extend(
       {required: true, number: true, min: 0.1, max: 1000});
     this.name.extend(
-      {required: true, minLength: 2, maxLength: 100});
+      {required: true, minLength: 2, maxLength: 50});
     this.parent = parent
     this.set(room)
   }
@@ -149,13 +169,13 @@ export class Rooms {
     first_input.focus()
     return new_room
   }
-  get = () => {
-    $.get("/json/v1/customer/", { id: 51 })
+  get = (id:number) => {
+    $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {
-        this.parent.anleggs_adresse(result.address.address1)
-        this.parent.anleggs_adresse2(result.address.address2)
-        this.parent.anleggs_postnummer(result.address.post_code)
-        this.parent.anleggs_poststed(result.address.post_area)
+        this.parent.customer().address1(result.address.address1)
+        this.parent.customer().address2(result.address.address2)
+        this.parent.customer().post_code(result.address.post_code)
+        this.parent.customer().post_area(result.address.post_area)
         this.parent.customer_id(result.id)
         this.list([])
         let self = this

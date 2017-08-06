@@ -3,7 +3,7 @@ import { RoomSuggestionInterface, RoomSuggestionList} from './InterfaceRoom'
 import nb_NO = require('./../../node_modules/knockout.validation/localization/nb-NO.js')
 import kv = require("knockout.validation");
 import { StrIndex, AddressInterface, HTTPVerbs } from "./Common"
-import { Rooms, RoomInterface, CustomerInterface } from "./Customer"
+import { Rooms, RoomInterface, CustomerInterface, Customer} from "./Customer"
 import ko = require("knockout");
 import $ = require("jquery");
 var titleCase = require('title-case')
@@ -23,30 +23,7 @@ interface FileDownloadInterface {
   error_message?: string
 }
 
-
 export class TSAppViewModel {
-  anleggs_adresse: KnockoutObservable<{}> = ko.observable().extend({
-    required: true,
-    minLength: 3,
-    maxLength: 50
-  })
-  anleggs_adresse2: KnockoutObservable<{}> = ko.observable().extend({
-    required: false,
-    minLength: 3,
-    maxLength: 50
-  })
-  anleggs_poststed: KnockoutObservable<{}> = ko.observable().extend({
-    required: true,
-    minLength: 3,
-    maxLength: 50
-  });
-  anleggs_postnummer: KnockoutObservable<{}> = ko.observable().extend({
-    required: true,
-    minLength: 4,
-    number: true,
-    min: 1000,
-    max: 9999,
-  });
   manufacturor: KnockoutObservable<string> = ko.observable();
   vk_type: KnockoutObservable<string> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
@@ -96,6 +73,7 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
+  customer: KnockoutObservable<Customer> = ko.observable(new Customer())
   rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this))
   room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
@@ -154,8 +132,8 @@ export class TSAppViewModel {
 
     this.autocompleteAddress = ko.computed(() => {
       let url: string = '/address/?q=%QUERY'
-      if (this.anleggs_postnummer()) {
-        url += '&p=' + this.anleggs_postnummer()
+      if (this.customer().address1()) {
+        url += '&p=' + this.customer().address1()
       }
       return url
       // We need a rateLimiter here so that the url doesn't change too early
@@ -180,7 +158,7 @@ export class TSAppViewModel {
         }
       }
     });
-    this.rooms().get()
+    this.rooms().get(52)
   }
 
   suggestRoom = () => {
@@ -222,8 +200,8 @@ export class TSAppViewModel {
     event: any,
     element: any) => {
     value(titleCase(address.street_name))
-    this.anleggs_postnummer(address.post_code)
-    this.anleggs_poststed(address.post_area.toUpperCase())
+    this.customer().post_code((address.post_code))
+    this.customer().post_area(address.post_area.toUpperCase())
   }
 
   parse_form_download = (result: FileDownloadInterface) => {

@@ -120,11 +120,12 @@ class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     address1 = db.Column(db.String(200), nullable=False)
     address2 = db.Column(db.String(200))
-    post_area = db.Column(db.SmallInteger, nullable=False)
-    post_code = db.Column(db.String(200), nullable=False)
+    post_code = db.Column(db.SmallInteger, nullable=False)
+    post_area = db.Column(db.String(200), nullable=False)
 
     @classmethod
-    def update_or_create(cls, address_id, address1, address2, post_area, post_code):
+    def update_or_create(
+        cls, address_id, address1, address2, post_area, post_code):
         """Update if exists, else create Address."""
         address = Address.query.filter_by(
             id=address_id
