@@ -15,31 +15,6 @@ require("knockout-template-loader?name=suggestion-template!html-loader?-minimize
 kv.defineLocale('no-NO', nb_NO);
 kv.locale('nb-NO')
 
-interface UserFormInterface {
-  date: string;
-  id: number;
-  request_form: RequestFormInterface
-}
-
-interface RequestFormInterface {
-  anleggs_adresse: string
-  anleggs_adresse2: string
-  anleggs_postnummer: number
-  anleggs_poststed: string
-  rom_navn: string
-  areal: number
-  oppvarmet_areal: number
-  selected_vk: number
-  product_id: number
-  address_id: number
-  ohm_a: number
-  ohm_b: number
-  ohm_c: number
-  mohm_a: boolean
-  mohm_b: boolean
-  mohm_c: boolean
-}
-
 interface FileDownloadInterface {
   address_id: number
   file_download: string
@@ -249,12 +224,7 @@ export class TSAppViewModel {
     value(titleCase(address.street_name))
     this.anleggs_postnummer(address.post_code)
     this.anleggs_poststed(address.post_area.toUpperCase())
-
   }
-
-  form_changed = ko.computed(() => {
-    return this.form_args() !== this.last_sent_args();
-  }, this);
 
   parse_form_download = (result: FileDownloadInterface) => {
     this.last_sent_args(this.form_args());
@@ -298,48 +268,6 @@ export class TSAppViewModel {
       button.button('reset')
     })
   }
-
-
-  post_form = () => {
-    this.form_args($('#form').serialize());
-    if (this.validation_errors().length > 0) {
-      this.validation_errors.showAllMessages();
-      return false;
-    }
-    if (this.form_changed() || !this.filled_form_modified_id()) {
-      this.file_download(null);
-      this.loading.push('fill_form');
-      $.post("/json/heating/", {
-        'anleggs_adresse': this.anleggs_adresse(),
-        'anleggs_poststed': this.anleggs_poststed(),
-        'anleggs_postnummer': this.anleggs_postnummer(),
-        'rom_navn': this.rom_navn(),
-        'areal': this.areal(),
-        'oppvarmet_areal': this.oppvarmet_areal(),
-        'mohm_a': this.mohm_a(),
-        'mohm_b': this.mohm_b(),
-        'mohm_c': this.mohm_c(),
-        'ohm_a': this.ohm_a(),
-        'ohm_b': this.ohm_b(),
-        'ohm_c': this.ohm_c(),
-        'product_id': this.selected_vk(),
-        'address_id': this.address_id(),
-        'filled_form_modified_id': this.filled_form_modified_id()
-      })
-        .done((result: FileDownloadInterface) => {
-          this.loading.remove('fill_form');
-          this.parse_form_download(result);
-        });
-    } else {
-      this.loading.push('fill_form');
-      $.get("/json/heating/", {
-        'filled_form_modified_id': this.filled_form_modified_id()
-      }).done((result: FileDownloadInterface) => {
-        this.loading.remove('fill_form');
-        this.parse_form_download(result);
-      });
-    }
-  };
   findWithAttr = (array: Array<any>, attr: string, value: any) => {
     for (var i = 0; i < array.length; i += 1) {
       if (array[i][attr] === value) {
@@ -365,45 +293,6 @@ export class TSAppViewModel {
     let f = this.Products().flat_products();
     return f.find(myObj => myObj.id === Number(id));
   }
-
-  confirmed_delete = (e: UserFormInterface) => {
-    this.delete('');
-    this.loading.push('delete');
-    $.ajax({
-      url: 'json/form_mod/' + e.id,
-      type: 'DELETE',
-      data: {
-        id: e.id
-      }
-    })
-      .done((result) => {
-        this.loading.remove('delete');
-        this.get_user_forms();
-      });
-  };
-
-  edit_form = (e: UserFormInterface) => {
-    var f = e.request_form;
-    this.filled_form_modified_id(e.id);
-    this.anleggs_adresse(f.anleggs_adresse);
-    this.anleggs_postnummer(f.anleggs_postnummer);
-    this.anleggs_poststed(f.anleggs_poststed);
-    this.rom_navn(f.rom_navn);
-    this.areal(f.areal);
-    this.oppvarmet_areal(f.oppvarmet_areal);
-    this.selected_vk(f.product_id);
-    // this.address_id(e.address_id);
-    // TODO: fix address_id
-    this.ohm_a(f.ohm_a);
-    this.ohm_b(f.ohm_b);
-    this.ohm_c(f.ohm_c);
-    this.mohm_a(f.mohm_a);
-    this.mohm_b(f.ohm_b);
-    this.mohm_c(f.ohm_c);
-    this.last_sent_args($('#form').serialize());
-    this.form_args($('#form').serialize());
-    ($('.nav-tabs a[href="#main_form"]') as any).tab('show');
-  };
 
 }
 // Inject our CSRF token into our AJAX request.
