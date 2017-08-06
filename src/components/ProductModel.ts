@@ -134,7 +134,7 @@ export class TSProductModel {
             );
 
         }).sort((a, b)=> {
-          let effect = parentModel.effect();
+          let effect = this.parentModel.effect();
           if (effect) {
               let diffA = Math.abs(effect - a.effect)
               let diffB = Math.abs(effect - b.effect)
