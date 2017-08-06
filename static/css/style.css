@@ -57,10 +57,9 @@
 .panel-heading a:after {
   font-family: 'Glyphicons Halflings';
   content: "";
-  float: right;
-  color: grey; }
+  float: right; }
 
-  .panel-heading a.collapsed:after {
+  .panel-heading.collapsed a:after {
     content: ""; }
 
     .row.no-gutters {
@@ -109,18 +108,21 @@
 .title-case {
   text-transform: capitalize; }
 
-  #input-anleggs_postnummer {
-    width: 100px; }
+  .panel-default > .primary-bg {
+    background-color: #60a5e3; }
 
-    legend {
-      font-size: 14px;
-      font-weight: 700;
-      border: 0;
-      margin-bottom: 5px; }
+    #input-anleggs_postnummer {
+      width: 100px; }
 
-      @media screen and (max-width: 450px) {
-        label {
-          font-size: 12px;   }
+      legend {
+        font-size: 14px;
+        font-weight: 700;
+        border: 0;
+        margin-bottom: 5px; }
+
+        @media screen and (max-width: 450px) {
+          label {
+            font-size: 12px;   }
 }
 
 input[type=radio] {

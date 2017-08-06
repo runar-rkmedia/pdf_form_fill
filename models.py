@@ -608,9 +608,9 @@ class Room(db.Model, MyBaseModel):
 
         dictionary = {
             'id': self.id,
-            'name': self.name,
-            'specs': self.specs,
+            'room_name': self.name,
         }
+        dictionary.update(self.specs)
         return dictionary
 
 

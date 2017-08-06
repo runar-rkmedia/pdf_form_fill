@@ -488,6 +488,8 @@ def json_room():
                    or request.form.get('customer_id'))
     room_id = (request.args.get('id')
                or request.form.get('id'))
+    customer = None
+    room = None
     if customer_id:
         customer = Customer.by_id(
             customer_id,
@@ -496,6 +498,7 @@ def json_room():
         room = Room.by_id(
             room_id,
             current_user)
+    print(room_id)
     if not customer:
         return jsonify({}), 403
     if not form.validate_on_submit():

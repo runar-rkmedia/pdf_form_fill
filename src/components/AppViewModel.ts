@@ -1,5 +1,5 @@
 import { TSProductModel } from './ProductModel'
-import { RoomSuggestionInterface, Rooms} from './InterfaceRoom'
+import { RoomSuggestionInterface, RoomSuggestionList} from './InterfaceRoom'
 import nb_NO = require('./../../node_modules/knockout.validation/localization/nb-NO.js')
 import kv = require("knockout.validation");
 import { StrIndex } from "./Common"
@@ -14,6 +14,14 @@ require("knockout-template-loader?name=suggestion-template!html-loader?-minimize
 kv.defineLocale('no-NO', nb_NO);
 kv.locale('nb-NO')
 
+const enum HTTPVerbs {
+  post = 'POST',
+  get = 'GET',
+  put = 'PUT',
+  delete = 'DELETE',
+  patch = 'PATCH'
+}
+
 interface AddressInterface {
   post_area: string;
   post_code: number;
@@ -24,15 +32,13 @@ interface AddressFullInterface extends AddressInterface {
   address1: string;
   address2: string;
 }
-interface RoomSpecsInterface {
-  area: number;
-  heated_area: number;
-  outside: boolean;
-}
 interface RoomInterface {
-  name: string;
+  room_name: string;
   id: number;
-  specs: RoomSpecsInterface;
+  area: number |null;
+  heated_area: number |null;
+  outside: boolean;
+  customer_id?: number
 }
 interface CustomerInterface {
   id: number;
@@ -41,15 +47,143 @@ interface CustomerInterface {
   rooms: RoomInterface[];
 }
 
-class Room  {
-  name = ko.observable()
-  id = ko.observable()
-  specs: RoomSpecsInterface
+class Room {
+  id: KnockoutObservable<number> = ko.observable()
+  name: KnockoutObservable<string> = ko.observable()
+  outside: KnockoutObservable<boolean> = ko.observable()
+  area: KnockoutObservable<number> = ko.observable()
+  heated_area: KnockoutObservable<number> = ko.observable()
+  parent: Rooms
+  private last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
 
-  constructor(room: RoomInterface) {
-    this.name(room.name)
+  constructor(
+    parent: Rooms,
+    room: RoomInterface | undefined = undefined) {
+    this.parent = parent
+    this.set(room)
+  }
+  modified = ko.computed(() => {
+    if (!this.last_sent_data()) {
+      return true
+    }
+    if (
+      this.name() != this.last_sent_data().room_name ||
+      this.outside() != this.last_sent_data().outside ||
+      this.area() != this.last_sent_data().area ||
+      this.heated_area() != this.last_sent_data().heated_area
+    ) {
+      return true
+    }
+    return false
+  })
+  save() {
+    this.last_sent_data({
+      room_name: this.name(),
+      id: this.id(),
+      area: this.area(),
+      heated_area: this.heated_area(),
+      outside: this.outside()
+    })
+  }
+  set(room: RoomInterface = {
+    room_name: '',
+    id: -1,
+    area: null,
+    heated_area: null,
+    outside: false
+  }) {
+    this.name(room.room_name)
     this.id(room.id)
-    this.specs = room.specs
+    this.area(room.area)
+    this.heated_area(room.heated_area)
+    this.outside(room.outside)
+    this.save()
+  }
+  serialize(): RoomInterface {
+    // TODO: Can be removed
+    return {
+      room_name: this.name(),
+      id: this.id(),
+      area: this.area(),
+      heated_area: this.heated_area(),
+      outside: this.outside(),
+      customer_id: this.parent.parent.customer_id()
+    }
+  }
+  post = (r: Rooms,event: Event) => {
+    let method: HTTPVerbs
+    let btn = $(event.target)
+    btn.button('loading')
+    let form = btn.closest('form')
+    let data = form.serializeArray()
+    data.push({name: 'customer_id', value: String(this.parent.parent.customer_id())})
+    data.push({name: 'id', value: String(this.id())})
+    console.log(data)
+    if (this.id() >= 0) {
+      method = HTTPVerbs.put
+    } else {
+      method = HTTPVerbs.post
+    }
+    $.ajax({
+      url: '/json/v1/room/',
+      type: method,
+      data: data
+    }).done((result: RoomInterface) => {
+      this.save()
+      if (method == 'POST') {
+        this.set(result)
+      } else if (method == 'PUT') {
+      }
+      setTimeout(() => {
+        btn.text('Endre')
+      }, 20)
+    }).always(() => {
+      btn.button('reset')
+    })
+  }
+}
+
+class Rooms {
+  list: KnockoutObservableArray<Room>
+  parent: TSAppViewModel
+
+  constructor(parent: TSAppViewModel, list_of_rooms: Room[] = []) {
+    this.list = ko.observableArray(list_of_rooms)
+    this.parent = parent
+  }
+  by_id(id: number) {
+    for (let room of this.list()) {
+      if (room.id() == id) {
+        return room
+      }
+    }
+  }
+  add = () => {
+    let new_room = this.by_id(-1)
+    if (!new_room) {
+      this.list.push(new Room(this))
+    }
+    let accordian = $('#accordion-room')
+    let panel = accordian.find('#room-1')
+    let first_input = panel.find('input:text').first()
+    panel.removeClass('collapse')
+    first_input.focus()
+    return new_room
+  }
+  get = () => {
+    $.get("/json/v1/customer/", { id: 51 })
+      .done((result: CustomerInterface) => {
+        this.parent.anleggs_adresse(result.address.address1)
+        this.parent.anleggs_adresse2(result.address.address2)
+        this.parent.anleggs_postnummer(result.address.post_code)
+        this.parent.anleggs_poststed(result.address.post_area)
+        this.parent.customer_id(result.id)
+        this.list([])
+        let self = this
+        this.list(result.rooms.map(function(x) {
+          return new Room(self, x)
+        }))
+      })
   }
 }
 
@@ -159,8 +293,7 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
-  rooms: KnockoutObservableArray<Room> = ko.observableArray()
-  new_room: KnockoutObservable<RoomInterface> = ko.observable();
+  rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this))
   room_id: KnockoutObservable<number> = ko.observable();
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -244,24 +377,12 @@ export class TSAppViewModel {
         }
       }
     });
-    this.clear_new_room()
-
-    $.get("/json/v1/customer/", { id: 51 })
-      .done((result: CustomerInterface) => {
-        this.anleggs_adresse(result.address.address1)
-        this.anleggs_adresse2(result.address.address2)
-        this.anleggs_postnummer(result.address.post_code)
-        this.anleggs_poststed(result.address.post_area)
-        this.customer_id(result.id)
-        this.rooms(result.rooms.map(function(x) {
-          return new Room(x)
-        }))
-      })
+    this.rooms().get()
   }
 
   suggestRoom = () => {
     let listOfRooms: RoomSuggestionInterface[] = []
-    Rooms.forEach((room, index) => {
+    RoomSuggestionList.forEach((room, index) => {
       listOfRooms.push({
         name: room.name,
         id: index
@@ -278,28 +399,29 @@ export class TSAppViewModel {
     return listOfRooms
   };
 
-  clear_new_room = () => {
-    this.new_room(<RoomInterface>{
-      name: '',
-
-      specs: <RoomSpecsInterface>{}
-    })
-  }
-
   roomSuggestionOnSelect = (
     value: KnockoutObservable<string>,
-    room: RoomInterface) => {
-    let roomObject = Rooms[room.id]
-    this.outside(<boolean>(roomObject.outside));
-
+    roomSuggestion: RoomInterface,
+    event: Event
+  ) => {
+    let room_data = RoomSuggestionList[roomSuggestion.id]
+    let form = $(event.target).closest('form').serializeArray()
+    let id = form[this.findWithAttr(form, 'name', 'id')].value
+    let room = this.rooms().by_id(Number(id))
+    if (room) {
+      room.outside(Boolean(room_data.outside))
+    }
   }
 
   suggestionOnSelect = (
     value: KnockoutObservable<{}>,
-    address: AddressInterface) => {
+    address: AddressInterface,
+    event: any,
+    element: any) => {
     value(titleCase(address.street_name))
     this.anleggs_postnummer(address.post_code)
     this.anleggs_poststed(address.post_area.toUpperCase())
+
   }
 
   form_changed = ko.computed(() => {
@@ -348,50 +470,7 @@ export class TSAppViewModel {
       button.button('reset')
     })
   }
-  post_room_form = (e: any, event: any) => {
-    let button = $(event.target)
-    button.button('loading')
-    let type = 'POST'
-    let form =  button.closest('form')
-    let data = form.serializeArray()
-    // Get the room_id from the form.
-    let room_field = this.findWithAttr(data, 'name', 'id')
-    let room_id = null
-    if (room_field >= 0) {
-      let x = Number(data[room_field].value)
-      if (!isNaN(x)) {
-        room_id = x
-      }
-    }
-    if (this.customer_id()) {
-      data.push({ name: 'customer_id', value: String(this.customer_id()) })
-    }
-    if (room_id) {
-      data.push({ name: 'room_id', value: String(this.room_id()) })
-      type = 'PUT'
-    }
-    if (this.customer_id()) {
-      $.ajax({
-        url: '/json/v1/room/',
-        type: type,
-        data: data
-      }).done((result: RoomInterface) => {
-        if (type == 'POST') {
-          this.rooms.push(new Room(result))
-          $(form).parent().collapse("hide")
-          this.clear_new_room()
-        } else if (type == 'PUT') {
-          let test = this.findWithAttr(this.rooms(), 'id', result.id)
-          console.log(test)
-        }
-        setTimeout(() => {
-          button.text('Endre')
-        }, 20)
-      }).always(() => {
-        button.button('reset')
-      })
-    }
-  }
+
 
   post_form = () => {
     this.form_args($('#form').serialize());
@@ -502,7 +581,7 @@ export class TSAppViewModel {
 // Inject our CSRF token into our AJAX request.
 $.ajaxSetup({
   beforeSend: function(xhr, settings) {
-    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(String(settings.type)) && !this.crossDomain) {
       xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
     }
   }

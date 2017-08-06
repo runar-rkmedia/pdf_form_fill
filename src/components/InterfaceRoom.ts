@@ -4,7 +4,7 @@ export interface RoomSmartFill {
   aliases?: string[]
 }
 
-export let Rooms: RoomSmartFill[] = [
+export let RoomSuggestionList: RoomSmartFill[] = [
   {
     name: 'Baderom',
     aliases: ['Bad']

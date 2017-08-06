@@ -1,4 +1,5 @@
 $primary-color: #266cac;
+$primary-light-color: #60a5e3;
 $break-sm: 768px;
 $break-md: 992px;
 $break-lg: 1200px;
@@ -136,10 +137,10 @@ canvas {
     font-family: 'Glyphicons Halflings';
     content: "\e114";
     float: right;
-    color: grey;
+    // color: grey;
 }
 
-.panel-heading a.collapsed:after {
+.panel-heading.collapsed a:after {
     content: "\e080";
 }
 
@@ -195,5 +196,8 @@ canvas {
 }
 .title-case{
     text-transform: capitalize;
+}
+.panel-default > .primary-bg{
+  background-color: $primary-light-color;
 }
 @import "form";

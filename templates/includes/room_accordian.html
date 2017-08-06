@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <script type="text/html" id="room-accordian">
   <!-- ko foreach: $data -->
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div>
-        <h3 class="panel-title">
-          <a class="collapsed" role="button" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + $index(), 'href': '#room' + $index()}">
-            <span data-bind="text: name"></span>
-          </a>
-        </h4>
-      </div>
+  <div class="panel" data-bind="css: {'panel-primary': id() >= 0, 'panel-info': id() < 0}">
+    <div class="panel-heading collapsed" data-parent="#accordion-room" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + id(), 'href': '#room' + id()}">
+      <h3 class="panel-title">
+        <a role="button">
+          <span data-bind="text: name().length > 0 && id() >= 0 ? name : 'Nytt rom/sted'"></span>
+        </a>
+      </h4>
     </div>
-    <div class="panel-collapse collapse" data-bind="attr: {'id': 'room' + $index()}" role="tabpanel">
+    <div class="panel-collapse collapse" data-bind="
+    attr: {'id': 'room' + id()}
+    " role="tabpanel">
       <div class="panel-body">
         <!-- ko template: { name: 'room_form_template', data: $data} -->
         <!-- /ko -->
-        <div class="select_products" data-bind="if: id">
+        <div class="select_products" data-bind="if: id >= 0">
+          <h4>Varmekabler</h4>
           <!-- ko template: { name: 'select_product_template', data: $root} -->
           <!-- /ko -->
           <hr>

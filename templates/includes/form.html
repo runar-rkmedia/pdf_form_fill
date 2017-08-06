@@ -22,29 +22,19 @@ render_field_group %}
     </button>
   </div>
 </form>
-
 <!-- Room -->
 <!-- ko if: rooms -->
-<h4 class="panel-title">
+<h4 class="">
   Rom/stedsinformasjon
 </h4>
 <!-- List of rooms -->
-<div div id="collapse-form-rom" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="form-rom">
-  <div class="panel-body row">
-    <div class="panel-group col-xs-12" id="accordion-room" role="tablist" aria-multiselectable="true">
-      <!-- ko template: { name: 'room-accordian', data: rooms} -->
-      <!-- /ko -->
+<div class="panel-group col-xs-12" id="accordion-room" role="tablist" aria-multiselectable="true">
+  <!-- ko template: { name: 'room-accordian', data: rooms().list} -->
+  <!-- /ko -->
 
-    </div>
-  </div>
-  <!-- Room form -->
 </div>
+<!-- Room form -->
 <!-- /ko -->
 <!-- ko if: customer_id -->
-<button type="button" class="btn btn-primary pull-right" data-toggle="collapse" data-target=" #new_room_form">Legg til rom</button>
-
-<div id="new_room_form" class="collapse">
-  <!-- ko template: { name: 'room_form_template', data: new_room} -->
-  <!-- /ko -->
-</div>
+<button type="button" class="btn btn-primary pull-right" data-bind="click: rooms().add">Legg til rom</button>
 <!-- /ko -->
