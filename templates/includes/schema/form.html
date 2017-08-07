@@ -28,19 +28,19 @@ render_field_group %}
   </form>
 </div>
 <!-- Room -->
-<!-- ko if: rooms -->
+<!-- ko if: customer().rooms -->
 <h4 class="">
   Rom/stedsinformasjon
 </h4>
 <!-- List of rooms -->
 <div class="panel-group col-xs-12" id="accordion-room" role="tablist" aria-multiselectable="true">
-  <!-- ko template: { name: 'room-accordian', data: rooms().list} -->
+  <!-- ko template: { name: 'room-accordian', data: customer().rooms().list} -->
   <!-- /ko -->
 
 </div>
 <!-- Room form -->
 <!-- /ko -->
 <!-- ko if: customer_id -->
-<button type="button" class="btn btn-primary pull-right" data-bind="click: rooms().add">Legg til rom</button>
+<button type="button" class="btn btn-primary pull-right" data-bind="click: customer().rooms().add">Legg til rom</button>
 <!-- /ko -->
 <!-- /ko -->

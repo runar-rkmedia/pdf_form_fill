@@ -1,6 +1,6 @@
 import {HTTPVerbs}  from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
-import { CustomerInterface } from './Customer'
+import { CustomerInterface, Customer } from './Customer'
 
 export interface RoomInterface {
   room_name: string;
@@ -81,7 +81,7 @@ export class Room {
       area: this.area(),
       heated_area: this.heated_area(),
       outside: this.outside(),
-      customer_id: this.parent.parent.customer_id()
+      customer_id: this.parent.parent.parent.customer_id()
     }
   }
   post = (r: Rooms, event: Event) => {
@@ -90,7 +90,7 @@ export class Room {
     btn.button('loading')
     let form = btn.closest('form')
     let data = form.serializeArray()
-    data.push({ name: 'customer_id', value: String(this.parent.parent.customer_id()) })
+    data.push({ name: 'customer_id', value: String(this.parent.parent.parent.customer_id()) })
     data.push({ name: 'id', value: String(this.id()) })
     if (this.id() >= 0) {
       method = HTTPVerbs.put
@@ -118,9 +118,9 @@ export class Room {
 
 export class Rooms {
   list: KnockoutObservableArray<Room>
-  parent: TSAppViewModel
+  parent: Customer
 
-  constructor(parent: TSAppViewModel, list_of_rooms: Room[] = []) {
+  constructor(parent: Customer, list_of_rooms: Room[] = []) {
     this.list = ko.observableArray(list_of_rooms)
     this.parent = parent
   }
@@ -142,20 +142,5 @@ export class Rooms {
     panel.removeClass('collapse')
     first_input.focus()
     return new_room
-  }
-  get = (id:number) => {
-    $.get("/json/v1/customer/", { id })
-      .done((result: CustomerInterface) => {
-        this.parent.customer().address1(result.address.address1)
-        this.parent.customer().address2(result.address.address2)
-        this.parent.customer().post_code(result.address.post_code)
-        this.parent.customer().post_area(result.address.post_area)
-        this.parent.customer_id(result.id)
-        this.list([])
-        let self = this
-        this.list(result.rooms.map(function(x) {
-          return new Room(self, x)
-        }))
-      })
   }
 }

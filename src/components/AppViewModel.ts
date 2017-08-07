@@ -65,9 +65,7 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
-  customer: KnockoutObservable<Customer> = ko.observable(new Customer())
-  rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this))
-  room_id: KnockoutObservable<number> = ko.observable();
+  customer: KnockoutObservable<Customer> = ko.observable(new Customer(this))
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
   company_forms: KnockoutObservableArray<string> = ko.observableArray();
@@ -150,7 +148,7 @@ export class TSAppViewModel {
         }
       }
     });
-    this.rooms().get(52)
+    this.customer().get(52)
   }
 
   suggestRoom = () => {
@@ -180,7 +178,7 @@ export class TSAppViewModel {
     let room_data = RoomSuggestionList[roomSuggestion.id]
     let form = $(event.target).closest('form').serializeArray()
     let id = form[this.findWithAttr(form, 'name', 'id')].value
-    let room = this.rooms().by_id(Number(id))
+    let room = this.customer().rooms().by_id(Number(id))
     if (room) {
       room.outside(Boolean(room_data.outside))
     }
