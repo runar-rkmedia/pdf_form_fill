@@ -1,6 +1,7 @@
 import { HTTPVerbs, ByID }  from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { CustomerInterface, Customer } from './Customer'
+import { HeatingCable, HeatingCables, HeatingCableInterface} from './HeatingCable'
 
 export interface RoomInterface {
   room_name: string;
@@ -9,6 +10,7 @@ export interface RoomInterface {
   heated_area: number |null;
   outside: boolean;
   customer_id?: number
+  heating_cables?: HeatingCableInterface[]
 }
 
 export class Room {
@@ -17,6 +19,7 @@ export class Room {
   outside: KnockoutObservable<boolean> = ko.observable()
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
+  heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
   validationModel = ko.validatedObservable({
     name: this.name,
     outside: this.outside,
@@ -28,11 +31,11 @@ export class Room {
 
   constructor(parent: Rooms, room: RoomInterface | undefined = undefined) {
     this.area.extend(
-      {required: true, number: true, min: 0.1, max: 1000});
+      { required: true, number: true, min: 0.1, max: 1000 });
     this.heated_area.extend(
-      {required: true, number: true, min: 0.1, max: 1000});
+      { required: true, number: true, min: 0.1, max: 1000 });
     this.name.extend(
-      {required: true, minLength: 2, maxLength: 50});
+      { required: true, minLength: 2, maxLength: 50 });
     this.parent = parent
     this.set(room)
   }
@@ -72,6 +75,14 @@ export class Room {
     this.heated_area(room.heated_area)
     this.outside(room.outside)
     this.save()
+    let heating_cables: HeatingCable[] = []
+    if (room.heating_cables) {
+      let self = this
+      let heating_cables = room.heating_cables.map(function(x) {
+        return new HeatingCable(self.heating_cables(), x)
+      })
+    }
+    this.heating_cables(new HeatingCables(this, heating_cables))
   }
   serialize(): RoomInterface {
     // TODO: Can be removed
@@ -121,15 +132,8 @@ export class Rooms extends ByID {
   parent: Customer
 
   constructor(parent: Customer, list_of_rooms: Room[] = []) {
-    this.list = ko.observableArray(list_of_rooms)
+    super(list_of_rooms)
     this.parent = parent
-  }
-  by_id(id: number) {
-    for (let room of this.list()) {
-      if (room.id() == id) {
-        return room
-      }
-    }
   }
   add = () => {
     let new_room = this.by_id(-1)
@@ -142,5 +146,20 @@ export class Rooms extends ByID {
     panel.removeClass('collapse')
     first_input.focus()
     return new_room
+  }
+  get = (id: number) => {
+    $.get("/json/v1/customer/", { id })
+      .done((result: CustomerInterface) => {
+        this.parent.address1(result.address.address1)
+        this.parent.address2(result.address.address2)
+        this.parent.post_code(result.address.post_code)
+        this.parent.post_area(result.address.post_area)
+        this.parent.parent.customer_id(result.id)
+        this.list([])
+        let self = this
+        this.list(result.rooms.map(function(x) {
+          return new Room(self, x)
+        }))
+      })
   }
 }

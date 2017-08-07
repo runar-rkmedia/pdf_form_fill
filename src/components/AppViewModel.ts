@@ -24,9 +24,7 @@ interface FileDownloadInterface {
   error_message?: string
 }
 
-interface HeatingCableInterface {
-  product_id: number
-}
+
 
 
 
@@ -64,6 +62,7 @@ export class TSAppViewModel {
   selected_vk: KnockoutObservable<number> = ko.observable();
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
+  editing_heating_cable_id: KnockoutObservable<number> = ko.observable();
   customer_id: KnockoutObservable<number> = ko.observable();
   customer: KnockoutObservable<Customer> = ko.observable(new Customer(this))
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
