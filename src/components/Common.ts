@@ -1,7 +1,7 @@
 import { AddressInterface } from "./Common"
 
 export interface StrIndex<TValue> {
-    [key: string]: TValue
+  [key: string]: TValue
 }
 export interface AddressInterface {
   post_area: string;
@@ -20,4 +20,18 @@ export const enum HTTPVerbs {
   put = 'PUT',
   delete = 'DELETE',
   patch = 'PATCH'
+}
+
+export class ByID {
+  list: KnockoutObservableArray<any>
+  constructor(list: any[]) {
+    this.list = ko.observableArray(list)
+  }
+  by_id(id: number) {
+    for (let item of this.list()) {
+      if (item.id() == id) {
+        return item
+      }
+    }
+  }
 }

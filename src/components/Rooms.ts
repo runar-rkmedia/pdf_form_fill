@@ -1,4 +1,4 @@
-import {HTTPVerbs}  from "./Common"
+import { HTTPVerbs, ByID }  from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { CustomerInterface, Customer } from './Customer'
 
@@ -116,7 +116,7 @@ export class Room {
   }
 }
 
-export class Rooms {
+export class Rooms extends ByID {
   list: KnockoutObservableArray<Room>
   parent: Customer
 
