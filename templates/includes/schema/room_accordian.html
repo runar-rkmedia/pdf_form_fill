@@ -15,7 +15,7 @@
       <div class="panel-body">
         <!-- ko template: { name: 'room_form_template', data: $data} -->
         <!-- /ko -->
-        <div class="select_products" data-bind="if: id >= 0">
+        <div class="select_products" data-bind="if: id() >= 0">
           <h4>Varmekabler</h4>
           <!-- ko template: { name: 'select_product_template', data: $root} -->
           <!-- /ko -->

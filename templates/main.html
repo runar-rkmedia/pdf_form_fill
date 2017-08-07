@@ -36,13 +36,13 @@
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="main_form">
-      {% include 'includes/form.html' %}
+      {% include 'includes/schema/form.html' %}
     </div>
     <div role="tabpanel" class="tab-pane" id="user_forms">
-      {% include 'includes/user_forms.html' %}
+      {% include 'includes/other/user_forms.html' %}
     </div>
     <div role="tabpanel" class="tab-pane" id="company">
-      {% include 'includes/company_forms.html' %}
+      {% include 'includes/other/company_forms.html' %}
     </div>
   </div>
 
@@ -50,8 +50,7 @@
 {% endblock %}
 {% block script %}
   <script src="{{url_for('static', filename='js/main.js')}}"></script>
-  {% include 'includes/form_template.html' %}
-  {% include 'includes/room_accordian.html' %}
-  {% include 'includes/select_heating_cable.html' %}
-  {% include 'includes/room_form_template.html' %}
+  {% include 'includes/schema/room_accordian.html' %}
+  {% include 'includes/schema/select_heating_cable_form.html' %}
+  {% include 'includes/schema/room_form_template.html' %}
 {% endblock %}

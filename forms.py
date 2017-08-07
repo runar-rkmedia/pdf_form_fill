@@ -138,6 +138,16 @@ class CustomerForm(FlaskForm):
     customer_id = HiddenField()
 
 
+class HeatingCableForm(FlaskForm):
+    """Form for filling in info about a heating-cable."""
+    product_id = HiddenField(
+        validators=[
+            DataRequired(
+                'Vennligst velg en varmekabel.')
+        ]
+    )
+
+
 class HeatingForm(FlaskForm):
     """Form for filling out a heaating-cable."""
     address = FormField(AddressForm)
