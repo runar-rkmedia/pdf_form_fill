@@ -3,7 +3,8 @@ import { RoomSuggestionInterface, RoomSuggestionList} from './InterfaceRoom'
 import nb_NO = require('./../../node_modules/knockout.validation/localization/nb-NO.js')
 import kv = require("knockout.validation");
 import { StrIndex, AddressInterface, HTTPVerbs } from "./Common"
-import { Rooms, RoomInterface, CustomerInterface, Customer} from "./Customer"
+import { CustomerInterface, Customer} from "./Customer"
+import { Rooms, RoomInterface  } from "./Rooms"
 import ko = require("knockout");
 import $ = require("jquery");
 var titleCase = require('title-case')
@@ -23,25 +24,16 @@ interface FileDownloadInterface {
   error_message?: string
 }
 
+interface HeatingCableInterface {
+  product_id: number
+}
+
+
+
 export class TSAppViewModel {
   manufacturor: KnockoutObservable<string> = ko.observable();
   vk_type: KnockoutObservable<string> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
-  rom_navn: KnockoutObservable<{}> = ko.observable().extend({
-    required: true,
-    minLength: 2,
-    maxLength: 50
-  });
-  outside: KnockoutObservable<boolean> = ko.observable();
-  areal: KnockoutObservable<{}> = ko.observable().extend({
-    number: true,
-    min: 0.1
-  });
-  oppvarmet_areal: KnockoutObservable<{}> = ko.observable().extend({
-    required: true,
-    number: true,
-    min: 0.1
-  });
   effect: KnockoutObservable<{}> = ko.observable().extend({
     number: true,
   });

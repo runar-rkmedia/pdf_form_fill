@@ -1,86 +1,86 @@
 <!DOCTYPE html>
 <script type="text/html" id="select_product_template">
-  <div class="col-xs-12">
-    <div class="well well-lg row">
-      <h4 class="panel-title">
-        Spesifikasjoner varmekabel
-      </h4>
-      <div class="col-xs-12">
-        <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
-      </div>
-      <div class="form-group form-group-sm col-xs-6">
-        <fieldset>
+  <div class="well well-lg col-xs-12">
+    <h4 class="panel-title">
+      Spesifikasjoner varmekabel
+    </h4>
+    <div class="col-xs-12">
+      <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
+    </div>
+    <div class="form-group form-group-sm col-xs-6">
+      <fieldset>
+        <div>
           <legend>Fabrikant</legend>
-          <!-- ko foreach: Products().products -->
-          <div class="col-xs-12">
+        </div>
+        <!-- ko foreach: Products().products -->
+        <div class="col-xs-12">
+          <label class="radio-inline">
+            <input type="radio" name="manufacturor" data-bind="checked: $root.manufacturor, value: name">
+            <!-- ko text: name  -->
+            <!-- /ko -->
+          </label>
+        </div>
+        <!-- /ko -->
+      </fieldset>
+    </div>
+    <div class="form-group form-group-sm col-xs-6">
+      <fieldset>
+        <legend>Type</legend>
+        <div class="col-xs-12">
+          <label class="radio-inline">
+            <input type="radio" name="vk_type" data-bind="checked: $root.vk_type, value: 'mat'">
+            Matte
+          </label>
+        </div>
+        <div class="col-xs-12">
+          <label class="radio-inline">
+            <input type="radio" name="vk_type" data-bind="checked: vk_type, value: 'cable'">
+            Kabel
+          </label>
+        </div>
+        <!-- /ko -->
+      </fieldset>
+    </div>
+    <div class="form-group form-group-sm col-xs-6">
+      <label for="input-effekt">Effekt</label>
+      <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: effect">
+    </div>
+    <!-- ko with: Products() -->
+    <div class="form-group col-xs-12">
+      <fieldset>
+        <legend>Watt per
+          <span data-bind="visible: $root.vk_type() == 'mat'">kvadrat</span>
+          <span data-bind="visible: !$root.vk_type()">(kvadrat)</span>meter</legend>
+        <div class="csscolumn">
+          <!-- ko foreach: spec_groups().sort(function (a,b) {
+                                    return a.mainSpec-b.mainSpec
+                                }) -->
+          <!-- ko if: $data.mainSpec -->
+          <div>
             <label class="radio-inline">
-              <input type="radio" name="manufacturor" data-bind="checked: $root.manufacturor, value: name">
-              <!-- ko text: name  -->
+              <input type="radio" name="meterEffekt" data-bind="checked: $root.mainSpec, value: $data.mainSpec">
+              <span data-bind="text: $data.mainSpec"></span>
+              <span>
+                W/m<!-- ko if: $data.type == "mat" -->²
+                <!-- /ko -->
+              </span>
               <!-- /ko -->
             </label>
           </div>
           <!-- /ko -->
-        </fieldset>
-      </div>
-      <div class="form-group form-group-sm col-xs-6">
-        <fieldset>
-          <legend>Type</legend>
-          <div class="col-xs-12">
-            <label class="radio-inline">
-              <input type="radio" name="vk_type" data-bind="checked: $root.vk_type, value: 'mat'">
-              Matte
-            </label>
-          </div>
-          <div class="col-xs-12">
-            <label class="radio-inline">
-              <input type="radio" name="vk_type" data-bind="checked: vk_type, value: 'cable'">
-              Kabel
-            </label>
-          </div>
           <!-- /ko -->
-        </fieldset>
-      </div>
-      <div class="form-group form-group-sm col-xs-6">
-        <label for="input-effekt">Effekt</label>
-        <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: effect">
-      </div>
-      <!-- ko with: Products() -->
-      <div class="form-group col-xs-12">
-        <fieldset>
-          <legend>Watt per
-            <span data-bind="visible: $root.vk_type() == 'mat'">kvadrat</span>
-            <span data-bind="visible: !$root.vk_type()">(kvadrat)</span>meter</legend>
-          <div class="csscolumn">
-            <!-- ko foreach: spec_groups().sort(function (a,b) {
-                                    return a.mainSpec-b.mainSpec
-                                }) -->
-            <!-- ko if: $data.mainSpec -->
-            <div>
-              <label class="radio-inline">
-                <input type="radio" name="meterEffekt" data-bind="checked: $root.mainSpec, value: $data.mainSpec">
-                <span data-bind="text: $data.mainSpec"></span>
-                <span>
-                  W/m<!-- ko if: $data.type == "mat" -->²
-                  <!-- /ko -->
-                </span>
-                <!-- /ko -->
-              </label>
-            </div>
-            <!-- /ko -->
-            <!-- /ko -->
-          </div>
-        </fieldset>
-      </div>
-      <div class="form-group col-xs-12">
-        <select
-          class="form-control"
-          data-bind="options: filtered_products,
+        </div>
+      </fieldset>
+    </div>
+    <div class="form-group col-xs-12">
+      <select
+        class="form-control"
+        data-bind="options: filtered_products,
                 optionsText: 'name',
                 optionsValue: 'id',
                 value: $root.selected_vk,
                 optionsCaption: 'Velg en vamekabel her... (' + filtered_products().length + ')'"></select>
-      </div>
-      <!-- /ko -->
     </div>
+    <!-- /ko -->
   </div>
 </script>

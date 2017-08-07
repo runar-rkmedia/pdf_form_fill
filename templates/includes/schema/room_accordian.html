@@ -13,8 +13,10 @@
     attr: {'id': 'room' + id()}
     " role="tabpanel">
       <div class="panel-body">
-        <!-- ko template: { name: 'room_form_template', data: $data} -->
-        <!-- /ko -->
+        <div class="col-xs-12 well">
+          <!-- ko template: { name: 'room_form_template', data: $data} -->
+          <!-- /ko -->
+        </div>
         <div class="select_products" data-bind="if: id() >= 0">
           <h4>Varmekabler</h4>
           <!-- ko template: { name: 'select_product_template', data: $root} -->

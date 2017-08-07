@@ -4,24 +4,27 @@
   render_field_group %}
   <form id="room_form" autocomplete="off">
     {{ roomForm.csrf_token }}
-    <div class="formgroup col-xs-12">
-      {{render_field(roomForm.room_name, False, **{'data-bind':" textInput: name, typeahead: $root.suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: $root.roomSuggestionOnSelect"}) }}
-    </div>
-    {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: area"}) }}
-    {{render_field( roomForm.heated_area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: $data.heated_area"}) }}
-    {{render_field( roomForm.outside,
-    formgroup='col-xs-12', label_class='checkbox-inline', class_='', **{'data-bind':"checked: outside"}) }}
-    <div class="col-xs-12">
-      <button
-        type="button"
-        class="btn btn-primary pull-right"
-        data-bind="
-        click: $data.post,
-        css: {opaque: $root.validation_errors().length > 0},
-        enable: $data.modified && $data.validationModel.isValid()"
-        data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
-        <span data-bind="text: id() >= 0 ? 'Endre' : 'Lagre'"></span>
-      </button>
+    <div class="fieldset">
+      <legend>Rom/stedsinformasjon</legend>
+      <div class="formgroup col-xs-12">
+        {{render_field(roomForm.room_name, False, **{'data-bind':" textInput: name, typeahead: $root.suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: $root.roomSuggestionOnSelect"}) }}
+      </div>
+      {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: area"}) }}
+      {{render_field( roomForm.heated_area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: $data.heated_area"}) }}
+      {{render_field( roomForm.outside,
+  formgroup='col-xs-12', label_class='checkbox-inline', class_='', **{'data-bind':"checked: outside"}) }}
+      <div class="col-xs-12">
+        <button
+          type="button"
+          class="btn btn-primary pull-right"
+          data-bind="
+      click: $data.post,
+      css: {opaque: $root.validation_errors().length > 0},
+      enable: $data.modified && $data.validationModel.isValid()"
+          data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
+          <span data-bind="text: id() >= 0 ? 'Endre' : 'Lagre'"></span>
+        </button>
+      </div>
     </div>
   </form>
 </script>
