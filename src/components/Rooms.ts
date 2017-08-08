@@ -1,4 +1,4 @@
-import { HTTPVerbs, ByID }  from "./Common"
+import { HTTPVerbs, ByID, Post, CsrfInterface}  from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { CustomerInterface, Customer } from './Customer'
 import { HeatingCable, HeatingCables, HeatingCableInterface} from './HeatingCable'
@@ -13,7 +13,8 @@ export interface RoomInterface {
   heating_cables?: HeatingCableInterface[]
 }
 
-export class Room {
+export class Room extends Post {
+  url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
   name: KnockoutObservable<string> = ko.observable()
   outside: KnockoutObservable<boolean> = ko.observable()
@@ -31,6 +32,7 @@ export class Room {
   private last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
+    super()
     this.area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });
     this.heated_area.extend(
@@ -39,7 +41,6 @@ export class Room {
       { required: true, minLength: 2, maxLength: 50 });
     this.parent = parent
     this.root = root
-    console.log(root)
     this.set(room)
   }
   modified = ko.computed(() => {
@@ -87,7 +88,7 @@ export class Room {
     }
     this.heating_cables(new HeatingCables(this.root, this, heating_cables))
   }
-  serialize(): RoomInterface {
+  serialize(): RoomInterface & CsrfInterface {
     return {
       room_name: this.name(),
       id: this.id(),
@@ -96,37 +97,6 @@ export class Room {
       outside: this.outside(),
       customer_id: this.root.customer_id()
     }
-  }
-  post = (r: Rooms, event: Event) => {
-    let method: HTTPVerbs
-    let btn = $(event.target)
-    btn.button('loading')
-    let form = btn.closest('form')
-    let data = form.serializeArray()
-    console.log(this)
-    data.push({ name: 'customer_id', value: String(this.root.customer_id()) })
-    data.push({ name: 'id', value: String(this.id()) })
-    if (this.id() >= 0) {
-      method = HTTPVerbs.put
-    } else {
-      method = HTTPVerbs.post
-    }
-    $.ajax({
-      url: '/json/v1/room/',
-      type: method,
-      data: data
-    }).done((result: RoomInterface) => {
-      this.save()
-      if (method == 'POST') {
-        this.set(result)
-      } else if (method == 'PUT') {
-      }
-      setTimeout(() => {
-        btn.text('Endre')
-      }, 20)
-    }).always(() => {
-      btn.button('reset')
-    })
   }
 }
 

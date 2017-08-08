@@ -3,7 +3,7 @@
   {% from "includes/formhelpers.html" import render_field,
   render_field_group %}
   <form id="room_form" autocomplete="off">
-    {{ roomForm.csrf_token }}
+
     <div class="fieldset">
       <legend>Rom/stedsinformasjon</legend>
       <div class="formgroup col-xs-12">
@@ -14,16 +14,16 @@
       {{render_field( roomForm.outside,
   formgroup='col-xs-12', label_class='checkbox-inline', class_='', **{'data-bind':"checked: outside"}) }}
       <div class="col-xs-12">
+        {{ roomForm.csrf_token }}
         <button
           type="button"
           class="btn btn-primary pull-right"
           data-bind="
       click: $data.post,
       css: {opaque: $root.validation_errors().length > 0},
-      enable: $data.modified && $data.validationModel.isValid()"
-          data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
-          <span data-bind="text: id() >= 0 ? 'Endre' : 'Lagre'"></span>
-        </button>
+      enable: $data.modified && $data.validationModel.isValid(),
+      text: id() >= 0 ? 'Endre' : 'Lagre'"
+          data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
       </div>
     </div>
   </form>

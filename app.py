@@ -499,6 +499,7 @@ def json_heating_cable():
 def json_room():
     """Handle a room-object"""
     form = forms.RoomForm(request.form)
+    print(request.form)
     customer_id = (request.args.get('customer_id')
                    or request.form.get('customer_id'))
     room_id = (request.args.get('id')
