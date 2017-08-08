@@ -48,8 +48,9 @@ class MyBaseModel(ByID):
     def by_id(cls, this_id, user):
         """Return a entity by its id."""
         entity = super(MyBaseModel, cls).by_id(this_id)
-        entity.owns(user)
-        return entity
+        if entity:
+            entity.owns(user)
+            return entity
 
 
 class ContactType(enum.Enum):

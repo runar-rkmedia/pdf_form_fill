@@ -137,6 +137,7 @@ export class Rooms extends ByID {
   constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: Room[] = []) {
     super(list_of_rooms)
     this.parent = parent
+    this.root = root
   }
   add = () => {
     let new_room = this.by_id(-1)
