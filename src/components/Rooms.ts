@@ -27,9 +27,10 @@ export class Room {
     heated_area: this.heated_area
   })
   parent: Rooms
+  root: TSAppViewModel
   private last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
 
-  constructor(parent: Rooms, room: RoomInterface | undefined = undefined) {
+  constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
     this.area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });
     this.heated_area.extend(
@@ -37,6 +38,7 @@ export class Room {
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
     this.parent = parent
+    this.root = root
     this.set(room)
   }
   modified = ko.computed(() => {
@@ -82,7 +84,7 @@ export class Room {
         return new HeatingCable(self.heating_cables(), x)
       })
     }
-    this.heating_cables(new HeatingCables(this, heating_cables))
+    this.heating_cables(new HeatingCables(this.root, this, heating_cables))
   }
   serialize(): RoomInterface {
     // TODO: Can be removed
@@ -92,7 +94,7 @@ export class Room {
       area: this.area(),
       heated_area: this.heated_area(),
       outside: this.outside(),
-      customer_id: this.parent.parent.parent.customer_id()
+      customer_id: this.root.customer_id()
     }
   }
   post = (r: Rooms, event: Event) => {
@@ -101,7 +103,7 @@ export class Room {
     btn.button('loading')
     let form = btn.closest('form')
     let data = form.serializeArray()
-    data.push({ name: 'customer_id', value: String(this.parent.parent.parent.customer_id()) })
+    data.push({ name: 'customer_id', value: String(this.root.customer_id()) })
     data.push({ name: 'id', value: String(this.id()) })
     if (this.id() >= 0) {
       method = HTTPVerbs.put
@@ -130,15 +132,16 @@ export class Room {
 export class Rooms extends ByID {
   list: KnockoutObservableArray<Room>
   parent: Customer
+  root: TSAppViewModel
 
-  constructor(parent: Customer, list_of_rooms: Room[] = []) {
+  constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: Room[] = []) {
     super(list_of_rooms)
     this.parent = parent
   }
   add = () => {
     let new_room = this.by_id(-1)
     if (!new_room) {
-      this.list.push(new Room(this))
+      this.list.push(new Room(this.root, this))
     }
     let accordian = $('#accordion-room')
     let panel = accordian.find('#room-1')
@@ -154,11 +157,10 @@ export class Rooms extends ByID {
         this.parent.address2(result.address.address2)
         this.parent.post_code(result.address.post_code)
         this.parent.post_area(result.address.post_area)
-        this.parent.parent.customer_id(result.id)
+        this.root.customer_id(result.id)
         this.list([])
-        let self = this
-        this.list(result.rooms.map(function(x) {
-          return new Room(self, x)
+        this.list(result.rooms.map((x) => {
+          return new Room(this.root, this, x)
         }))
       })
   }

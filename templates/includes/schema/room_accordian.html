@@ -20,7 +20,10 @@
         <div class="select_products" data-bind="if: id() >= 0">
           <h4>Varmekabler</h4>
           <!-- ko foreach: heating_cables().list()-->
-          <!-- ko template: { if: $data.id() === $root.editing_heating_cable_id(), name: 'select_product_template', data: $root} -->
+          <!-- ko if: product -->
+          <div data-bind="text: product().name"></div>
+          <!-- /ko -->
+          <!-- ko template: { if: id() === $root.editing_heating_cable_id(), name: 'select_product_template', data: $data} -->
           <!-- /ko -->
           <!-- /ko -->
           <hr>

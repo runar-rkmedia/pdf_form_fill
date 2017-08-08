@@ -17,11 +17,13 @@ export class Customer {
   address2: KnockoutObservable<string> = ko.observable()
   post_code: KnockoutObservable<number> = ko.observable()
   post_area: KnockoutObservable<string> = ko.observable()
-  rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this))
+  root: TSAppViewModel
+  rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))
   parent: TSAppViewModel
   id: KnockoutObservable<number> = ko.observable()
-  constructor(parent: TSAppViewModel, id: number = -1) {
+  constructor(parent: TSAppViewModel, id: number = -1, root: TSAppViewModel = parent) {
     this.parent = parent
+    this.root = parent
     this.id(id)
     this.name.extend(
       { required: false, minLength: 3, maxLength: 100 });
@@ -42,11 +44,10 @@ export class Customer {
         this.post_code(result.address.post_code)
         this.post_area(result.address.post_area)
         this.parent.customer_id(result.id)
-        let self = this
-        let new_rooms = result.rooms.map(function(x) {
-          return new Room(self.rooms(), x)
+        let new_rooms = result.rooms.map((x) => {
+          return new Room(this.root, this.rooms(), x)
         })
-        this.rooms(new Rooms(this, new_rooms))
+        this.rooms(new Rooms(this.root, this, new_rooms))
       })
   }
 }

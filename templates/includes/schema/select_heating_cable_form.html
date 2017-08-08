@@ -12,7 +12,7 @@
         <div>
           <legend>Fabrikant</legend>
         </div>
-        <!-- ko foreach: Products().products -->
+        <!-- ko foreach: $root.Products().products -->
         <div class="col-xs-12">
           <label class="radio-inline">
             <input type="radio" name="manufacturor" data-bind="checked: $root.manufacturor, value: name">
@@ -34,7 +34,7 @@
         </div>
         <div class="col-xs-12">
           <label class="radio-inline">
-            <input type="radio" name="vk_type" data-bind="checked: vk_type, value: 'cable'">
+            <input type="radio" name="vk_type" data-bind="checked: $root.vk_type, value: 'cable'">
             Kabel
           </label>
         </div>
@@ -42,10 +42,12 @@
       </fieldset>
     </div>
     <div class="form-group form-group-sm col-xs-6">
-      <label for="input-effekt">Effekt</label>
-      <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: effect">
+      <label for="input-effekt">Effekt
+        <small>(sorterer etter nærmeste effekt)</small>
+      </label>
+      <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: $root.effect">
     </div>
-    <!-- ko with: Products() -->
+    <!-- ko with: $root.Products() -->
     <div class="form-group col-xs-12">
       <fieldset>
         <legend>Watt per
@@ -72,15 +74,25 @@
         </div>
       </fieldset>
     </div>
+    <!-- /ko -->
     <div class="form-group col-xs-12">
       <select
         class="form-control"
-        data-bind="options: filtered_products,
+        data-bind="options: $root.Products().filtered_products,
                 optionsText: 'name',
                 optionsValue: 'id',
-                value: $root.selected_vk,
-                optionsCaption: 'Velg en vamekabel her... (' + filtered_products().length + ')'"></select>
+                value: $data.product_id,
+                optionsCaption: 'Velg en vamekabel her... (' + $root.Products().filtered_products().length + ')'"></select>
     </div>
-    <!-- /ko -->
+    <button
+      type="button"
+      class="btn btn-primary pull-right"
+      data-bind="
+          click: $data.post,
+          css: {opaque: $root.validation_errors().length > 0},
+          enable: $data.modified && $data.validationModel.isValid()"
+      data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
+      <span data-bind="text: id() >= 0 ? 'Endre' : 'Lagre'"></span>
+    </button>
   </div>
 </script>

@@ -26,8 +26,6 @@ interface FileDownloadInterface {
 
 
 
-
-
 export class TSAppViewModel {
   manufacturor: KnockoutObservable<string> = ko.observable();
   vk_type: KnockoutObservable<string> = ko.observable();
@@ -255,12 +253,6 @@ export class TSAppViewModel {
         this.loading.remove('user_form')
       });
   }
-
-  get_product_by_id = (id: number) => {
-    let f = this.Products().flat_products();
-    return f.find(myObj => myObj.id === Number(id));
-  }
-
 }
 // Inject our CSRF token into our AJAX request.
 $.ajaxSetup({
