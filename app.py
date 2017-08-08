@@ -478,6 +478,21 @@ def json_user_forms():
     return jsonify(result)
 
 
+@app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@login_required
+def json_heating_cable():
+    """Handle a heatining-cable-form."""
+    form = forms.HeatingCableForm(request.form)
+    if not form.validate_on_submit():
+        print(form.errors)
+        return jsonify({form.errors}, 403)
+    product_id = form.product_id.data
+    product = Product.by_id(product_id)
+
+
+    return jsonify({})
+
+
 @app.route('/json/v1/room/',
            methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
@@ -498,7 +513,6 @@ def json_room():
         room = Room.by_id(
             room_id,
             current_user)
-    print(room_id)
     if not customer:
         return jsonify({}), 403
     if not form.validate_on_submit():
@@ -719,7 +733,7 @@ def json_fill_document():
 def view_form(dictionary=None, error_fields=None, error_message=None):
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
-    form = forms.HeatingForm()
+    heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()
     roomForm = forms.RoomForm()
     if dictionary is None:
@@ -731,7 +745,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
         }
     return render_template(
         'main.html',
-        form=form,
+        heatingForm=heatingForm,
         customerForm=customerForm,
         roomForm=roomForm
     )

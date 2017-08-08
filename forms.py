@@ -146,6 +146,12 @@ class HeatingCableForm(FlaskForm):
                 'Vennligst velg en varmekabel.')
         ]
     )
+    room_id = HiddenField(
+        validators=[
+            DataRequired(
+                'Mottok ikke et id for rom. Dette er sansynligvis en feil.')
+        ]
+    )
 
 
 class HeatingForm(FlaskForm):

@@ -39,6 +39,7 @@ export class Room {
       { required: true, minLength: 2, maxLength: 50 });
     this.parent = parent
     this.root = root
+    console.log(root)
     this.set(room)
   }
   modified = ko.computed(() => {
@@ -81,13 +82,12 @@ export class Room {
     if (room.heating_cables) {
       let self = this
       let heating_cables = room.heating_cables.map(function(x) {
-        return new HeatingCable(self.heating_cables(), x)
+        return new HeatingCable(self.root.Products(), self.heating_cables(), x)
       })
     }
     this.heating_cables(new HeatingCables(this.root, this, heating_cables))
   }
   serialize(): RoomInterface {
-    // TODO: Can be removed
     return {
       room_name: this.name(),
       id: this.id(),
@@ -103,6 +103,7 @@ export class Room {
     btn.button('loading')
     let form = btn.closest('form')
     let data = form.serializeArray()
+    console.log(this)
     data.push({ name: 'customer_id', value: String(this.root.customer_id()) })
     data.push({ name: 'id', value: String(this.id()) })
     if (this.id() >= 0) {

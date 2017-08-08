@@ -6,6 +6,8 @@ import { TSProductModel, ProductInterface } from "./ProductModel"
 export interface HeatingCableInterface {
   id: number
   product_id: number
+  room_id?: number
+  csrf_token?: string
 }
 
 export class HeatingCable {
@@ -44,6 +46,54 @@ export class HeatingCable {
     }
     return false
   })
+  save = () => {
+    console.log('not implemented yet (heatingcable.save)')
+  }
+  set = (heating_cable: HeatingCableInterface) => {
+    console.log('not implemented yet (heatingcable.set)')
+  }
+  serialize = (): HeatingCableInterface => {
+    return {
+      id: this.id(),
+      room_id: this.parent.parent.id(),
+      product_id: this.product_id()
+    }
+  }
+  post = (h: HeatingCable, event: Event) => {
+    let method: HTTPVerbs
+    let btn = $(event.target)
+    btn.button('loading')
+    let csrf_field = btn.prev('#csrf_token')
+    let csrf_token
+    if (csrf_field.length) {
+      let csrf_token = String(csrf_field.val())
+    } else {
+      throw "Could not find the csrf_token, aborting"
+    }
+    let data = this.serialize()
+    data.csrf_token = csrf_token
+    if (this.id() >= 0) {
+      method = HTTPVerbs.put
+    } else {
+      method = HTTPVerbs.post
+    }
+    $.ajax({
+      url: '/json/v1/heat/',
+      type: method,
+      data: data
+    }).done((result: HeatingCableInterface) => {
+      this.save()
+      if (method == 'POST') {
+        this.set(result)
+      } else if (method == 'PUT') {
+      }
+      setTimeout(() => {
+        btn.text('Endre')
+      }, 20)
+    }).always(() => {
+      btn.button('reset')
+    })
+  }
 }
 
 export class HeatingCables extends ByID {
