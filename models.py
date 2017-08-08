@@ -22,6 +22,36 @@ db = SQLAlchemy()
 PER_PAGE = 500
 
 
+class ByID(object):
+    """Class which can return it's entity by id."""
+    @classmethod
+    def by_id(cls, this_id):
+        """Return a entity by its id."""
+        try:
+            this_id = int(this_id)
+        except (ValueError, TypeError):
+            return None
+        entity = cls.query.filter(cls.id == this_id).first()
+        if not entity:
+            return None
+        return entity
+
+
+class MyBaseModel(ByID):
+    """Basic functionality."""
+
+    def owns(self, user):
+        """Check if owner."""
+        raise NotImplementedError("{} missing owns-method".format(type(self)))
+
+    @classmethod
+    def by_id(cls, this_id, user):
+        """Return a entity by its id."""
+        entity = super(MyBaseModel, cls).by_id(this_id)
+        entity.owns(user)
+        return entity
+
+
 class ContactType(enum.Enum):
     """Enumeration for types of contactfields."""
     phone = 1,
@@ -94,26 +124,6 @@ class NoAccess(Error):
         self.message = message
         super(NoAccess, self).__init__(message, *args)
 
-class MyBaseModel(object):
-    """Basic functionality."""
-
-    def owns(self, user):
-        """Check if owner."""
-        raise NotImplementedError("{} missing owns-method".format(type(self)))
-
-    @classmethod
-    def by_id(cls, this_id, user):
-        """Return a entity by its id."""
-        try:
-            this_id = int(this_id)
-        except (ValueError, TypeError):
-            return None
-        entity = cls.query.filter(cls.id == this_id).first()
-        if not entity:
-            return None
-        entity.owns(user)
-        return entity
-
 
 class Address(db.Model):
     """Address-table for users."""
@@ -125,7 +135,7 @@ class Address(db.Model):
 
     @classmethod
     def update_or_create(
-        cls, address_id, address1, address2, post_area, post_code):
+            cls, address_id, address1, address2, post_area, post_code):
         """Update if exists, else create Address."""
         address = Address.query.filter_by(
             id=address_id
@@ -221,8 +231,16 @@ class Company(db.Model):
         filled_forms = []
         for i in query.items:
             if (
-                    any(True for mod in i.modifications if not mod.archived) and
-                    any(True for mod in i.modifications if not mod.user == user)
+                    any(
+                        True for mod in
+                        i.modifications
+                        if not mod.archived
+                        ) and
+                    any(
+                        True for mod in
+                        i.modifications
+                        if not mod.user == user
+                        )
             ):
                 filled_forms.append(i)
 
@@ -287,7 +305,6 @@ class Company(db.Model):
             lng=location[1]
         )
         if company.contacts:
-            # print(company.contacts[0].value)
             company.contacts[0].contact.value = form.email.data
             company.contacts[0].contact.description = form.contact_name.data
             db.session.add(company.contacts[0])
@@ -520,7 +537,7 @@ class ProductType(db.Model):
         return dictionary
 
 
-class Product(db.Model):
+class Product(db.Model, ByID):
     """Product-table."""
     __bind_key__ = 'products'
     id = db.Column(db.Integer, primary_key=True, unique=True)
