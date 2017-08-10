@@ -348,17 +348,17 @@ class User(db.Model, UserMixin):
         """Return all filled forms created by user."""
         subq = db.session\
             .query(
-                func.max(FilledFormModified.id)
+                func.max(RoomItem.id)
             )\
             .filter(
-                (FilledFormModified.user == self) &
-                (FilledFormModified.archived != True)
+                (RoomItem.user == self) &
+                (RoomItem.archived != True)
             )\
-            .group_by(FilledFormModified.room_id)\
+            .group_by(RoomItem.room_id)\
             .subquery()
-        query = FilledFormModified\
+        query = RoomItem\
             .query\
-            .filter(FilledFormModified.id.in_(subq))\
+            .filter(RoomItem.id.in_(subq))\
             .paginate(
                 page=page,
                 per_page=per_page,
@@ -633,31 +633,31 @@ class Room(db.Model, MyBaseModel):
         return dictionary
 
 
-class FilledFormModified(db.Model, MyBaseModel):
+class RoomItem(db.Model, MyBaseModel):
     """Table of modification-dated for Room-model."""
-    __tablename__ = 'filled_form_modified'
+    __tablename__ = 'room_item'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(
-        User, primaryjoin='FilledFormModified.user_id==User.id')
+        User, primaryjoin='RoomItem.user_id==User.id')
     archived = db.Column(db.Boolean, default=False)
     room_id = db.Column(db.Integer, db.ForeignKey(Room.id), nullable=False)
     room = db.relationship(
         Room,
-        primaryjoin='FilledFormModified.room_id==Room.id',
-        backref='modifications')  # noqa
+        primaryjoin='RoomItem.room_id==Room.id',
+        backref='items')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
     # All data from the users-form
-    request_form = db.Column(db.JSON, nullable=False)
+    json = db.Column(db.JSON, nullable=False)
     # All data actually used to fill the pdf.
-    form_data = db.Column(db.JSON, nullable=False)
+    pdf_json = db.Column(db.JSON, nullable=False)
 
     __mapper_args__ = {
         "order_by": date.desc()
     }
 
     @classmethod
-    def update_or_create(cls, user, room, request_form, form_data):
+    def update_or_create(cls, user, room, json):
         """
         Create modification-date if last update was either not made by
         current user, or within the last 5 minutes."""
@@ -667,21 +667,20 @@ class FilledFormModified(db.Model, MyBaseModel):
             ValueError('Expected a room, got {}'.format(room))
         last_modified = None
         if user.id:
-            last_modified = FilledFormModified.query.filter(
-                FilledFormModified.room == room).order_by(
-                    desc(FilledFormModified.date)).filter(
+            last_modified = RoomItem.query.filter(
+                RoomItem.room == room).order_by(
+                    desc(RoomItem.date)).filter(
                         or_(
-                            FilledFormModified.user != user,
-                            FilledFormModified.date >= (
+                            RoomItem.user != user,
+                            RoomItem.date >= (
                                 datetime.utcnow() - timedelta(seconds=1))
                         )).first()
         if not last_modified:
-            last_modified = FilledFormModified(
+            last_modified = RoomItem(
                 user=user,
                 room=room
             )
-        last_modified.request_form = request_form
-        last_modified.form_data = form_data
+        last_modified.json = json
         db.session.add(last_modified)
         return last_modified
 
@@ -699,11 +698,11 @@ class FilledFormModified(db.Model, MyBaseModel):
 
         creation_time = db.session\
             .query(
-                FilledFormModified.date
+                RoomItem.date
             )\
             .filter(
-                FilledFormModified.room_id == self.room_id)\
-            .order_by(FilledFormModified.date)\
+                RoomItem.room_id == self.room_id)\
+            .order_by(RoomItem.date)\
             .first()
 
         dictionary = {
@@ -713,18 +712,5 @@ class FilledFormModified(db.Model, MyBaseModel):
         if creation_time:
             dictionary['creation_time'] = creation_time
         if self.room:
-            dictionary['request_form'] = self.request_form
-            dictionary['address_id'] = self.room.customer.address.id
-        return dictionary
-
-    def serialize_b(self, user=None):
-        """Return object data in easily serializeable format"""
-
-        dictionary = {
-            'id': self.id,
-            'date': self.date,
-        }
-        if self.user != user:
-            dictionary['user'] = self.user.email
-        dictionary['request_form'] = self.request_form
+            dictionary['json'] = self.json
         return dictionary
