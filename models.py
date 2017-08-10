@@ -52,6 +52,12 @@ class MyBaseModel(ByID):
             entity.owns(user)
             return entity
 
+    def update_entity(self, dictionary):
+        """Update an entity from a dictionary."""
+        for key, val, in dictionary.items():
+            setattr(self, key, val)
+        return self
+
 
 class ContactType(enum.Enum):
     """Enumeration for types of contactfields."""
@@ -634,18 +640,45 @@ class Room(db.Model, MyBaseModel):
 
 
 class RoomItem(db.Model, MyBaseModel):
+    """Holder for modifications to items."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    room_id = db.Column(
+        db.Integer, db.ForeignKey(Room.id), nullable=False)
+    room_item = db.relationship(
+        Room,
+        primaryjoin='RoomItem.room_id==Room.id',
+        backref='items')  # noqa
+
+    @classmethod
+    def update_or_create(cls, user, room, room_item_id, json={}, pdf_json={}):
+        """Update or create a RoomItemModifications.."""
+        room_item = RoomItem.by_id(room_item_id, user)
+        if not room_item:
+            room_item = RoomItem(
+                room=room
+            )
+        RoomItemModifications.update_or_create(
+            user=user,
+            room_item=room_item,
+            json=json,
+            pdf_json=pdf_json
+        )
+
+
+class RoomItemModifications(db.Model, MyBaseModel):
     """Table of modification-dated for Room-model."""
-    __tablename__ = 'room_item'
+    __tablename__ = 'room_item_modifications'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(
         User, primaryjoin='RoomItem.user_id==User.id')
     archived = db.Column(db.Boolean, default=False)
-    room_id = db.Column(db.Integer, db.ForeignKey(Room.id), nullable=False)
-    room = db.relationship(
-        Room,
-        primaryjoin='RoomItem.room_id==Room.id',
-        backref='items')  # noqa
+    room_item_id = db.Column(
+        db.Integer, db.ForeignKey(RoomItem.id), nullable=False)
+    room_item = db.relationship(
+        RoomItem,
+        primaryjoin='RoomItemModifications.room_item_id==RoomItem.id',
+        backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
     # All data from the users-form
     json = db.Column(db.JSON, nullable=False)
@@ -657,28 +690,28 @@ class RoomItem(db.Model, MyBaseModel):
     }
 
     @classmethod
-    def update_or_create(cls, user, room, json):
+    def update_or_create(cls, user, room_item, json, pdf_json):
         """
         Create modification-date if last update was either not made by
         current user, or within the last 5 minutes."""
         if not user:
             ValueError('Expected a user, got {}'.format(user))
-        if not room:
-            ValueError('Expected a room, got {}'.format(room))
+        if not room_item:
+            ValueError('Expected a room_item, got {}'.format(room_item))
         last_modified = None
         if user.id:
-            last_modified = RoomItem.query.filter(
-                RoomItem.room == room).order_by(
-                    desc(RoomItem.date)).filter(
+            last_modified = RoomItemModifications.query.filter(
+                RoomItemModifications.room_item == room_item).order_by(
+                    desc(RoomItemModifications.date)).filter(
                         or_(
-                            RoomItem.user != user,
-                            RoomItem.date >= (
+                            RoomItemModifications.user != user,
+                            RoomItemModifications.date >= (
                                 datetime.utcnow() - timedelta(seconds=1))
                         )).first()
         if not last_modified:
-            last_modified = RoomItem(
+            last_modified = RoomItemModifications(
                 user=user,
-                room=room
+                room_item=room_item
             )
         last_modified.json = json
         db.session.add(last_modified)
