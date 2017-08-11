@@ -78,21 +78,8 @@ export class Room extends Post {
     this.area(room.area)
     this.heated_area(room.heated_area)
     this.outside(room.outside)
+    this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
     this.save()
-    let heating_cables: HeatingCable[] = []
-    if (room.heating_cables) {
-      let self = this
-      let heating_cables = room.heating_cables.map(function(x) {
-        // console.log(x)
-        return new HeatingCable(self.root.Products(), self.heating_cables(), x)
-      })
-    }
-    if (room.heating_cables) {
-      // console.log(room.heating_cables)
-      // console.log('room.heating_cables')
-      // console.log(heating_cables)
-    }
-    this.heating_cables(new HeatingCables(this.root, this, heating_cables))
   }
   serialize(): RoomInterface & CsrfInterface {
     return {
@@ -113,7 +100,6 @@ export class Rooms extends ByID {
 
   constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: Room[] = []) {
     super(list_of_rooms)
-    console.log(list_of_rooms)
     this.parent = parent
     this.root = root
   }

@@ -44,10 +44,7 @@ export abstract class Post {
   abstract save(): void
   abstract set(result: any): void
   abstract url: string
-  send_data(): void {
-
-  }
-  post = (h: any, event: Event) => {
+  post(h: any, event: Event, data_object?: CsrfInterface & any, url?: string) {
     // Abstract class for posting data. Will use PUT if id > 0
     // Also handles buttons
     // Needs a csrf_token to be placed in HTML above button
@@ -59,7 +56,7 @@ export abstract class Post {
       throw "Could not find the csrf_token, aborting"
     }
     let csrf_token = String(csrf_field.val())
-    let data = this.serialize()
+    let data = data_object || this.serialize()
     data.csrf_token = csrf_token
     if (this.id() >= 0) {
       method = HTTPVerbs.put
@@ -67,7 +64,7 @@ export abstract class Post {
       method = HTTPVerbs.post
     }
     $.ajax({
-      url: this.url,
+      url: url || this.url,
       type: method,
       data: data
     }).done((result: any) => {

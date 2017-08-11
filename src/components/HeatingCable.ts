@@ -13,6 +13,16 @@ export interface HeatingCableInterface {
   mod_id?: number
 }
 
+interface MeasurementsInterface {
+  id: number
+  ohm_a: number
+  ohm_b: number
+  ohm_c: number
+  mohm_a: boolean
+  mohm_b: boolean
+  mohm_c: boolean
+}
+
 interface PostInterface {
   url: string
   post(): void;
@@ -27,6 +37,12 @@ export class HeatingCable extends Post {
   id: KnockoutObservable<number> = ko.observable();
   parent: HeatingCables
   product_model: TSProductModel
+  ohm_a: KnockoutObservable<number> = ko.observable();
+  ohm_b: KnockoutObservable<number> = ko.observable();
+  ohm_c: KnockoutObservable<number> = ko.observable();
+  mohm_a: KnockoutObservable<boolean> = ko.observable();
+  mohm_b: KnockoutObservable<boolean> = ko.observable();
+  mohm_c: KnockoutObservable<boolean> = ko.observable();
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
   })
@@ -72,6 +88,25 @@ export class HeatingCable extends Post {
       product_id: this.product_id()
     }
   }
+  public post_measurements(h: any, event: Event): void {
+    this.post(
+      h,
+      event,
+      this.serializeMeasurements(),
+      '/json/v1/measurements')
+  }
+  serializeMeasurements(): MeasurementsInterface {
+    console.log(this.parent)
+    return {
+      id: this.id(),
+      ohm_a: this.ohm_a(),
+      ohm_b: this.ohm_b(),
+      ohm_c: this.ohm_c(),
+      mohm_a: this.mohm_a(),
+      mohm_b: this.mohm_b(),
+      mohm_c: this.mohm_c(),
+    }
+  }
 
 }
 
@@ -79,10 +114,19 @@ export class HeatingCables extends ByID {
   list: KnockoutObservableArray<HeatingCable>
   parent: Room
   root: TSAppViewModel
-  constructor(root: TSAppViewModel, parent: Room, list: HeatingCable[] = []) {
-    super(list)
+  constructor(root: TSAppViewModel, parent: Room, heating_cables: HeatingCableInterface[] = []) {
+    super([])
     this.parent = parent
     this.root = root
+    let heating_cables_objects: HeatingCable[] = []
+    if (heating_cables_objects) {
+      let self = this
+      heating_cables_objects = heating_cables.map(function(x) {
+        return new HeatingCable(self.root.Products(), self, x)
+      })
+    }
+    console.log(heating_cables)
+    this.list(heating_cables_objects)
   }
   add = () => {
     let new_heating_cable = this.by_id(-1)

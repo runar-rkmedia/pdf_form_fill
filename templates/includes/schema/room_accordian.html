@@ -19,12 +19,12 @@
         </div>
         <div class="select_products" data-bind="if: id() >= 0">
           <h4>Varmekabler</h4>
-          <div data-bind="text: console.log('heati:',heating_cables().list())"></div>
+          <!-- ko if: heating_cables().list() -->
           <!-- ko foreach: heating_cables().list()-->
           <!-- ko if: product -->
-          <div data-bind="text: product().name"></div>
           <!-- /ko -->
-          <!-- ko template: { if: id() === $root.editing_heating_cable_id(), name: 'select_product_template', data: $data} -->
+          <!-- ko template: {name: 'heating_cable_template', data: $data} -->
+          <!-- /ko -->
           <!-- /ko -->
           <!-- /ko -->
           <hr>

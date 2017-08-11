@@ -486,7 +486,7 @@ def json_heating_cable():
         if fieldname == 'csrf_token':
             continue
         json[fieldname] = value
-
+    print(json)
     product_id = json.get('product_id')
     room_id = json.pop('room_id', -1)
     product = Product.by_id(product_id)
@@ -496,7 +496,7 @@ def json_heating_cable():
     if not room:
         return jsonify('Could not find this room', 403)
     print(json)
-    room_item = RoomItem.update_or_create(
+    RoomItem.update_or_create(
         user=current_user,
         room=room,
         json=json,

@@ -1,58 +1,43 @@
-<!-- Measurements -->
-
-<h4 class="panel-title">
+<!DOCTYPE html>
+<script type="text/html" id="measurements_template">
+  <h4 class="panel-title">
         Målinger
       </h4>
-<div class="form-group col-xs-4">
-  <label for="input-ohm_a">Før installasjon</label>
-  <input class="form-control" type="number" step="0.01" min="0" name="ohm_a" id="input-ohm_a" data-bind="value: ohm_a">
-</div>
-<div class="form-group col-xs-4">
-  <label for="input-ohm_b">Før støping</label>
-  <input class="form-control" type="number" step="0.01" min="0" name="ohm_b" id="input-ohm_b" data-bind="value: ohm_b">
-</div>
-<div class="form-group col-xs-4">
-  <label for="input-ohm_c">Før tilkobling</label>
-  <input class="form-control" type="number" step="0.01" min="0" name="ohm_c" id="input-ohm_c" data-bind="value: ohm_c">
-</div>
-<fieldset class="col-xs-12">
-  <legend>Isolasjonsmotstand</legend>
-  <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
-  <div class="col-xs-4 col-sm-3 col-md-2">
-    <label class="checkbox-inline">
+  <div class="form-group col-xs-4">
+    <label for="input-ohm_a">Før installasjon</label>
+    <input class="form-control" type="number" step="0.01" min="0" name="ohm_a" id="input-ohm_a" data-bind="value: ohm_a">
+  </div>
+  <div class="form-group col-xs-4">
+    <label for="input-ohm_b">Før støping</label>
+    <input class="form-control" type="number" step="0.01" min="0" name="ohm_b" id="input-ohm_b" data-bind="value: ohm_b">
+  </div>
+  <div class="form-group col-xs-4">
+    <label for="input-ohm_c">Før tilkobling</label>
+    <input class="form-control" type="number" step="0.01" min="0" name="ohm_c" id="input-ohm_c" data-bind="value: ohm_c">
+  </div>
+  <fieldset class="col-xs-12">
+    <legend>Isolasjonsmotstand</legend>
+    <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
+    <div class="col-xs-4 col-sm-3 col-md-2">
+      <label class="checkbox-inline">
               <input type="checkbox" name="mohm_a" value="999" data-bind="checked: mohm_a">
               Før installasjon
             </label>
-  </div>
-  <div class="col-xs-4 col-sm-3 col-md-2">
-    <label class="checkbox-inline">
+    </div>
+    <div class="col-xs-4 col-sm-3 col-md-2">
+      <label class="checkbox-inline">
               <input type="checkbox" name="mohm_b" value="999" data-bind="checked: mohm_b">
               Før støping
             </label>
-  </div>
-  <div class="col-xs-4 col-sm-3 col-md-2">
-    <label class="checkbox-inline">
+    </div>
+    <div class="col-xs-4 col-sm-3 col-md-2">
+      <label class="checkbox-inline">
               <input type="checkbox" name="mohm_c" value="999" data-bind="checked: mohm_c">
               Før tilkobling
             </label>
-  </div>
-</fieldset>
-<input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_form, css: {opaque: validation_errors().length > 0}">
-<div class="Loading" data-bind="if: loading.indexOf('fill_form') > -1">
+    </div>
+  </fieldset>
+  {{ heatingForm.csrf_token }}
+  <input class="btn btn-primary" type="submit" value="Fyll inn i skjema" data-bind="click: post_measurements, css: {opaque: validationModel()}">
 
-  <span class="glyphicon glyphicon-refresh spinning"></span> Fyller ut skjema...
-</div>
-<div class="file_download" data-bind="if: file_download, enable: loading, css: {
-      'bg-danger': loading(),
-      'bg-info': !loading(),
-    }">
-  <div class="message" data-bind="ifnot: form_changed">Ditt skjema er ferdig utfyllt.</div>
-  <a target="vk_pdf" data-bind="attr: { href: file_download}" title="Utfylt skjema">Klikk her for å laste det ned.</a>
-
-  <p>Hvis du vil gjøre endringer, kan du gjøre det på denne siden, eller i det nedlastede skjemaet.
-  </p>
-
-  <p class="bg-danger">MERK: Filen ovenfor er bare tilgjengelig i en kort periode.
-    <br>Hvis du vil sende filen til noen, anbefales det å laste den ned først.</p>
-  <p class="bg-danger" id="warning"></p>
-</div>
+</script>
