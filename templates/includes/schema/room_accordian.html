@@ -19,6 +19,7 @@
         </div>
         <div class="select_products" data-bind="if: id() >= 0">
           <h4>Varmekabler</h4>
+          <div data-bind="text: console.log('heati:',heating_cables().list())"></div>
           <!-- ko foreach: heating_cables().list()-->
           <!-- ko if: product -->
           <div data-bind="text: product().name"></div>

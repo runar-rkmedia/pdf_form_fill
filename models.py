@@ -352,6 +352,7 @@ class User(db.Model, UserMixin):
 
     def get_forms(self, per_page=PER_PAGE, page=1):
         """Return all filled forms created by user."""
+        return [], 0
         subq = db.session\
             .query(
                 func.max(RoomItem.id)
@@ -634,6 +635,7 @@ class Room(db.Model, MyBaseModel):
         dictionary = {
             'id': self.id,
             'room_name': self.name,
+            'heating_cables': [i.serialize for i in self.items],
         }
         dictionary.update(self.specs)
         return dictionary
@@ -644,19 +646,30 @@ class RoomItem(db.Model, MyBaseModel):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     room_id = db.Column(
         db.Integer, db.ForeignKey(Room.id), nullable=False)
-    room_item = db.relationship(
+    room = db.relationship(
         Room,
         primaryjoin='RoomItem.room_id==Room.id',
         backref='items')  # noqa
 
+    @property
+    def serialize(self, user=None):
+        """Return object data in easily serializeable format"""
+
+        dictionary = self.modifications[-1].serialize
+        json = dictionary.pop('json')
+
+        dictionary['id'] = self.id
+        return {**dictionary, **json}
+
     @classmethod
-    def update_or_create(cls, user, room, room_item_id, json={}, pdf_json={}):
+    def update_or_create(cls, user, room, room_item_id=None, json={}, pdf_json={}):
         """Update or create a RoomItemModifications.."""
         room_item = RoomItem.by_id(room_item_id, user)
         if not room_item:
             room_item = RoomItem(
                 room=room
             )
+        db.session.add(room_item)
         RoomItemModifications.update_or_create(
             user=user,
             room_item=room_item,
@@ -671,7 +684,7 @@ class RoomItemModifications(db.Model, MyBaseModel):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(
-        User, primaryjoin='RoomItem.user_id==User.id')
+        User, primaryjoin='RoomItemModifications.user_id==User.id')
     archived = db.Column(db.Boolean, default=False)
     room_item_id = db.Column(
         db.Integer, db.ForeignKey(RoomItem.id), nullable=False)
@@ -681,9 +694,9 @@ class RoomItemModifications(db.Model, MyBaseModel):
         backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
     # All data from the users-form
-    json = db.Column(db.JSON, nullable=False)
+    json = db.Column(db.JSON, nullable=True)
     # All data actually used to fill the pdf.
-    pdf_json = db.Column(db.JSON, nullable=False)
+    pdf_json = db.Column(db.JSON, nullable=True)
 
     __mapper_args__ = {
         "order_by": date.desc()
@@ -731,19 +744,19 @@ class RoomItemModifications(db.Model, MyBaseModel):
 
         creation_time = db.session\
             .query(
-                RoomItem.date
+                RoomItemModifications.date
             )\
             .filter(
-                RoomItem.room_id == self.room_id)\
-            .order_by(RoomItem.date)\
+                RoomItemModifications.room_item_id == self.room_item_id)\
+            .order_by(RoomItemModifications.date)\
             .first()
 
         dictionary = {
             'id': self.id,
-            'date': self.date
+            'm_date': self.date
         }
         if creation_time:
-            dictionary['creation_time'] = creation_time
-        if self.room:
+            dictionary['c_date'] = creation_time
+        if self.room_item:
             dictionary['json'] = self.json
         return dictionary

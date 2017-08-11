@@ -8,6 +8,9 @@ export interface HeatingCableInterface {
   product_id: number
   room_id?: number
   csrf_token?: string
+  c_date?: Date
+  m_date?: Date
+  mod_id?: number
 }
 
 interface PostInterface {

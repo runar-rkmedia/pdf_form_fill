@@ -23,13 +23,12 @@ from models import (
     User,
     OAuth,
     Invite,
-    FilledFormModified,
+    RoomItem,
     Room,
     Customer,
     InviteType,
     Address,
     Company,
-    ContactType,
     UserRole
 )
 from vk_objects import FormField
@@ -273,11 +272,7 @@ def set_fields_from_product(dictionary, product, specs=None):
     return dictionary
 
 
-def update_entity(entity, dictionary):
-    """Update an entity from a dictionary."""
-    for key, val, in dictionary.items():
-        setattr(entity, key, val)
-    return entity
+
 
 
 def validate_fields(request_form):
@@ -335,7 +330,7 @@ def get_invite(invite_id):
 
 def invite_create_company(invite):
     """Handle invites for creating a company."""
-    form = CreateCompany()
+    form = forms.CreateCompany()
     if request.method == 'POST':
         if form.validate_on_submit():
             try:
@@ -358,7 +353,7 @@ def invite_create_company(invite):
 @login_required
 def edit_company(company_id=None, invite=None):
     """Description."""
-    form = CreateCompany()
+    form = forms.CreateCompany()
     company = Company.query.filter_by(id=company_id).first()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -486,10 +481,27 @@ def json_heating_cable():
     if not form.validate_on_submit():
         print(form.errors)
         return jsonify({form.errors}, 403)
-    product_id = form.product_id.data
+    json = {}
+    for fieldname, value in form.data.items():
+        if fieldname == 'csrf_token':
+            continue
+        json[fieldname] = value
+
+    product_id = json.get('product_id')
+    room_id = json.pop('room_id', -1)
     product = Product.by_id(product_id)
-
-
+    room = Room.by_id(room_id, current_user)
+    if not product:
+        return jsonify('Could not find this product', 403)
+    if not room:
+        return jsonify('Could not find this room', 403)
+    print(json)
+    room_item = RoomItem.update_or_create(
+        user=current_user,
+        room=room,
+        json=json,
+    )
+    db.session.commit()
     return jsonify({})
 
 
@@ -524,7 +536,7 @@ def json_room():
         db.session.add(room)
     if not room:
         return jsonify({}), 403
-    update_entity(room, {
+    room.update_entity({
         'name': form.room_name.data,
         'customer': customer,
         'specs': {
@@ -550,6 +562,8 @@ def json_customer():
         customer_id,
         current_user)
     if request.method == "GET" and customer:
+        from pprint import pprint
+        pprint(customer.serialize)
         return jsonify(customer.serialize)
 
     if not form.validate_on_submit():
@@ -563,7 +577,7 @@ def json_customer():
         db.session.add(customer)
     if not customer:
         return jsonify({}), 403
-    update_entity(customer.address, {
+    customer.address.update_entity({
         'address1': form.address.address1.data,
         'address2': form.address.address2.data,
         'post_code': form.address.post_code.data,
@@ -581,7 +595,7 @@ def json_customer():
 @login_required
 def json_form_modification(filled_form_modified_id):
     """Return a json-object of a form-modfication."""
-    form = FilledFormModified.by_id(current_user, filled_form_modified_id)
+    form = RoomItem.by_id(current_user, filled_form_modified_id)
     if request.method == 'GET':
         if form:
             result = {}
@@ -643,10 +657,10 @@ def json_fill_document():
     form = forms.HeatingFmrm()
     if request.method == 'GET':
         filled_form_modified_id = request.args.get('filled_form_modified_id')
-        filled_form_modified = FilledFormModified\
+        filled_form_modified = RoomItem\
             .query\
             .filter(
-                FilledFormModified.id == filled_form_modified_id
+                RoomItem.id == filled_form_modified_id
             )\
             .first()
         # form = FormField(manufacturor)
@@ -710,10 +724,9 @@ def json_fill_document():
             post_code=dictionary.get('anleggs_postnummer'),
             post_area=dictionary.get('anleggs_poststed')
         )
-        save_form = FilledForm.update_or_create(
+        save_form = RoomItem.update_or_create(
             filled_form_modified_id=dictionary.get('filled_form_modified_id'),
             user=current_user,
-            name=dictionary.get('rom_navn'),
             customer_name=dictionary.get('kunde_navn'),
             request_form=request.form,
             form_data=complete_dictionary,
