@@ -1,5 +1,5 @@
 import { TSAppViewModel } from "./AppViewModel"
-import {StrIndex}  from "./Common"
+import { StrIndex } from "./Common"
 import ko = require("knockout");
 
 export interface ProductInterface {
@@ -13,6 +13,14 @@ export interface ProductInterface {
   secondarySpec?: number;
 }
 
+
+export interface ProductFilterInterface {
+  manufacturor: string
+  effect: number,
+  mainSpec: number,
+  vk_type: string
+}
+
 interface ProductTypeInterface {
   id: number;
   mainSpec: number;
@@ -21,6 +29,7 @@ interface ProductTypeInterface {
   products: ProductInterface[]
   name: string
 }
+
 
 interface ManufacturorInterface {
   id: number;
@@ -108,10 +117,10 @@ export class TSProductModel {
           value: prod.manufacturor,
           mustEqual: this.parentModel.manufacturor
         },
-          {
-            value: prod.type,
-            mustEqual: this.parentModel.vk_type
-          }
+        {
+          value: prod.type,
+          mustEqual: this.parentModel.vk_type
+        }
 
         ]
       );
@@ -124,6 +133,7 @@ export class TSProductModel {
     if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
       return this.filtered_products_no_mainSpec();
     }
+    // console.log(this.parentModel.effect(), this.parentModel.manufacturor(), this.parentModel.mainSpec(), this.parentModel.vk_type())
     return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
       return this.myArrayFilter(
         [{
@@ -144,6 +154,38 @@ export class TSProductModel {
       }
     });
   });
+  filter_products = (filter: ProductFilterInterface) => {
+    if (!filter.effect && !filter.manufacturor && !filter.mainSpec && !filter.vk_type) {
+      return this.filtered_products_no_mainSpec();
+    }
+    return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
+      return this.myArrayFilter(
+        [
+          {
+            value: prod.manufacturor,
+            mustEqual: () => { return filter.manufacturor }
+          },
+          {
+            value: prod.type,
+            mustEqual: () => { return filter.vk_type }
+          },
+          {
+            value: prod.mainSpec,
+            mustEqual: () => { return filter.mainSpec }
+          }
+        ]
+      );
+
+    }).sort((a, b) => {
+      if (filter.effect) {
+        let diffA = Math.abs(filter.effect - a.effect)
+        let diffB = Math.abs(filter.effect - b.effect)
+        return diffA - diffB
+      } else {
+        return (a.effect) - (b.effect);
+      }
+    });
+  };
 
 
   spec_groups = ko.computed(() => {

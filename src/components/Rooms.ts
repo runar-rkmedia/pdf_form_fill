@@ -16,41 +16,68 @@ export interface RoomSmartFill {
   name: string;
   outside?: boolean;
   aliases?: string[]
+  maxEffect: number
+  normalEffect: number
 }
 
 export let RoomSuggestionList: RoomSmartFill[] = [
   {
-    name: 'Baderom',
-    aliases: ['Bad']
-  },
-  {
-    name: 'Toalett',
-    aliases: ['WC']
-  },
-  {
-    name: 'Vaskerom',
-  },
-  {
-    name: 'Soverom',
-  },
-  {
-    name: 'Kjøkken',
-  },
-  {
-    name: 'Gang',
-    aliases: ['Yttergang']
-  },
-  {
-    name: 'Vindfang',
-    aliases: ['VF']
-  },
-  {
     name: 'Stue',
+    aliases: ['Kjøkken', 'Soverom', 'Barnerom', 'Kjellerstue'],
+    maxEffect: 100,
+    normalEffect: 85
   },
   {
-    name: 'Tunet',
+    name: 'Baderom',
+    aliases: [
+      'Badegulv', 'Vaskerom', 'Hall', 'Bad', 'WC', 'Toalett', 'Gang',
+      'Vindfang'],
+    maxEffect: 160,
+    normalEffect: 135
+  },
+  {
+    name: 'Snøsmelting',
     outside: true,
-    aliases: ['Gårdsplass']
+    aliases: ['Gate', 'Fortau', 'Rampe', 'Terrasse', 'Trapp', 'Hjulspor', 'Gårdsplass', 'Tunet'],
+    maxEffect: 1000,
+    normalEffect: 300
+  },
+  {
+    name: 'Snøsmelting med automatikk',
+    outside: true,
+    maxEffect: 1000,
+    normalEffect: 350
+  },
+  {
+    name: 'Tregulv',
+    maxEffect: 80,
+    normalEffect: 60
+  },
+  {
+    name: 'Fryseromsgulv',
+    maxEffect: 15,
+    normalEffect: 12.5
+  },
+  {
+    name: 'Betongherding',
+    maxEffect: 1000,
+    normalEffect: 110
+  },
+  {
+    name: 'Idrettsanlegg',
+    aliases: ['Fotballbane'],
+    maxEffect: 1000,
+    normalEffect: 60
+  },
+  {
+    name: 'Gartneri',
+    maxEffect: 1000,
+    normalEffect: 80
+  },
+  {
+    name: 'Magasinvarme',
+    maxEffect: 250,
+    normalEffect: 215
   }
 ]
 
@@ -63,6 +90,8 @@ export class Room extends Post {
   id: KnockoutObservable<number> = ko.observable()
   name: KnockoutObservable<string> = ko.observable()
   outside: KnockoutObservable<boolean> = ko.observable()
+  maxEffect: KnockoutObservable<number> = ko.observable()
+  normalEffect: KnockoutObservable<number> = ko.observable()
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
@@ -78,16 +107,22 @@ export class Room extends Post {
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
     super()
+    this.parent = parent
+    this.root = root
     this.area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });
     this.heated_area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
-    this.parent = parent
-    this.root = root
     this.set(room)
   }
+  bestFitEffect = ko.computed(() => {
+    if (this.normalEffect() > 0 && this.heated_area() > 0) {
+      return this.normalEffect() * this.heated_area()
+    }
+    return 0
+  })
   modified = ko.computed(() => {
     if (!this.last_sent_data()) {
       return true
@@ -162,6 +197,8 @@ export class Room extends Post {
   ) => {
     let room_data = RoomSuggestionList[roomSuggestion.id]
     this.outside(Boolean(room_data.outside))
+    this.maxEffect(room_data.maxEffect)
+    this.normalEffect(room_data.normalEffect)
   }
 }
 

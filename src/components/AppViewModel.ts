@@ -30,24 +30,6 @@ export class TSAppViewModel {
   vk_type: KnockoutObservable<string> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
   effect: KnockoutObservable<number> = ko.observable()
-  ohm_a: KnockoutObservable<{}> = ko.observable().extend({
-    number: true,
-    min: 0,
-    max: 1000,
-  });
-  ohm_b: KnockoutObservable<{}> = ko.observable().extend({
-    number: true,
-    min: 0,
-    max: 1000,
-  });
-  ohm_c: KnockoutObservable<{}> = ko.observable().extend({
-    number: true,
-    min: 0,
-    max: 1000,
-  });
-  mohm_a: KnockoutObservable<{}> = ko.observable();
-  mohm_b: KnockoutObservable<{}> = ko.observable();
-  mohm_c: KnockoutObservable<{}> = ko.observable();
   error_fields: KnockoutObservableArray<string> = ko.observableArray();
   error_message: KnockoutObservable<string> = ko.observable();
   file_download: KnockoutObservable<string> = ko.observable();

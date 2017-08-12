@@ -1,7 +1,7 @@
 import { HTTPVerbs, ByID, Post } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
-import { TSProductModel, ProductInterface } from "./ProductModel"
+import { TSProductModel, ProductInterface, ProductFilterInterface } from "./ProductModel"
 
 export interface HeatingCableInterface {
   id: number
@@ -42,6 +42,11 @@ export class HeatingCable extends Post {
   mohm_a: KnockoutObservable<boolean> = ko.observable();
   mohm_b: KnockoutObservable<boolean> = ko.observable();
   mohm_c: KnockoutObservable<boolean> = ko.observable();
+  effect: KnockoutObservable<number> = ko.observable();
+  mainSpec: KnockoutObservable<number> = ko.observable();
+  manufacturor: KnockoutObservable<string> = ko.observable();
+  vk_type: KnockoutObservable<string> = ko.observable();
+  product_filter: KnockoutObservable<ProductInterface[]>;
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
   })
@@ -59,6 +64,15 @@ export class HeatingCable extends Post {
     this.product_id(heating_cable.product_id)
     this.id(heating_cable.id)
     this.product_id(heating_cable.product_id)
+    this.product_filter = ko.computed(() => {
+      console.log(this.effect() || this.parent.parent.bestFitEffect())
+      return this.product_model.filter_products({
+        effect: this.effect() || this.parent.parent.bestFitEffect(),
+        manufacturor: this.manufacturor(),
+        mainSpec: this.mainSpec(),
+        vk_type: this.vk_type()
+      })
+    })
   }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
