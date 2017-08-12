@@ -487,7 +487,7 @@ def json_user_forms():
 @login_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
-    form = forms.HeatingCableForm(request.form)
+    form = forms.HeatingCableForm.from_json(request.json)
     if not form.validate_on_submit():
         print(form.errors)
         return jsonify({form.errors}, 403)
@@ -520,12 +520,10 @@ def json_heating_cable():
 @login_required
 def json_room():
     """Handle a room-object"""
-    form = forms.RoomForm(request.form)
-    print(request.form)
-    customer_id = (request.args.get('customer_id')
-                   or request.form.get('customer_id'))
-    room_id = (request.args.get('id')
-               or request.form.get('id'))
+    form = forms.RoomForm.from_json(request.json)
+    print(request.json)
+    customer_id = (form.customer_id.data)
+    room_id = (form.id.data)
     customer = None
     room = None
     if customer_id:
@@ -536,6 +534,7 @@ def json_room():
         room = Room.by_id(
             room_id,
             current_user)
+    print(room)
     if not customer:
         return jsonify({}), 403
     if not form.validate_on_submit():
@@ -566,9 +565,8 @@ def json_room():
 @login_required
 def json_customer():
     """Handle a customer-object"""
-    form = forms.CustomerForm.from_json(request.json or request.args)
-    customer_id = form.id.data
-    print('json:', request.is_xhr)
+    form = forms.CustomerForm.from_json(request.json)
+    customer_id = form.id.data or request.args.get('id')
     customer = Customer.by_id(
         customer_id,
         current_user)
