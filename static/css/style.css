@@ -111,18 +111,23 @@
   .panel-default > .primary-bg {
     background-color: #60a5e3; }
 
-    #input-anleggs_postnummer {
-      width: 100px; }
+    .tab-content.panel {
+      border-top: none;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0; }
 
-      legend {
-        font-size: 14px;
-        font-weight: 700;
-        border: 0;
-        margin-bottom: 5px; }
+      #input-anleggs_postnummer {
+        width: 100px; }
 
-        @media screen and (max-width: 450px) {
-          label {
-            font-size: 12px;   }
+        legend {
+          font-size: 14px;
+          font-weight: 700;
+          border: 0;
+          margin-bottom: 5px; }
+
+          @media screen and (max-width: 450px) {
+            label {
+              font-size: 12px;   }
 }
 
 input[type=radio] {

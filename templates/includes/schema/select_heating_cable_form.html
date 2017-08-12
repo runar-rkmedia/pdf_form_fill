@@ -1,71 +1,70 @@
 <!DOCTYPE html>
 <script type="text/html"
         id="select_product_template">
-  <div class="well well-lg col-xs-12">
-    <h4 class="panel-title">
+  <h4>
       Spesifikasjoner varmekabel
     </h4>
-    <div class="col-xs-12">
-      <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
-    </div>
-    <div class="form-group form-group-sm col-xs-6">
-      <fieldset>
-        <div>
-          <legend>Fabrikant</legend>
-        </div>
-        <!-- ko foreach: $root.Products().products -->
-        <div class="col-xs-12">
-          <label class="radio-inline">
+  <div class="col-xs-12">
+    <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
+  </div>
+  <div class="form-group form-group-sm col-xs-6">/
+    <fieldset>
+      <div>
+        <legend>Fabrikant</legend>
+      </div>
+      <!-- ko foreach: $root.Products().products -->
+      <div class="col-xs-12">
+        <label class="radio-inline">
             <input type="radio" name="manufacturor" data-bind="checked: $root.manufacturor, value: name">
             <!-- ko text: name  -->
             <!-- /ko -->
           </label>
-        </div>
-        <!-- /ko -->
-      </fieldset>
-    </div>
-    <div class="form-group form-group-sm col-xs-6">
-      <fieldset>
-        <legend>Type</legend>
-        <div class="col-xs-12">
-          <label class="radio-inline">
+      </div>
+      <!-- /ko -->
+    </fieldset>
+  </div>
+  <div class="form-group form-group-sm col-xs-6">
+    <fieldset>
+      <legend>Type</legend>
+      <div class="col-xs-12">
+        <label class="radio-inline">
             <input type="radio" name="vk_type" data-bind="checked: $root.vk_type, value: 'mat'">
             Matte
           </label>
-        </div>
-        <div class="col-xs-12">
-          <label class="radio-inline">
+      </div>
+      <div class="col-xs-12">
+        <label class="radio-inline">
             <input type="radio" name="vk_type" data-bind="checked: $root.vk_type, value: 'cable'">
             Kabel
           </label>
-        </div>
-        <!-- /ko -->
-      </fieldset>
-    </div>
-    <div class="form-group form-group-sm col-xs-6">
-      <label for="input-effekt">Effekt
+      </div>
+      <!-- /ko -->
+    </fieldset>
+  </div>
+  <div class="form-group form-group-sm col-xs-6">
+    <label for="input-effekt">Effekt
         <small>(sorterer etter nærmeste effekt)</small>
       </label>
-      <input class="form-control"
-             type="number"
-             min="0"
-             name="effekt"
-             id="input-effekt"
-             data-bind="value: $root.effect">
-    </div>
-    <!-- ko with: $root.Products() -->
-    <div class="form-group col-xs-12">
-      <fieldset>
-        <legend>Watt per
-          <span data-bind="visible: $root.vk_type() == 'mat'">kvadrat</span>
-          <span data-bind="visible: !$root.vk_type()">(kvadrat)</span>meter</legend>
-        <div class="csscolumn">
-          <!-- ko foreach: spec_groups().sort(function (a,b) {
+    <input class="form-control"
+           type="number"
+           min="0"
+           name="effekt"
+           id="input-effekt"
+           data-bind="value: $root.effect">
+  </div>
+  <!-- ko with: $root.Products() -->
+  <div class="form-group col-xs-12">
+    <fieldset>
+      <legend>Watt per
+        <span data-bind="visible: $root.vk_type() == 'mat'">kvadrat</span>
+        <span data-bind="visible: !$root.vk_type()">(kvadrat)</span>meter</legend>
+      <div class="csscolumn">
+        <!-- ko foreach: spec_groups().sort(function (a,b) {
                                     return a.mainSpec-b.mainSpec
                                 }) -->
-          <!-- ko if: $data.mainSpec -->
-          <div>
-            <label class="radio-inline">
+        <!-- ko if: $data.mainSpec -->
+        <div>
+          <label class="radio-inline">
               <input type="radio" name="meterEffekt" data-bind="checked: $root.mainSpec, value: $data.mainSpec">
               <span data-bind="text: $data.mainSpec"></span>
               <span>
@@ -74,33 +73,32 @@
               </span>
               <!-- /ko -->
             </label>
-          </div>
-          <!-- /ko -->
-          <!-- /ko -->
         </div>
-      </fieldset>
-    </div>
-    <!-- /ko -->
-    {% from "includes/formhelpers.html" import render_field, render_field_group %}
-    <form id="heating_form"
-          autocomplete="off">
-      <div class="form-group col-xs-12">
-        <select class="form-control"
-                data-bind="options: $root.Products().filtered_products,
+        <!-- /ko -->
+        <!-- /ko -->
+      </div>
+    </fieldset>
+  </div>
+  <!-- /ko -->
+  {% from "includes/formhelpers.html" import render_field, render_field_group %}
+  <form id="heating_form"
+        autocomplete="off">
+    <div class="form-group col-xs-12">
+      <select class="form-control"
+              data-bind="options: $root.Products().filtered_products,
                 optionsText: 'name',
                 optionsValue: 'id',
                 value: $data.product_id,
                 optionsCaption: 'Velg en vamekabel her... (' + $root.Products().filtered_products().length + ')'"></select>
-      </div>
-      <button type="button"
-              class="btn btn-primary pull-right"
-              data-bind="
+    </div>
+    <button type="button"
+            class="btn btn-primary pull-right"
+            data-bind="
           click: $data.post,
           css: {opaque: !$data.validationModel.isValid()},
           enable: $data.modified && $data.validationModel.isValid(),
           text: id() >= 0 ? 'Endre' : 'Lagre'"
-              data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">sldkjf
+            data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">sldkjf
       </button>
-    </form>
-  </div>
+  </form>
 </script>
