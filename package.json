@@ -23,6 +23,8 @@
     "@types/jquery": "^3.2.6",
     "@types/knockout": "^3.4.41",
     "@types/knockout.validation": "0.0.33",
+    "bootstrap": "^3.3.7",
+    "file-loader": "^0.11.2",
     "jquery": "^3.2.1",
     "knockout": "^3.4.2",
     "knockout.typeahead": "git+https://github.com/runartrollet/knockout.typeahead.git",
@@ -30,7 +32,8 @@
     "title-case": "^2.1.1",
     "typeahead": "^0.2.2",
     "typescript": "^2.4.1",
-    "uglify-js": "^3.0.23"
+    "uglify-js": "^3.0.23",
+    "url-loader": "^0.5.9"
   },
   "devDependencies": {
     "@types/node": "^8.0.10",
