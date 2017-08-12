@@ -1,7 +1,8 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomInterface, Rooms, Room } from "./Rooms"
-import { StrIndex, AddressFullInterface, HTTPVerbs, Post } from "./Common"
+import { StrIndex, AddressFullInterface, HTTPVerbs, Post, AddressInterface } from "./Common"
 import ko = require("knockout");
+let titleCase = require('title-case')
 
 
 export interface CustomerInterface {
@@ -21,6 +22,13 @@ export class Customer extends Post {
   root: TSAppViewModel
   rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))
   parent: TSAppViewModel
+  validationModel = ko.validatedObservable({
+    name: this.name,
+    address1: this.address1,
+    address2: this.address2,
+    post_code: this.post_code,
+    post_area: this.post_area,
+  })
   id: KnockoutObservable<number> = ko.observable()
   constructor(parent: TSAppViewModel, id: number = -1, root: TSAppViewModel = parent) {
     super()
@@ -42,7 +50,7 @@ export class Customer extends Post {
   serialize(): CustomerInterface {
     let t = {
       name: this.name(),
-      id: this.root.customer_id(),
+      id: this.id(),
       address: {
         address1: this.address1(),
         address2: this.address2(),
@@ -53,7 +61,20 @@ export class Customer extends Post {
     return t
   }
 
-  set() { }
+  set(result: CustomerInterface) {
+    if (result.id) {
+      this.id(result.id)
+    }
+    if (result.name) {
+      this.name(result.name)
+    }
+    if (result.address) {
+      this.address1(result.address.address1)
+      this.address2(result.address.address2)
+      this.post_code(result.address.post_code)
+      this.post_area(result.address.post_area)
+    }
+  }
   get = (id: number) => {
     $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {
@@ -61,7 +82,7 @@ export class Customer extends Post {
         this.address2(result.address.address2)
         this.post_code(result.address.post_code)
         this.post_area(result.address.post_area)
-        this.parent.customer_id(result.id)
+        this.id(result.id)
         if (result.rooms) {
           let new_rooms = result.rooms.map((x) => {
             return new Room(this.root, this.rooms(), x)
@@ -70,4 +91,22 @@ export class Customer extends Post {
         }
       })
   }
+  suggestionOnSelect = (
+    value: KnockoutObservable<{}>,
+    address: AddressInterface,
+    event: any,
+    element: any) => {
+    value(titleCase(address.street_name))
+    this.post_code((address.post_code))
+    this.post_area(address.post_area.toUpperCase())
+  }
+  autocompleteAddress = ko.computed(() => {
+    let url: string = '/address/?q=%QUERY'
+    if (this.address1()) {
+      url += '&p=' + this.address1()
+    }
+    return url
+    // We need a rateLimiter here so that the url doesn't change too early
+    // when a user clicks a selection.
+  }).extend({ rateLimit: 50 })
 }

@@ -47,7 +47,6 @@ from flask import (
 )
 from flask.json import jsonify, JSONEncoder
 import forms
-import json
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
@@ -74,7 +73,6 @@ import wtforms_json
 from flask_wtf.csrf import CSRFProtect, CSRFError
 
 wtforms_json.init()
-
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -568,8 +566,9 @@ def json_room():
 @login_required
 def json_customer():
     """Handle a customer-object"""
-    form = forms.CustomerForm.from_json(request.json)
+    form = forms.CustomerForm.from_json(request.json or request.args)
     customer_id = form.id.data
+    print('json:', request.is_xhr)
     customer = Customer.by_id(
         customer_id,
         current_user)
@@ -597,7 +596,7 @@ def json_customer():
     customer.name = form.customer_name.data
     db.session.commit()
     if customer:
-        return jsonify({'customer_id': customer.id})
+        return jsonify({'id': customer.id})
     return jsonify({}, 404)
 
 

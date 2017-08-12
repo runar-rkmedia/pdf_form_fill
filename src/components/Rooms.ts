@@ -1,18 +1,63 @@
-import { HTTPVerbs, ByID, Post }  from "./Common"
+import { HTTPVerbs, ByID, Post } from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { CustomerInterface, Customer } from './Customer'
-import { HeatingCable, HeatingCables, HeatingCableInterface} from './HeatingCable'
+import { HeatingCable, HeatingCables, HeatingCableInterface } from './HeatingCable'
 
 export interface RoomInterface {
   room_name: string;
   id: number;
-  area: number |null;
-  heated_area: number |null;
+  area: number | null;
+  heated_area: number | null;
   outside: boolean;
   customer_id?: number
   heating_cables?: HeatingCableInterface[]
 }
+export interface RoomSmartFill {
+  name: string;
+  outside?: boolean;
+  aliases?: string[]
+}
 
+export let RoomSuggestionList: RoomSmartFill[] = [
+  {
+    name: 'Baderom',
+    aliases: ['Bad']
+  },
+  {
+    name: 'Toalett',
+    aliases: ['WC']
+  },
+  {
+    name: 'Vaskerom',
+  },
+  {
+    name: 'Soverom',
+  },
+  {
+    name: 'Kjøkken',
+  },
+  {
+    name: 'Gang',
+    aliases: ['Yttergang']
+  },
+  {
+    name: 'Vindfang',
+    aliases: ['VF']
+  },
+  {
+    name: 'Stue',
+  },
+  {
+    name: 'Tunet',
+    outside: true,
+    aliases: ['Gårdsplass']
+  }
+]
+
+export interface RoomSuggestionInterface {
+  name: string,
+  id: number
+}
 export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
@@ -88,8 +133,35 @@ export class Room extends Post {
       area: this.area(),
       heated_area: this.heated_area(),
       outside: this.outside(),
-      customer_id: this.root.customer_id()
+      customer_id: this.parent.parent.id()
     }
+  }
+  suggestRoom = () => {
+    let listOfRooms: RoomSuggestionInterface[] = []
+    RoomSuggestionList.forEach((room, index) => {
+      listOfRooms.push({
+        name: room.name,
+        id: index
+      })
+      if (room.aliases) {
+        for (let alias of room.aliases) {
+          listOfRooms.push({
+            name: alias,
+            id: index
+          })
+        }
+      }
+    })
+    return listOfRooms
+  };
+
+  roomSuggestionOnSelect = (
+    value: KnockoutObservable<string>,
+    roomSuggestion: RoomInterface,
+    event: Event
+  ) => {
+    let room_data = RoomSuggestionList[roomSuggestion.id]
+    this.outside(Boolean(room_data.outside))
   }
 }
 

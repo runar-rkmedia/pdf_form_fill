@@ -48,3 +48,7 @@ $(() => {
 });
 var myObject = {};
 var mySecondReference = myObject;
+$.ajaxSetup({
+  contentType: "application/json",
+  dataType: "json"
+});

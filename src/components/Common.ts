@@ -56,8 +56,6 @@ export abstract class Post {
     $.ajax({
       url: url || this.url,
       type: method,
-      contentType: "application/json; charset=utf-8",
-      dataType: 'json',
       data: JSON.stringify(data),
     }).done((result: any) => {
       this.save()

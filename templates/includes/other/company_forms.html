@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <div class="col-xs-12">
-      <div class="Loading" data-bind="if: (loading.indexOf('user_form') > -1 || loading.indexOf('delete') > -1)">
-        <span class="glyphicon glyphicon-refresh spinning"></span>
-        Oppdaterer data...
-      </div>
   <h2>Våre varmekabler</h2>
   <p>Her kan du se en list over alle varmekablene som er lagt av dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
-    <div class="col-xs-12"></div>
-    <!-- ko if: company_forms()-->
-    <!-- ko template: { name: 'form_template', data: company_forms} -->
-    <!-- /ko -->
-    <!-- /ko -->
+  <div class="col-xs-12"></div>
+  <!-- ko if: company_forms()-->
+  <!-- ko template: { name: 'form_template', data: company_forms} -->
+  <!-- /ko -->
+  <!-- /ko -->
 </div>

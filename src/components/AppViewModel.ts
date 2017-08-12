@@ -1,13 +1,12 @@
 import { TSProductModel } from './ProductModel'
-import { RoomSuggestionInterface, RoomSuggestionList} from './InterfaceRoom'
 import nb_NO = require('./../../node_modules/knockout.validation/localization/nb-NO.js')
 import kv = require("knockout.validation");
 import { StrIndex, AddressInterface, HTTPVerbs } from "./Common"
-import { CustomerInterface, Customer} from "./Customer"
-import { Rooms, RoomInterface  } from "./Rooms"
+import { CustomerInterface, Customer } from "./Customer"
+import { Rooms, RoomInterface } from "./Rooms"
 import ko = require("knockout");
 import $ = require("jquery");
-var titleCase = require('title-case')
+
 
 require("knockout.typeahead");
 require("knockout-template-loader?name=suggestion-template!html-loader?-minimize!./suggestion.html");
@@ -59,15 +58,11 @@ export class TSAppViewModel {
   forced_selected_vk: KnockoutObservable<number> = ko.observable();
   address_id: KnockoutObservable<number> = ko.observable();
   editing_heating_cable_id: KnockoutObservable<number> = ko.observable();
-  customer_id: KnockoutObservable<number> = ko.observable();
   customer: KnockoutObservable<Customer> = ko.observable(new Customer(this))
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
   company_forms: KnockoutObservableArray<string> = ko.observableArray();
-  validation_errors: KnockoutValidationErrors = kv.group(self);
-  loading: KnockoutObservableArray<string> = ko.observableArray();
-  autocompleteAddress: KnockoutComputed<string>;
-
+  // validation_errors: KnockoutValidationErrors = kv.group(self);
   delete: KnockoutObservable<string> = ko.observable();
 
 
@@ -117,18 +112,6 @@ export class TSAppViewModel {
 
       }
     });
-
-    this.autocompleteAddress = ko.computed(() => {
-      let url: string = '/address/?q=%QUERY'
-      if (this.customer().address1()) {
-        url += '&p=' + this.customer().address1()
-      }
-      return url
-      // We need a rateLimiter here so that the url doesn't change too early
-      // when a user clicks a selection.
-    }).extend({ rateLimit: 50 })
-
-
     ko.computed(() => {
       if (this.mainSpec()) {
         try {
@@ -146,51 +129,10 @@ export class TSAppViewModel {
         }
       }
     });
-    // this.customer().get(52)
+    this.customer().get(108)
   }
 
-  suggestRoom = () => {
-    let listOfRooms: RoomSuggestionInterface[] = []
-    RoomSuggestionList.forEach((room, index) => {
-      listOfRooms.push({
-        name: room.name,
-        id: index
-      })
-      if (room.aliases) {
-        for (let alias of room.aliases) {
-          listOfRooms.push({
-            name: alias,
-            id: index
-          })
-        }
-      }
-    })
-    return listOfRooms
-  };
 
-  roomSuggestionOnSelect = (
-    value: KnockoutObservable<string>,
-    roomSuggestion: RoomInterface,
-    event: Event
-  ) => {
-    let room_data = RoomSuggestionList[roomSuggestion.id]
-    let form = $(event.target).closest('form').serializeArray()
-    let id = form[this.findWithAttr(form, 'name', 'id')].value
-    let room = this.customer().rooms().by_id(Number(id))
-    if (room) {
-      room.outside(Boolean(room_data.outside))
-    }
-  }
-
-  suggestionOnSelect = (
-    value: KnockoutObservable<{}>,
-    address: AddressInterface,
-    event: any,
-    element: any) => {
-    value(titleCase(address.street_name))
-    this.customer().post_code((address.post_code))
-    this.customer().post_area(address.post_area.toUpperCase())
-  }
 
   parse_form_download = (result: FileDownloadInterface) => {
     this.last_sent_args(this.form_args());
@@ -221,14 +163,12 @@ export class TSAppViewModel {
   }
 
   get_user_forms = () => {
-    this.loading.push('user_form')
     $.get("/forms.json", {})
       .done((result) => {
         result.user_forms.prefix = 'user_forms';
         result.company_forms.prefix = 'company_forms';
         this.user_forms(result.user_forms);
         this.company_forms(result.company_forms);
-        this.loading.remove('user_form')
       });
   }
 }
