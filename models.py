@@ -132,7 +132,7 @@ class NoAccess(Error):
         super(NoAccess, self).__init__(message, *args)
 
 
-class Address(db.Model):
+class Address(db.Model, MyBaseModel):
     """Address-table for users."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
     address1 = db.Column(db.String(200), nullable=False)

@@ -82,8 +82,16 @@ class RoomForm(FlaskForm):
     id = HiddenField()
 
 
-class AddressForm(FlaskForm):
+class CsrfToken(FlaskForm):
+    """CsrfToken-basic."""
+
+
+class AddressForm(CsrfToken):
     """Input-form for Adresses."""
+    def __init__(self, **_kwargs):
+        _kwargs['csrf_enabled'] = False
+        super().__init__(**_kwargs)
+
     address1 = StringField(
         'Adresse',
         validators=[
@@ -135,7 +143,7 @@ class CustomerForm(FlaskForm):
             Length(max=100)
         ]
     )
-    customer_id = HiddenField()
+    id = HiddenField()
 
 
 class HeatingCableForm(FlaskForm):

@@ -2,25 +2,25 @@
 
 <!-- Customer -->
 
-<h2 class="">Skjema</h2>
-{% from "includes/formhelpers.html" import render_field,
-render_field_group %}
+<h2 class="">Skjema</h2> {% from "includes/formhelpers.html" import render_field, render_field_group %}
 
 <div class="well col-xs-12">
-  <form id="customer_form" autocomplete="off">
-    {{ customerForm.csrf_token }}
-    {{ customerForm.address.csrf_token }}
+  <form id="customer_form"
+        autocomplete="off">
     <legend>Kundeinformasjon</legend>
     <div class="fieldset">
-      {{ render_field(customerForm.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: customer().address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect
-      "}) }}
-      {{ render_field(customerForm.address.address2, 'form-group, col-xs-12', no_label=True, **{'data-bind':" textInput: customer().address2 "}) }}
-      {{ render_field(customerForm.address.post_code, 'form-group
-  col-xs-4 col-sm-2', **{'data-bind':" textInput: customer().post_code"}) }}
-      {{ render_field(customerForm.address.post_area,'form-group col-xs-8 col-sm-10' , **{'data-bind': "textInput: customer().post_area", 'readonly':'readonly'}) }}
+      {{ render_field(customerForm.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: customer().address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "})
+      }} {{ render_field(customerForm.address.address2, 'form-group, col-xs-12', no_label=True, **{'data-bind':" textInput: customer().address2 "}) }} {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2', **{'data-bind':" textInput:
+      customer().post_code"}) }} {{ render_field(customerForm.address.post_area,'form-group col-xs-8 col-sm-10' , **{'data-bind': "textInput: customer().post_area", 'readonly':'readonly'}) }}
       <div class="col-xs-12">
-        <button type="button" class="btn btn-primary pull-right" data-bind="click: post_customer_form, css: {opaque: validation_errors().length > 0}" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
-          <span data-bind="text: customer_id() ? 'Endre' : 'Lagre'"></span>
+        <button type="button"
+                class="btn btn-primary pull-right"
+                data-bind="
+        click: customer().post,
+        css: {opaque: validation_errors().length > 0,
+          text: customer_id() ? 'Endre' : 'Lagre'
+        }"
+                data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
         </button>
       </div>
     </div>
@@ -32,7 +32,10 @@ render_field_group %}
   Rom/stedsinformasjon
 </h4>
 <!-- List of rooms -->
-<div class="panel-group col-xs-12" id="accordion-room" role="tablist" aria-multiselectable="true">
+<div class="panel-group col-xs-12"
+     id="accordion-room"
+     role="tablist"
+     aria-multiselectable="true">
   <!-- ko template: { name: 'room-accordian', data: customer().rooms().list} -->
   <!-- /ko -->
 
@@ -40,6 +43,8 @@ render_field_group %}
 <!-- Room form -->
 <!-- /ko -->
 <!-- ko if: customer_id -->
-<button type="button" class="btn btn-primary pull-right" data-bind="click: customer().rooms().add">Legg til rom</button>
+<button type="button"
+        class="btn btn-primary pull-right"
+        data-bind="click: customer().rooms().add">Legg til rom</button>
 <!-- /ko -->
 <!-- /ko -->

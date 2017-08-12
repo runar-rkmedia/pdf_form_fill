@@ -1,6 +1,6 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomInterface, Rooms, Room } from "./Rooms"
-import {StrIndex, AddressFullInterface, HTTPVerbs}  from "./Common"
+import { StrIndex, AddressFullInterface, HTTPVerbs, Post } from "./Common"
 import ko = require("knockout");
 
 
@@ -8,10 +8,11 @@ export interface CustomerInterface {
   id: number;
   name: string;
   address: AddressFullInterface;
-  rooms: RoomInterface[];
+  rooms?: RoomInterface[];
 }
 
-export class Customer {
+export class Customer extends Post {
+  url = '/json/v1/customer/'
   name: KnockoutObservable<string> = ko.observable()
   address1: KnockoutObservable<string> = ko.observable()
   address2: KnockoutObservable<string> = ko.observable()
@@ -22,6 +23,7 @@ export class Customer {
   parent: TSAppViewModel
   id: KnockoutObservable<number> = ko.observable()
   constructor(parent: TSAppViewModel, id: number = -1, root: TSAppViewModel = parent) {
+    super()
     this.parent = parent
     this.root = parent
     this.id(id)
@@ -36,6 +38,22 @@ export class Customer {
     this.post_code.extend(
       { required: true, number: true, min: 0, max: 9999 });
   }
+  save() { }
+  serialize(): CustomerInterface {
+    let t = {
+      name: this.name(),
+      id: this.root.customer_id(),
+      address: {
+        address1: this.address1(),
+        address2: this.address2(),
+        post_code: this.post_code(),
+        post_area: this.post_area(),
+      }
+    }
+    return t
+  }
+
+  set() { }
   get = (id: number) => {
     $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {
@@ -44,10 +62,12 @@ export class Customer {
         this.post_code(result.address.post_code)
         this.post_area(result.address.post_area)
         this.parent.customer_id(result.id)
-        let new_rooms = result.rooms.map((x) => {
-          return new Room(this.root, this.rooms(), x)
-        })
-        this.rooms(new Rooms(this.root, this, new_rooms))
+        if (result.rooms) {
+          let new_rooms = result.rooms.map((x) => {
+            return new Room(this.root, this.rooms(), x)
+          })
+          this.rooms(new Rooms(this.root, this, new_rooms))
+        }
       })
   }
 }

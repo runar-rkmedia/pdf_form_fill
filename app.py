@@ -13,7 +13,7 @@ from addresses.address_pymongo import (
     # get_post_area_for_post_code,
     get_address_from_street_name,
     # get_post_code_for_post_area,
-    get_location_from_address
+    # get_location_from_address
 )
 from field_dicts.helpers import (commafloat, id_generator)
 from models import (
@@ -47,6 +47,7 @@ from flask import (
 )
 from flask.json import jsonify, JSONEncoder
 import forms
+import json
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
@@ -68,6 +69,12 @@ from flask_login import (
 )
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+from pprint import pprint
+import wtforms_json
+from flask_wtf.csrf import CSRFProtect, CSRFError
+
+wtforms_json.init()
+
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -132,6 +139,14 @@ login_manager.init_app(app)
 
 # setup SQLAlchemy backend
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
+csrf = CSRFProtect(app)
+
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    print('csrf-error: {}'.format(e))
+    # TODO: Needs to actually send the json
+    return jsonify({'errors': [str(e)]})
 
 
 @app.context_processor
@@ -270,9 +285,6 @@ def set_fields_from_product(dictionary, product, specs=None):
     print('dsssssssss')
 
     return dictionary
-
-
-
 
 
 def validate_fields(request_form):
@@ -556,17 +568,16 @@ def json_room():
 @login_required
 def json_customer():
     """Handle a customer-object"""
-    form = forms.CustomerForm(request.form)
-    customer_id = (request.form.get('id') or request.args.get('id'))
+    form = forms.CustomerForm.from_json(request.json)
+    customer_id = form.id.data
     customer = Customer.by_id(
         customer_id,
         current_user)
     if request.method == "GET" and customer:
-        from pprint import pprint
-        pprint(customer.serialize)
         return jsonify(customer.serialize)
 
     if not form.validate_on_submit():
+        pprint(form.errors)
         return 'incorrect data', 403
     if request.method == 'POST':
         address = Address()
@@ -749,6 +760,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
     # Set up some defaults. (retrieve this from the user-config later.)
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()
+    form = forms.CustomerForm()
     roomForm = forms.RoomForm()
     if dictionary is None:
         dictionary = {
@@ -761,6 +773,7 @@ def view_form(dictionary=None, error_fields=None, error_message=None):
         'main.html',
         heatingForm=heatingForm,
         customerForm=customerForm,
+        form=form,
         roomForm=roomForm
     )
 

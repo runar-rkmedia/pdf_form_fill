@@ -11,36 +11,67 @@
   </div>
   <!-- /ko -->
   <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active">
-      <a href="#main_form" aria-controls="main_form" role="tab" data-toggle="tab">Skjema</a>
+  <ul class="nav nav-tabs"
+      role="tablist">
+    <li role="presentation"
+        class="active">
+      <a href="#main_form"
+         aria-controls="main_form"
+         role="tab"
+         data-toggle="tab">Skjema</a>
     </li>
     {% if current_user.is_authenticated %}
     <li role="presentation">
-      <a href="#user_forms" aria-controls="user_forms" role="tab" data-toggle="tab">Mine</a>
+      <a href="#user_forms"
+         aria-controls="user_forms"
+         role="tab"
+         data-toggle="tab">Mine</a>
     </li>
     {% if current_user.company.name %}
     <li role="presentation">
-      <a href="#company" aria-controls="company" role="tab" data-toggle="tab">Våre</a>
+      <a href="#company"
+         aria-controls="company"
+         role="tab"
+         data-toggle="tab">Våre</a>
     </li>
     {% endif %} {% endif %}
   </ul>
 </div>
 <!-- Tab panes -->
 <div class="tab-content">
-  <div role="tabpanel" class="tab-pane active" id="main_form">
+  <div role="tabpanel"
+       class="tab-pane active"
+       id="main_form">
     {% include 'includes/schema/form.html' %}
   </div>
-  <div role="tabpanel" class="tab-pane" id="user_forms">
+  <div role="tabpanel"
+       class="tab-pane"
+       id="user_forms">
     {% include 'includes/other/user_forms.html' %}
   </div>
-  <div role="tabpanel" class="tab-pane" id="company">
+  <div role="tabpanel"
+       class="tab-pane"
+       id="company">
     {% include 'includes/other/company_forms.html' %}
   </div>
 </div>
 
 <div class="row">{% include 'includes/footer.html' %}</div>
+
+
 {% endblock %} {% block script %}
 <script src="{{url_for('static', filename='js/main.js')}}"></script>
 {% include 'includes/schema/room_accordian.html' %} {% include 'includes/schema/select_heating_cable_form.html' %} {% include 'includes/schema/room_form_template.html' %} {% include 'includes/schema/heating_cable.html' %} {% include 'includes/schema/measurements.html'
-%} {% endblock %}
+%}
+<script type="text/javascript">
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      var csrf_token = '{{ customerForm.csrf_token._value() }}'
+      if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrf_token)
+      }
+    }
+  })
+
+</script>
+{% endblock %}

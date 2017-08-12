@@ -1,4 +1,4 @@
-import { HTTPVerbs, ByID, Post, CsrfInterface}  from "./Common"
+import { HTTPVerbs, ByID, Post }  from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { CustomerInterface, Customer } from './Customer'
 import { HeatingCable, HeatingCables, HeatingCableInterface} from './HeatingCable'
@@ -81,7 +81,7 @@ export class Room extends Post {
     this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
     this.save()
   }
-  serialize(): RoomInterface & CsrfInterface {
+  serialize(): RoomInterface {
     return {
       room_name: this.name(),
       id: this.id(),
@@ -114,19 +114,5 @@ export class Rooms extends ByID {
     panel.removeClass('collapse')
     first_input.focus()
     return new_room
-  }
-  get = (id: number) => {
-    $.get("/json/v1/customer/", { id })
-      .done((result: CustomerInterface) => {
-        this.parent.address1(result.address.address1)
-        this.parent.address2(result.address.address2)
-        this.parent.post_code(result.address.post_code)
-        this.parent.post_area(result.address.post_area)
-        this.root.customer_id(result.id)
-        this.list([])
-        this.list(result.rooms.map((x) => {
-          return new Room(this.root, this, x)
-        }))
-      })
   }
 }

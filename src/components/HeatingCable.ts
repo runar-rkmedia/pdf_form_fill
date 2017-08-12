@@ -1,4 +1,4 @@
-import { HTTPVerbs, ByID, Post }  from "./Common"
+import { HTTPVerbs, ByID, Post } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
 import { TSProductModel, ProductInterface } from "./ProductModel"
@@ -7,7 +7,6 @@ export interface HeatingCableInterface {
   id: number
   product_id: number
   room_id?: number
-  csrf_token?: string
   c_date?: Date
   m_date?: Date
   mod_id?: number
@@ -96,7 +95,6 @@ export class HeatingCable extends Post {
       '/json/v1/measurements')
   }
   serializeMeasurements(): MeasurementsInterface {
-    console.log(this.parent)
     return {
       id: this.id(),
       ohm_a: this.ohm_a(),
@@ -125,7 +123,6 @@ export class HeatingCables extends ByID {
         return new HeatingCable(self.root.Products(), self, x)
       })
     }
-    console.log(heating_cables)
     this.list(heating_cables_objects)
   }
   add = () => {

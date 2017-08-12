@@ -30,9 +30,7 @@ export class TSAppViewModel {
   manufacturor: KnockoutObservable<string> = ko.observable();
   vk_type: KnockoutObservable<string> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
-  effect: KnockoutObservable<{}> = ko.observable().extend({
-    number: true,
-  });
+  effect: KnockoutObservable<number> = ko.observable()
   ohm_a: KnockoutObservable<{}> = ko.observable().extend({
     number: true,
     min: 0,
@@ -84,6 +82,9 @@ export class TSAppViewModel {
       // decorateElement: true,
       // errorElementClass: 'error',
       errorMessageClass: 'bg-danger'
+    });
+    this.effect.extend({
+      number: true,
     });
 
     // Add bootstrap-validation-css to parent of field
@@ -145,7 +146,7 @@ export class TSAppViewModel {
         }
       }
     });
-    this.customer().get(52)
+    // this.customer().get(52)
   }
 
   suggestRoom = () => {
@@ -209,30 +210,7 @@ export class TSAppViewModel {
       this.error_message(result.error_message);
     }
   }
-  post_customer_form = (e: any, event: any) => {
-    let button = $(event.target)
-    button.button('loading')
-    let type = 'POST'
-    let data = $('#customer_form').serializeArray()
-    if (this.customer_id()) {
-      data.push({ name: 'id', value: String(this.customer_id()) })
-    }
-    if (this.customer_id()) {
-      type = 'PUT'
-    }
-    $.ajax({
-      url: '/json/v1/customer/',
-      type: type,
-      data: data
-    }).done((result) => {
-      this.customer_id(result.customer_id)
-      setTimeout(() => {
-        button.text('Endre')
-      }, 20)
-    }).always(() => {
-      button.button('reset')
-    })
-  }
+
   findWithAttr = (array: Array<any>, attr: string, value: any) => {
     for (var i = 0; i < array.length; i += 1) {
       if (array[i][attr] === value) {

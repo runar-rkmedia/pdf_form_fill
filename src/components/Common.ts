@@ -6,7 +6,7 @@ export interface StrIndex<TValue> {
 export interface AddressInterface {
   post_area: string;
   post_code: number;
-  street_name: string;
+  street_name?: string;
 }
 
 export interface AddressFullInterface extends AddressInterface {
@@ -35,29 +35,19 @@ export class ByID {
     }
   }
 }
-export interface CsrfInterface {
-  csrf_token?: string
-}
 export abstract class Post {
   abstract id: KnockoutObservable<number>;
-  abstract serialize(): CsrfInterface
+  abstract serialize(): {}
   abstract save(): void
   abstract set(result: any): void
   abstract url: string
-  post(h: any, event: Event, data_object?: CsrfInterface & any, url?: string) {
+  post = (h: any, event: Event, data_object?: any, url?: string) => {
     // Abstract class for posting data. Will use PUT if id > 0
     // Also handles buttons
-    // Needs a csrf_token to be placed in HTML above button
     let method: HTTPVerbs
     let btn = $(event.target)
     btn.button('loading')
-    let csrf_field = btn.prev('#csrf_token')
-    if (csrf_field.length == 0) {
-      throw "Could not find the csrf_token, aborting"
-    }
-    let csrf_token = String(csrf_field.val())
     let data = data_object || this.serialize()
-    data.csrf_token = csrf_token
     if (this.id() >= 0) {
       method = HTTPVerbs.put
     } else {
@@ -66,7 +56,9 @@ export abstract class Post {
     $.ajax({
       url: url || this.url,
       type: method,
-      data: data
+      contentType: "application/json; charset=utf-8",
+      dataType: 'json',
+      data: JSON.stringify(data),
     }).done((result: any) => {
       this.save()
       if (method == HTTPVerbs.post) {
@@ -76,7 +68,7 @@ export abstract class Post {
       setTimeout(() => {
         btn.text('Endre')
       }, 20)
-    }).always(() => {
+    }).always(function(data) {
       btn.button('reset')
     })
   }
