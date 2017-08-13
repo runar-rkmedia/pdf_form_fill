@@ -133,7 +133,7 @@ export class Room extends Post {
     if (this.id() >= 0) {
       let result = this.name()
       if (this.area()) {
-        result += ',  ' + this.area() + ' m²'
+        result += ', ' + this.area() + 'm²'
       }
       if (this.heated_area()) {
         result += ' (' + this.heated_area() + ' m²)'

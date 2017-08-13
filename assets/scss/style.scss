@@ -139,10 +139,10 @@ canvas {
   float: right;
   // color: grey;
 }
+
 .collapsed .carrot:after {
   content: "\e080";
 }
-
 
 .row.no-gutters {
   margin-right: 0;
@@ -203,29 +203,13 @@ canvas {
   background-color: $primary-light-color;
 }
 
+.opaquelight {
+  opacity: 0.75;
+}
+
 .tab-content.panel {
   border-top: none;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-// .nav-tabs > li.active > a,
-// .nav-tabs > li.active > a:focus,
-// .nav-tabs > li.active > a:hover {
-//   border: 0;
-// }
-// .nav-tabs > li:not(active) {
-//   background-color: #596e8b;
-//
-//   & a {
-//     color: white;
-//   }
-// }
-//
-// .tab-content {
-//   padding: 0;
-// }
-//
-// .nav-tabs > li > a {
-//   border: medium none;
-// }
 @import "form";
