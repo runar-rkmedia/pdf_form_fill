@@ -35,10 +35,28 @@ export class ByID {
     }
   }
 }
-export abstract class Post {
+export abstract class Base {
+  abstract last_sent_data: KnockoutObservable<{}>
+  abstract serialize: KnockoutObservable<{}>
+  modified: KnockoutComputed<{}> = ko.computed(() => { return false })
+  save() {
+    this.last_sent_data(this.serialize())
+  }
+  constructor() {
+  }
+  init = (): void => {
+    this.modified = ko.computed(() => {
+      if (!this.last_sent_data()) {
+        return true
+      }
+      return compareDicts(this.serialize(), this.last_sent_data())
+    })
+  }
+
+}
+export abstract class Post extends Base {
   abstract id: KnockoutObservable<number>;
-  abstract serialize(): {}
-  abstract save(): void
+  abstract serialize: KnockoutObservable<{}>
   abstract set(result: any): void
   abstract url: string
   post = (h: any, event: Event, data_object?: any, url?: string) => {
@@ -70,5 +88,19 @@ export abstract class Post {
       btn.button('reset')
     })
   }
-  constructor() { }
+  constructor() { super() }
+}
+export let compareDicts = (dictA: {}, dictB: {}) => {
+  for (let key in dictA) {
+    if (
+      !dictA.hasOwnProperty(key) ||
+      !dictB.hasOwnProperty(key)
+    ) {
+      return true
+    }
+    if ((<any>dictA)[key] != (<any>dictB)[key]) {
+      return true
+    }
+  }
+  return false
 }

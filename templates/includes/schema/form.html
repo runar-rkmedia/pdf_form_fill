@@ -14,14 +14,12 @@
       'form-group, col-xs-12', no_label=True, **{'data-bind':" textInput: address2 "}) }} {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2', **{'data-bind':" textInput: post_code"}) }} {{ render_field(customerForm.address.post_area,'form-group
       col-xs-8 col-sm-10' , **{'data-bind': "textInput: post_area", 'readonly':'readonly'}) }}
       <div class="col-xs-12">
-        <div data-bind="text: id()">
-
-        </div>
         <button type="button"
                 class="btn btn-primary pull-right"
                 data-bind="
         click: post,
-        css: {opaque: !$data.validationModel.isValid()},
+        css: {opaque: !validationModel.isValid() || !modified()},
+        enable: modified() && validationModel.isValid(),
           text: id() >= 0 ? 'Endre' : 'Lagre'"
                 data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
         </button>

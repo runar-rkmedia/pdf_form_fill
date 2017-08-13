@@ -1,4 +1,4 @@
-import { HTTPVerbs, ByID, Post } from "./Common"
+import { HTTPVerbs, ByID, Post, compareDicts, Base } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
 import { TSProductModel, ProductInterface, ProductFilterInterface } from "./ProductModel"
@@ -12,36 +12,57 @@ export interface HeatingCableInterface {
   mod_id?: number
 }
 
-interface MeasurementsInterface {
-  id: number
-  ohm_a: number
-  ohm_b: number
-  ohm_c: number
-  mohm_a: boolean
-  mohm_b: boolean
-  mohm_c: boolean
-}
 
 interface PostInterface {
   url: string
   post(): void;
   serialize(): {}
 }
+interface MeasurementsInterface {
+  ohm_a: number | null
+  ohm_b: number | null
+  ohm_c: number | null
+  mohm_a: boolean | null
+  mohm_b: boolean | null
+  mohm_c: boolean | null
+}
 
+export interface HeatingInterfaceFull extends MeasurementsInterface, HeatingCableInterface {
+}
 
-
-export class HeatingCable extends Post {
-  product_id: KnockoutObservable<number> = ko.observable();
-  url = '/json/v1/heat/'
-  id: KnockoutObservable<number> = ko.observable();
-  parent: HeatingCables
-  product_model: TSProductModel
+class Measurements extends Base {
   ohm_a: KnockoutObservable<number> = ko.observable();
   ohm_b: KnockoutObservable<number> = ko.observable();
   ohm_c: KnockoutObservable<number> = ko.observable();
   mohm_a: KnockoutObservable<boolean> = ko.observable();
   mohm_b: KnockoutObservable<boolean> = ko.observable();
   mohm_c: KnockoutObservable<boolean> = ko.observable();
+  // modified: KnockoutObservable<boolean>
+  last_sent_data: KnockoutObservable<MeasurementsInterface> = ko.observable()
+
+  constructor() {
+    super()
+    this.init()
+  }
+  serialize = ko.computed(() => {
+    return {
+      ohm_a: this.ohm_a(),
+      ohm_b: this.ohm_b(),
+      ohm_c: this.ohm_c(),
+      mohm_a: this.mohm_a(),
+      mohm_b: this.mohm_b(),
+      mohm_c: this.mohm_c()
+    }
+  })
+}
+
+export class HeatingCable extends Post {
+  product_id: KnockoutObservable<number> = ko.observable();
+  url = '/json/v1/heat/'
+  id: KnockoutObservable<number> = ko.observable();
+  measurements: KnockoutObservable<Measurements> = ko.observable(new Measurements())
+  parent: HeatingCables
+  product_model: TSProductModel
   effect: KnockoutObservable<number> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
   manufacturor: KnockoutObservable<string> = ko.observable();
@@ -50,7 +71,8 @@ export class HeatingCable extends Post {
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
   })
-  private last_sent_data: KnockoutObservable<HeatingCableInterface> = ko.observable()
+  last_sent_data: KnockoutObservable<HeatingCableInterface> = ko.observable()
+  serialize: KnockoutObservable<HeatingInterfaceFull>
   constructor(
     product_model: TSProductModel,
     parent: HeatingCables,
@@ -61,11 +83,7 @@ export class HeatingCable extends Post {
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
     this.parent = parent
-    this.product_id(heating_cable.product_id)
-    this.id(heating_cable.id)
-    this.product_id(heating_cable.product_id)
     this.product_filter = ko.computed(() => {
-      console.log(this.effect() || this.parent.parent.bestFitEffect())
       return this.product_model.filter_products({
         effect: this.effect() || this.parent.parent.bestFitEffect(),
         manufacturor: this.manufacturor(),
@@ -73,51 +91,31 @@ export class HeatingCable extends Post {
         vk_type: this.vk_type()
       })
     })
+    this.serialize = ko.computed(() => {
+      let obj = Object.assign(
+        {
+          id: this.id(),
+          room_id: this.parent.parent.id(),
+          product_id: Number(this.product_id())
+        },
+        this.measurements().serialize()
+      )
+      return obj
+    })
+    this.init()
+    this.set(heating_cable)
   }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
       return this.product_model.by_id(this.product_id())
     }
   })
-  modified = ko.computed(() => {
-    if (!this.last_sent_data()) {
-      return true
-    }
-    if (this.product_id() != this.last_sent_data().product_id) {
-      return true
-    }
-    return false
-  })
-  save() {
-    console.log('not implemented yet (heatingcable.save)')
-  }
+
   set(heating_cable: HeatingCableInterface) {
-    console.log('not implemented yet (heatingcable.set)')
-  }
-  serialize(): HeatingCableInterface {
-    return {
-      id: this.id(),
-      room_id: this.parent.parent.id(),
-      product_id: this.product_id()
-    }
-  }
-  public post_measurements(h: any, event: Event): void {
-    this.post(
-      h,
-      event,
-      this.serializeMeasurements(),
-      '/json/v1/measurements')
-  }
-  serializeMeasurements(): MeasurementsInterface {
-    return {
-      id: this.id(),
-      ohm_a: this.ohm_a(),
-      ohm_b: this.ohm_b(),
-      ohm_c: this.ohm_c(),
-      mohm_a: this.mohm_a(),
-      mohm_b: this.mohm_b(),
-      mohm_c: this.mohm_c(),
-    }
+    this.product_id(heating_cable.product_id)
+    this.id(heating_cable.id)
+    this.product_id(heating_cable.product_id)
+    this.save()
   }
 
 }

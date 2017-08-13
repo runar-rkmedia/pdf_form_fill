@@ -15,12 +15,11 @@
       <div class="col-xs-12">
         <button type="button"
                 class="btn btn-primary pull-right"
-                data-bind="
-      click: $data.post,
-          css: {opaque: !$data.validationModel.isValid()},
-          enable: $data.modified && $data.validationModel.isValid(),
-      text: id() >= 0 ? 'Endre' : 'Lagre'"
-                data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
+                data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
+                data-loading-text="
+<span class='glyphicon glyphicon-refresh spinning'></span>">
+</button
+>
       </div>
     </div>
   </form>

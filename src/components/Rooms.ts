@@ -103,7 +103,8 @@ export class Room extends Post {
   })
   parent: Rooms
   root: TSAppViewModel
-  private last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
+  last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
+  serialize: KnockoutObservable<RoomInterface>
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
     super()
@@ -115,16 +116,27 @@ export class Room extends Post {
       { required: true, number: true, min: 0.1, max: 1000 });
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
+
+    this.serialize = ko.computed(() => {
+      return {
+        room_name: this.name(),
+        id: this.id(),
+        area: this.area(),
+        heated_area: this.heated_area(),
+        outside: this.outside(),
+        customer_id: this.parent.parent.id()
+      }
+    })
     this.set(room)
   }
   room_title = ko.computed(() => {
     if (this.id() >= 0) {
       let result = this.name()
       if (this.area()) {
-        result += ',  ' + this.area() + 'm²'
+        result += ',  ' + this.area() + ' m²'
       }
       if (this.heated_area()) {
-        result += ' (' + this.heated_area() + 'm²)'
+        result += ' (' + this.heated_area() + ' m²)'
       }
       return result
     }
@@ -152,13 +164,7 @@ export class Room extends Post {
     return false
   })
   save() {
-    this.last_sent_data({
-      room_name: this.name(),
-      id: this.id(),
-      area: this.area(),
-      heated_area: this.heated_area(),
-      outside: this.outside()
-    })
+    this.last_sent_data(this.serialize())
   }
   set(room: RoomInterface = {
     room_name: '',
@@ -175,16 +181,8 @@ export class Room extends Post {
     this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
     this.save()
   }
-  serialize(): RoomInterface {
-    return {
-      room_name: this.name(),
-      id: this.id(),
-      area: this.area(),
-      heated_area: this.heated_area(),
-      outside: this.outside(),
-      customer_id: this.parent.parent.id()
-    }
-  }
+
+
   suggestRoom = () => {
     let listOfRooms: RoomSuggestionInterface[] = []
     RoomSuggestionList.forEach((room, index) => {

@@ -7,7 +7,7 @@
        aria-multiselectable="true">
     <!-- ko foreach: $data -->
     <div class="panel"
-         data-bind="css: {'panel-info': id() >= 0, 'panel-danger': id() < 0}">
+         data-bind="css: {'panel-info': !modified(), 'panel-warning': modified()}">
       <div class="panel-heading collapsed"
            data-parent="#accordion-heat"
            data-toggle="collapse"
@@ -15,6 +15,9 @@
         <h3 class="panel-title carrot">
         <!-- ko if: product() -->
         <span data-bind="text: product().name"></span>
+        <!-- /ko -->
+        <!-- ko if: modified -->
+        <b>Ikke lagret</b>
         <!-- /ko -->
       </h3>
       </div>
@@ -64,6 +67,18 @@ attr: {'id': 'heat' + id()}
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bind="
+                click: $data.post,
+                    css: {opaque: !validationModel.isValid() || !modified()},
+                    enable: modified() && validationModel.isValid(),
+                text: id() >= 0 ? 'Endre' : 'Lagre'"
+                    data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
           </div>
         </div>
       </div>

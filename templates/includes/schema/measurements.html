@@ -4,6 +4,7 @@
   <h4>
         Målinger
       </h4>
+  <!-- ko with: measurements -->
   <div class="form-group col-xs-4">
     <label for="input-ohm_a">Før installasjon</label>
     <input class="form-control"
@@ -56,8 +57,5 @@
             </label>
     </div>
   </fieldset>
-  <input class="btn btn-primary"
-         type="submit"
-         value="Fyll inn i skjema"
-         data-bind="click: post_measurements, css: {opaque: validationModel()}">
+  <!-- /ko -->
 </script>
