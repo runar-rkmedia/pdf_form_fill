@@ -242,12 +242,12 @@ class Company(db.Model):
                         True for mod in
                         i.modifications
                         if not mod.archived
-                        ) and
+                    ) and
                     any(
                         True for mod in
                         i.modifications
                         if not mod.user == user
-                        )
+                    )
             ):
                 filled_forms.append(i)
 
@@ -621,7 +621,7 @@ class Room(db.Model, MyBaseModel):
 
     def owns(self, user):
         """Check that user has rights to this room."""
-        user.company.owns(self.customer)
+        self.customer.owns(user)
 
     def archive_this(self, user):
         """Mark this as archived."""
@@ -651,20 +651,28 @@ class RoomItem(db.Model, MyBaseModel):
         primaryjoin='RoomItem.room_id==Room.id',
         backref='items')  # noqa
 
+    def owns(self, user):
+        """Check that user has rights to this room-item."""
+        self.room.owns(user)
+
     @property
     def serialize(self, user=None):
         """Return object data in easily serializeable format"""
+        if self.modifications:
+            dictionary = self.modifications[0].serialize
+            json = dictionary.pop('json')
 
-        dictionary = self.modifications[-1].serialize
-        json = dictionary.pop('json')
-
-        dictionary['id'] = self.id
-        return {**dictionary, **json}
+            dictionary['id'] = self.id
+            d = {**dictionary, **json}
+            return d
 
     @classmethod
-    def update_or_create(cls, user, room, room_item_id=None, json={}, pdf_json={}):
+    def update_or_create(
+            cls, user, room, id=None,
+            room_item=None, json={}, pdf_json={}):
         """Update or create a RoomItemModifications.."""
-        room_item = RoomItem.by_id(room_item_id, user)
+        if not room_item:
+            room_item = RoomItem.by_id(id, user)
         if not room_item:
             room_item = RoomItem(
                 room=room
@@ -676,6 +684,7 @@ class RoomItem(db.Model, MyBaseModel):
             json=json,
             pdf_json=pdf_json
         )
+        return room_item
 
 
 class RoomItemModifications(db.Model, MyBaseModel):

@@ -69,8 +69,10 @@ export abstract class Post extends Base {
     if (this.id() >= 0) {
       method = HTTPVerbs.put
     } else {
+      delete data['id']
       method = HTTPVerbs.post
     }
+    console.log(data)
     $.ajax({
       url: url || this.url,
       type: method,
@@ -84,7 +86,9 @@ export abstract class Post extends Base {
       setTimeout(() => {
         btn.text('Endre')
       }, 20)
-    }).always(function(data) {
+    }).fail((result, a, c) => {
+      console.log(result.responseJSON.errors)
+    }).always(function(result) {
       btn.button('reset')
     })
   }

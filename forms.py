@@ -148,6 +148,14 @@ class CustomerForm(FlaskForm):
 
 class HeatingCableForm(FlaskForm):
     """Form for filling in info about a heating-cable."""
+    ohm_a = HiddenField()
+    ohm_b = HiddenField()
+    ohm_c = HiddenField()
+    mohm_a = HiddenField()
+    mohm_b = HiddenField()
+    mohm_c = HiddenField()
+    room_item_id = HiddenField()
+    id = HiddenField()
     product_id = HiddenField(
         validators=[
             DataRequired(

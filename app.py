@@ -487,32 +487,35 @@ def json_user_forms():
 @login_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
+    print('request:', request.json)
     form = forms.HeatingCableForm.from_json(request.json)
     if not form.validate_on_submit():
         print(form.errors)
-        return jsonify({form.errors}, 403)
-    json = {}
-    for fieldname, value in form.data.items():
-        if fieldname == 'csrf_token':
-            continue
-        json[fieldname] = value
-    print(json)
-    product_id = json.get('product_id')
-    room_id = json.pop('room_id', -1)
+        return jsonify({'error': form.errors}, 403)
+    jsondata = dict((k, v) for k, v in form.data.items() if v)
+    room_item_id = jsondata.get('id')
+    product_id = jsondata.get('product_id')
+    room_id = jsondata.pop('room_id', -1)
     product = Product.by_id(product_id)
     room = Room.by_id(room_id, current_user)
+    room_item = RoomItem.by_id(room_item_id, current_user)
     if not product:
-        return jsonify('Could not find this product', 403)
+        return jsonify({'errors': ['Could not find this product']}), 403
     if not room:
-        return jsonify('Could not find this room', 403)
-    print(json)
-    RoomItem.update_or_create(
+        return jsonify({'errors': ['Could not find this room']}), 403
+    if not room_item:
+        return jsonify({
+            'errors': ['Could not find this item {}'
+                       .format(room_item_id)
+                       ]}), 403
+    room_item = RoomItem.update_or_create(
+        room_item=room_item,
         user=current_user,
         room=room,
-        json=json,
+        json=jsondata,
     )
     db.session.commit()
-    return jsonify({})
+    return jsonify(room_item.serialize)
 
 
 @app.route('/json/v1/room/',
