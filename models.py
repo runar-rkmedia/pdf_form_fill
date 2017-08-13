@@ -661,10 +661,21 @@ class RoomItem(db.Model, MyBaseModel):
         if self.modifications:
             dictionary = self.modifications[0].serialize
             json = dictionary.pop('json')
-
+            measurements = {}
+            measurements.update(
+                {k: v for k, v in json.items() if k in [
+                    'ohm_a',
+                    'ohm_b',
+                    'ohm_c',
+                    'mohm_a',
+                    'mohm_b',
+                    'mohm_c',
+                ]}
+            )
             dictionary['id'] = self.id
-            d = {**dictionary, **json}
-            return d
+            dictionary['product_id'] = json.pop('product_id')
+            dictionary['measurements'] = measurements
+            return dictionary
 
     @classmethod
     def update_or_create(

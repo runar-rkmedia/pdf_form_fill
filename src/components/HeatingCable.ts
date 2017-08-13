@@ -3,6 +3,15 @@ import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
 import { TSProductModel, ProductInterface, ProductFilterInterface } from "./ProductModel"
 
+interface MeasurementsInterface {
+  ohm_a: number
+  ohm_b: number
+  ohm_c: number
+  mohm_a: boolean
+  mohm_b: boolean
+  mohm_c: boolean
+}
+
 export interface HeatingCableInterface {
   id: number
   product_id: number
@@ -10,6 +19,7 @@ export interface HeatingCableInterface {
   c_date?: Date
   m_date?: Date
   mod_id?: number
+  measurements?: MeasurementsInterface
 }
 
 
@@ -18,14 +28,7 @@ interface PostInterface {
   post(): void;
   serialize(): {}
 }
-interface MeasurementsInterface {
-  ohm_a: number | null
-  ohm_b: number | null
-  ohm_c: number | null
-  mohm_a: boolean | null
-  mohm_b: boolean | null
-  mohm_c: boolean | null
-}
+
 
 export interface HeatingInterfaceFull extends MeasurementsInterface, HeatingCableInterface {
 }
@@ -43,6 +46,17 @@ class Measurements extends Base {
   constructor() {
     super()
     this.init()
+  }
+  set(measurements?: MeasurementsInterface) {
+    if (measurements) {
+      this.ohm_a(measurements.ohm_a)
+      this.ohm_b(measurements.ohm_b)
+      this.ohm_c(measurements.ohm_c)
+
+      this.mohm_a(measurements.mohm_a)
+      this.mohm_b(measurements.mohm_b)
+      this.mohm_c(measurements.mohm_c)
+    }
   }
   serialize = ko.computed(() => {
     return {
@@ -103,6 +117,7 @@ export class HeatingCable extends Post {
       return obj
     })
     this.init()
+    console.log(heating_cable)
     this.set(heating_cable)
   }
   product = ko.computed((): ProductInterface | undefined => {
@@ -115,6 +130,9 @@ export class HeatingCable extends Post {
     this.product_id(heating_cable.product_id)
     this.id(heating_cable.id)
     this.product_id(heating_cable.product_id)
+    if (heating_cable.measurements) {
+      this.measurements().set(heating_cable.measurements)
+    }
     this.save()
   }
 
