@@ -117,6 +117,20 @@ export class Room extends Post {
       { required: true, minLength: 2, maxLength: 50 });
     this.set(room)
   }
+  room_title = ko.computed(() => {
+    if (this.id() >= 0) {
+      let result = this.name()
+      if (this.area()) {
+        result += ',  ' + this.area() + 'm²'
+      }
+      if (this.heated_area()) {
+        result += ' (' + this.heated_area() + 'm²)'
+      }
+      return result
+    }
+    return 'Nytt rom/sted'
+  }
+  )
   bestFitEffect = ko.computed(() => {
     if (this.normalEffect() > 0 && this.heated_area() > 0) {
       return this.normalEffect() * this.heated_area()

@@ -1,57 +1,73 @@
 <!DOCTYPE html>
 <script type="text/html"
         id="heating_cable_template">
-  <div class="panel panel-info">
-    <div class="panel-heading">
-      <h3 class="panel-title fucker">
+  <div class="panel-group"
+       id="accordion-heat"
+       role="tablist"
+       aria-multiselectable="true">
+    <!-- ko foreach: $data -->
+    <div class="panel"
+         data-bind="css: {'panel-info': id() >= 0, 'panel-danger': id() < 0}">
+      <div class="panel-heading collapsed"
+           data-parent="#accordion-heat"
+           data-toggle="collapse"
+           data-bind="attr: { 'data-target': '#heat' + id(), 'href': '#heat' + id()}">
+        <h3 class="panel-title carrot">
         <!-- ko if: product() -->
         <span data-bind="text: product().name"></span>
         <!-- /ko -->
       </h3>
-    </div>
-    <div class="panel-body">
+      </div>
+      <div class="panel-collapse collapse"
+           data-bind="
+attr: {'id': 'heat' + id()}
+">
+        <div class="panel-body">
 
-      <ul class="nav nav-tabs"
-          role="tablist">
-        <li role="presentation"><a data-bind="attr: {
-                'href': '#pane_select_cable' + id(),
-                'aria-controls': '#pane_select_cable' + id()
-              }"
-             role="tab"
-             data-toggle="tab">Varmekabel</a></li>
-        <li role="presentation"
-            class="active"><a data-bind="attr: {
-                'href': '#pane_measurements' + id(),
-                'aria-controls': '#pane_measurements' + id()
-              }"
-             role="tab"
-             data-toggle="tab">Målinger</a></li>
+          <ul class="nav nav-tabs"
+              role="tablist">
+            <li role="presentation"><a data-bind="attr: {
+            'href': '#pane_select_cable' + id(),
+            'aria-controls': '#pane_select_cable' + id()
+          }"
+                 role="tab"
+                 data-toggle="tab">Varmekabel</a></li>
+            <li role="presentation"
+                class="active"><a data-bind="attr: {
+            'href': '#pane_measurements' + id(),
+            'aria-controls': '#pane_measurements' + id()
+          }"
+                 role="tab"
+                 data-toggle="tab">Målinger</a></li>
 
-      </ul>
-      <div class="tab-content panel">
-        <div class="tab-pane"
-             data-bind="attr: {
-                            'id': 'pane_select_cable' + id()
-                          }">
-          <div class="row">
-            <div class="col-xs-12">
-              <!-- ko template: { name: 'select_product_template', data: $data} -->
-              <!-- /ko -->
+          </ul>
+          <div class="tab-content panel">
+            <div class="tab-pane"
+                 data-bind="attr: {
+                        'id': 'pane_select_cable' + id()
+                      }">
+              <div class="row">
+                <div class="col-xs-12">
+                  <!-- ko template: { name: 'select_product_template', data: $data} -->
+                  <!-- /ko -->
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="tab-pane active"
-             data-bind="attr: {
-                       'id': 'pane_measurements' + id()
-                     }">
-          <div class="row">
-            <div class="col-xs-12">
-              <!-- ko template: { name: 'measurements_template', data: $data} -->
-              <!-- /ko -->
+            <div class="tab-pane active"
+                 data-bind="attr: {
+                   'id': 'pane_measurements' + id()
+                 }">
+              <div class="row">
+                <div class="col-xs-12">
+                  <!-- ko template: { name: 'measurements_template', data: $data} -->
+                  <!-- /ko -->
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- /ko -->
   </div>
 </script>

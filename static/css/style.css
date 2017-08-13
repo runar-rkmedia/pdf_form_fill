@@ -54,12 +54,12 @@
           .equal-four > * *:last-child {
             text-align: right; }
 
-.panel-heading a:after {
+.carrot:after {
   font-family: 'Glyphicons Halflings';
   content: "";
   float: right; }
 
-  .panel-heading.collapsed a:after {
+  .collapsed .carrot:after {
     content: ""; }
 
     .row.no-gutters {

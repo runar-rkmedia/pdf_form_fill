@@ -133,16 +133,16 @@ canvas {
   }
 }
 
-.panel-heading a:after {
+.carrot:after {
   font-family: 'Glyphicons Halflings';
   content: "\e114";
   float: right;
   // color: grey;
 }
-
-.panel-heading.collapsed a:after {
+.collapsed .carrot:after {
   content: "\e080";
 }
+
 
 .row.no-gutters {
   margin-right: 0;
