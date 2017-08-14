@@ -1,7 +1,7 @@
 import { HTTPVerbs, ByID, Post, compareDicts, Base } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
-import { TSProductModel, ProductInterface, ProductFilterInterface } from "./ProductModel"
+import { TSProductModel, ProductInterface, ProductFilter } from "./ProductModel"
 
 interface MeasurementsInterface {
   ohm_a: number
@@ -77,11 +77,8 @@ export class HeatingCable extends Post {
   measurements: KnockoutObservable<Measurements> = ko.observable(new Measurements())
   parent: HeatingCables
   product_model: TSProductModel
-  effect: KnockoutObservable<number> = ko.observable();
-  mainSpec: KnockoutObservable<number> = ko.observable();
-  manufacturor: KnockoutObservable<string> = ko.observable();
-  vk_type: KnockoutObservable<string> = ko.observable();
-  product_filter: KnockoutObservable<ProductInterface[]>;
+  product_filter: KnockoutObservable<ProductFilter>
+
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
   })
@@ -96,15 +93,8 @@ export class HeatingCable extends Post {
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
+    this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
     this.parent = parent
-    this.product_filter = ko.computed(() => {
-      return this.product_model.filter_products({
-        effect: this.effect() || this.parent.parent.bestFitEffect(),
-        manufacturor: this.manufacturor(),
-        mainSpec: this.mainSpec(),
-        vk_type: this.vk_type()
-      })
-    })
     this.serialize = ko.computed(() => {
       let obj = Object.assign(
         {
@@ -117,7 +107,6 @@ export class HeatingCable extends Post {
       return obj
     })
     this.init()
-    console.log(heating_cable)
     this.set(heating_cable)
   }
   product = ko.computed((): ProductInterface | undefined => {

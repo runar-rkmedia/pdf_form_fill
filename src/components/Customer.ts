@@ -88,16 +88,6 @@ export class Customer extends Post {
   get = (id: number) => {
     $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {
-        console.log('get:', result)
-        if (result.rooms) {
-          for (let room of result.rooms) {
-            if (room.heating_cables) {
-              for (let c of room.heating_cables) {
-                console.log(c)
-              }
-            }
-          }
-        }
         this.set(result)
       })
   }

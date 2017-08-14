@@ -26,10 +26,6 @@ interface FileDownloadInterface {
 
 
 export class TSAppViewModel {
-  manufacturor: KnockoutObservable<string> = ko.observable();
-  vk_type: KnockoutObservable<string> = ko.observable();
-  mainSpec: KnockoutObservable<number> = ko.observable();
-  effect: KnockoutObservable<number> = ko.observable()
   error_fields: KnockoutObservableArray<string> = ko.observableArray();
   error_message: KnockoutObservable<string> = ko.observable();
   file_download: KnockoutObservable<string> = ko.observable();
@@ -60,9 +56,7 @@ export class TSAppViewModel {
       // errorElementClass: 'error',
       errorMessageClass: 'bg-danger'
     });
-    this.effect.extend({
-      number: true,
-    });
+
 
     // Add bootstrap-validation-css to parent of field
     let init = ko.bindingHandlers['validationCore'].init!;
@@ -92,23 +86,6 @@ export class TSAppViewModel {
 
       } finally {
 
-      }
-    });
-    ko.computed(() => {
-      if (this.mainSpec()) {
-        try {
-          let f = this.Products().spec_groups();
-          if (f.find(item => item.mainSpec === this.mainSpec())) {
-
-          }
-          if (this.findWithAttr(f, 'mainSpec', this.mainSpec()) < 0) {
-            this.mainSpec(null);
-          }
-        } catch (e) {
-
-        } finally {
-
-        }
       }
     });
     this.customer().get(108)

@@ -15,7 +15,7 @@
       <!-- ko foreach: $root.Products().products -->
       <div class="col-xs-12">
         <label class="radio-inline">
-            <input type="radio" name="manufacturor" data-bind="checked: $parent.manufacturor, value: name">
+            <input type="radio" name="manufacturor" data-bind="checked: $parent.product_filter().manufacturor, value: name">
             <!-- ko text: name  -->
             <!-- /ko -->
           </label>
@@ -28,13 +28,13 @@
       <legend>Type</legend>
       <div class="col-xs-12">
         <label class="radio-inline">
-            <input type="radio" name="vk_type" data-bind="checked: vk_type, value: 'mat'">
+            <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'mat'">
             Matte
           </label>
       </div>
       <div class="col-xs-12">
         <label class="radio-inline">
-            <input type="radio" name="vk_type" data-bind="checked: vk_type, value: 'cable'">
+            <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'cable'">
             Kabel
           </label>
       </div>
@@ -50,22 +50,22 @@
            min="0"
            name="effekt"
            id="input-effekt"
-           data-bind="value: effect">
+           data-bind="value: product_filter().effect">
   </div>
-  <!-- ko with: $root.Products() -->
+
   <div class="form-group col-xs-12">
     <fieldset>
       <legend>Watt per
-        <span data-bind="visible: $root.vk_type() == 'mat'">kvadrat</span>
-        <span data-bind="visible: !$root.vk_type()">(kvadrat)</span>meter</legend>
+        <span data-bind="visible: product_filter().vk_type() == 'mat'">kvadrat</span>
+        <span data-bind="visible: !product_filter().vk_type()">(kvadrat)</span>meter</legend>
       <div class="csscolumn">
-        <!-- ko foreach: spec_groups().sort(function (a,b) {
+        <!-- ko foreach: product_filter().spec_groups().sort(function (a,b) {
                                     return a.mainSpec-b.mainSpec
                                 }) -->
         <!-- ko if: $data.mainSpec -->
         <div>
           <label class="radio-inline">
-              <input type="radio" name="meterEffekt" data-bind="checked: $root.mainSpec, value: $data.mainSpec">
+              <input type="radio" name="meterEffekt" data-bind="checked: $parent.product_filter().mainSpec, value: $data.mainSpec">
               <span data-bind="text: $data.mainSpec"></span>
               <span>
                 W/m<!-- ko if: $data.type == "mat" -->²
@@ -79,18 +79,20 @@
       </div>
     </fieldset>
   </div>
-  <!-- /ko -->
+
   {% from "includes/formhelpers.html" import render_field, render_field_group %}
   <form id="heating_form"
         autocomplete="off">
     <div class="form-group col-xs-12">
-
+      <!-- ko with: product_filter -->
       <select class="form-control"
-              data-bind="options: product_filter,
+              data-bind="options: sortDist(filtered_products(), effect() || $parent.parent.parent.bestFitEffect())
+,
                 optionsText: 'name',
                 optionsValue: 'id',
-                value: $data.product_id,
-                optionsCaption: 'Velg en vamekabel her... (' + $root.Products().filtered_products().length + ')'"></select>
+                value: $parent.product_id,
+                optionsCaption: 'Velg en vamekabel her... (' + filtered_products().length + ')'"></select>
+      <!-- /ko -->
     </div>
 
   </form>

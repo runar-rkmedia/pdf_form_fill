@@ -72,7 +72,7 @@ export abstract class Post extends Base {
       delete data['id']
       method = HTTPVerbs.post
     }
-    console.log(data)
+)
     $.ajax({
       url: url || this.url,
       type: method,

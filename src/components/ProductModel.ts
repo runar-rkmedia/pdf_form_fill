@@ -1,5 +1,6 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { StrIndex } from "./Common"
+import { HeatingCable } from "./HeatingCable"
 import ko = require("knockout");
 
 export interface ProductInterface {
@@ -42,23 +43,116 @@ interface ArrayFylterInterface {
   mustEqual: any
 }
 
+// Used to filter an arrayFilter.
+let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
+  for (let current_filter of list_to_filter) {
+    let f = current_filter['value'];
+    let t = current_filter['mustEqual']();
+    if (t && f != t) {
+      return false;
+    }
+  }
+  return true;
+};
+
+
+
+export class ProductFilter {
+  target: HeatingCable
+  product_model: TSProductModel
+  effect: KnockoutObservable<number> = ko.observable();
+  mainSpec: KnockoutObservable<number> = ko.observable();
+  manufacturor: KnockoutObservable<string> = ko.observable();
+  vk_type: KnockoutObservable<string> = ko.observable();
+  filtered_products_no_mainSpec: KnockoutComputed<ProductInterface[]>
+  filtered_products: KnockoutComputed<ProductInterface[]>
+  spec_groups: KnockoutComputed<ProductInterface[]>
+
+  constructor(target: HeatingCable, product_model: TSProductModel) {
+    this.target = target
+    this.product_model = product_model
+    this.filtered_products_no_mainSpec = ko.computed(() => {
+      if (!this.effect() && !this.manufacturor() && !this.mainSpec() && !this.vk_type()) {
+        return this.product_model.flat_products();
+      }
+      return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
+        return myArrayFilter(
+          [{
+            value: prod.manufacturor,
+            mustEqual: this.manufacturor
+          },
+          {
+            value: prod.type,
+            mustEqual: this.vk_type
+          }
+
+          ]
+        );
+
+      }).sort((a, b) => {
+        return a.effect - b.effect;
+      });
+    });
+    this.filtered_products = ko.computed(() => {
+      if (!this.effect() && !this.manufacturor() && !this.mainSpec() && !this.vk_type()) {
+        return this.filtered_products_no_mainSpec()
+      }
+      return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
+        return myArrayFilter(
+          [{
+            value: prod.mainSpec,
+            mustEqual: this.mainSpec
+          }
+          ]
+        );
+
+      })
+    });
+    this.spec_groups = ko.computed(() => {
+      let filtered = this.filtered_products_no_mainSpec();
+      let flags: StrIndex<boolean> = {};
+      return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface) => {
+        if (flags[entry.mainSpec]) {
+          return false;
+        }
+        flags[entry.mainSpec] = true;
+        return true;
+      })
+    });
+  }
+  // Sort any list of object by its distance to a setpoint to a certain key.
+  // For instance, sort all towns with distance closest to 800m:
+  // kings road: 760m
+  // queens road: 850m
+  // princes road: 750m
+  sortDist = (list: any[], setPoint: number, key = 'effect') => {
+    return list.sort((a, b) => {
+      if (setPoint) {
+        let diffA = Math.abs(setPoint - a[key])
+        let diffB = Math.abs(setPoint - b[key])
+        return diffA - diffB
+      } else {
+        return (a[key]) - (b[key]);
+      }
+    });
+  }
+
+
+  by_id = (id: number) => {
+    let f = this.product_model.flat_products();
+    return f.find(myObj => {
+      return myObj.id === Number(id)
+    });
+  }
+}
+
 export class TSProductModel {
   products: KnockoutObservableArray<ManufacturorInterface> = ko.observableArray(<ManufacturorInterface[]>[])
 
   constructor(private parentModel: TSAppViewModel) {
     // this.products = ko.observableArray(<ManufacturorInterface[]>[])
   }
-  // Used to filter an arrayFilter.
-  myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
-    for (let current_filter of list_to_filter) {
-      let f = current_filter['value'];
-      let t = current_filter['mustEqual']();
-      if (t && f != t) {
-        return false;
-      }
-    }
-    return true;
-  };
+
 
   getProducts = () => {
     $.get("/products.json",
@@ -107,97 +201,6 @@ export class TSProductModel {
   };
   flat_products = ko.computed(() => {
     return this.flatten_products(this.products());
-  });
-  filtered_products_no_mainSpec = ko.computed(() => {
-    if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
-    }
-    return ko.utils.arrayFilter(this.flat_products(), (prod) => {
-      return this.myArrayFilter(
-        [{
-          value: prod.manufacturor,
-          mustEqual: this.parentModel.manufacturor
-        },
-        {
-          value: prod.type,
-          mustEqual: this.parentModel.vk_type
-        }
-
-        ]
-      );
-
-    }).sort((a, b) => {
-      return a.effect - b.effect;
-    });
-  });
-  filtered_products = ko.computed(() => {
-    if (!this.parentModel.effect() && !this.parentModel.manufacturor() && !this.parentModel.mainSpec() && !this.parentModel.vk_type()) {
-      return this.filtered_products_no_mainSpec();
-    }
-    // console.log(this.parentModel.effect(), this.parentModel.manufacturor(), this.parentModel.mainSpec(), this.parentModel.vk_type())
-    return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
-      return this.myArrayFilter(
-        [{
-          value: prod.mainSpec,
-          mustEqual: this.parentModel.mainSpec
-        }
-        ]
-      );
-
-    }).sort((a, b) => {
-      let effect = this.parentModel.effect();
-      if (effect) {
-        let diffA = Math.abs(effect - a.effect)
-        let diffB = Math.abs(effect - b.effect)
-        return diffA - diffB
-      } else {
-        return (a.effect) - (b.effect);
-      }
-    });
-  });
-  filter_products = (filter: ProductFilterInterface) => {
-    if (!filter.effect && !filter.manufacturor && !filter.mainSpec && !filter.vk_type) {
-      return this.filtered_products_no_mainSpec();
-    }
-    return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
-      return this.myArrayFilter(
-        [
-          {
-            value: prod.manufacturor,
-            mustEqual: () => { return filter.manufacturor }
-          },
-          {
-            value: prod.type,
-            mustEqual: () => { return filter.vk_type }
-          },
-          {
-            value: prod.mainSpec,
-            mustEqual: () => { return filter.mainSpec }
-          }
-        ]
-      );
-
-    }).sort((a, b) => {
-      if (filter.effect) {
-        let diffA = Math.abs(filter.effect - a.effect)
-        let diffB = Math.abs(filter.effect - b.effect)
-        return diffA - diffB
-      } else {
-        return (a.effect) - (b.effect);
-      }
-    });
-  };
-
-
-  spec_groups = ko.computed(() => {
-    let filtered = this.filtered_products_no_mainSpec();
-    let flags: StrIndex<boolean> = {};
-    return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface) => {
-      if (flags[entry.mainSpec]) {
-        return false;
-      }
-      flags[entry.mainSpec] = true;
-      return true;
-    });
   });
   by_id = (id: number) => {
     let f = this.flat_products();
