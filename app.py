@@ -483,7 +483,7 @@ def json_user_forms():
     return jsonify(result)
 
 
-@app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/json/v1/heat/', methods=['POST', 'PUT'])
 @login_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
@@ -498,16 +498,18 @@ def json_heating_cable():
     room_id = jsondata.pop('room_id', -1)
     product = Product.by_id(product_id)
     room = Room.by_id(room_id, current_user)
-    room_item = RoomItem.by_id(room_item_id, current_user)
     if not product:
         return jsonify({'errors': ['Could not find this product']}), 403
     if not room:
         return jsonify({'errors': ['Could not find this room']}), 403
-    if not room_item:
-        return jsonify({
-            'errors': ['Could not find this item {}'
-                       .format(room_item_id)
-                       ]}), 403
+    room_item = None
+    if request.method == 'PUT':
+        room_item = RoomItem.by_id(room_item_id, current_user)
+        if not room_item:
+            return jsonify({
+                'errors': ['Could not find this item {}'
+                           .format(room_item_id)
+                           ]}), 403
     room_item = RoomItem.update_or_create(
         room_item=room_item,
         user=current_user,
