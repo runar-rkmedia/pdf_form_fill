@@ -170,6 +170,18 @@ class Address(db.Model, MyBaseModel):
 
         return address
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        dictionary = {
+            'address1': self.address1,
+            'address2': self.address2,
+            'post_code': self.post_code,
+            'post_area': self.post_area
+        }
+        return dictionary
+
 
 class Contact(db.Model):
     """Contact-table for users, like phone, email"""
@@ -595,12 +607,7 @@ class Customer(db.Model, MyBaseModel):
     def serialize(self):
         return {
             'name': self.name,
-            'address': {
-                'address1': self.address.address1,
-                'address2': self.address.address2,
-                'post_code': self.address.post_code,
-                'post_area': self.address.post_area
-            },
+            'address': self.address.serialize,
             'rooms': [i.serialize for i in self.rooms],
             'id': self.id
         }
