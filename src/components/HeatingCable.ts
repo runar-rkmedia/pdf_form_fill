@@ -1,7 +1,12 @@
 import { HTTPVerbs, ByID, Post, compareDicts, Base } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
-import { TSProductModel, ProductInterface, ProductFilter } from "./ProductModel"
+import {
+  TSProductModel,
+  ProductInterface,
+  ProductFilter,
+  ProductResctrictionsCalculated
+} from "./ProductModel"
 
 interface MeasurementsInterface {
   ohm_a: number
@@ -113,6 +118,46 @@ export class HeatingCable extends Post {
     if (this.product_id() >= 0 && this.product_model) {
       return this.product_model.by_id(this.product_id())
     }
+  })
+  product_restrictions = ko.computed(() => {
+    let product = this.product()
+    let boundary: ProductResctrictionsCalculated = { top: 0, bottom: 0 }
+    let restrictions_from_nominal = (
+      boundary: ProductResctrictionsCalculated, value: number
+    ) => {
+      boundary.top = value * 1.05
+      boundary.bottom = value * 0.95
+      return boundary
+    }
+    if (product) {
+      let restrictions = product.restrictions
+      if (restrictions) {
+        if (restrictions.R_max) {
+          boundary.top = restrictions.R_max
+        }
+        if (restrictions.R_min) {
+          boundary.bottom = restrictions.R_min
+        }
+        if (!restrictions.R_min && !restrictions.R_max) {
+          if (restrictions.R_nom) {
+            boundary = restrictions_from_nominal(boundary, restrictions.R_nom)
+          } else {
+            console.log('We need to calculate this:', product)
+          }
+        }
+      }
+
+      if ((boundary.top <= 0 || boundary.bottom <= 0) && product.effect) {
+
+        console.log('lazily calculating restrictions for: ', product)
+        // Calculate the resistance based on effect
+        let voltage = product.secondarySpec || 230
+        let resistance = voltage ^ 2 / product.effect
+        boundary = restrictions_from_nominal(boundary, resistance)
+
+      }
+    }
+    return boundary
   })
 
   set(heating_cable: HeatingCableInterface) {

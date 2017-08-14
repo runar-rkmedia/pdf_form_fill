@@ -2949,6 +2949,42 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     return _this.product_model.by_id(_this.product_id());
                 }
             });
+            _this.product_restrictions = ko.computed(function () {
+                var product = _this.product();
+                var boundary = { top: 0, bottom: 0 };
+                var restrictions_from_nominal = function (boundary, value) {
+                    boundary.top = value * 1.05;
+                    boundary.bottom = value * 0.95;
+                    return boundary;
+                };
+                if (product) {
+                    var restrictions = product.restrictions;
+                    if (restrictions) {
+                        if (restrictions.R_max) {
+                            boundary.top = restrictions.R_max;
+                        }
+                        if (restrictions.R_min) {
+                            boundary.bottom = restrictions.R_min;
+                        }
+                        if (!restrictions.R_min && !restrictions.R_max) {
+                            if (restrictions.R_nom) {
+                                boundary = restrictions_from_nominal(boundary, restrictions.R_nom);
+                            }
+                            else {
+                                console.log('We need to calculate this:', product);
+                            }
+                        }
+                    }
+                    if ((boundary.top <= 0 || boundary.bottom <= 0) && product.effect) {
+                        console.log('lazily calculating restrictions for: ', product);
+                        // Calculate the resistance based on effect
+                        var voltage = product.secondarySpec || 230;
+                        var resistance = voltage ^ 2 / product.effect;
+                        boundary = restrictions_from_nominal(boundary, resistance);
+                    }
+                }
+                return boundary;
+            });
             _this.product_id.extend({ required: true, number: true, min: 1000000, max: 9999999 });
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));

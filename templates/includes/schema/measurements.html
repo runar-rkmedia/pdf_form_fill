@@ -4,6 +4,12 @@
   <h4>
         Målinger
       </h4>
+  <small class="col-xs-12 well well-lg">
+    Målingene bør ligge mellom:
+    <span data-bind="text: product_restrictions().bottom.toFixed(2)"></span>&nbsp;Ω og
+    <span data-bind="text: product_restrictions().top.toFixed(2)"></span>&nbsp;Ω
+    for denne varmekabelen.
+  </small>
   <!-- ko with: measurements -->
   <div class="form-group col-xs-4">
     <label for="input-ohm_a">Før installasjon</label>

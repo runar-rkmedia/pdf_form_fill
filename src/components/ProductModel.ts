@@ -12,14 +12,18 @@ export interface ProductInterface {
   name?: string;
   mainSpec: number;
   secondarySpec?: number;
+  restrictions?: ProductRestrictions
 }
 
 
-export interface ProductFilterInterface {
-  manufacturor: string
-  effect: number,
-  mainSpec: number,
-  vk_type: string
+interface ProductRestrictions {
+  R_max: number
+  R_min: number
+  R_nom: number
+}
+export interface ProductResctrictionsCalculated {
+  top: number
+  bottom: number
 }
 
 interface ProductTypeInterface {
@@ -54,8 +58,6 @@ let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
   }
   return true;
 };
-
-
 
 export class ProductFilter {
   target: HeatingCable

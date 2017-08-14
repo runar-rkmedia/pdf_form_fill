@@ -567,7 +567,8 @@ class Product(db.Model, ByID):
         """Return object data in easily serializeable format"""
         dictionary = {
             'id': self.id,
-            'effect': self.effect
+            'effect': self.effect,
+            'restrictions': self.restrictions
         }
         return dictionary
 
