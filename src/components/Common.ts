@@ -91,6 +91,12 @@ export abstract class Post extends Base {
       btn.button('reset')
     })
   }
+  public get_form() {
+    $.get(this.url, { id: this.id() })
+      .done((result) => {
+        console.log(result)
+      })
+  }
   constructor() { super() }
 }
 export let compareDicts = (dictA: {}, dictB: {}) => {

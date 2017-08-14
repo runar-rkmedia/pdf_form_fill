@@ -16,7 +16,9 @@ interface MeasurementsInterface {
   mohm_b: boolean
   mohm_c: boolean
 }
-
+interface HeatingCableSpecs {
+  measurements: MeasurementsInterface
+}
 export interface HeatingCableInterface {
   id: number
   product_id: number
@@ -24,18 +26,15 @@ export interface HeatingCableInterface {
   c_date?: Date
   m_date?: Date
   mod_id?: number
-  measurements?: MeasurementsInterface
+  specs?: HeatingCableSpecs
 }
+
 
 
 interface PostInterface {
   url: string
   post(): void;
   serialize(): {}
-}
-
-
-export interface HeatingInterfaceFull extends MeasurementsInterface, HeatingCableInterface {
 }
 
 class Measurements extends Base {
@@ -88,27 +87,27 @@ export class HeatingCable extends Post {
     product_id: this.product_id,
   })
   last_sent_data: KnockoutObservable<HeatingCableInterface> = ko.observable()
-  serialize: KnockoutObservable<HeatingInterfaceFull>
+  serialize: KnockoutObservable<HeatingCableInterface>
   constructor(
     product_model: TSProductModel,
     parent: HeatingCables,
     heating_cable: HeatingCableInterface = { id: -1, product_id: -1 }
   ) {
     super()
+    console.log(heating_cable)
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
     this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
     this.parent = parent
     this.serialize = ko.computed(() => {
-      let obj = Object.assign(
-        {
-          id: this.id(),
-          room_id: this.parent.parent.id(),
-          product_id: Number(this.product_id())
-        },
-        this.measurements().serialize()
-      )
+      let obj = {
+        id: this.id(),
+        room_id: this.parent.parent.id(),
+        product_id: Number(this.product_id()),
+        specs: { measurements: this.measurements().serialize() }
+      }
+
       return obj
     })
     this.init()
@@ -161,11 +160,11 @@ export class HeatingCable extends Post {
   })
 
   set(heating_cable: HeatingCableInterface) {
-    this.product_id(heating_cable.product_id)
+    console.log(heating_cable)
     this.id(heating_cable.id)
-    this.product_id(heating_cable.product_id)
-    if (heating_cable.measurements) {
-      this.measurements().set(heating_cable.measurements)
+    this.product_id(Number(heating_cable.product_id))
+    if (heating_cable.specs && heating_cable.specs.measurements) {
+      this.measurements().set(heating_cable.specs.measurements)
     }
     this.save()
   }

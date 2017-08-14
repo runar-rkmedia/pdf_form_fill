@@ -174,6 +174,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 btn.button('reset');
             });
         };
+        Post.prototype.get_form = function () {
+            $.get(this.url, { id: this.id() })
+                .done(function (result) {
+                console.log(result);
+            });
+        };
         return Post;
     }(Base));
     exports.Post = Post;
@@ -2996,16 +3002,18 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 return boundary;
             });
+            console.log(heating_cable);
             _this.product_id.extend({ required: true, number: true, min: 1000000, max: 9999999 });
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
             _this.parent = parent;
             _this.serialize = ko.computed(function () {
-                var obj = Object.assign({
+                var obj = {
                     id: _this.id(),
                     room_id: _this.parent.parent.id(),
-                    product_id: Number(_this.product_id())
-                }, _this.measurements().serialize());
+                    product_id: Number(_this.product_id()),
+                    specs: { measurements: _this.measurements().serialize() }
+                };
                 return obj;
             });
             _this.init();
@@ -3013,11 +3021,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             return _this;
         }
         HeatingCable.prototype.set = function (heating_cable) {
-            this.product_id(heating_cable.product_id);
+            console.log(heating_cable);
             this.id(heating_cable.id);
-            this.product_id(heating_cable.product_id);
-            if (heating_cable.measurements) {
-                this.measurements().set(heating_cable.measurements);
+            this.product_id(Number(heating_cable.product_id));
+            if (heating_cable.specs && heating_cable.specs.measurements) {
+                this.measurements().set(heating_cable.specs.measurements);
             }
             this.save();
         };

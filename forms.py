@@ -5,20 +5,20 @@ from wtforms import (
     StringField,
     FormField,
     BooleanField,
-    RadioField,
+    # RadioField,
     HiddenField
 )
 from wtforms.fields.html5 import EmailField, IntegerField, DecimalField
 from wtforms_html5 import AutoAttrMeta
 from wtforms.validators import (DataRequired,
-                                Email,
+                                # Email,
                                 Length,
                                 NumberRange,
                                 ValidationError)
 
-from models import (
-    Company
-)
+# from models import (
+#     Company
+# )
 
 
 class Unique(object):
@@ -82,15 +82,15 @@ class RoomForm(FlaskForm):
     id = HiddenField()
 
 
-class CsrfToken(FlaskForm):
+class SubForm(FlaskForm):
     """CsrfToken-basic."""
-
-
-class AddressForm(CsrfToken):
-    """Input-form for Adresses."""
     def __init__(self, **_kwargs):
         _kwargs['csrf_enabled'] = False
         super().__init__(**_kwargs)
+
+
+class AddressForm(SubForm):
+    """Input-form for Adresses."""
 
     address1 = StringField(
         'Adresse',
@@ -146,14 +146,23 @@ class CustomerForm(FlaskForm):
     id = HiddenField()
 
 
-class HeatingCableForm(FlaskForm):
-    """Form for filling in info about a heating-cable."""
+class MeasurementsForms(SubForm):
+    """Form for measurements for a HeatingCable."""
     ohm_a = HiddenField()
     ohm_b = HiddenField()
     ohm_c = HiddenField()
     mohm_a = HiddenField()
     mohm_b = HiddenField()
     mohm_c = HiddenField()
+
+
+class SpecsForm(SubForm):
+    """Form for combining some different specs for heatingcable."""
+    measurements = FormField(MeasurementsForms)
+
+
+class HeatingCableForm(FlaskForm):
+    """Form for filling in info about a heating-cable."""
     room_item_id = HiddenField()
     id = HiddenField()
     product_id = HiddenField(
@@ -168,6 +177,7 @@ class HeatingCableForm(FlaskForm):
                 'Mottok ikke et id for rom. Dette er sansynligvis en feil.')
         ]
     )
+    specs = FormField(SpecsForm)
 
 
 class HeatingForm(FlaskForm):
@@ -218,7 +228,8 @@ class CreateCompany(FlaskForm):
             Length(
                 min=6,
                 max=70,
-                message="Epost-adressen bør være mellom %(min)d og %(max)d tegn."
+                message=("Epost-adressen bør være mellom",
+                         "%(min)d og %(max)d tegn.")
             )
         ]
     )

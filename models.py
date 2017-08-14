@@ -668,21 +668,11 @@ class RoomItem(db.Model, MyBaseModel):
         """Return object data in easily serializeable format"""
         if self.modifications:
             dictionary = self.modifications[0].serialize
-            json = dictionary.pop('json')
-            measurements = {}
-            measurements.update(
-                {k: v for k, v in json.items() if k in [
-                    'ohm_a',
-                    'ohm_b',
-                    'ohm_c',
-                    'mohm_a',
-                    'mohm_b',
-                    'mohm_c',
-                ]}
-            )
+            # json = dictionary.pop('json')
+            # measurements = {}
             dictionary['id'] = self.id
-            dictionary['product_id'] = json.pop('product_id')
-            dictionary['measurements'] = measurements
+            # dictionary['product_id'] = json.pop('product_id', None)
+            # dictionary['specs'] = json
             return dictionary
 
     @classmethod
@@ -696,6 +686,8 @@ class RoomItem(db.Model, MyBaseModel):
             room_item = RoomItem(
                 room=room
             )
+        if not json.get('product_id'):
+            raise ValueError('Missing product_id in json: {}'.format(json))
         db.session.add(room_item)
         RoomItemModifications.update_or_create(
             user=user,
@@ -783,8 +775,10 @@ class RoomItemModifications(db.Model, MyBaseModel):
             'id': self.id,
             'm_date': self.date
         }
+        specs = self.json.copy()
+        dictionary['product_id'] = specs.get('product_id')
         if creation_time:
             dictionary['c_date'] = creation_time
         if self.room_item:
-            dictionary['json'] = self.json
+            dictionary['specs'] = specs
         return dictionary

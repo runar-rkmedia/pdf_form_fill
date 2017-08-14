@@ -483,38 +483,55 @@ def json_user_forms():
     return jsonify(result)
 
 
-@app.route('/json/v1/heat/', methods=['POST', 'PUT'])
+@app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT'])
 @login_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
+    room_item = None
+    if request.method == 'GET':
+        print('request args:', request.args)
+        room_item_id = request.args.get('id')
+        if room_item_id:
+            room_item = RoomItem.by_id(room_item_id, current_user)
+        if room_item:
+            return output_forms(room_item)
+            return jsonify({'yo': room_item.serialize})
+        return jsonify({'error': 'Could not find anything here'}), 403
+
     print('request:', request.json)
     form = forms.HeatingCableForm.from_json(request.json)
     if not form.validate_on_submit():
         print(form.errors)
-        return jsonify({'error': form.errors}, 403)
-    jsondata = dict((k, v) for k, v in form.data.items() if v)
-    room_item_id = jsondata.get('id')
-    product_id = jsondata.get('product_id')
-    room_id = jsondata.pop('room_id', -1)
-    product = Product.by_id(product_id)
-    room = Room.by_id(room_id, current_user)
-    if not product:
-        return jsonify({'errors': ['Could not find this product']}), 403
-    if not room:
-        return jsonify({'errors': ['Could not find this room']}), 403
-    room_item = None
-    if request.method == 'PUT':
+        return jsonify({'error': form.errors}), 403
+    room_item_id = form.id.data
+    if request.method in ['PUT']:
         room_item = RoomItem.by_id(room_item_id, current_user)
         if not room_item:
             return jsonify({
                 'errors': ['Could not find this item {}'
                            .format(room_item_id)
                            ]}), 403
+    if request.method == 'GET':
+        return jsonify({'url': 'aweseome.com'})
+    # TODO: This is really bad. Remove the code below.
+    product_id = form.product_id.data
+    room_id = form.room_id.data
+    product = Product.by_id(product_id)
+    room = Room.by_id(room_id, current_user)
+    if not product:
+        return jsonify({'errors': ['Could not find this product']}), 403
+    if not room:
+        return jsonify({'errors': ['Could not find this room']}), 403
+
+    form.specs.data
+    specs = {**form.specs.data, **{
+        'product_id': product_id
+    }}
     room_item = RoomItem.update_or_create(
         room_item=room_item,
         user=current_user,
         room=room,
-        json=jsondata,
+        json=specs,
     )
     db.session.commit()
     return jsonify(room_item.serialize)
@@ -621,7 +638,7 @@ def json_form_modification(filled_form_modified_id):
 
 
 def create_form(manufacturor, dictionary=None,
-                request_form=None, form_data=None, user=current_user):
+                request_form={}, form_data=None, user=current_user):
     """Create a form."""
     form = FormField(manufacturor)
     if form_data:
@@ -659,6 +676,39 @@ def add_company_info_to_dictionary(dictionary, company):
     dictionary[
         'firma_postnummer'] = current_user.company.address.post_code
     return dictionary
+
+
+def output_forms(entity):
+    """Creates forms from a valid entity.
+
+    It will create all forms that are withing this entity.
+
+    For instance, if provided a Customer, it will output every form, for every
+    Room, for every HeatingCable within it.
+
+    """
+    room_item_modification = entity.modifications[0]
+    data = room_item_modification.serialize
+    product_id = room_item_modification.json.get('product_id')
+    company = room_item_modification.room_item.room.customer.company
+    product = Product.by_id((product_id))
+    if not product:
+        print('r', room_item_modification.json, room_item_modification.id)
+        raise ValueError("Couldn't find this product: {}".format(product_id))
+    if not company:
+        raise ValueError("Couldn't find this company")
+    dictionary = set_fields_from_product({}, product)
+    dictionary = add_company_info_to_dictionary(
+        dictionary, current_user.company)
+    print('dic')
+    pprint(dictionary)
+    output_pdf, complete_dictionary, form = create_form(
+        manufacturor=product.product_type.manufacturor.name,
+        dictionary=dictionary
+    )
+    return jsonify(
+        file_download=os.path.relpath(output_pdf),
+    )
 
 
 @app.route('/json/heating/', methods=['POST', 'GET'])

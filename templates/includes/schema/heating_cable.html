@@ -21,7 +21,7 @@
         <!-- /ko -->
       </h3>
       </div>
-      <div class="panel-collapse collapse"
+      <div class="panel-collapse collapse in"
            data-bind="
 attr: {'id': 'heat' + id()}
 ">
@@ -42,9 +42,16 @@ attr: {'id': 'heat' + id()}
           }"
                  role="tab"
                  data-toggle="tab">Målinger</a></li>
-
+            <li role="presentation"
+                class=""><a data-bind="attr: {
+            'href': '#pane_other' + id(),
+            'aria-controls': '#pane_other' + id()
+          }"
+                 role="tab"
+                 data-toggle="tab">Annet</a></li>
           </ul>
           <div class="tab-content panel">
+            <!-- Select product-pane -->
             <div class="tab-pane"
                  data-bind="attr: {
                         'id': 'pane_select_cable' + id()
@@ -56,7 +63,8 @@ attr: {'id': 'heat' + id()}
                 </div>
               </div>
             </div>
-            <div class="tab-pane active"
+            <!-- Measurements-pane -->
+            <div class="tab-pane "
                  data-bind="attr: {
                    'id': 'pane_measurements' + id()
                  }">
@@ -64,6 +72,21 @@ attr: {'id': 'heat' + id()}
                 <div class="col-xs-12">
                   <!-- ko template: { name: 'measurements_template', data: $data} -->
                   <!-- /ko -->
+                </div>
+              </div>
+            </div>
+            <!-- Other Pane -->
+            <div class="tab-pane active"
+                 data-bind="attr: {
+                                    'id': 'pane_other' + id()
+                                  }">
+              <div class="row">
+                <div class="col-xs-12">
+                  <button type="button"
+                          class="btn btn-primary"
+                          data-bind="
+                                  click: get_form"
+                          data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Forhåndsvis</button>
                 </div>
               </div>
             </div>
