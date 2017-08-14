@@ -189,11 +189,24 @@ export class HeatingCables extends ByID {
     }
     this.list(heating_cables_objects)
   }
-  add = () => {
+  add = (event: Event) => {
     let new_heating_cable = this.by_id(-1)
     if (!new_heating_cable) {
       this.list.push(new HeatingCable(this.root.Products(), this))
     }
     this.root.editing_heating_cable_id(-1)
+    setTimeout(() => {    // Expand the panel
+      let btn = $(event.target)
+      let accordian = $('#accordion-heat')
+      let panel = accordian.find('#heat-1')
+      let pane = panel.find('#pane_select_cable-1')
+      let navpill = panel.find('a[href="#pane_select_cable-1"]')
+      console.log(btn, accordian, panel, pane, navpill)
+      console.log(btn.length, accordian.length, panel.length, pane.length, navpill.length)
+      // pane.addClass('active')
+      navpill.tab('show')
+      panel.collapse('show')
+    }, 20)
+
   }
 }

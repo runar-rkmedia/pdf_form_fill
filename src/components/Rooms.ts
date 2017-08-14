@@ -163,6 +163,13 @@ export class Room extends Post {
     }
     return false
   })
+  // Add some additonal functionality when posting.
+  post(h: any, event: Event, data_object?: any, url?: string) {
+    return super.post(h, event, data_object, url).done(() => {
+      $(event.target).closest('.collapse').collapse('hide')
+    }
+    )
+  }
   save() {
     this.last_sent_data(this.serialize())
   }
@@ -231,8 +238,13 @@ export class Rooms extends ByID {
     }
     let accordian = $('#accordion-room')
     let panel = accordian.find('#room-1')
-    let first_input = panel.find('input:text').first()
-    panel.removeClass('collapse')
+    let room_form = panel.find('#room-form-1')
+    let first_input = panel.find('input').first()
+    room_form.addClass('in')
+    panel.collapse('show')
+    // Focus does not work becaus of an issue with using typeahead.Workaround
+    // with using a setTimeOut doesnt seemt to work inside animated stuff, so
+    // for now, I will leave it not working.
     first_input.focus()
     return new_room
   }

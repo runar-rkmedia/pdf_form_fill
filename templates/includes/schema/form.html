@@ -40,9 +40,14 @@
 <!-- Room form -->
 <!-- /ko -->
 <!-- ko if: id() >= 0 -->
-<button type="button"
-        class="btn btn-primary pull-right"
-        data-bind="click: rooms().add">Legg til rom</button>
+<div class="row">
+  <div class="text-right col-xs-12">
+    <button type="button"
+            class="btn btn-primary"
+            data-bind="click: rooms().add">Legg til rom</button>
+  </div>
+</div>
+
 <!-- /ko -->
 <!-- /ko -->
 <!-- /ko -->

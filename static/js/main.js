@@ -137,43 +137,43 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     var Post = (function (_super) {
         __extends(Post, _super);
         function Post() {
-            var _this = _super.call(this) || this;
-            _this.post = function (h, event, data_object, url) {
-                // Abstract class for posting data. Will use PUT if id > 0
-                // Also handles buttons
-                var method;
-                var btn = $(event.target);
-                btn.button('loading');
-                var data = data_object || _this.serialize();
-                if (_this.id() >= 0) {
-                    method = HTTPVerbs.put;
-                }
-                else {
-                    delete data['id'];
-                    method = HTTPVerbs.post;
-                }
-                $.ajax({
-                    url: url || _this.url,
-                    type: method,
-                    data: JSON.stringify(data),
-                }).done(function (result) {
-                    _this.save();
-                    if (method == HTTPVerbs.post) {
-                        _this.set(result);
-                    }
-                    else if (method == HTTPVerbs.put) {
-                    }
-                    setTimeout(function () {
-                        btn.text('Endre');
-                    }, 20);
-                }).fail(function (result, a, c) {
-                    console.log(result.responseJSON.errors);
-                }).always(function (result) {
-                    btn.button('reset');
-                });
-            };
-            return _this;
+            return _super.call(this) || this;
         }
+        Post.prototype.post = function (h, event, data_object, url) {
+            var _this = this;
+            // Abstract class for posting data. Will use PUT if id > 0
+            // Also handles buttons
+            var method;
+            var btn = $(event.target);
+            btn.button('loading');
+            var data = data_object || this.serialize();
+            if (this.id() >= 0) {
+                method = HTTPVerbs.put;
+            }
+            else {
+                delete data['id'];
+                method = HTTPVerbs.post;
+            }
+            return $.ajax({
+                url: url || this.url,
+                type: method,
+                data: JSON.stringify(data),
+            }).done(function (result) {
+                _this.save();
+                if (method == HTTPVerbs.post) {
+                    _this.set(result);
+                }
+                else if (method == HTTPVerbs.put) {
+                }
+                setTimeout(function () {
+                    btn.text('Endre');
+                }, 20);
+            }).fail(function (result, a, c) {
+                console.log(result.responseJSON.errors);
+            }).always(function (result) {
+                btn.button('reset');
+            });
+        };
         return Post;
     }(Base));
     exports.Post = Post;
@@ -2827,6 +2827,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.set(room);
             return _this;
         }
+        // Add some additonal functionality when posting.
+        Room.prototype.post = function (h, event, data_object, url) {
+            return _super.prototype.post.call(this, h, event, data_object, url).done(function () {
+                $(event.target).closest('.collapse').collapse('hide');
+            });
+        };
         Room.prototype.save = function () {
             this.last_sent_data(this.serialize());
         };
@@ -2861,8 +2867,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 var accordian = $('#accordion-room');
                 var panel = accordian.find('#room-1');
-                var first_input = panel.find('input:text').first();
-                panel.removeClass('collapse');
+                var room_form = panel.find('#room-form-1');
+                var first_input = panel.find('input').first();
+                room_form.addClass('in');
+                panel.collapse('show');
+                // Focus does not work becaus of an issue with using typeahead.Workaround
+                // with using a setTimeOut doesnt seemt to work inside animated stuff, so
+                // for now, I will leave it not working.
                 first_input.focus();
                 return new_room;
             };
@@ -3018,12 +3029,24 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         function HeatingCables(root, parent, heating_cables) {
             if (heating_cables === void 0) { heating_cables = []; }
             var _this = _super.call(this, []) || this;
-            _this.add = function () {
+            _this.add = function (event) {
                 var new_heating_cable = _this.by_id(-1);
                 if (!new_heating_cable) {
                     _this.list.push(new HeatingCable(_this.root.Products(), _this));
                 }
                 _this.root.editing_heating_cable_id(-1);
+                setTimeout(function () {
+                    var btn = $(event.target);
+                    var accordian = $('#accordion-heat');
+                    var panel = accordian.find('#heat-1');
+                    var pane = panel.find('#pane_select_cable-1');
+                    var navpill = panel.find('a[href="#pane_select_cable-1"]');
+                    console.log(btn, accordian, panel, pane, navpill);
+                    console.log(btn.length, accordian.length, panel.length, pane.length, navpill.length);
+                    // pane.addClass('active')
+                    navpill.tab('show');
+                    panel.collapse('show');
+                }, 20);
             };
             _this.parent = parent;
             _this.root = root;
@@ -5848,6 +5871,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 // import 'bootstrap/js/affix';
 
+$('div').on('shown.bs.collapse', function (e) {
+
+var panelHeadingHeight = $('.panel-heading').height() *2;
+var animationSpeed = 200; // animation speed in milliseconds
+var currentScrollbarPosition = $(document).scrollTop();
+var topOfPanelContent = $(e.target).offset().top;
+
+$("html, body").animate({ scrollTop: topOfPanelContent - panelHeadingHeight }, animationSpeed);
+if ( currentScrollbarPosition >  topOfPanelContent - panelHeadingHeight) {
+}});
 
 
 /***/ }),

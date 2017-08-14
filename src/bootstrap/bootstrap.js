@@ -11,3 +11,13 @@ import 'bootstrap/js/collapse';
 import 'bootstrap/js/tab';
 // import 'bootstrap/js/affix';
 import './bootstrap.less'
+$('div').on('shown.bs.collapse', function (e) {
+
+var panelHeadingHeight = $('.panel-heading').height() *2;
+var animationSpeed = 200; // animation speed in milliseconds
+var currentScrollbarPosition = $(document).scrollTop();
+var topOfPanelContent = $(e.target).offset().top;
+
+$("html, body").animate({ scrollTop: topOfPanelContent - panelHeadingHeight }, animationSpeed);
+if ( currentScrollbarPosition >  topOfPanelContent - panelHeadingHeight) {
+}});

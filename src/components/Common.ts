@@ -59,7 +59,7 @@ export abstract class Post extends Base {
   abstract serialize: KnockoutObservable<{}>
   abstract set(result: any): void
   abstract url: string
-  post = (h: any, event: Event, data_object?: any, url?: string) => {
+  public post(h: any, event: Event, data_object?: any, url?: string) {
     // Abstract class for posting data. Will use PUT if id > 0
     // Also handles buttons
     let method: HTTPVerbs
@@ -72,8 +72,7 @@ export abstract class Post extends Base {
       delete data['id']
       method = HTTPVerbs.post
     }
-)
-    $.ajax({
+    return $.ajax({
       url: url || this.url,
       type: method,
       data: JSON.stringify(data),
