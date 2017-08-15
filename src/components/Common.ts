@@ -54,11 +54,16 @@ export abstract class Base {
   }
 
 }
+
+export interface FileDownloadInterface {
+  file_download: string
+}
 export abstract class Post extends Base {
   abstract id: KnockoutObservable<number>;
   abstract serialize: KnockoutObservable<{}>
   abstract set(result: any): void
   abstract url: string
+  file_download: KnockoutObservable<string> = ko.observable()
   public post(h: any, event: Event, data_object?: any, url?: string) {
     // Abstract class for posting data. Will use PUT if id > 0
     // Also handles buttons
@@ -91,10 +96,17 @@ export abstract class Post extends Base {
       btn.button('reset')
     })
   }
-  public get_form() {
-    $.get(this.url, { id: this.id() })
-      .done((result) => {
-        console.log(result)
+  get_form_and_open(target: string = 'VarmeDokPDF') {
+    let importantStuff = window.open('', target);
+    importantStuff.document.write('Henter skjema...');
+    return this.get_form().done((result: FileDownloadInterface) => {
+      importantStuff.location.href = result.file_download;
+    })
+  }
+  get_form() {
+    return $.get(this.url, { id: this.id() })
+      .done((result: FileDownloadInterface) => {
+        this.file_download(result.file_download)
       })
   }
   constructor() { super() }

@@ -137,7 +137,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     var Post = (function (_super) {
         __extends(Post, _super);
         function Post() {
-            return _super.call(this) || this;
+            var _this = _super.call(this) || this;
+            _this.file_download = ko.observable();
+            return _this;
         }
         Post.prototype.post = function (h, event, data_object, url) {
             var _this = this;
@@ -174,10 +176,19 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 btn.button('reset');
             });
         };
+        Post.prototype.get_form_and_open = function (target) {
+            if (target === void 0) { target = 'VarmeDokPDF'; }
+            var importantStuff = window.open('', target);
+            importantStuff.document.write('Henter skjema...');
+            return this.get_form().done(function (result) {
+                importantStuff.location.href = result.file_download;
+            });
+        };
         Post.prototype.get_form = function () {
-            $.get(this.url, { id: this.id() })
+            var _this = this;
+            return $.get(this.url, { id: this.id() })
                 .done(function (result) {
-                console.log(result);
+                _this.file_download(result.file_download);
             });
         };
         return Post;

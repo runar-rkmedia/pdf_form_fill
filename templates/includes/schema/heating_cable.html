@@ -85,8 +85,12 @@ attr: {'id': 'heat' + id()}
                   <button type="button"
                           class="btn btn-primary"
                           data-bind="
-                                  click: get_form"
+                                  click: get_form_and_open"
                           data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Forhåndsvis</button>
+                  <!-- ko if: file_download() -->
+                  <a target="VarmeDokPDF"
+                     data-bind="attr: {'href': file_download()}">Trykk her for å laste ned Forhåndsvisningen</a>
+                  <!-- /ko -->
                 </div>
               </div>
             </div>
