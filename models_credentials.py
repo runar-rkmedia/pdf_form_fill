@@ -494,17 +494,17 @@ class RoomItem(db.Model, MyBaseModel):
         """Return object data in easily serializeable format"""
         if self.modifications:
             dictionary = self.modifications[0].serialize
-            # json = dictionary.pop('json')
+            # specs = dictionary.pop('specs')
             # measurements = {}
             dictionary['id'] = self.id
-            # dictionary['product_id'] = json.pop('product_id', None)
-            # dictionary['specs'] = json
+            # dictionary['product_id'] = specs.pop('product_id', None)
+            # dictionary['specs'] = specs
             return dictionary
 
     @classmethod
     def update_or_create(
-            cls, user, room, id=None,
-            room_item=None, json={}, pdf_json={}):
+            cls, user, room, product_id, id=None,
+            room_item=None, specs={}, pdf_specs={}):
         """Update or create a RoomItemModifications.."""
         if not room_item:
             room_item = RoomItem.by_id(id, user)
@@ -512,14 +512,13 @@ class RoomItem(db.Model, MyBaseModel):
             room_item = RoomItem(
                 room=room
             )
-        if not json.get('product_id'):
-            raise ValueError('Missing product_id in json: {}'.format(json))
         db.session.add(room_item)
         RoomItemModifications.update_or_create(
             user=user,
+            product_id=product_id,
             room_item=room_item,
-            json=json,
-            pdf_json=pdf_json
+            specs=specs,
+            pdf_specs=pdf_specs
         )
         return room_item
 
@@ -534,22 +533,23 @@ class RoomItemModifications(db.Model, MyBaseModel):
     archived = db.Column(db.Boolean, default=False)
     room_item_id = db.Column(
         db.Integer, db.ForeignKey(RoomItem.id), nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
     room_item = db.relationship(
         RoomItem,
         primaryjoin='RoomItemModifications.room_item_id==RoomItem.id',
         backref='modifications')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
     # All data from the users-form
-    json = db.Column(db.JSON, nullable=True)
+    specs = db.Column(db.JSON, nullable=True)
     # All data actually used to fill the pdf.
-    pdf_json = db.Column(db.JSON, nullable=True)
+    pdf_specs = db.Column(db.JSON, nullable=True)
 
     __mapper_args__ = {
         "order_by": date.desc()
     }
 
     @classmethod
-    def update_or_create(cls, user, room_item, json, pdf_json):
+    def update_or_create(cls, user, room_item, specs, product_id, pdf_specs):
         """
         Create modification-date if last update was either not made by
         current user, or within the last 5 minutes."""
@@ -572,7 +572,8 @@ class RoomItemModifications(db.Model, MyBaseModel):
                 user=user,
                 room_item=room_item
             )
-        last_modified.json = json
+        last_modified.specs = specs
+        last_modified.product_id = product_id
         db.session.add(last_modified)
         return last_modified
 
@@ -601,8 +602,8 @@ class RoomItemModifications(db.Model, MyBaseModel):
             'id': self.id,
             'm_date': self.date
         }
-        specs = self.json.copy()
-        dictionary['product_id'] = specs.get('product_id')
+        specs = self.specs.copy()
+        dictionary['product_id'] = self.product_id
         if creation_time:
             dictionary['c_date'] = creation_time
         if self.room_item:
