@@ -18,18 +18,23 @@ from addresses.address_pymongo import (
 from field_dicts.helpers import (commafloat, id_generator)
 from models import (
     db,
+)
+from models_product import (
+
     Manufacturor,
     Product,
+)
+from models_credentials import (
     User,
     OAuth,
     Invite,
-    RoomItem,
-    Room,
     Customer,
     InviteType,
     Address,
     Company,
-    UserRole
+    UserRole,
+    RoomItem,
+    Room,
 )
 from vk_objects import FormField
 

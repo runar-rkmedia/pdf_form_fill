@@ -16,9 +16,7 @@ from wtforms.validators import (DataRequired,
                                 NumberRange,
                                 ValidationError)
 
-# from models import (
-#     Company
-# )
+
 
 
 class Unique(object):
