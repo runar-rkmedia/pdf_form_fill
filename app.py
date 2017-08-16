@@ -36,7 +36,6 @@ from models_credentials import (
     RoomItem,
     Room,
 )
-from vk_objects import FormField
 
 from my_exceptions import LocationException
 
@@ -290,34 +289,6 @@ def set_fields_from_product(dictionary, product, specs=None):
     return dictionary
 
 
-def validate_fields(request_form):
-    """Validate the input from a form."""
-    error_fields = []
-    required_fields = {
-        'strings': [
-            'anleggs_adresse',
-            'rom_navn',
-        ],
-        'digits': [
-            'product_id',
-            'oppvarmet_areal',
-        ]}
-    for key in required_fields['strings']:
-        field = request_form.get(key)
-        if not field:
-            error_fields.append(key)
-    for key in required_fields['digits']:
-        field = request_form.get(key)
-        if not field:
-            error_fields.append(key)
-        else:
-            try:
-                commafloat(field)
-            except ValueError:
-                error_fields.append(key)
-    return error_fields
-
-
 @app.route('/invite/<invite_id>', methods=['GET', 'POST'])
 @app.route('/invite/')
 @login_required
@@ -488,6 +459,21 @@ def json_user_forms():
     return jsonify(result)
 
 
+def create_form(room_item_modification):
+    """Create forms, and return a json-object with the url."""
+    form_handler = FormHandler(room_item_modification, current_user)
+    path = user_file_path(
+        filename=(
+            room_item_modification.room_item.room.customer.address.
+            address1 + '.pdf'
+            ),
+        create_random_dir=True
+    )
+    form_handler.create(path)
+    print(form_handler.url)
+    return jsonify({'file_download': form_handler.url})
+
+
 @app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT'])
 @login_required
 def json_heating_cable():
@@ -499,7 +485,7 @@ def json_heating_cable():
         if room_item_id:
             room_item = RoomItem.by_id(room_item_id, current_user)
         if room_item:
-            return output_forms(room_item)
+            return create_form(room_item.latest)
             return jsonify({'yo': room_item.serialize})
         return jsonify({'error': 'Could not find anything here'}), 403
 
@@ -528,15 +514,12 @@ def json_heating_cable():
     if not room:
         return jsonify({'errors': ['Could not find this room']}), 403
 
-    form.specs.data
-    specs = {**form.specs.data, **{
-        'product_id': product_id
-    }}
     room_item = RoomItem.update_or_create(
         room_item=room_item,
         user=current_user,
+        product_id=product_id,
         room=room,
-        json=specs,
+        specs=form.specs.data,
     )
     db.session.commit()
     return jsonify(room_item.serialize)
@@ -642,190 +625,14 @@ def json_form_modification(filled_form_modified_id):
         return 'deleted'
 
 
-def create_form(manufacturor, dictionary=None,
-                request_form={}, form_data=None, user=current_user):
-    """Create a form."""
-    form = FormField(manufacturor)
-    if form_data:
-        form.fields = form_data
-    elif dictionary:
-        form.set_fields_from_dict(dictionary)
-
-    filename = request_form.get('anleggs_adresse', 'output') + '.pdf'
-    output_dir = user_file_path(create_random_dir=True)
-    output_pdf = os.path.join(output_dir, filename)
-    dictionary = form.create_filled_pdf(output_pdf)
-    stamp_with_user(user, output_pdf, form)
-    return output_pdf, dictionary, form
-
-
-def stamp_with_user(user, output_pdf, form):
-    """Description."""
-    if user.signature:
-        image = os.path.join(os.path.split(output_pdf)[0], 'sign.png')
-        with open(image, 'wb') as f:
-            f.write(user.signature)
-        stamped_pdf = form.stamp_with_image(output_pdf, image, 20, 10)
-        os.remove(image)
-        os.remove(output_pdf)
-        os.rename(stamped_pdf, output_pdf)
-
-
-def add_company_info_to_dictionary(dictionary, company):
-    """Description."""
-    dictionary['firma_navn'] = current_user.company.name
-    dictionary['firma_orgnr'] = current_user.company.orgnumber
-    dictionary['firma_adresse1'] = current_user.company.address.address1
-    dictionary['firma_adresse2'] = current_user.company.address.address2
-    dictionary['firma_poststed'] = current_user.company.address.post_area
-    dictionary[
-        'firma_postnummer'] = current_user.company.address.post_code
-    return dictionary
-
-
-def output_forms(entity):
-    """Creates forms from a valid entity.
-
-    It will create all forms that are withing this entity.
-
-    For instance, if provided a Customer, it will output every form, for every
-    Room, for every HeatingCable within it.
-
-    """
-    room_item_modification = entity.modifications[0]
-    data = room_item_modification.serialize
-    product_id = room_item_modification.json.get('product_id')
-    company = room_item_modification.room_item.room.customer.company
-    product = Product.by_id((product_id))
-    if not product:
-        print('r', room_item_modification.json, room_item_modification.id)
-        raise ValueError("Couldn't find this product: {}".format(product_id))
-    if not company:
-        raise ValueError("Couldn't find this company")
-    dictionary = set_fields_from_product({}, product)
-    dictionary = add_company_info_to_dictionary(
-        dictionary, current_user.company)
-    print('dic')
-    pprint(dictionary)
-    output_pdf, complete_dictionary, form = create_form(
-        manufacturor=product.product_type.manufacturor.name,
-        dictionary=dictionary
-    )
-    return jsonify(
-        file_download=os.path.relpath(output_pdf),
-    )
-
-
-@app.route('/json/heating/', methods=['POST', 'GET'])
-@limiter.limit("1/second", error_message='Èn per sekund')
-@limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
-@limiter.limit("200/hour", error_message='200 per hour')
-def json_fill_document():
-    """Fill a form from user."""
-    form = forms.HeatingFmrm()
-    if request.method == 'GET':
-        filled_form_modified_id = request.args.get('filled_form_modified_id')
-        filled_form_modified = RoomItem\
-            .query\
-            .filter(
-                RoomItem.id == filled_form_modified_id
-            )\
-            .first()
-        # form = FormField(manufacturor)
-        # form.set_fields_from_dict(dictionary)
-        form_data = filled_form_modified.form_data
-        request_form = filled_form_modified.request_form
-        product = Product\
-            .query\
-            .filter(
-                Product.id == request_form['product_id']
-            ).first()
-        manufacturor = product.product_type.manufacturor.name
-        output_pdf, dictionary, form = create_form(  # noqa
-            manufacturor=manufacturor,
-            form_data=form_data,
-            request_form=request_form,
-            user=filled_form_modified.user
-        )
-        return jsonify(
-            file_download=os.path.relpath(output_pdf),
-        )
-    if request.method == 'POST':
-        print(request.form)
-        error_fields = validate_fields(request.form)
-
-        if error_fields:
-            return jsonify(
-                error_fields=error_fields,
-                error_message='Noen felt var ikke tilstrekkelig utfylt',
-                status=400
-            )
-        product_id = request.form['product_id']
-        product = Product.get_by_id(product_id)
-        manufacturor = product.product_type.manufacturor.name
-        dictionary = request.form.copy()
-
-        if product:
-            dictionary = set_fields_from_product(
-                dictionary, product)
-        else:
-            return jsonify(
-                error_message=(
-                    "Fant ingen varmekabler med denne id '{}'. "
-                    "Om dette er en feil, bør dette rapporteres."
-                ).format(manufacturor),
-                status=400)
-        if current_user.is_authenticated:
-            if current_user.company:
-                dictionary = add_company_info_to_dictionary(
-                    dictionary, current_user.company)
-
-        output_pdf, complete_dictionary, form = create_form(
-            manufacturor=manufacturor,
-            dictionary=dictionary,
-            request_form=request.form
-        )
-        address = Address.update_or_create(
-            address_id=dictionary.get('address_id'),
-            address1=dictionary.get('anleggs_adresse'),
-            address2=None,
-            post_code=dictionary.get('anleggs_postnummer'),
-            post_area=dictionary.get('anleggs_poststed')
-        )
-        save_form = RoomItem.update_or_create(
-            filled_form_modified_id=dictionary.get('filled_form_modified_id'),
-            user=current_user,
-            customer_name=dictionary.get('kunde_navn'),
-            request_form=request.form,
-            form_data=complete_dictionary,
-            company=current_user.company,
-            address=address
-        )
-        db.session.commit()
-
-        return jsonify(
-            file_download=os.path.relpath(output_pdf),
-            status=200,
-            filled_form_id=save_form.id,
-            address_id=address.id,
-        )
-
-
 @app.route('/')
-def view_form(dictionary=None, error_fields=None, error_message=None):
+def view_form():
     """View for home."""
     # Set up some defaults. (retrieve this from the user-config later.)
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()
     form = forms.CustomerForm()
     roomForm = forms.RoomForm()
-    if dictionary is None:
-        dictionary = {
-            'anleggs_postnummer': 4626,
-            'anleggs_poststed': 'Kristiansand',
-            'meterEffekt':  "17",
-            'manufacturor':  "Nexans"
-        }
     return render_template(
         'main.html',
         heatingForm=heatingForm,

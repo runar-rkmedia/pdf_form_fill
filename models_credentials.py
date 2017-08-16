@@ -19,6 +19,7 @@ from flask_dance.consumer.backend.sqla import (
 from field_dicts.helpers import id_generator
 from datetime import datetime, timedelta
 from sqlalchemy import desc, or_
+from models_product import Product
 
 
 class ContactType(Enum):
@@ -501,6 +502,12 @@ class RoomItem(db.Model, MyBaseModel):
             # dictionary['specs'] = specs
             return dictionary
 
+    @property
+    def latest(self):
+        """Return the latest modification mad to this item."""
+        if self.modifications:
+            return self.modifications[0]
+
     @classmethod
     def update_or_create(
             cls, user, room, product_id, id=None,
@@ -584,6 +591,11 @@ class RoomItemModifications(db.Model, MyBaseModel):
             db.session.add(self)
             db.session.commit()
             return True
+
+    @property
+    def product(self):
+        """Return product from stored on this object."""
+        return Product.by_id(self.product_id)
 
     @property
     def serialize(self):
