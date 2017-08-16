@@ -75,6 +75,7 @@ from flask_migrate import Migrate, MigrateCommand
 from pprint import pprint
 import wtforms_json
 from flask_wtf.csrf import CSRFProtect, CSRFError
+from form_handler import FormHandler
 
 wtforms_json.init()
 
@@ -461,16 +462,15 @@ def json_user_forms():
 
 def create_form(room_item_modification):
     """Create forms, and return a json-object with the url."""
-    form_handler = FormHandler(room_item_modification, current_user)
     path = user_file_path(
         filename=(
             room_item_modification.room_item.room.customer.address.
             address1 + '.pdf'
-            ),
+        ),
         create_random_dir=True
     )
-    form_handler.create(path)
-    print(form_handler.url)
+    form_handler = FormHandler(room_item_modification, current_user, path)
+    form_handler.create()
     return jsonify({'file_download': form_handler.url})
 
 
@@ -490,7 +490,7 @@ def json_heating_cable():
         return jsonify({'error': 'Could not find anything here'}), 403
 
     print('request:', request.json)
-    form = forms.HeatingCableForm.from_json(request.json)
+    form = forms.HeatingCableForm.from_json(request.json, skip_unknown_keys=False)
     if not form.validate_on_submit():
         print(form.errors)
         return jsonify({'error': form.errors}), 403

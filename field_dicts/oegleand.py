@@ -22,8 +22,8 @@ translator = {
     'firma_adresse': [
         '{}, {} {}',
         lambda x: (x['firma_adresse1'],
-                   x.get('firma_postnummer',''),
-                   x.get('firma_poststed',''))
+                   x.get('firma_postnummer', ''),
+                   x.get('firma_poststed', ''))
     ],
     'firma_orgnr': [
         '{}',
@@ -40,7 +40,8 @@ translator = {
     ],
     'cc': [
         '{:.2f}',
-        lambda x: (commafloat(x['oppvarmet_areal']) / commafloat(x['Length']) * 100,)
+        lambda x: (commafloat(x['oppvarmet_areal']) /
+                   commafloat(x['Length']) * 100,)
     ],
     'dato-År': [
         '{}',
@@ -65,6 +66,17 @@ translator = {
     'dato-dag': [
         '{}',
         lambda x: (currentDate('%d'),)
+    ],
+    'anleggs_adresse': [
+        '{}',
+        lambda x: (
+            "{} {}\n{} {}"
+            .format(
+                x['customer.address.address1'] or '',
+                x['customer.address.address2'] or '',
+                x['customer.address.post_code'] or '',
+                x['customer.address.post_area'] or '',
+            ), )
     ],
     'check-beskyttelses-tiltak-bruk-av-styring': [
         '{}',

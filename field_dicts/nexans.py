@@ -142,7 +142,7 @@ fields_dict = {
         'field': 'Text1',
         'type': str
     },
-    'anleggs_adresse': {
+    'anleggs_adresse1': {
         'text': 'Innstalleringsadresse',
         'field': 'Text2',
         'type': str

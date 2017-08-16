@@ -238,7 +238,7 @@ varmecomfort = {
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[0]',
         'type': str
     },
-    'anleggs_adresse': {
+    'anleggs_adresse1': {
         'text': 'TextInPDF',
         'field': 'topmostSubform[0].Side1[0].PlacedPDF[0].Text5[1]',
         'type': str
