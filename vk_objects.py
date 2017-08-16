@@ -14,6 +14,15 @@ from field_dicts.helpers import (NumberTypes,
                                  get_image_size,
                                  delete_empty_value)
 
+from schemas import (
+    AddressSchema,
+    ContactSchema,
+    CustomerSchema,
+    RoomSchema,
+    RoomItemSchema,
+    RoomItemModificationsSchema
+)
+
 
 def setLoggerOptions(msg_type, enabled):
     """Will enable/disable a msg_type."""
@@ -47,19 +56,6 @@ class FormField(object):
         e.g. ['true', 'false']
 
     """
-    standard_data = {
-        'type': 'TFXP',
-        'driftspenning': '230',
-        'sikringstørrelse': '16',
-        'utløserstrøm_for_fordfeilvern': '30',
-        'check-jordet_kabelskjerm': True,
-        'check-toleder': True,
-        'check-maks_temp_planlegging': True,
-        'check-følertype-gulv': True,
-        'check-installasjonsveiledning_fulgt': True,
-        'check-Dokumentasjon-overlevert': True,
-        'check-Eier-informert': True
-    }
 
     form_data_dict = {
         'Nexans': nexans,
@@ -67,11 +63,12 @@ class FormField(object):
     }
 
     def __init__(self, manufacturor, standard_dict=None):
-        standard_dict = standard_dict or self.standard_data
         form_data = self.form_data_dict.get(manufacturor)
         if not form_data:
             raise ValueError(
-                "Could not find 'manufacturor' in dictionary when gathering form_data. wrong id? object was {}".format(self.form_data_dict))
+                ("Could not find 'manufacturor' in dictionary when gathering",
+                 "form_data. wrong id? object was{}")
+                .format(self.form_data_dict))
 
         self.pdf_path = form_data.pdf_path
         self.fields_dict = form_data.fields_dict
@@ -155,8 +152,8 @@ class FormField(object):
         image_size = get_image_size(image)
         for signature_location_size in self.signature_location_size:
             dpi = max(
-                image_size[0]*72/signature_location_size['sizex'],
-                image_size[1]*72/signature_location_size['sizey']
+                image_size[0] * 72 / signature_location_size['sizex'],
+                image_size[1] * 72 / signature_location_size['sizey']
             )
             call = [
                 'java',
@@ -170,7 +167,7 @@ class FormField(object):
                 "{},{}".format(
                     signature_location_size['x'],
                     signature_location_size['y']
-                    ),
+                ),
                 '-e',
                 's',
                 output_path]
