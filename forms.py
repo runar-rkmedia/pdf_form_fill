@@ -146,12 +146,12 @@ class CustomerForm(FlaskForm):
 
 class MeasurementsForms(SubForm):
     """Form for measurements for a HeatingCable."""
-    ohm_a = HiddenField()
-    ohm_b = HiddenField()
-    ohm_c = HiddenField()
-    mohm_a = HiddenField()
-    mohm_b = HiddenField()
-    mohm_c = HiddenField()
+    ohm_a = IntegerField()
+    ohm_b = IntegerField()
+    ohm_c = IntegerField()
+    mohm_a = IntegerField()
+    mohm_b = IntegerField()
+    mohm_c = IntegerField()
 
 
 class SpecsForm(SubForm):

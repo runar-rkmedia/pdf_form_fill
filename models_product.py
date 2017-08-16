@@ -57,8 +57,7 @@ class ProductType(db.Model):
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
-    mainSpec = db.Column(db.SmallInteger)  # meterEffekt/kvadratMeterEffekt
-    # meterEffekt/kvadratMeterEffekt
+    mainSpec = db.Column(db.SmallInteger)  # electrical effect per meter(squared)
     secondarySpec = db.Column(db.SmallInteger)
     catagory = db.Column(db.Enum(ProductCatagory))
 

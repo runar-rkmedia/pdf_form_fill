@@ -48,15 +48,15 @@ translator = {
     ],
     'mohm_a': [
         '{}',
-        lambda x: ('999' if x['mohm_a'] == 'true' else '',)
+        lambda x: (x['mohm_a'] if x['mohm_a'] >= 0 else '',)
     ],
     'mohm_b': [
         '{}',
-        lambda x: ('999' if x['mohm_b'] == 'true' else '',)
+        lambda x: (x['mohm_b'] if x['mohm_b'] >= 0 else '',)
     ],
     'mohm_c': [
         '{}',
-        lambda x: ('999' if x['mohm_c'] == 'true' else '',)
+        lambda x: (x['mohm_c'] if x['mohm_c'] >= 0 else '',)
     ],
     'dato-måned': [
         '{}',

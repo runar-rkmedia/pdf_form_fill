@@ -12,9 +12,9 @@ interface MeasurementsInterface {
   ohm_a: number
   ohm_b: number
   ohm_c: number
-  mohm_a: boolean
-  mohm_b: boolean
-  mohm_c: boolean
+  mohm_a: number
+  mohm_b: number
+  mohm_c: number
 }
 interface HeatingCableSpecs {
   measurements: MeasurementsInterface
@@ -41,9 +41,9 @@ class Measurements extends Base {
   ohm_a: KnockoutObservable<number> = ko.observable();
   ohm_b: KnockoutObservable<number> = ko.observable();
   ohm_c: KnockoutObservable<number> = ko.observable();
-  mohm_a: KnockoutObservable<boolean> = ko.observable();
-  mohm_b: KnockoutObservable<boolean> = ko.observable();
-  mohm_c: KnockoutObservable<boolean> = ko.observable();
+  mohm_a: KnockoutObservable<number> = ko.observable();
+  mohm_b: KnockoutObservable<number> = ko.observable();
+  mohm_c: KnockoutObservable<number> = ko.observable();
   // modified: KnockoutObservable<boolean>
   last_sent_data: KnockoutObservable<MeasurementsInterface> = ko.observable()
 
@@ -63,13 +63,15 @@ class Measurements extends Base {
     }
   }
   serialize = ko.computed(() => {
+    let a = 180
+    let b = 200;
     return {
       ohm_a: this.ohm_a(),
       ohm_b: this.ohm_b(),
       ohm_c: this.ohm_c(),
-      mohm_a: this.mohm_a(),
-      mohm_b: this.mohm_b(),
-      mohm_c: this.mohm_c()
+      mohm_a: (this.mohm_a() ? 999 : -1),
+      mohm_b: (this.mohm_b() ? 999 : -1),
+      mohm_c: (this.mohm_c() ? 999 : -1),
     }
   })
 }
@@ -129,7 +131,7 @@ export class HeatingCable extends Post {
       return boundary
     }
     if (product) {
-      let restrictions = product.restrictions
+      let restrictions = product!.restrictions
       if (restrictions) {
         if (restrictions.R_max) {
           boundary.top = restrictions.R_max
@@ -146,12 +148,12 @@ export class HeatingCable extends Post {
         }
       }
 
-      if ((boundary.top <= 0 || boundary.bottom <= 0) && product.effect) {
+      if ((boundary.top <= 0 || boundary.bottom <= 0) && product!.effect) {
 
         console.log('lazily calculating restrictions for: ', product)
         // Calculate the resistance based on effect
-        let voltage = product.secondarySpec || 230
-        let resistance = voltage ^ 2 / product.effect
+        let voltage = product!.secondarySpec || 230
+        let resistance = voltage ^ 2 / product!.effect
         boundary = restrictions_from_nominal(boundary, resistance)
 
       }
