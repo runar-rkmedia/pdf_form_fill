@@ -63,12 +63,10 @@ class Measurements extends Base {
     }
   }
   serialize = ko.computed(() => {
-    let a = 180
-    let b = 200;
     return {
-      ohm_a: this.ohm_a(),
-      ohm_b: this.ohm_b(),
-      ohm_c: this.ohm_c(),
+      ohm_a: Number(this.ohm_a()),
+      ohm_b: Number(this.ohm_b()),
+      ohm_c: Number(this.ohm_c()),
       mohm_a: (this.mohm_a() ? 999 : -1),
       mohm_b: (this.mohm_b() ? 999 : -1),
       mohm_c: (this.mohm_c() ? 999 : -1),

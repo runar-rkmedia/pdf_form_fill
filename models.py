@@ -1,7 +1,43 @@
 """Database-structure for item-catalog."""
 
 from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
+from decimal import Decimal
+from datetime import datetime
+from flask import json
+
+
+class MyJSONEncoder(json.JSONEncoder):
+    """Redefine flasks json-encoded to convert Decimals.."""
+
+    def default(self, obj):  # noqa
+        if isinstance(obj, Decimal):
+            # Convert decimal instances to strings.
+            return str(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super(MyJSONEncoder, self).default(obj)
+
+    def _iterencode(self, o, markers=None):
+        if isinstance(o, Decimal):
+            # wanted a simple yield str(o) in the next line,
+            # but that would mean a yield on the line with super(...),
+            # which wouldn't work (see my comment below), so...
+            return (str(o) for o in [o])
+        return super(MyJSONEncoder, self)._iterencode(o, markers)
+
+
+json.JSONEncoder = MyJSONEncoder
+
+
+class MySQLAlchemy(SQLAlchemy):
+
+    def apply_driver_hacks(self, app, info, options):
+        # add options here
+        options.update(json_serializer=json.dumps,)
+        super().apply_driver_hacks(app, info, options)
+
+
+db = MySQLAlchemy()
 
 PER_PAGE = 500
 

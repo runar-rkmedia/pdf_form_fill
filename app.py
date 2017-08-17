@@ -18,6 +18,7 @@ from addresses.address_pymongo import (
 from field_dicts.helpers import (commafloat, id_generator)
 from models import (
     db,
+    MyJSONEncoder
 )
 from models_product import (
 
@@ -80,16 +81,6 @@ from form_handler import FormHandler
 wtforms_json.init()
 
 
-class MyJSONEncoder(JSONEncoder):
-    """Redefine flasks json-encoded to convert Decimals.."""
-
-    def default(self, obj):  # noqa
-        if isinstance(obj, decimal.Decimal):
-            # Convert decimal instances to strings.
-            return str(obj)
-        if isinstance(obj, datetime):
-            return obj.isoformat()
-        return super(MyJSONEncoder, self).default(obj)
 
 
 app = Flask(__name__, instance_relative_config=True)

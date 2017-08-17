@@ -2935,12 +2935,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             // modified: KnockoutObservable<boolean>
             _this.last_sent_data = ko.observable();
             _this.serialize = ko.computed(function () {
-                var a = 180;
-                var b = 200;
                 return {
-                    ohm_a: _this.ohm_a(),
-                    ohm_b: _this.ohm_b(),
-                    ohm_c: _this.ohm_c(),
+                    ohm_a: Number(_this.ohm_a()),
+                    ohm_b: Number(_this.ohm_b()),
+                    ohm_c: Number(_this.ohm_c()),
                     mohm_a: (_this.mohm_a() ? 999 : -1),
                     mohm_b: (_this.mohm_b() ? 999 : -1),
                     mohm_c: (_this.mohm_c() ? 999 : -1),
