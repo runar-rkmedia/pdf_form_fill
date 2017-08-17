@@ -485,6 +485,7 @@ class RoomItem(db.Model, MyBaseModel):
         Room,
         primaryjoin='RoomItem.room_id==Room.id',
         backref='items')  # noqa
+    date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def owns(self, user):
         """Check that user has rights to this room-item."""
@@ -504,9 +505,15 @@ class RoomItem(db.Model, MyBaseModel):
 
     @property
     def latest(self):
-        """Return the latest modification mad to this item."""
+        """Return the latest modification made to this item, by date"""
         if self.modifications:
             return self.modifications[0]
+
+    @property
+    def modification_date(self):
+        """Return the time of last modification"""
+        if self.latest:
+            return self.latest.date
 
     @classmethod
     def update_or_create(
