@@ -16,7 +16,7 @@ from addresses.address_pymongo import (
 from flask_dance.consumer.backend.sqla import (
     OAuthConsumerMixin,
 )
-from field_dicts.helpers import id_generator
+from pdf_filler.helpers import id_generator
 from datetime import datetime, timedelta
 from sqlalchemy import desc, or_
 from models_product import Product

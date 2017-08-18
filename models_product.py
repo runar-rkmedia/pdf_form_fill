@@ -57,7 +57,8 @@ class ProductType(db.Model):
     manufacturor_id = db.Column(db.Integer, db.ForeignKey(Manufacturor.id))
     manufacturor = db.relationship(
         Manufacturor, primaryjoin='ProductType.manufacturor_id==Manufacturor.id')  # noqa
-    mainSpec = db.Column(db.SmallInteger)  # electrical effect per meter(squared)
+    # electrical effect per meter(squared)
+    mainSpec = db.Column(db.SmallInteger)
     secondarySpec = db.Column(db.SmallInteger)
     catagory = db.Column(db.Enum(ProductCatagory))
 
@@ -106,3 +107,22 @@ class Product(db.Model, ByID):
             'restrictions': self.restrictions
         }
         return dictionary
+
+    def calculate_nominal_resistance(self):
+        return float(self.product_type.secondarySpec) ** 2 / float(self.effect)
+
+    @property
+    def resistance_min(self):
+        print(self.restrictions)
+        return (self.restrictions.get('R_min') or
+                self.calculate_nominal_resistance() / 1.05)
+
+    @property
+    def resistance_nominal(self):
+        return (self.restrictions.get('R_nom') or
+                self.calculate_nominal_resistance())
+
+    @property
+    def resistance_max(self):
+                return (self.restrictions.get('R_max') or
+                        self.calculate_nominal_resistance() * 1.05)

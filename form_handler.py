@@ -1,6 +1,6 @@
 import os
-from vk_objects import FormField
-from pprint import pprint
+from pdf_filler.schema import get_template_schema
+from models_product import ProductCatagory
 
 
 class FormHandler(object):
@@ -30,12 +30,12 @@ class FormHandler(object):
     def push_from_company(self):
         """Push data from company."""
         self.dictionary.update({
-            'firma_navn': self.company.name,
-            'firma_orgnr': self.company.orgnumber,
-            'firma_adresse1': self.company.address.address1,
-            'firma_adresse2': self.company.address.address2,
-            'firma_poststed': self.company.address.post_area,
-            'firma_postnummer': self.company.address.post_code
+            'company.name': self.company.name,
+            'company.orgnumber': self.company.orgnumber,
+            'company.address.address1': self.company.address.address1,
+            'company.address.address2': self.company.address.address2,
+            'company.address.post_code': self.company.address.post_code,
+            'company.address.post_area': self.company.address.post_area,
         })
 
     def push_from_customer(self):
@@ -51,23 +51,53 @@ class FormHandler(object):
     def push_from_product(self):
         """Push data from product."""
         self.dictionary.update({
-            'effect': self.product.product_type.mainSpec,
-            'produkt_type': self.product.product_type.name
+            'product.effect': self.product.effect,
+            'product.watt_per_(square)_meter':
+            self.product.product_type.mainSpec,
+            'product.voltage':
+            self.product.product_type.secondarySpec,
+            'product.product_type.name': self.product.product_type.name,
+            'product.name': self.product.name,
+            'product.resistance_max': self.product.resistance_max,
+            'product.resistance_min': self.product.resistance_min,
+            'product.resistance_nominal': self.product.resistance_nominal,
+            'product.twowires': (
+                True
+                if self.product.product_type.catagory not in [
+                    ProductCatagory.single_inside,
+                    ProductCatagory.single_outside]
+                else
+                False
+            )
         })
 
     def push_from_room(self):
         """Push data from product."""
         self.dictionary.update({
-            'rom_navn': self.room.name
+            'room.name': self.room.name,
+            'room.area': self.room.specs['area']
+            if self.room.specs else '',
+            'room.heated_area': self.room.specs['heated_area']
+            if self.room.specs else ''
         })
 
     def push_from_room_item_modification(self):
         """Push data from room_item_modification."""
-        self.dictionary.update(
-            self.room_item_modification.specs['measurements'])
-        self.dictionary.update({
-            'dato': self.room_item_modification.date
-        })
+        specs = self.room_item_modification.specs.copy()
+        if specs and 'measurements' in specs:
+            measurements = specs['measurements']
+            for key, value in measurements.items():
+                try:
+                    if int(value) < 0:
+                        measurements[key] = ''
+                except ValueError:
+                    break
+                else:
+                    self.dictionary.update(
+                        self.room_item_modification.specs['measurements'])
+                    self.dictionary.update({
+                        'date': self.room_item_modification.date
+                    })
 
     def stamp_with_user(self, user, form):
         """Description."""
@@ -82,12 +112,12 @@ class FormHandler(object):
 
     def create(self, stamp=False):
         """Create a form."""
-        form = FormField(
-            self.product.product_type.manufacturor.name, self.dictionary)
+        # form = FormField(
+        #     self.product.product_type.manufacturor.name, self.dictionary)
+        form = get_template_schema(
+            manufacturor=self.product.product_type.manufacturor.name,
+            dictionary=self.dictionary)
         complete_dictionary = form.create_filled_pdf(self.path)
         if stamp:
             self.stamp_with_user(self.current_user, form)
-        pprint(self.dictionary)
-        pprint(complete_dictionary)
-        # TODO: FIX complete_dictionary. it has wrong keys.
         return complete_dictionary
