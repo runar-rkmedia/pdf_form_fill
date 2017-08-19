@@ -1,26 +1,28 @@
-#input-anleggs_postnummer{
-    width: 100px;
-}
-legend{
-    font-size: 14px;
-    font-weight: 700;
-    border: 0;
-    margin-bottom: 5px;
-}
-@media screen and (max-width: 450px) {
-    label{
-        font-size: 12px;
-    }
+#input-anleggs_postnummer {
+  width: 100px;
 }
 
-input[type=radio]{
-     margin:0;
+legend {
+  font-size: 14px;
+  font-weight: 700;
+  border: 0;
+  margin-bottom: 5px;
 }
-.radio-Wm{
+@media screen and (max-width: 450px) {
+  label {
+    font-size: 12px;
+  }
+}
+
+input[type=radio] {
+  margin: 0;
+}
+
+.radio-Wm {
   min-width: 65px;
   display: inline;
 }
 
-.opaque{
-  opacity: .5;
+.opaque {
+  opacity: 0.5;
 }
