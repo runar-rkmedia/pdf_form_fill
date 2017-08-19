@@ -1,4 +1,5 @@
 import { AddressInterface } from "./Common"
+var diff = require('recursive-diff');
 
 export interface StrIndex<TValue> {
   [key: string]: TValue
@@ -49,7 +50,8 @@ export abstract class Base {
       if (!this.last_sent_data()) {
         return true
       }
-      return compareDicts(this.serialize(), this.last_sent_data())
+      let difference = diff.getDiff(this.serialize(), this.last_sent_data())
+      return Object.keys(difference).length > 0
     })
   }
 
@@ -110,18 +112,4 @@ export abstract class Post extends Base {
       })
   }
   constructor() { super() }
-}
-export let compareDicts = (dictA: {}, dictB: {}) => {
-  for (let key in dictA) {
-    if (
-      !dictA.hasOwnProperty(key) ||
-      !dictB.hasOwnProperty(key)
-    ) {
-      return true
-    }
-    if ((<any>dictA)[key] != (<any>dictB)[key]) {
-      return true
-    }
-  }
-  return false
 }
