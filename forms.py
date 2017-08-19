@@ -17,8 +17,6 @@ from wtforms.validators import (DataRequired,
                                 ValidationError)
 
 
-
-
 class Unique(object):
     """ validator that checks field uniqueness """
 
@@ -82,6 +80,7 @@ class RoomForm(FlaskForm):
 
 class SubForm(FlaskForm):
     """CsrfToken-basic."""
+
     def __init__(self, **_kwargs):
         _kwargs['csrf_enabled'] = False
         super().__init__(**_kwargs)
@@ -154,9 +153,20 @@ class MeasurementsForms(SubForm):
     mohm_c = DecimalField()
 
 
+class CalculationsForm(SubForm):
+    """Form for calculated values, with override by user."""
+    cc = DecimalField(
+        'C/C-avstand'
+    )
+    w_per_m2 = DecimalField(
+        'Flateeffect (W/m2)'
+    )
+
+
 class SpecsForm(SubForm):
     """Form for combining some different specs for heatingcable."""
     measurements = FormField(MeasurementsForms)
+    calculations = FormField(CalculationsForm)
 
 
 class HeatingCableForm(FlaskForm):

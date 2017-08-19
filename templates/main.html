@@ -1,77 +1,71 @@
-<!DOCTYPE html> {% extends 'base.html' %} {% block body %}
-<div class="row">
-  <!-- ko if: error_message || error_fields -->
-  <div class="error bg-danger col-xs-12">
-    <p data-bind="text:error_message"></p>
-    <!-- ko foreach:{data: error_fields, as :'item'} -->
-    <strong data-bind="text: $data"></strong>
-    <!-- ko if: ($index() !== ($parent.error_fields().length - 1)) -->,
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+  {% from "includes/formhelpers.html" import render_field,
+  render_field_group %}
+
+  <div class="row">
+    <!-- ko if: error_message || error_fields -->
+    <div class="error bg-danger col-xs-12">
+      <p data-bind="text:error_message"></p>
+      <!-- ko foreach:{data: error_fields, as :'item'} -->
+      <strong data-bind="text: $data"></strong>
+      <!-- ko if: ($index() !== ($parent.error_fields().length - 1)) -->,
+      <!-- /ko -->
+      <!-- /ko -->
+    </div>
     <!-- /ko -->
-    <!-- /ko -->
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active">
+        <a href="#main_form" aria-controls="main_form" role="tab" data-toggle="tab">Skjema</a>
+      </li>
+      {% if current_user.is_authenticated %}
+        <li role="presentation">
+          <a href="#user_forms" aria-controls="user_forms" role="tab" data-toggle="tab">Mine</a>
+        </li>
+        {% if current_user.company.name %}
+          <li role="presentation">
+            <a href="#company" aria-controls="company" role="tab" data-toggle="tab">Våre</a>
+          </li>
+        {% endif %}
+      {% endif %}
+    </ul>
   </div>
-  <!-- /ko -->
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs"
-      role="tablist">
-    <li role="presentation"
-        class="active">
-      <a href="#main_form"
-         aria-controls="main_form"
-         role="tab"
-         data-toggle="tab">Skjema</a>
-    </li>
-    {% if current_user.is_authenticated %}
-    <li role="presentation">
-      <a href="#user_forms"
-         aria-controls="user_forms"
-         role="tab"
-         data-toggle="tab">Mine</a>
-    </li>
-    {% if current_user.company.name %}
-    <li role="presentation">
-      <a href="#company"
-         aria-controls="company"
-         role="tab"
-         data-toggle="tab">Våre</a>
-    </li>
-    {% endif %} {% endif %}
-  </ul>
-</div>
-<!-- Tab panes -->
-<div class="tab-content">
-  <div role="tabpanel"
-       class="tab-pane active"
-       id="main_form">
-    {% include 'includes/schema/form.html' %}
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="main_form">
+      {% include 'includes/schema/form.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="user_forms">
+      {% include 'includes/other/user_forms.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="company">
+      {% include 'includes/other/company_forms.html' %}
+    </div>
   </div>
-  <div role="tabpanel"
-       class="tab-pane"
-       id="user_forms">
-    {% include 'includes/other/user_forms.html' %}
-  </div>
-  <div role="tabpanel"
-       class="tab-pane"
-       id="company">
-    {% include 'includes/other/company_forms.html' %}
-  </div>
-</div>
 
-<div class="row">{% include 'includes/footer.html' %}</div>
+  <div class="row">{% include 'includes/footer.html' %}</div>
 
-
-{% endblock %} {% block script %}
-<script src="{{url_for('static', filename='js/main.js')}}"></script>
-{% include 'includes/schema/room_accordian.html' %} {% include 'includes/schema/select_heating_cable_form.html' %} {% include 'includes/schema/room_form_template.html' %} {% include 'includes/schema/heating_cable.html' %} {% include 'includes/schema/measurements.html'
-%}
-<script type="text/javascript">
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      var csrf_token = '{{ customerForm.csrf_token._value() }}'
-      if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrf_token)
+{% endblock %}
+{% block script %}
+  {% from "includes/formhelpers.html" import render_field,
+  render_field_group %}
+  <script src="{{url_for('static', filename='js/main.js')}}"></script>
+  {% include 'includes/schema/room_accordian.html' %}
+  {% include 'includes/schema/select_heating_cable_form.html' %}
+  {% include 'includes/schema/room_form_template.html' %}
+  {% include 'includes/schema/heating_cable.html' %}
+  {% include 'includes/schema/measurements.html' %}
+  {% include 'includes/schema/calculations_template.html' %}
+  <script type="text/javascript">
+    $.ajaxSetup({
+      beforeSend: function (xhr, settings) {
+        var csrf_token = '{{ customerForm.csrf_token._value() }}'
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrf_token)
+        }
       }
-    }
-  })
-
-</script>
+    })
+  </script>
 {% endblock %}

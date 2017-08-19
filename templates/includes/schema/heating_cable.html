@@ -1,59 +1,46 @@
 <!DOCTYPE html>
-<script type="text/html"
-        id="heating_cable_template">
-  <div class="panel-group"
-       id="accordion-heat"
-       role="tablist"
-       aria-multiselectable="true">
+<script type="text/html" id="heating_cable_template">
+  <div class="panel-group" id="accordion-heat" role="tablist" aria-multiselectable="true">
     <!-- ko foreach: $data -->
-    <div class="panel"
-         data-bind="css: {'panel-info': !modified(), 'panel-warning': modified()}">
-      <div class="panel-heading collapsed"
-           data-parent="#accordion-heat"
-           data-toggle="collapse"
-           data-bind="attr: { 'data-target': '#heat' + id(), 'href': '#heat' + id()}">
+    <div class="panel" data-bind="css: {'panel-info': !modified(), 'panel-warning': modified()}">
+      <div class="panel-heading collapsed" data-parent="#accordion-heat" data-toggle="collapse" data-bind="attr: { 'data-target': '#heat' + id(), 'href': '#heat' + id()}">
         <h3 class="panel-title carrot">
-        <!-- ko if: product() -->
-        <span data-bind="text: product().name"></span>
-        <!-- /ko -->
-        <!-- ko if: modified -->
-        <b>Ikke lagret</b>
-        <!-- /ko -->
-      </h3>
+          <!-- ko if: product() -->
+          <span data-bind="text: product().name"></span>
+          <!-- /ko -->
+          <!-- ko if: modified -->
+          <b>Ikke lagret</b>
+          <!-- /ko -->
+        </h3>
       </div>
-      <div class="panel-collapse collapse in"
-           data-bind="
+      <div class="panel-collapse collapse in" data-bind="
 attr: {'id': 'heat' + id()}
 ">
         <div class="panel-body">
 
-          <ul class="nav nav-tabs"
-              role="tablist">
-            <li role="presentation"><a data-bind="attr: {
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation">
+              <a data-bind="attr: {
             'href': '#pane_select_cable' + id(),
             'aria-controls': '#pane_select_cable' + id()
-          }"
-                 role="tab"
-                 data-toggle="tab">Varmekabel</a></li>
-            <li role="presentation"
-                class="active"><a data-bind="attr: {
+          }" role="tab" data-toggle="tab">Varmekabel</a>
+            </li>
+            <li role="presentation" class="active">
+              <a data-bind="attr: {
             'href': '#pane_measurements' + id(),
             'aria-controls': '#pane_measurements' + id()
-          }"
-                 role="tab"
-                 data-toggle="tab">Målinger</a></li>
-            <li role="presentation"
-                class=""><a data-bind="attr: {
+          }" role="tab" data-toggle="tab">Målinger</a>
+            </li>
+            <li role="presentation" class="">
+              <a data-bind="attr: {
             'href': '#pane_other' + id(),
             'aria-controls': '#pane_other' + id()
-          }"
-                 role="tab"
-                 data-toggle="tab">Annet</a></li>
+          }" role="tab" data-toggle="tab">Annet</a>
+            </li>
           </ul>
           <div class="tab-content panel">
             <!-- Select product-pane -->
-            <div class="tab-pane"
-                 data-bind="attr: {
+            <div class="tab-pane" data-bind="attr: {
                         'id': 'pane_select_cable' + id()
                       }">
               <div class="row">
@@ -64,8 +51,7 @@ attr: {'id': 'heat' + id()}
               </div>
             </div>
             <!-- Measurements-pane -->
-            <div class="tab-pane active"
-                 data-bind="attr: {
+            <div class="tab-pane" data-bind="attr: {
                    'id': 'pane_measurements' + id()
                  }">
               <div class="row">
@@ -76,12 +62,13 @@ attr: {'id': 'heat' + id()}
               </div>
             </div>
             <!-- Other Pane -->
-            <div class="tab-pane "
-                 data-bind="attr: {
+            <div class="tab-pane active" data-bind="attr: {
                                     'id': 'pane_other' + id()
                                   }">
               <div class="row">
                 <div class="col-xs-12">
+                  <!-- ko template: { name: 'calculations_template', data: $data.calculations} -->
+                  <!-- /ko -->
                 </div>
               </div>
             </div>
@@ -89,24 +76,21 @@ attr: {'id': 'heat' + id()}
         </div>
         <div class="row">
           <div class="col-xs-12 text-right">
-            <button type="button"
-                    class="btn btn-primary"
-                    data-bind="
-                                  click: get_form_and_open"
-                    data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Forhåndsvis</button>
+            <button type="button" class="btn btn-primary" data-bind="
+                                  click: get_form_and_open" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Forhåndsvis</button>
             <!-- ko if: file_download() -->
-            <a target="VarmeDokPDF"
-               data-bind="attr: {'href': file_download()}">Trykk her for å laste ned Forhåndsvisningen</a>
+            <a target="VarmeDokPDF" data-bind="attr: {'href': file_download()}">Trykk her for å laste ned Forhåndsvisningen</a>
             <!-- /ko -->
 
-            <button type="button"
-                    class="btn btn-primary"
-                    data-bind="
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bind="
                 click: $data.post,
                     css: {opaque: !validationModel.isValid() || !modified()},
                     enable: modified() && validationModel.isValid(),
                 text: id() >= 0 ? 'Endre' : 'Lagre'"
-                    data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
+              data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
           </div>
         </div>
       </div>

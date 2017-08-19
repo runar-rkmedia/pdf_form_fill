@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<script type="text/html"
-        id="select_product_template">
+<script type="text/html" id="select_product_template">
   <h4>
-      Spesifikasjoner varmekabel
-    </h4>
+    Spesifikasjoner varmekabel
+  </h4>
   <div class="col-xs-12">
     <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
   </div>
@@ -15,10 +14,10 @@
       <!-- ko foreach: $root.Products().products -->
       <div class="col-xs-12">
         <label class="radio-inline">
-            <input type="radio" name="manufacturor" data-bind="checked: $parent.product_filter().manufacturor, value: name">
-            <!-- ko text: name  -->
-            <!-- /ko -->
-          </label>
+          <input type="radio" name="manufacturor" data-bind="checked: $parent.product_filter().manufacturor, value: name">
+          <!-- ko text: name  -->
+          <!-- /ko -->
+        </label>
       </div>
       <!-- /ko -->
     </fieldset>
@@ -28,29 +27,24 @@
       <legend>Type</legend>
       <div class="col-xs-12">
         <label class="radio-inline">
-            <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'mat'">
-            Matte
-          </label>
+          <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'mat'">
+          Matte
+        </label>
       </div>
       <div class="col-xs-12">
         <label class="radio-inline">
-            <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'cable'">
-            Kabel
-          </label>
+          <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'cable'">
+          Kabel
+        </label>
       </div>
       <!-- /ko -->
     </fieldset>
   </div>
   <div class="form-group form-group-sm col-xs-6">
     <label for="input-effekt">Effekt
-        <small>(sorterer etter nærmeste effekt)</small>
-      </label>
-    <input class="form-control"
-           type="number"
-           min="0"
-           name="effekt"
-           id="input-effekt"
-           data-bind="value: product_filter().effect">
+      <small>(sorterer etter nærmeste effekt)</small>
+    </label>
+    <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: product_filter().effect">
   </div>
 
   <div class="form-group col-xs-12">
@@ -65,14 +59,14 @@
         <!-- ko if: $data.mainSpec -->
         <div>
           <label class="radio-inline">
-              <input type="radio" name="meterEffekt" data-bind="checked: $parent.product_filter().mainSpec, value: $data.mainSpec">
-              <span data-bind="text: $data.mainSpec"></span>
-              <span>
-                W/m<!-- ko if: $data.type == "mat" -->²
-                <!-- /ko -->
-              </span>
+            <input type="radio" name="meterEffekt" data-bind="checked: $parent.product_filter().mainSpec, value: $data.mainSpec">
+            <span data-bind="text: $data.mainSpec"></span>
+            <span>
+              W/m<!-- ko if: $data.type == "mat" -->²
               <!-- /ko -->
-            </label>
+            </span>
+            <!-- /ko -->
+          </label>
         </div>
         <!-- /ko -->
         <!-- /ko -->
@@ -80,13 +74,12 @@
     </fieldset>
   </div>
 
-  {% from "includes/formhelpers.html" import render_field, render_field_group %}
-  <form id="heating_form"
-        autocomplete="off">
+  <form id="heating_form" autocomplete="off">
     <div class="form-group col-xs-12">
       <!-- ko with: product_filter -->
-      <select class="form-control"
-              data-bind="options: sortDist(filtered_products(), effect() || $parent.parent.parent.bestFitEffect())
+      <select
+        class="form-control"
+        data-bind="options: sortDist(filtered_products(), effect() || $parent.parent.parent.bestFitEffect())
 ,
                 optionsText: 'name',
                 optionsValue: 'id',

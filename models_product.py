@@ -104,7 +104,8 @@ class Product(db.Model, ByID):
         dictionary = {
             'id': self.id,
             'effect': self.effect,
-            'restrictions': self.restrictions
+            'restrictions': self.restrictions,
+            'specs': self.specs
         }
         return dictionary
 

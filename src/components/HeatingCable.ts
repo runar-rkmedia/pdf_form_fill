@@ -1,4 +1,4 @@
-import { HTTPVerbs, ByID, Post, compareDicts, Base } from "./Common"
+import { ByID, Post, Base } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
 import {
@@ -7,18 +7,12 @@ import {
   ProductFilter,
   ProductResctrictionsCalculated
 } from "./ProductModel"
+import {
+  HeatingCableSpecs,
+  Measurements,
+  Calculations
+} from './HeatingCableSpecs'
 
-interface MeasurementsInterface {
-  ohm_a: number
-  ohm_b: number
-  ohm_c: number
-  mohm_a: number
-  mohm_b: number
-  mohm_c: number
-}
-interface HeatingCableSpecs {
-  measurements: MeasurementsInterface
-}
 export interface HeatingCableInterface {
   id: number
   product_id: number
@@ -29,49 +23,10 @@ export interface HeatingCableInterface {
   specs?: HeatingCableSpecs
 }
 
-
-
 interface PostInterface {
   url: string
   post(): void;
   serialize(): {}
-}
-
-class Measurements extends Base {
-  ohm_a: KnockoutObservable<number> = ko.observable();
-  ohm_b: KnockoutObservable<number> = ko.observable();
-  ohm_c: KnockoutObservable<number> = ko.observable();
-  mohm_a: KnockoutObservable<number> = ko.observable();
-  mohm_b: KnockoutObservable<number> = ko.observable();
-  mohm_c: KnockoutObservable<number> = ko.observable();
-  // modified: KnockoutObservable<boolean>
-  last_sent_data: KnockoutObservable<MeasurementsInterface> = ko.observable()
-
-  constructor() {
-    super()
-    this.init()
-  }
-  set(measurements?: MeasurementsInterface) {
-    if (measurements) {
-      this.ohm_a(measurements.ohm_a)
-      this.ohm_b(measurements.ohm_b)
-      this.ohm_c(measurements.ohm_c)
-
-      this.mohm_a(measurements.mohm_a)
-      this.mohm_b(measurements.mohm_b)
-      this.mohm_c(measurements.mohm_c)
-    }
-  }
-  serialize = ko.computed(() => {
-    return {
-      ohm_a: Number(this.ohm_a()),
-      ohm_b: Number(this.ohm_b()),
-      ohm_c: Number(this.ohm_c()),
-      mohm_a: (this.mohm_a() ? 999 : -1),
-      mohm_b: (this.mohm_b() ? 999 : -1),
-      mohm_c: (this.mohm_c() ? 999 : -1),
-    }
-  })
 }
 
 export class HeatingCable extends Post {
@@ -79,6 +34,7 @@ export class HeatingCable extends Post {
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
   measurements: KnockoutObservable<Measurements> = ko.observable(new Measurements())
+  calculations: KnockoutObservable<Calculations>
   parent: HeatingCables
   product_model: TSProductModel
   product_filter: KnockoutObservable<ProductFilter>
@@ -94,18 +50,21 @@ export class HeatingCable extends Post {
     heating_cable: HeatingCableInterface = { id: -1, product_id: -1 }
   ) {
     super()
-    console.log(heating_cable)
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
     this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
     this.parent = parent
+    this.calculations = ko.observable(new Calculations(this))
     this.serialize = ko.computed(() => {
       let obj = {
         id: this.id(),
         room_id: this.parent.parent.id(),
         product_id: Number(this.product_id()),
-        specs: { measurements: this.measurements().serialize() }
+        specs: {
+          measurements: this.measurements().serialize(),
+          calculations: this.calculations().serialize(),
+        }
       }
 
       return obj
@@ -160,7 +119,6 @@ export class HeatingCable extends Post {
   })
 
   set(heating_cable: HeatingCableInterface) {
-    console.log(heating_cable)
     this.id(heating_cable.id)
     this.product_id(Number(heating_cable.product_id))
     if (heating_cable.specs && heating_cable.specs.measurements) {
