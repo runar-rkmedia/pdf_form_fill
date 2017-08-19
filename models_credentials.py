@@ -8,6 +8,7 @@ from models import (
     MyBaseModel,
     NoAccess,
     PER_PAGE,
+    ByID
 )
 from my_exceptions import LocationException
 from addresses.address_pymongo import (
@@ -20,6 +21,7 @@ from pdf_filler.helpers import id_generator
 from datetime import datetime, timedelta
 from sqlalchemy import desc, or_
 from models_product import Product
+from sqlalchemy.dialects import postgresql
 
 
 class ContactType(Enum):
@@ -40,6 +42,27 @@ class UserRole(Enum):
     user = 1,
     companyAdmin = 2,
     admin = 3
+
+
+class RoomTypesInfo(db.Model, ByID):
+    """Table for room-info."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    normalEffect = db.Column(db.SmallInteger(), nullable=False)
+    maxEffect = db.Column(db.SmallInteger(), nullable=False)
+    names = db.Column(postgresql.ARRAY(db.String(), dimensions=1))
+    outside = db.Column(db.Boolean(), default=False)
+
+    @property
+    def serialize(self):
+        d = {
+            'id': self.id,
+            'normalEffect': self.normalEffect,
+            'maxEffect': self.maxEffect,
+            'names': self.names,
+        }
+        if self.outside:
+            d['outside'] = self.outside
+        return d
 
 
 class Address(db.Model, MyBaseModel):
