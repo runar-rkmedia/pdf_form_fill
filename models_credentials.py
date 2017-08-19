@@ -44,7 +44,7 @@ class UserRole(Enum):
     admin = 3
 
 
-class RoomTypesInfo(db.Model, ByID):
+class RoomTypeInfo(db.Model, ByID):
     """Table for room-info."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
     normalEffect = db.Column(db.SmallInteger(), nullable=False)
@@ -304,7 +304,7 @@ class User(db.Model, UserMixin):
             )\
             .filter(
                 (RoomItem.user == self) &
-                (RoomItem.archived != True)
+                (RoomItem.archived != True)  # noqa
             )\
             .group_by(RoomItem.room_id)\
             .subquery()
@@ -468,8 +468,13 @@ class Room(db.Model, MyBaseModel):
     # __tablename__ = 'room'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
-    archived = db.Column(db.Boolean)
-    specs = db.Column(db.JSON, nullable=False)
+    archived = db.Column(db.Boolean, default=False)
+    outside = db.Column(db.Boolean, default=False)
+    area = db.Column(db.Numeric(8, 3))
+    heated_area = db.Column(db.Numeric(8, 3))
+    maxEffect = db.Column(db.Numeric(8, 3))
+    normalEffect = db.Column(db.Numeric(8, 3))
+
     customer_id = db.Column(
         db.Integer, db.ForeignKey(Customer.id), nullable=False)
     customer = db.relationship(
@@ -494,8 +499,12 @@ class Room(db.Model, MyBaseModel):
             'id': self.id,
             'room_name': self.name,
             'heating_cables': [i.serialize for i in self.items],
+            'outside': self.outside,
+            'area': float(self.area or 0),
+            'heated_area': float(self.heated_area or 0),
+            'maxEffect': float(self.maxEffect or 0),
+            'normalEffect': float(self.normalEffect or 0)
         }
-        dictionary.update(self.specs)
         return dictionary
 
 

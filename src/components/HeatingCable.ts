@@ -113,8 +113,6 @@ export class HeatingCable extends Post {
           let coverage_fraction = this_effect / room_effect
           let heated_area = this.parent.parent.heated_area()
           let heated_area_of_this_cable = heated_area * coverage_fraction
-          console.log('cov', coverage_fraction, )
-          console.log('cov2', room_effect, this_effect)
           let length = this.product()!.specs!.Length
           if (length && heated_area_of_this_cable) {
             return heated_area_of_this_cable / length

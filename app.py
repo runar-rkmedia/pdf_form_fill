@@ -3,19 +3,17 @@
 
 import os
 import sys
-import decimal
 import re
 import base64
 
 from config import configure_app
-from datetime import datetime
 from addresses.address_pymongo import (
     # get_post_area_for_post_code,
     get_address_from_street_name,
     # get_post_code_for_post_area,
     # get_location_from_address
 )
-from pdf_filler.helpers import (commafloat, id_generator)
+from pdf_filler.helpers import (id_generator)
 from models import (
     db,
     MyJSONEncoder
@@ -35,7 +33,7 @@ from models_credentials import (
     Company,
     UserRole,
     RoomItem,
-    RoomTypesInfo,
+    RoomTypeInfo,
     Room,
 )
 
@@ -51,7 +49,7 @@ from flask import (
     send_from_directory,
     url_for
 )
-from flask.json import jsonify, JSONEncoder
+from flask.json import jsonify
 import forms
 from flask_scss import Scss
 from flask_assets import Environment, Bundle
@@ -416,7 +414,7 @@ def json_invite():
 def json_static_data():
     """Return a json-object of all products and room-type-info."""
     manufacturors = Manufacturor.query.all()
-    room_types = RoomTypesInfo.query.all()
+    room_types = RoomTypeInfo.query.all()
     return jsonify(
         {
             'products': [i.serialize for i in manufacturors],
@@ -523,7 +521,7 @@ def json_heating_cable():
 
 
 @app.route('/json/v1/room/',
-           methods=['GET', 'POST', 'PUT', 'DELETE'])
+           methods=['POST', 'PUT'])
 @login_required
 def json_room():
     """Handle a room-object"""
@@ -555,11 +553,11 @@ def json_room():
     room.update_entity({
         'name': form.room_name.data,
         'customer': customer,
-        'specs': {
-            'outside': form.outside.data,
-            'area': float(form.area.data),
-            'heated_area': float(form.heated_area.data)
-        }
+        'outside': form.outside.data,
+        'area': float(form.area.data),
+        'heated_area': float(form.heated_area.data),
+        'maxEffect': float(form.maxEffect.data),
+        'normalEffect': float(form.normalEffect.data)
     })
     db.session.commit()
     if customer:

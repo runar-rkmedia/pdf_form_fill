@@ -2707,6 +2707,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.name = ko.observable();
             _this.outside = ko.observable();
             _this.maxEffect = ko.observable();
+            _this.room_type_info_id = ko.observable();
             _this.normalEffect = ko.observable();
             _this.area = ko.observable();
             _this.heated_area = ko.observable();
@@ -2773,7 +2774,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     area: _this.area(),
                     heated_area: _this.heated_area(),
                     outside: _this.outside(),
-                    customer_id: _this.parent.parent.id()
+                    customer_id: _this.parent.parent.id(),
+                    maxEffect: _this.maxEffect(),
+                    normalEffect: _this.normalEffect()
                 };
             });
             _this.set(room);
@@ -2795,13 +2798,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 id: -1,
                 area: null,
                 heated_area: null,
-                outside: false
+                outside: false,
+                normalEffect: 0,
+                maxEffect: 0
             }; }
             this.name(room.room_name);
             this.id(room.id);
             this.area(room.area);
             this.heated_area(room.heated_area);
             this.outside(room.outside);
+            this.maxEffect(room.maxEffect || 0);
+            this.normalEffect(room.normalEffect || 0);
             this.heating_cables(new HeatingCable_1.HeatingCables(this.root, this, room.heating_cables));
             this.save();
         };
@@ -2848,6 +2855,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 _this.parent.outside(Boolean(roomSuggestion.outside));
                 _this.parent.maxEffect(roomSuggestion.maxEffect);
                 _this.parent.normalEffect(roomSuggestion.normalEffect);
+                _this.parent.room_type_info_id(roomSuggestion.id);
             };
             this.list(room_type_info_flat);
             this.parent = room;
@@ -3150,8 +3158,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                         var coverage_fraction = this_effect / room_effect;
                         var heated_area = _this.parent.parent.heated_area();
                         var heated_area_of_this_cable = heated_area * coverage_fraction;
-                        console.log('cov', coverage_fraction);
-                        console.log('cov2', room_effect, this_effect);
                         var length = _this.product().specs.Length;
                         if (length && heated_area_of_this_cable) {
                             return heated_area_of_this_cable / length;

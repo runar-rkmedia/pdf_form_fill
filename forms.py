@@ -46,6 +46,8 @@ class RoomForm(FlaskForm):
             )
         ]
     )
+    maxEffect = DecimalField()
+    normalEffect = DecimalField()
     outside = BooleanField(
         'Utvendig'
     )

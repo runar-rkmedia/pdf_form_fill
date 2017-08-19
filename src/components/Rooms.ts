@@ -11,7 +11,9 @@ export interface RoomInterface {
   heated_area: number | null;
   outside: boolean;
   customer_id?: number
-  heating_cables?: HeatingCableInterface[]
+  heating_cables?: HeatingCableInterface[],
+  maxEffect?: number
+  normalEffect?: number
 }
 
 export class Room extends Post {
@@ -20,6 +22,7 @@ export class Room extends Post {
   name: KnockoutObservable<string> = ko.observable()
   outside: KnockoutObservable<boolean> = ko.observable()
   maxEffect: KnockoutObservable<number> = ko.observable()
+  room_type_info_id: KnockoutObservable<number> = ko.observable()
   normalEffect: KnockoutObservable<number> = ko.observable()
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
@@ -34,7 +37,7 @@ export class Room extends Post {
   parent: Rooms
   root: TSAppViewModel
   last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
-  serialize: KnockoutObservable<RoomInterface>
+  serialize: KnockoutComputed<RoomInterface>
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
     super()
@@ -47,14 +50,16 @@ export class Room extends Post {
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
 
-    this.serialize = ko.computed(() => {
+    this.serialize = ko.computed((): RoomInterface => {
       return {
         room_name: this.name(),
         id: this.id(),
         area: this.area(),
         heated_area: this.heated_area(),
         outside: this.outside(),
-        customer_id: this.parent.parent.id()
+        customer_id: this.parent.parent.id(),
+        maxEffect: this.maxEffect(),
+        normalEffect: this.normalEffect()
       }
     })
     this.set(room)
@@ -122,13 +127,17 @@ export class Room extends Post {
     id: -1,
     area: null,
     heated_area: null,
-    outside: false
+    outside: false,
+    normalEffect: 0,
+    maxEffect: 0
   }) {
     this.name(room.room_name)
     this.id(room.id)
     this.area(room.area)
     this.heated_area(room.heated_area)
     this.outside(room.outside)
+    this.maxEffect(room.maxEffect || 0)
+    this.normalEffect(room.normalEffect || 0)
     this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
     this.save()
   }
@@ -181,5 +190,6 @@ export class RoomSuggestion {
     this.parent.outside(Boolean(roomSuggestion.outside))
     this.parent.maxEffect(roomSuggestion.maxEffect)
     this.parent.normalEffect(roomSuggestion.normalEffect)
+    this.parent.room_type_info_id(roomSuggestion.id)
   }
 }
