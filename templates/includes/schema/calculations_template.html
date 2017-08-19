@@ -3,7 +3,8 @@
     Kalkulasjoner
   </h4>
 
-  <!-- ko ifnot: product().type != 'mat' -->
+  <!-- ko if: product()-->
+  <!-- ko if: product().type != 'mat' -->
   {{ render_field(
   heatingForm.specs.calculations.cc,
   'form-group col-xs-8 col-sm-10',
@@ -17,5 +18,6 @@
   **{'data-bind':
     "textInput: w_per_m2_calculated().toFixed(2)",
     'readonly':'readonly'}) }}
+  <!-- /ko -->
   <!-- /ko -->
 </script>

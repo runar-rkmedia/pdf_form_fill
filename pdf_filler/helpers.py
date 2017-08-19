@@ -12,7 +12,14 @@ def currentDate(date_format="%d.%m.%Y"):
 
 def commafloat(string_as_number):
     """Return a float from string with comma as decimal-seperator."""
-    return float(string_as_number.replace(',', '.'))
+    if isinstance(string_as_number, float):
+        return string_as_number
+    elif isinstance(string_as_number, str):
+        return float(string_as_number.replace(',', '.'))
+    else:
+        raise ValueError('{} is not a string, or a float, but {}'.format(
+            string_as_number, type(string_as_number)
+        ))
 
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -23,16 +30,6 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 def delete_empty_value(dictionary):
     """Remove all keys from a dictionary where values are empty."""
     return {k: v for k, v in dictionary.items() if v != None and v != ''}  # noqa
-
-
-def dictionary_subset(dictionary, list_of_keys):
-    """Only return the data we want from a dictionary."""
-    return {
-        k: dictionary[k]
-        for k in dictionary.keys() &
-        list_of_keys
-        if dictionary[k] is not ""
-    }
 
 
 def group_number(n, grouping=3, seperator=' '):
