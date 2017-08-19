@@ -79,7 +79,6 @@ export class HeatingCable extends Post {
         let heated_area = this.parent.parent.heated_area()
         let length = this.product()!.specs!.Length
         if (length && heated_area) {
-          console.log(this.product())
           return heated_area / length
         }
       }
@@ -87,14 +86,12 @@ export class HeatingCable extends Post {
     })
     this.w_per_m2_calculated = ko.computed(() => {
       if (this.product()) {
-        console.log(this.product())
         if (this.product()!.type == 'mat') {
           return this.product()!.mainSpec
         }
         let heated_area = this.parent.parent.heated_area()
         let effect = this.product()!.effect
         if (effect && heated_area) {
-          console.log(effect, heated_area)
           return effect / heated_area
         }
       }
@@ -130,46 +127,6 @@ export class HeatingCable extends Post {
     if (this.product_id() >= 0 && this.product_model) {
       return this.product_model.by_id(this.product_id())
     }
-  })
-  product_restrictions = ko.computed(() => {
-    let product = this.product()
-    let boundary: ProductResctrictionsCalculated = { top: 0, bottom: 0 }
-    let restrictions_from_nominal = (
-      boundary: ProductResctrictionsCalculated, value: number
-    ) => {
-      boundary.top = value * 1.05
-      boundary.bottom = value * 0.95
-      return boundary
-    }
-    if (product) {
-      let restrictions = product!.restrictions
-      if (restrictions) {
-        if (restrictions.R_max) {
-          boundary.top = restrictions.R_max
-        }
-        if (restrictions.R_min) {
-          boundary.bottom = restrictions.R_min
-        }
-        if (!restrictions.R_min && !restrictions.R_max) {
-          if (restrictions.R_nom) {
-            boundary = restrictions_from_nominal(boundary, restrictions.R_nom)
-          } else {
-            console.log('We need to calculate this:', product)
-          }
-        }
-      }
-
-      if ((boundary.top <= 0 || boundary.bottom <= 0) && product!.effect) {
-
-        console.log('lazily calculating restrictions for: ', product)
-        // Calculate the resistance based on effect
-        let voltage = product!.secondarySpec || 230
-        let resistance = voltage ^ 2 / product!.effect
-        boundary = restrictions_from_nominal(boundary, resistance)
-
-      }
-    }
-    return boundary
   })
 
   set(heating_cable: HeatingCableInterface) {
@@ -218,9 +175,6 @@ export class HeatingCables extends ByID {
       let panel = accordian.find('#heat-1')
       let pane = panel.find('#pane_select_cable-1')
       let navpill = panel.find('a[href="#pane_select_cable-1"]')
-      console.log(btn, accordian, panel, pane, navpill)
-      console.log(btn.length, accordian.length, panel.length, pane.length, navpill.length)
-      // pane.addClass('active')
       navpill.tab('show')
       panel.collapse('show')
     }, 20)

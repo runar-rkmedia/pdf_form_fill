@@ -3144,42 +3144,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     return _this.product_model.by_id(_this.product_id());
                 }
             });
-            _this.product_restrictions = ko.computed(function () {
-                var product = _this.product();
-                var boundary = { top: 0, bottom: 0 };
-                var restrictions_from_nominal = function (boundary, value) {
-                    boundary.top = value * 1.05;
-                    boundary.bottom = value * 0.95;
-                    return boundary;
-                };
-                if (product) {
-                    var restrictions = product.restrictions;
-                    if (restrictions) {
-                        if (restrictions.R_max) {
-                            boundary.top = restrictions.R_max;
-                        }
-                        if (restrictions.R_min) {
-                            boundary.bottom = restrictions.R_min;
-                        }
-                        if (!restrictions.R_min && !restrictions.R_max) {
-                            if (restrictions.R_nom) {
-                                boundary = restrictions_from_nominal(boundary, restrictions.R_nom);
-                            }
-                            else {
-                                console.log('We need to calculate this:', product);
-                            }
-                        }
-                    }
-                    if ((boundary.top <= 0 || boundary.bottom <= 0) && product.effect) {
-                        console.log('lazily calculating restrictions for: ', product);
-                        // Calculate the resistance based on effect
-                        var voltage = product.secondarySpec || 230;
-                        var resistance = voltage ^ 2 / product.effect;
-                        boundary = restrictions_from_nominal(boundary, resistance);
-                    }
-                }
-                return boundary;
-            });
             _this.product_id.extend({ required: true, number: true, min: 1000000, max: 9999999 });
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
@@ -3189,7 +3153,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     var heated_area = _this.parent.parent.heated_area();
                     var length = _this.product().specs.Length;
                     if (length && heated_area) {
-                        console.log(_this.product());
                         return heated_area / length;
                     }
                 }
@@ -3197,14 +3160,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             });
             _this.w_per_m2_calculated = ko.computed(function () {
                 if (_this.product()) {
-                    console.log(_this.product());
                     if (_this.product().type == 'mat') {
                         return _this.product().mainSpec;
                     }
                     var heated_area = _this.parent.parent.heated_area();
                     var effect = _this.product().effect;
                     if (effect && heated_area) {
-                        console.log(effect, heated_area);
                         return effect / heated_area;
                     }
                 }
@@ -3270,9 +3231,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     var panel = accordian.find('#heat-1');
                     var pane = panel.find('#pane_select_cable-1');
                     var navpill = panel.find('a[href="#pane_select_cable-1"]');
-                    console.log(btn, accordian, panel, pane, navpill);
-                    console.log(btn.length, accordian.length, panel.length, pane.length, navpill.length);
-                    // pane.addClass('active')
                     navpill.tab('show');
                     panel.collapse('show');
                 }, 20);
