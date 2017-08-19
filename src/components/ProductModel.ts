@@ -49,6 +49,28 @@ interface ManufacturorInterface {
   product_types: ProductTypeInterface[]
 }
 
+interface StaticData {
+  products: ManufacturorInterface[]
+  room_type_info: RoomTypeInfoServer[]
+}
+
+interface RoomTypeInfo {
+  id: number
+  maxEffect: number
+  normalEffect: number
+}
+
+interface RoomTypeInfoServer extends RoomTypeInfo {
+  names: string[]
+  outside?: boolean
+}
+
+
+export interface RoomTypesInfoFlat extends RoomTypeInfo {
+  name: string
+  outside: boolean
+}
+
 interface ArrayFylterInterface {
   value: any,
   mustEqual: any
@@ -156,7 +178,9 @@ export class ProductFilter {
 }
 
 export class TSProductModel {
+  url = '/json/v1/static/'
   products: KnockoutObservableArray<ManufacturorInterface> = ko.observableArray(<ManufacturorInterface[]>[])
+  room_type_info: KnockoutObservableArray<RoomTypeInfoServer> = ko.observableArray()
 
   constructor(private parentModel: TSAppViewModel) {
     // this.products = ko.observableArray(<ManufacturorInterface[]>[])
@@ -164,10 +188,10 @@ export class TSProductModel {
 
 
   getProducts = () => {
-    $.get("/products.json",
-      $('#form').serialize())
-      .done((result: ManufacturorInterface[]) => {
-        this.products(result);
+    $.get(this.url)
+      .done((result: StaticData) => {
+        this.products(result.products);
+        this.room_type_info(result.room_type_info)
         this.parentModel.selected_vk(this.parentModel.forced_selected_vk());
       })
       .fail((e) => {
@@ -211,6 +235,24 @@ export class TSProductModel {
   flat_products = ko.computed(() => {
     return this.flatten_products(this.products());
   });
+  flat_room_type_info = ko.computed((): RoomTypesInfoFlat[] => {
+    let flattened: RoomTypesInfoFlat[] = []
+    if (this.room_type_info()) {
+      for (let room_type_info of this.room_type_info()) {
+        for (let name of room_type_info.names) {
+          flattened.push({
+            name: name,
+            id: room_type_info.id,
+            maxEffect: room_type_info.maxEffect,
+            normalEffect: room_type_info.normalEffect,
+            outside: room_type_info.outside || false
+          })
+        }
+
+      }
+    }
+    return flattened
+  })
   by_id = (id: number) => {
     let f = this.flat_products();
     return f.find(myObj => {

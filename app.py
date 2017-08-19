@@ -35,6 +35,7 @@ from models_credentials import (
     Company,
     UserRole,
     RoomItem,
+    RoomTypesInfo,
     Room,
 )
 
@@ -80,8 +81,6 @@ from flask_wtf.csrf import CSRFProtect, CSRFError
 from form_handler import FormHandler
 
 wtforms_json.init()
-
-
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -410,15 +409,20 @@ def json_invite():
     })
 
 
-@app.route('/products.json')
+@app.route('/json/v1/static/')
 # @limiter.limit("1/second", error_message='Èn per sekund')
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
-def json_products():
-    """Return a json-object of all products."""
+def json_static_data():
+    """Return a json-object of all products and room-type-info."""
     manufacturors = Manufacturor.query.all()
-
-    return jsonify([i.serialize for i in manufacturors])
+    room_types = RoomTypesInfo.query.all()
+    return jsonify(
+        {
+            'products': [i.serialize for i in manufacturors],
+            'room_type_info': [i.serialize for i in room_types]
+        }
+    )
 
 
 @app.route('/forms.json')
@@ -482,7 +486,8 @@ def json_heating_cable():
         return jsonify({'error': 'Could not find anything here'}), 403
 
     print('request:', request.json)
-    form = forms.HeatingCableForm.from_json(request.json, skip_unknown_keys=False)
+    form = forms.HeatingCableForm.from_json(
+        request.json, skip_unknown_keys=False)
     if not form.validate_on_submit():
         print(form.errors)
         return jsonify({'error': form.errors}), 403
