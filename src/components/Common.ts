@@ -29,11 +29,9 @@ export class ByID {
     this.list = ko.observableArray(list)
   }
   by_id(id: number) {
-    for (let item of this.list()) {
-      if (item.id() == id) {
-        return item
-      }
-    }
+    return this.list().find(myObj => {
+      return myObj.id === Number(id)
+    });
   }
 }
 export abstract class Base {
