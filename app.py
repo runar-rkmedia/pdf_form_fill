@@ -76,6 +76,7 @@ from flask_migrate import Migrate, MigrateCommand
 from pprint import pprint
 import wtforms_json
 from flask_wtf.csrf import CSRFProtect, CSRFError
+# import schemas
 from form_handler import FormHandler
 
 wtforms_json.init()
