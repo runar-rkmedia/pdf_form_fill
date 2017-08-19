@@ -6,9 +6,6 @@ import ko = require("knockout");
 export interface ProductInterface {
   effect: number;
   id: number;
-  Area?: number
-  Length?: number
-  width?: number
   // These only exist on flatten products
   manufacturor?: string;
   type?: string;
@@ -16,8 +13,15 @@ export interface ProductInterface {
   mainSpec: number;
   secondarySpec?: number;
   restrictions?: ProductRestrictions
+  specs?: ProductSpecs
 }
 
+
+interface ProductSpecs {
+  Area?: number
+  Length?: number
+  width?: number
+}
 
 interface ProductRestrictions {
   R_max: number

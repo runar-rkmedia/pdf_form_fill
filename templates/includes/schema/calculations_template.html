@@ -2,16 +2,20 @@
   <h4>
     Kalkulasjoner
   </h4>
+
+  <!-- ko ifnot: product().type != 'mat' -->
   {{ render_field(
   heatingForm.specs.calculations.cc,
   'form-group col-xs-8 col-sm-10',
   **{'data-bind':
-    "textInput: cc_calculated",
+    "textInput: (cc_calculated() * 100).toFixed(1)",
     'readonly':'readonly'}) }}
+
   {{ render_field(
   heatingForm.specs.calculations.w_per_m2,
   'form-group col-xs-8 col-sm-10',
   **{'data-bind':
     "textInput: w_per_m2_calculated().toFixed(2)",
     'readonly':'readonly'}) }}
+  <!-- /ko -->
 </script>

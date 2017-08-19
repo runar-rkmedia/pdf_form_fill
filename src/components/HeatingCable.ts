@@ -42,17 +42,15 @@ export interface HeatingCableSpecs {
 }
 
 export class HeatingCable extends Post {
+  product_id: KnockoutObservable<number> = ko.observable();
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
-  product_id: KnockoutObservable<number> = ko.observable();
   ohm_a: KnockoutObservable<number> = ko.observable();
   ohm_b: KnockoutObservable<number> = ko.observable();
   ohm_c: KnockoutObservable<number> = ko.observable();
   mohm_a: KnockoutObservable<number> = ko.observable();
   mohm_b: KnockoutObservable<number> = ko.observable();
   mohm_c: KnockoutObservable<number> = ko.observable();
-  cc: KnockoutObservable<number> = ko.observable();
-  w_per_m2: KnockoutObservable<number> = ko.observable();
   cc_calculated: KnockoutComputed<number | undefined>
   w_per_m2_calculated: KnockoutComputed<number | undefined>
 
@@ -77,23 +75,31 @@ export class HeatingCable extends Post {
     this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
     this.parent = parent
     this.cc_calculated = ko.computed(() => {
-      if (this.product()) {
-        let effect = this.product()!.effect
-        if (effect) {
-          return effect
+      if (this.product() && this.product()!.type != 'mat') {
+        let heated_area = this.parent.parent.heated_area()
+        let length = this.product()!.specs!.Length
+        if (length && heated_area) {
+          console.log(this.product())
+          return heated_area / length
         }
       }
+      return 0
     })
     this.w_per_m2_calculated = ko.computed(() => {
       if (this.product()) {
-        let effect = this.product()!.effect
+        console.log(this.product())
+        if (this.product()!.type == 'mat') {
+          return this.product()!.mainSpec
+        }
         let heated_area = this.parent.parent.heated_area()
-        if (effect) {
+        let effect = this.product()!.effect
+        if (effect && heated_area) {
+          console.log(effect, heated_area)
           return effect / heated_area
         }
       }
+      return 0
     })
-
     this.serialize = ko.computed(() => {
       let obj = {
         id: this.id(),
@@ -109,8 +115,8 @@ export class HeatingCable extends Post {
             mohm_c: (this.mohm_c() ? 999 : -1),
           },
           calculations: {
-            cc: Number(this.cc()),
-            w_per_m2: Number(this.w_per_m2()),
+            cc: Number(this.cc_calculated()),
+            w_per_m2: Number(this.w_per_m2_calculated()),
           }
         }
       }
@@ -169,20 +175,14 @@ export class HeatingCable extends Post {
   set(heating_cable: HeatingCableInterface) {
     this.id(heating_cable.id)
     this.product_id(Number(heating_cable.product_id))
-    if (heating_cable.specs) {
-
-      if (heating_cable.specs.measurements) {
-        this.ohm_a(heating_cable.specs.measurements.ohm_a)
-        this.ohm_b(heating_cable.specs.measurements.ohm_b)
-        this.ohm_c(heating_cable.specs.measurements.ohm_c)
-        this.mohm_a(heating_cable.specs.measurements.mohm_a)
-        this.mohm_b(heating_cable.specs.measurements.mohm_b)
-        this.mohm_c(heating_cable.specs.measurements.mohm_c)
-      }
-      if (heating_cable.specs.calculations) {
-        this.cc(heating_cable.specs.calculations.cc)
-        this.w_per_m2(heating_cable.specs.calculations.w_per_m2)
-      }
+    if (heating_cable.specs && heating_cable.specs.measurements) {
+      // this.measurements().set(heating_cable.specs.measurements)
+      this.ohm_a(heating_cable.specs.measurements.ohm_a)
+      this.ohm_b(heating_cable.specs.measurements.ohm_b)
+      this.ohm_c(heating_cable.specs.measurements.ohm_c)
+      this.mohm_a(heating_cable.specs.measurements.mohm_a)
+      this.mohm_b(heating_cable.specs.measurements.mohm_b)
+      this.mohm_c(heating_cable.specs.measurements.mohm_c)
     }
     this.save()
   }

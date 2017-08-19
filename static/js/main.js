@@ -71,6 +71,12 @@ module.exports = ko;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+module.exports = jQuery;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
@@ -86,6 +92,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var diff = __webpack_require__(13);
     var HTTPVerbs;
     (function (HTTPVerbs) {
         HTTPVerbs["post"] = "POST";
@@ -118,7 +125,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     if (!_this.last_sent_data()) {
                         return true;
                     }
-                    return exports.compareDicts(_this.serialize(), _this.last_sent_data());
+                    var difference = diff.getDiff(_this.serialize(), _this.last_sent_data());
+                    return Object.keys(difference).length > 0;
                 });
             };
         }
@@ -188,27 +196,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         return Post;
     }(Base));
     exports.Post = Post;
-    exports.compareDicts = function (dictA, dictB) {
-        for (var key in dictA) {
-            if (!dictA.hasOwnProperty(key) ||
-                !dictB.hasOwnProperty(key)) {
-                return true;
-            }
-            if (dictA[key] != dictB[key]) {
-                return true;
-            }
-        }
-        return false;
-    };
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = jQuery;
 
 /***/ }),
 /* 3 */
@@ -2342,7 +2332,7 @@ module.exports = "static/static/f4769f9bdb7466be65088239c12046d1.eot";
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(33)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(9), __webpack_require__(33)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var pad = function (n, width, z) {
@@ -2396,7 +2386,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(3), __webpack_require__(10), __webpack_require__(4), __webpack_require__(11), __webpack_require__(0), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, ko, $) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(3), __webpack_require__(10), __webpack_require__(4), __webpack_require__(11), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, ko, $) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     __webpack_require__(22);
@@ -2572,7 +2562,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(12), __webpack_require__(1), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Rooms_1, Common_1, ko) {
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(12), __webpack_require__(2), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Rooms_1, Common_1, ko) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var titleCase = __webpack_require__(15);
@@ -2685,7 +2675,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(13)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, HeatingCable_1) {
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(14)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, HeatingCable_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.RoomSuggestionList = [
@@ -2907,6 +2897,215 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports) {
+
+/*
+ * recursive-diff 
+ *
+ * Copyright (C) 2015 Anant Shukla <anant.shukla.rkgit@gmail.com>
+ *
+ * Licensed under The MIT License (MIT) 
+ */
+;(function(){
+    var diff = (function(){
+        var getType = function( x ){
+            var type = typeof x ;
+            if(type === 'object' && Object.prototype.toString.call(x).match(/array/i) ){
+                type = 'array';
+            }
+            return type ;
+        };
+        
+        var findDiff =  function( ob1, ob2 , path , result){
+            var val1, val2, newpath, key  ;
+            var type1 = getType(ob1) ;
+            var type2 = getType(ob2) ;
+            //initialize some defaults 
+            if( path == null || typeof path !== 'string'){
+                path = '/' ; //initialize to root path
+            }
+            if (result == null || typeof result !== 'object'){
+                result = {} ;
+            }
+            //diff algo
+            if(ob1 == null || ob2 == null ){
+                if(ob1 !== ob2){
+                    if(type1 === 'undefined'){
+                        result[path] = {operation: 'add', value : ob2};
+                    }
+                    else if(type2 === 'undefined'){
+                        result[path] = {operation: 'delete'};
+                    }
+                    else{
+                        result[path] = {operation: 'update', value: ob2};
+                    } 
+                }
+            }
+            else if( type1 !== type2  || (type1 !== 'object' && type1 !== 'array') || (type2 !== 'object' && type2 !== 'array') ){
+                if(ob1 !== ob2){
+                    result[path] = {operation: 'update', value : ob2};
+                }
+            }
+            else{
+                for(key in ob1){
+                    newpath = path === '/' ? path + key : path + '/' + key;
+                    val1 = ob1[key];
+                    val2 = ob2[key];
+            
+                    if(val1 == null || val2 == null){
+                        if(val1 !== val2){
+                            if(typeof val1 === 'undefined'){
+                                result[newpath] = {operation: 'add', value : val2};
+                            }
+                            else if(typeof val2 === 'undefined'){
+                                result[newpath] = {operation: 'delete'};
+                            }
+                            else{
+                                result[newpath] = {operation: 'update', value: val2};
+                            }    
+                        }
+                    }
+                    else {
+                        if(getType(val1) !== getType( val2) ){
+                                result[newpath] = {operation : 'update', value: val2} ;
+                        }
+                        else {
+                            if(typeof val1 === 'object'){
+                                findDiff(val1, val2, newpath, result); 
+                            }
+                            else{
+                                if(val1 !== val2){
+                                    result[newpath] = {operation : 'update', value: val2} ;
+                                }
+                            }
+                        }
+                    }
+                }
+                for(key in ob2){
+                    newpath = path === '/' ? path + key : path + '/' + key;
+                    val1 = ob1[key];
+                    val2 = ob2[key];
+                    if(val1 !== val2){
+                        if(typeof val1 === 'undefined'){
+                            result[newpath] = {operation: 'add', value : val2} ;
+                        }
+                    }
+                }
+            }
+            return result ; 
+        };
+        var setValueByPath = function(ob, path, value, visitorCallback){
+            if(! path.match(/^\//)){
+                throw 'diff path is not valid';
+            }
+            var keys = path.split('/');
+            keys.shift();
+            var val = ob ;
+            var length = keys.length ;
+            for(var i=0; i < length; i++){
+                if(val == null || keys[i].length < 1){
+                    throw 'Invalid data';
+                }
+                if( i !== length -1 ){
+                    val = val[keys[i]];
+                    if(visitorCallback){
+                        visitorCallback(val);
+                    }
+                }
+                else{
+                    val[keys[i]] = value;
+                }
+            }
+            return ob;
+        };
+        
+        var deleteValueByPath = function(ob, path ){
+            var keys = path.split('/');
+            keys.shift(); //removing initial blank element ''
+            var val = ob ;
+            var length = keys.length ;
+            for(var i=0; i < length; i++){
+                if( i !== length -1){
+                    if(val[keys[i]] == null){
+                        throw 'invalid data';
+                    }
+                    val = val[keys[i]];
+                }
+                else{
+                    if(getType(val) === 'object'){
+                        delete val[keys[i]] ;
+                    }
+                    else{
+                        var index = parseInt(keys[i]);
+                        while(val.length > index){
+                            val.pop();
+                        }
+                    }
+                }
+            }
+            return ob;
+        };
+        
+        var applyDiff = function( ob1, diff, visitorCallback){
+            var path, diffOb, op ;
+            if(diff == null){
+               throw 'No diff object is provided, Nothing to apply'; 
+            }
+            for(var key in diff ){
+                path =  key;
+                diffOb = diff[key];
+                op = diffOb.operation ;
+                if(op.match(/add|update|delete/)){
+                    if(op === 'add'){
+                        if(path === '/'){
+                            ob1 = diffOb.value ;
+                            break ;
+                        }
+                        setValueByPath(ob1, path, diffOb.value, visitorCallback); 
+                    }
+                    else if(op === 'update'){
+                        if(path === '/'){
+                            ob1 = diffOb.value ;
+                            break ;
+                        }
+                        setValueByPath(ob1, path, diffOb.value, visitorCallback); 
+                    }
+                    else{
+                        if(path === '/'){
+                            ob1 = null ;
+                            break ;
+                        }
+                        deleteValueByPath(ob1, path); 
+                    }
+                }
+                else{
+                    throw 'malformed diff object';
+                }
+            }
+            return ob1 ;
+        };
+        
+        return {
+            getDiff : function( ob1, ob2){
+               var result = findDiff(ob1, ob2) ;
+               return result;
+            },
+            applyDiff : function(ob, diff, visitorCallback){
+                var result = applyDiff(ob, diff, visitorCallback);
+                return result ;     
+            }
+        };
+    })();
+    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
+        module.exports = diff;
+    }
+    else{
+        window.diff = diff ;
+    }    
+})();
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
@@ -2919,7 +3118,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1) {
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var HeatingCable = (function (_super) {
@@ -2927,17 +3126,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         function HeatingCable(product_model, parent, heating_cable) {
             if (heating_cable === void 0) { heating_cable = { id: -1, product_id: -1 }; }
             var _this = _super.call(this) || this;
+            _this.product_id = ko.observable();
             _this.url = '/json/v1/heat/';
             _this.id = ko.observable();
-            _this.product_id = ko.observable();
             _this.ohm_a = ko.observable();
             _this.ohm_b = ko.observable();
             _this.ohm_c = ko.observable();
             _this.mohm_a = ko.observable();
             _this.mohm_b = ko.observable();
             _this.mohm_c = ko.observable();
-            _this.cc = ko.observable();
-            _this.w_per_m2 = ko.observable();
             _this.validationModel = ko.validatedObservable({
                 product_id: _this.product_id,
             });
@@ -2988,21 +3185,30 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
             _this.parent = parent;
             _this.cc_calculated = ko.computed(function () {
-                if (_this.product()) {
-                    var effect = _this.product().effect;
-                    if (effect) {
-                        return effect;
+                if (_this.product() && _this.product().type != 'mat') {
+                    var heated_area = _this.parent.parent.heated_area();
+                    var length = _this.product().specs.Length;
+                    if (length && heated_area) {
+                        console.log(_this.product());
+                        return heated_area / length;
                     }
                 }
+                return 0;
             });
             _this.w_per_m2_calculated = ko.computed(function () {
                 if (_this.product()) {
-                    var effect = _this.product().effect;
+                    console.log(_this.product());
+                    if (_this.product().type == 'mat') {
+                        return _this.product().mainSpec;
+                    }
                     var heated_area = _this.parent.parent.heated_area();
-                    if (effect) {
+                    var effect = _this.product().effect;
+                    if (effect && heated_area) {
+                        console.log(effect, heated_area);
                         return effect / heated_area;
                     }
                 }
+                return 0;
             });
             _this.serialize = ko.computed(function () {
                 var obj = {
@@ -3019,8 +3225,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                             mohm_c: (_this.mohm_c() ? 999 : -1),
                         },
                         calculations: {
-                            cc: Number(_this.cc()),
-                            w_per_m2: Number(_this.w_per_m2()),
+                            cc: Number(_this.cc_calculated()),
+                            w_per_m2: Number(_this.w_per_m2_calculated()),
                         }
                     }
                 };
@@ -3033,19 +3239,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         HeatingCable.prototype.set = function (heating_cable) {
             this.id(heating_cable.id);
             this.product_id(Number(heating_cable.product_id));
-            if (heating_cable.specs) {
-                if (heating_cable.specs.measurements) {
-                    this.ohm_a(heating_cable.specs.measurements.ohm_a);
-                    this.ohm_b(heating_cable.specs.measurements.ohm_b);
-                    this.ohm_c(heating_cable.specs.measurements.ohm_c);
-                    this.mohm_a(heating_cable.specs.measurements.mohm_a);
-                    this.mohm_b(heating_cable.specs.measurements.mohm_b);
-                    this.mohm_c(heating_cable.specs.measurements.mohm_c);
-                }
-                if (heating_cable.specs.calculations) {
-                    this.cc(heating_cable.specs.calculations.cc);
-                    this.w_per_m2(heating_cable.specs.calculations.w_per_m2);
-                }
+            if (heating_cable.specs && heating_cable.specs.measurements) {
+                // this.measurements().set(heating_cable.specs.measurements)
+                this.ohm_a(heating_cable.specs.measurements.ohm_a);
+                this.ohm_b(heating_cable.specs.measurements.ohm_b);
+                this.ohm_c(heating_cable.specs.measurements.ohm_c);
+                this.mohm_a(heating_cable.specs.measurements.mohm_a);
+                this.mohm_b(heating_cable.specs.measurements.mohm_b);
+                this.mohm_c(heating_cable.specs.measurements.mohm_c);
             }
             this.save();
         };
@@ -3096,7 +3297,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 
 
 /***/ }),
-/* 14 */,
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3305,7 +3505,7 @@ module.exports = function (str, locale) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var ko = __webpack_require__(0);
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(1);
 
 // hack to make typeahead work because it expects a global
 if (window && !window.jQuery) {

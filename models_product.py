@@ -104,17 +104,24 @@ class Product(db.Model, ByID):
         dictionary = {
             'id': self.id,
             'effect': self.effect,
-            'restrictions': self.restrictions,
+            'restrictions': {
+                'max': self.resistance_max,
+                'nom': self.resistance_nominal,
+                'min': self.resistance_min
+            },
             'specs': self.specs
         }
+
         return dictionary
 
     def calculate_nominal_resistance(self):
-        return float(self.product_type.secondarySpec) ** 2 / float(self.effect)
+        if self.effect:
+            return float(
+                self.product_type.secondarySpec) ** 2 / float(self.effect)
+        return 0
 
     @property
     def resistance_min(self):
-        print(self.restrictions)
         return (self.restrictions.get('R_min') or
                 self.calculate_nominal_resistance() / 1.05)
 
@@ -125,5 +132,5 @@ class Product(db.Model, ByID):
 
     @property
     def resistance_max(self):
-                return (self.restrictions.get('R_max') or
-                        self.calculate_nominal_resistance() * 1.05)
+        return (self.restrictions.get('R_max') or
+                self.calculate_nominal_resistance() * 1.05)

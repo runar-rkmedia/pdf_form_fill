@@ -156,10 +156,10 @@ class MeasurementsForms(SubForm):
 class CalculationsForm(SubForm):
     """Form for calculated values, with override by user."""
     cc = DecimalField(
-        'C/C-avstand'
+        'C/C-avstand ( cm )'
     )
     w_per_m2 = DecimalField(
-        'Flateeffect (W/m2)'
+        'Flateeffekt ( W/m<sup>2</sup> )'
     )
 
 
