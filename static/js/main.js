@@ -2919,7 +2919,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(3), __webpack_require__(14)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1, HeatingCableSpecs_1) {
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var HeatingCable = (function (_super) {
@@ -2927,10 +2927,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         function HeatingCable(product_model, parent, heating_cable) {
             if (heating_cable === void 0) { heating_cable = { id: -1, product_id: -1 }; }
             var _this = _super.call(this) || this;
-            _this.product_id = ko.observable();
             _this.url = '/json/v1/heat/';
             _this.id = ko.observable();
-            _this.measurements = ko.observable(new HeatingCableSpecs_1.Measurements());
+            _this.product_id = ko.observable();
+            _this.ohm_a = ko.observable();
+            _this.ohm_b = ko.observable();
+            _this.ohm_c = ko.observable();
+            _this.mohm_a = ko.observable();
+            _this.mohm_b = ko.observable();
+            _this.mohm_c = ko.observable();
+            _this.cc = ko.observable();
+            _this.w_per_m2 = ko.observable();
             _this.validationModel = ko.validatedObservable({
                 product_id: _this.product_id,
             });
@@ -2980,15 +2987,41 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
             _this.parent = parent;
-            _this.calculations = ko.observable(new HeatingCableSpecs_1.Calculations(_this));
+            _this.cc_calculated = ko.computed(function () {
+                if (_this.product()) {
+                    var effect = _this.product().effect;
+                    if (effect) {
+                        return effect;
+                    }
+                }
+            });
+            _this.w_per_m2_calculated = ko.computed(function () {
+                if (_this.product()) {
+                    var effect = _this.product().effect;
+                    var heated_area = _this.parent.parent.heated_area();
+                    if (effect) {
+                        return effect / heated_area;
+                    }
+                }
+            });
             _this.serialize = ko.computed(function () {
                 var obj = {
                     id: _this.id(),
                     room_id: _this.parent.parent.id(),
                     product_id: Number(_this.product_id()),
                     specs: {
-                        measurements: _this.measurements().serialize(),
-                        calculations: _this.calculations().serialize(),
+                        measurements: {
+                            ohm_a: Number(_this.ohm_a()),
+                            ohm_b: Number(_this.ohm_b()),
+                            ohm_c: Number(_this.ohm_c()),
+                            mohm_a: (_this.mohm_a() ? 999 : -1),
+                            mohm_b: (_this.mohm_b() ? 999 : -1),
+                            mohm_c: (_this.mohm_c() ? 999 : -1),
+                        },
+                        calculations: {
+                            cc: Number(_this.cc()),
+                            w_per_m2: Number(_this.w_per_m2()),
+                        }
                     }
                 };
                 return obj;
@@ -3000,8 +3033,19 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         HeatingCable.prototype.set = function (heating_cable) {
             this.id(heating_cable.id);
             this.product_id(Number(heating_cable.product_id));
-            if (heating_cable.specs && heating_cable.specs.measurements) {
-                this.measurements().set(heating_cable.specs.measurements);
+            if (heating_cable.specs) {
+                if (heating_cable.specs.measurements) {
+                    this.ohm_a(heating_cable.specs.measurements.ohm_a);
+                    this.ohm_b(heating_cable.specs.measurements.ohm_b);
+                    this.ohm_c(heating_cable.specs.measurements.ohm_c);
+                    this.mohm_a(heating_cable.specs.measurements.mohm_a);
+                    this.mohm_b(heating_cable.specs.measurements.mohm_b);
+                    this.mohm_c(heating_cable.specs.measurements.mohm_c);
+                }
+                if (heating_cable.specs.calculations) {
+                    this.cc(heating_cable.specs.calculations.cc);
+                    this.w_per_m2(heating_cable.specs.calculations.w_per_m2);
+                }
             }
             this.save();
         };
@@ -3052,112 +3096,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Measurements = (function (_super) {
-        __extends(Measurements, _super);
-        function Measurements() {
-            var _this = _super.call(this) || this;
-            _this.ohm_a = ko.observable();
-            _this.ohm_b = ko.observable();
-            _this.ohm_c = ko.observable();
-            _this.mohm_a = ko.observable();
-            _this.mohm_b = ko.observable();
-            _this.mohm_c = ko.observable();
-            // modified: KnockoutObservable<boolean>
-            _this.last_sent_data = ko.observable();
-            _this.serialize = ko.computed(function () {
-                return {
-                    ohm_a: Number(_this.ohm_a()),
-                    ohm_b: Number(_this.ohm_b()),
-                    ohm_c: Number(_this.ohm_c()),
-                    mohm_a: (_this.mohm_a() ? 999 : -1),
-                    mohm_b: (_this.mohm_b() ? 999 : -1),
-                    mohm_c: (_this.mohm_c() ? 999 : -1),
-                };
-            });
-            _this.init();
-            return _this;
-        }
-        Measurements.prototype.set = function (measurements) {
-            if (measurements) {
-                this.ohm_a(measurements.ohm_a);
-                this.ohm_b(measurements.ohm_b);
-                this.ohm_c(measurements.ohm_c);
-                this.mohm_a(measurements.mohm_a);
-                this.mohm_b(measurements.mohm_b);
-                this.mohm_c(measurements.mohm_c);
-            }
-        };
-        return Measurements;
-    }(Common_1.Base));
-    exports.Measurements = Measurements;
-    var Calculations = (function (_super) {
-        __extends(Calculations, _super);
-        function Calculations(parent) {
-            var _this = _super.call(this) || this;
-            // modified: KnockoutObservable<boolean>
-            _this.last_sent_data = ko.observable();
-            _this.parent = parent;
-            _this.init();
-            _this.cc = ko.computed(function () {
-                if (_this.parent.product()) {
-                    var effect = _this.parent.product().effect;
-                    if (effect) {
-                        return effect;
-                    }
-                }
-            });
-            _this.w_per_m2 = ko.computed(function () {
-                if (_this.parent.product()) {
-                    console.log(_this.parent.product().specs);
-                    var effect = _this.parent.product().effect;
-                    var heated_area = _this.parent.parent.parent.heated_area();
-                    if (effect) {
-                        return effect / heated_area;
-                    }
-                }
-            });
-            _this.serialize = ko.computed(function () {
-                return {
-                    cc: Number(_this.cc()),
-                    w_per_m2: Number(_this.w_per_m2()),
-                    mcc: (_this.cc() ? 999 : -1),
-                    mw_per_m2: (_this.w_per_m2() ? 999 : -1),
-                };
-            });
-            return _this;
-        }
-        Calculations.prototype.set = function (calculations) {
-            if (calculations) {
-                this.cc(calculations.cc);
-                this.w_per_m2(calculations.w_per_m2);
-                this.cc(calculations.cc);
-                this.w_per_m2(calculations.w_per_m2);
-            }
-        };
-        return Calculations;
-    }(Common_1.Base));
-    exports.Calculations = Calculations;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
+/* 14 */,
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 

@@ -6,12 +6,12 @@
   heatingForm.specs.calculations.cc,
   'form-group col-xs-8 col-sm-10',
   **{'data-bind':
-    "textInput: cc",
+    "textInput: cc_calculated",
     'readonly':'readonly'}) }}
   {{ render_field(
   heatingForm.specs.calculations.w_per_m2,
   'form-group col-xs-8 col-sm-10',
   **{'data-bind':
-    "textInput: w_per_m2().toFixed(2)",
+    "textInput: w_per_m2_calculated().toFixed(2)",
     'readonly':'readonly'}) }}
 </script>
