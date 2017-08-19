@@ -44,7 +44,8 @@ class PdfForm(object):
         thisDict = self.fields_dict[fieldVariable]
         thisType = thisDict['type']
         # Cast the value to the needed type.
-        if thisType == NumberTypes and not isinstance(value, thisType):
+        if (value and thisType == NumberTypes
+                and not isinstance(value, thisType)):
             for t in NumberTypes:
                 try:
                     value = t(value)

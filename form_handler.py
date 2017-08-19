@@ -75,10 +75,8 @@ class FormHandler(object):
         """Push data from product."""
         self.dictionary.update({
             'room.name': self.room.name,
-            'room.area': self.room.specs['area']
-            if self.room.specs else '',
-            'room.heated_area': self.room.specs['heated_area']
-            if self.room.specs else ''
+            'room.area': self.room.area,
+            'room.heated_area': self.room.area
         })
 
     def push_from_room_item_modification(self):
@@ -88,7 +86,7 @@ class FormHandler(object):
             measurements = specs['measurements']
             for key, value in measurements.items():
                 try:
-                    if int(value) < 0:
+                    if value and int(value) < 0:
                         measurements[key] = ''
                 except ValueError:
                     break
