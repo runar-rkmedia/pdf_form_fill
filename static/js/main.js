@@ -106,12 +106,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             this.list = ko.observableArray(list);
         }
         ByID.prototype.by_id = function (id) {
-            for (var _i = 0, _a = this.list(); _i < _a.length; _i++) {
-                var item = _a[_i];
-                if (item.id() == id) {
-                    return item;
-                }
-            }
+            return this.list().find(function (myObj) {
+                return myObj.id === Number(id);
+            });
         };
         return ByID;
     }());
@@ -301,11 +298,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
         function TSProductModel(parentModel) {
             var _this = this;
             this.parentModel = parentModel;
+            this.url = '/json/v1/static/';
             this.products = ko.observableArray([]);
+            this.room_type_info = ko.observableArray();
             this.getProducts = function () {
-                $.get("/products.json", $('#form').serialize())
+                $.get(_this.url)
                     .done(function (result) {
-                    _this.products(result);
+                    _this.products(result.products);
+                    _this.room_type_info(result.room_type_info);
                     _this.parentModel.selected_vk(_this.parentModel.forced_selected_vk());
                 })
                     .fail(function (e) {
@@ -348,6 +348,25 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             };
             this.flat_products = ko.computed(function () {
                 return _this.flatten_products(_this.products());
+            });
+            this.flat_room_type_info = ko.computed(function () {
+                var flattened = [];
+                if (_this.room_type_info()) {
+                    for (var _i = 0, _a = _this.room_type_info(); _i < _a.length; _i++) {
+                        var room_type_info = _a[_i];
+                        for (var _b = 0, _c = room_type_info.names; _b < _c.length; _b++) {
+                            var name = _c[_b];
+                            flattened.push({
+                                name: name,
+                                id: room_type_info.id,
+                                maxEffect: room_type_info.maxEffect,
+                                normalEffect: room_type_info.normalEffect,
+                                outside: room_type_info.outside || false
+                            });
+                        }
+                    }
+                }
+                return flattened;
             });
             this.by_id = function (id) {
                 var f = _this.flat_products();
@@ -2678,67 +2697,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(14)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, HeatingCable_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.RoomSuggestionList = [
-        {
-            name: 'Stue',
-            aliases: ['Kjøkken', 'Soverom', 'Barnerom', 'Kjellerstue'],
-            maxEffect: 100,
-            normalEffect: 85
-        },
-        {
-            name: 'Baderom',
-            aliases: [
-                'Badegulv', 'Vaskerom', 'Hall', 'Bad', 'WC', 'Toalett', 'Gang',
-                'Vindfang'
-            ],
-            maxEffect: 160,
-            normalEffect: 135
-        },
-        {
-            name: 'Snøsmelting',
-            outside: true,
-            aliases: ['Gate', 'Fortau', 'Rampe', 'Terrasse', 'Trapp', 'Hjulspor', 'Gårdsplass', 'Tunet'],
-            maxEffect: 1000,
-            normalEffect: 300
-        },
-        {
-            name: 'Snøsmelting med automatikk',
-            outside: true,
-            maxEffect: 1000,
-            normalEffect: 350
-        },
-        {
-            name: 'Tregulv',
-            maxEffect: 80,
-            normalEffect: 60
-        },
-        {
-            name: 'Fryseromsgulv',
-            maxEffect: 15,
-            normalEffect: 12.5
-        },
-        {
-            name: 'Betongherding',
-            maxEffect: 1000,
-            normalEffect: 110
-        },
-        {
-            name: 'Idrettsanlegg',
-            aliases: ['Fotballbane'],
-            maxEffect: 1000,
-            normalEffect: 60
-        },
-        {
-            name: 'Gartneri',
-            maxEffect: 1000,
-            normalEffect: 80
-        },
-        {
-            name: 'Magasinvarme',
-            maxEffect: 250,
-            normalEffect: 215
-        }
-    ];
     var Room = (function (_super) {
         __extends(Room, _super);
         function Room(root, parent, room) {
@@ -2803,31 +2761,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 return false;
             });
-            _this.suggestRoom = function () {
-                var listOfRooms = [];
-                exports.RoomSuggestionList.forEach(function (room, index) {
-                    listOfRooms.push({
-                        name: room.name,
-                        id: index
-                    });
-                    if (room.aliases) {
-                        for (var _i = 0, _a = room.aliases; _i < _a.length; _i++) {
-                            var alias = _a[_i];
-                            listOfRooms.push({
-                                name: alias,
-                                id: index
-                            });
-                        }
-                    }
-                });
-                return listOfRooms;
-            };
-            _this.roomSuggestionOnSelect = function (value, roomSuggestion, event) {
-                var room_data = exports.RoomSuggestionList[roomSuggestion.id];
-                _this.outside(Boolean(room_data.outside));
-                _this.maxEffect(room_data.maxEffect);
-                _this.normalEffect(room_data.normalEffect);
-            };
             _this.parent = parent;
             _this.root = root;
             _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
@@ -2844,6 +2777,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 };
             });
             _this.set(room);
+            _this.room_suggestion = ko.observable(new RoomSuggestion(_this.root.Products().flat_room_type_info(), _this));
             return _this;
         }
         // Add some additonal functionality when posting.
@@ -2903,6 +2837,24 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         return Rooms;
     }(Common_1.ByID));
     exports.Rooms = Rooms;
+    var RoomSuggestion = (function () {
+        function RoomSuggestion(room_type_info_flat, room) {
+            var _this = this;
+            this.list = ko.observableArray();
+            this.suggestRoom = ko.computed(function () {
+                return _this.list();
+            });
+            this.roomSuggestionOnSelect = function (value, roomSuggestion, event) {
+                _this.parent.outside(Boolean(roomSuggestion.outside));
+                _this.parent.maxEffect(roomSuggestion.maxEffect);
+                _this.parent.normalEffect(roomSuggestion.normalEffect);
+            };
+            this.list(room_type_info_flat);
+            this.parent = room;
+        }
+        return RoomSuggestion;
+    }());
+    exports.RoomSuggestion = RoomSuggestion;
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 

@@ -1,5 +1,6 @@
-import { HTTPVerbs, ByID, Post } from "./Common"
+import { ByID, Post } from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
+import { RoomTypesInfoFlat } from "./ProductModel"
 import { CustomerInterface, Customer } from './Customer'
 import { HeatingCable, HeatingCables, HeatingCableInterface } from './HeatingCable'
 
@@ -12,79 +13,7 @@ export interface RoomInterface {
   customer_id?: number
   heating_cables?: HeatingCableInterface[]
 }
-export interface RoomSmartFill {
-  name: string;
-  outside?: boolean;
-  aliases?: string[]
-  maxEffect: number
-  normalEffect: number
-}
 
-export let RoomSuggestionList: RoomSmartFill[] = [
-  {
-    name: 'Stue',
-    aliases: ['Kjøkken', 'Soverom', 'Barnerom', 'Kjellerstue'],
-    maxEffect: 100,
-    normalEffect: 85
-  },
-  {
-    name: 'Baderom',
-    aliases: [
-      'Badegulv', 'Vaskerom', 'Hall', 'Bad', 'WC', 'Toalett', 'Gang',
-      'Vindfang'],
-    maxEffect: 160,
-    normalEffect: 135
-  },
-  {
-    name: 'Snøsmelting',
-    outside: true,
-    aliases: ['Gate', 'Fortau', 'Rampe', 'Terrasse', 'Trapp', 'Hjulspor', 'Gårdsplass', 'Tunet'],
-    maxEffect: 1000,
-    normalEffect: 300
-  },
-  {
-    name: 'Snøsmelting med automatikk',
-    outside: true,
-    maxEffect: 1000,
-    normalEffect: 350
-  },
-  {
-    name: 'Tregulv',
-    maxEffect: 80,
-    normalEffect: 60
-  },
-  {
-    name: 'Fryseromsgulv',
-    maxEffect: 15,
-    normalEffect: 12.5
-  },
-  {
-    name: 'Betongherding',
-    maxEffect: 1000,
-    normalEffect: 110
-  },
-  {
-    name: 'Idrettsanlegg',
-    aliases: ['Fotballbane'],
-    maxEffect: 1000,
-    normalEffect: 60
-  },
-  {
-    name: 'Gartneri',
-    maxEffect: 1000,
-    normalEffect: 80
-  },
-  {
-    name: 'Magasinvarme',
-    maxEffect: 250,
-    normalEffect: 215
-  }
-]
-
-export interface RoomSuggestionInterface {
-  name: string,
-  id: number
-}
 export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
@@ -95,6 +24,7 @@ export class Room extends Post {
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
+  room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({
     name: this.name,
     outside: this.outside,
@@ -128,6 +58,9 @@ export class Room extends Post {
       }
     })
     this.set(room)
+    this.room_suggestion = ko.observable(
+      new RoomSuggestion(this.root.Products().flat_room_type_info(),
+        this))
   }
   room_effect = ko.computed((): number => {
     let sum_effect = 0
@@ -199,37 +132,6 @@ export class Room extends Post {
     this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
     this.save()
   }
-
-
-  suggestRoom = () => {
-    let listOfRooms: RoomSuggestionInterface[] = []
-    RoomSuggestionList.forEach((room, index) => {
-      listOfRooms.push({
-        name: room.name,
-        id: index
-      })
-      if (room.aliases) {
-        for (let alias of room.aliases) {
-          listOfRooms.push({
-            name: alias,
-            id: index
-          })
-        }
-      }
-    })
-    return listOfRooms
-  };
-
-  roomSuggestionOnSelect = (
-    value: KnockoutObservable<string>,
-    roomSuggestion: RoomInterface,
-    event: Event
-  ) => {
-    let room_data = RoomSuggestionList[roomSuggestion.id]
-    this.outside(Boolean(room_data.outside))
-    this.maxEffect(room_data.maxEffect)
-    this.normalEffect(room_data.normalEffect)
-  }
 }
 
 export class Rooms extends ByID {
@@ -258,5 +160,26 @@ export class Rooms extends ByID {
     // for now, I will leave it not working.
     first_input.focus()
     return new_room
+  }
+}
+
+export class RoomSuggestion {
+  list: KnockoutObservableArray<RoomTypesInfoFlat> = ko.observableArray()
+  parent: Room
+  constructor(room_type_info_flat: RoomTypesInfoFlat[], room: Room) {
+    this.list(room_type_info_flat)
+    this.parent = room
+  }
+  suggestRoom = ko.computed(() => {
+    return this.list()
+  })
+  roomSuggestionOnSelect = (
+    value: KnockoutObservable<string>,
+    roomSuggestion: RoomTypesInfoFlat,
+    event: Event
+  ) => {
+    this.parent.outside(Boolean(roomSuggestion.outside))
+    this.parent.maxEffect(roomSuggestion.maxEffect)
+    this.parent.normalEffect(roomSuggestion.normalEffect)
   }
 }
