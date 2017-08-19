@@ -129,6 +129,17 @@ export class Room extends Post {
     })
     this.set(room)
   }
+  room_effect = ko.computed((): number => {
+    let sum_effect = 0
+    if (this.heating_cables()) {
+      for (let heating_cable of this.heating_cables().list()) {
+        if (heating_cable.product()) {
+          sum_effect += Number(heating_cable.product()!.effect)
+        }
+      }
+    }
+    return sum_effect
+  })
   room_title = ko.computed(() => {
     if (this.id() >= 0) {
       let result = this.name()
