@@ -118,11 +118,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             var _this = this;
             this.modified = ko.computed(function () { return false; });
             this.init = function () {
+                _this.differences = ko.computed(function () {
+                    return diff.getDiff(_this.serialize(), _this.last_sent_data());
+                });
                 _this.modified = ko.computed(function () {
+                    var difference = _this.differences();
                     if (!_this.last_sent_data()) {
-                        return true;
+                        return false;
                     }
-                    var difference = diff.getDiff(_this.serialize(), _this.last_sent_data());
                     return Object.keys(difference).length > 0;
                 });
             };
@@ -2707,7 +2710,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.name = ko.observable();
             _this.outside = ko.observable();
             _this.maxEffect = ko.observable();
-            _this.room_type_info_id = ko.observable();
             _this.normalEffect = ko.observable();
             _this.area = ko.observable();
             _this.heated_area = ko.observable();
@@ -2855,7 +2857,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 _this.parent.outside(Boolean(roomSuggestion.outside));
                 _this.parent.maxEffect(roomSuggestion.maxEffect);
                 _this.parent.normalEffect(roomSuggestion.normalEffect);
-                _this.parent.room_type_info_id(roomSuggestion.id);
             };
             this.list(room_type_info_flat);
             this.parent = room;
@@ -3093,6 +3094,26 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(3)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var InputReadOnlyToggle = (function () {
+        function InputReadOnlyToggle(calculateFunction) {
+            var _this = this;
+            this.override = ko.observable(false);
+            this.user_input = ko.observable();
+            this.calculated = ko.computed(calculateFunction);
+            this.serialize = ko.computed(function () {
+                return {
+                    v: (_this.override() ? _this.user_input() : _this.calculated()) || 0,
+                    m: _this.override(),
+                };
+            });
+            ko.computed(function () {
+                if (!_this.override()) {
+                    _this.user_input(_this.calculated().toFixed(1));
+                }
+            });
+        }
+        return InputReadOnlyToggle;
+    }());
     var HeatingCable = (function (_super) {
         __extends(HeatingCable, _super);
         function HeatingCable(product_model, parent, heating_cable) {
@@ -3120,6 +3141,39 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
             _this.parent = parent;
+            _this.w_per_m2 = ko.observable(new InputReadOnlyToggle(function () {
+                if (_this.product()) {
+                    if (_this.product().type == 'mat') {
+                        return _this.product().mainSpec;
+                    }
+                }
+                var heated_area = _this.parent.parent.heated_area();
+                var room_effect = _this.parent.parent.room_effect();
+                if (room_effect && heated_area) {
+                    return room_effect / heated_area;
+                }
+                return Number(heating_cable.specs.w_per_m2.v) || 0;
+            }));
+            _this.cc = ko.observable(new InputReadOnlyToggle(function () {
+                if (_this.product() && _this.product().type != 'mat') {
+                    // For rooms with multiple cables, we need to do some guesswork to
+                    // calculate the area that this cable is covering.
+                    var room_effect = _this.parent.parent.room_effect();
+                    var this_effect = _this.product().effect;
+                    if (room_effect && this_effect) {
+                        var coverage_fraction = this_effect / room_effect;
+                        var heated_area = _this.parent.parent.heated_area();
+                        var heated_area_of_this_cable = heated_area * coverage_fraction;
+                        var length = _this.product().specs.Length;
+                        if (length && heated_area_of_this_cable) {
+                            var value = heated_area_of_this_cable / length * 100;
+                            return value;
+                        }
+                    }
+                }
+                // Set an initial value, to keep the modified-flag from raising
+                return Number(heating_cable.specs.cc.v) || 0;
+            }));
             _this.serialize = ko.computed(function () {
                 var obj = {
                     id: _this.id(),
@@ -3134,51 +3188,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                             mohm_b: (_this.mohm_b() ? 999 : -1),
                             mohm_c: (_this.mohm_c() ? 999 : -1),
                         },
-                    }
+                        cc: _this.cc().serialize(),
+                        w_per_m2: _this.w_per_m2().serialize()
+                    },
                 };
-                var calculations = {};
-                if (_this.cc_calculated) {
-                    calculations.cc = _this.cc_calculated();
-                }
-                if (_this.w_per_m2_calculated) {
-                    calculations.cc = _this.w_per_m2_calculated();
-                }
-                obj.specs.calculations = calculations;
                 return obj;
             });
-            _this.init();
             _this.set(heating_cable);
-            _this.cc_calculated = ko.computed(function () {
-                if (_this.product() && _this.product().type != 'mat') {
-                    // For rooms with multiple cables, we need to do some guesswork to
-                    // calculate the area that this cable is covering.
-                    var room_effect = _this.parent.parent.room_effect();
-                    var this_effect = _this.product().effect;
-                    if (room_effect && this_effect) {
-                        var coverage_fraction = this_effect / room_effect;
-                        var heated_area = _this.parent.parent.heated_area();
-                        var heated_area_of_this_cable = heated_area * coverage_fraction;
-                        var length = _this.product().specs.Length;
-                        if (length && heated_area_of_this_cable) {
-                            return heated_area_of_this_cable / length;
-                        }
-                    }
-                }
-                return 0;
-            });
-            _this.w_per_m2_calculated = ko.computed(function () {
-                if (_this.product()) {
-                    if (_this.product().type == 'mat') {
-                        return _this.product().mainSpec;
-                    }
-                }
-                var heated_area = _this.parent.parent.heated_area();
-                var room_effect = _this.parent.parent.room_effect();
-                if (room_effect && heated_area) {
-                    return room_effect / heated_area;
-                }
-                return 0;
-            });
+            _this.init();
             return _this;
         }
         HeatingCable.prototype.set = function (heating_cable) {
@@ -3192,8 +3209,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 this.mohm_a(heating_cable.specs.measurements.mohm_a);
                 this.mohm_b(heating_cable.specs.measurements.mohm_b);
                 this.mohm_c(heating_cable.specs.measurements.mohm_c);
+                this.w_per_m2().override(Boolean(heating_cable.specs.w_per_m2.m));
+                this.w_per_m2().user_input(Number(heating_cable.specs.w_per_m2.v));
+                this.cc().override(Boolean(heating_cable.specs.cc.m));
+                this.cc().user_input(Number(heating_cable.specs.cc.v));
             }
-            this.save();
+            if (this.serialize) {
+                this.save();
+            }
         };
         return HeatingCable;
     }(Common_1.Post));

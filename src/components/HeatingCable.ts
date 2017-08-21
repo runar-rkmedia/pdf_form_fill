@@ -39,6 +39,35 @@ interface CalculationsInterface {
 export interface HeatingCableSpecs {
   measurements?: MeasurementsInterface
   calculations?: CalculationsInterface
+  cc?: InputReadOnlyToggleInterface
+  w_per_m2?: InputReadOnlyToggleInterface
+}
+
+interface InputReadOnlyToggleInterface {
+  v: any
+  m: boolean
+}
+
+class InputReadOnlyToggle {
+  override: KnockoutObservable<boolean> = ko.observable(false)
+  calculated: KnockoutComputed<any>
+  serialize: KnockoutObservable<InputReadOnlyToggleInterface>
+  user_input: KnockoutObservable<number> = ko.observable();
+
+  constructor(calculateFunction: (() => any)) {
+    this.calculated = ko.computed(calculateFunction)
+    this.serialize = ko.computed((): InputReadOnlyToggleInterface => {
+      return {
+        v: (this.override() ? this.user_input() : this.calculated()) || 0,
+        m: this.override(),
+      }
+    })
+    ko.computed(() => {
+      if (!this.override()) {
+        this.user_input(this.calculated().toFixed(1))
+      }
+    })
+  }
 }
 
 export class HeatingCable extends Post {
@@ -51,8 +80,8 @@ export class HeatingCable extends Post {
   mohm_a: KnockoutObservable<number> = ko.observable();
   mohm_b: KnockoutObservable<number> = ko.observable();
   mohm_c: KnockoutObservable<number> = ko.observable();
-  cc_calculated: KnockoutComputed<number | undefined>
-  w_per_m2_calculated: KnockoutComputed<number | undefined>
+  w_per_m2: KnockoutObservable<InputReadOnlyToggle>
+  cc: KnockoutObservable<InputReadOnlyToggle>
 
   parent: HeatingCables
   product_model: TSProductModel
@@ -74,6 +103,41 @@ export class HeatingCable extends Post {
     this.product_model = product_model
     this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
     this.parent = parent
+
+    this.w_per_m2 = ko.observable(new InputReadOnlyToggle(() => {
+      if (this.product()) {
+        if (this.product()!.type == 'mat') {
+          return this.product()!.mainSpec
+        }
+      }
+      let heated_area = this.parent.parent.heated_area()
+      let room_effect = this.parent.parent.room_effect()
+      if (room_effect && heated_area) {
+        return room_effect / heated_area
+      }
+      return Number(heating_cable.specs!.w_per_m2!.v) || 0
+    }))
+    this.cc = ko.observable(new InputReadOnlyToggle(() => {
+      if (this.product() && this.product()!.type != 'mat') {
+        // For rooms with multiple cables, we need to do some guesswork to
+        // calculate the area that this cable is covering.
+        let room_effect = this.parent.parent.room_effect()
+        let this_effect = this.product()!.effect
+        if (room_effect && this_effect) {
+          let coverage_fraction = this_effect / room_effect
+          let heated_area = this.parent.parent.heated_area()
+          let heated_area_of_this_cable = heated_area * coverage_fraction
+          let length = this.product()!.specs!.Length
+          if (length && heated_area_of_this_cable) {
+            let value = heated_area_of_this_cable / length * 100
+            return value
+          }
+        }
+      }
+      // Set an initial value, to keep the modified-flag from raising
+      return Number(heating_cable.specs!.cc!.v) || 0
+    }))
+
     this.serialize = ko.computed(() => {
       let obj: HeatingCableInterface = {
         id: this.id(),
@@ -88,52 +152,14 @@ export class HeatingCable extends Post {
             mohm_b: (this.mohm_b() ? 999 : -1),
             mohm_c: (this.mohm_c() ? 999 : -1),
           },
-        }
+          cc: this.cc().serialize(),
+          w_per_m2: this.w_per_m2().serialize()
+        },
       }
-      let calculations: CalculationsInterface = {}
-      if (this.cc_calculated) {
-        calculations.cc = this.cc_calculated()
-      }
-      if (this.w_per_m2_calculated) {
-        calculations.cc = this.w_per_m2_calculated()
-      }
-      obj.specs!.calculations = calculations
-
       return obj
     })
-    this.init()
     this.set(heating_cable)
-    this.cc_calculated = ko.computed(() => {
-      if (this.product() && this.product()!.type != 'mat') {
-        // For rooms with multiple cables, we need to do some guesswork to
-        // calculate the area that this cable is covering.
-        let room_effect = this.parent.parent.room_effect()
-        let this_effect = this.product()!.effect
-        if (room_effect && this_effect) {
-          let coverage_fraction = this_effect / room_effect
-          let heated_area = this.parent.parent.heated_area()
-          let heated_area_of_this_cable = heated_area * coverage_fraction
-          let length = this.product()!.specs!.Length
-          if (length && heated_area_of_this_cable) {
-            return heated_area_of_this_cable / length
-          }
-        }
-      }
-      return 0
-    })
-    this.w_per_m2_calculated = ko.computed(() => {
-      if (this.product()) {
-        if (this.product()!.type == 'mat') {
-          return this.product()!.mainSpec
-        }
-      }
-      let heated_area = this.parent.parent.heated_area()
-      let room_effect = this.parent.parent.room_effect()
-      if (room_effect && heated_area) {
-        return room_effect / heated_area
-      }
-      return 0
-    })
+    this.init()
 
   }
   product = ko.computed((): ProductInterface | undefined => {
@@ -153,8 +179,15 @@ export class HeatingCable extends Post {
       this.mohm_a(heating_cable.specs.measurements.mohm_a)
       this.mohm_b(heating_cable.specs.measurements.mohm_b)
       this.mohm_c(heating_cable.specs.measurements.mohm_c)
+      this.w_per_m2().override(Boolean(heating_cable.specs.w_per_m2!.m))
+      this.w_per_m2().user_input(Number(heating_cable.specs.w_per_m2!.v))
+      this.cc().override(Boolean(heating_cable.specs.cc!.m))
+      this.cc().user_input(Number(heating_cable.specs.cc!.v))
     }
-    this.save()
+    if (this.serialize) {
+      this.save()
+
+    }
   }
 
 }

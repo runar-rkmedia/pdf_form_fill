@@ -155,20 +155,25 @@ class MeasurementsForms(SubForm):
     mohm_c = DecimalField()
 
 
-class CalculationsForm(SubForm):
-    """Form for calculated values, with override by user."""
-    cc = DecimalField(
-        'C/C-avstand ( cm )'
-    )
-    w_per_m2 = DecimalField(
+class W_per_m2(SubForm):
+    v = DecimalField(
         'Flateeffekt ( W/m<sup>2</sup> )'
     )
+    m = BooleanField()
+
+
+class Cc(SubForm):
+    v = DecimalField(
+        'C/C-avstand ( cm )'
+    )
+    m = BooleanField()
 
 
 class SpecsForm(SubForm):
     """Form for combining some different specs for heatingcable."""
     measurements = FormField(MeasurementsForms)
-    calculations = FormField(CalculationsForm)
+    w_per_m2 = FormField(W_per_m2)
+    cc = FormField(Cc)
 
 
 class HeatingCableForm(FlaskForm):
@@ -188,12 +193,6 @@ class HeatingCableForm(FlaskForm):
         ]
     )
     specs = FormField(SpecsForm)
-
-
-class HeatingForm(FlaskForm):
-    """Form for filling out a heaating-cable."""
-    address = FormField(AddressForm)
-    room = FormField(RoomForm)
 
 
 class CreateCompany(FlaskForm):

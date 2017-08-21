@@ -22,7 +22,6 @@ export class Room extends Post {
   name: KnockoutObservable<string> = ko.observable()
   outside: KnockoutObservable<boolean> = ko.observable()
   maxEffect: KnockoutObservable<number> = ko.observable()
-  room_type_info_id: KnockoutObservable<number> = ko.observable()
   normalEffect: KnockoutObservable<number> = ko.observable()
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
@@ -190,6 +189,5 @@ export class RoomSuggestion {
     this.parent.outside(Boolean(roomSuggestion.outside))
     this.parent.maxEffect(roomSuggestion.maxEffect)
     this.parent.normalEffect(roomSuggestion.normalEffect)
-    this.parent.room_type_info_id(roomSuggestion.id)
   }
 }

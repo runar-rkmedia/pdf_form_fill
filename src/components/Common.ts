@@ -38,17 +38,21 @@ export abstract class Base {
   abstract last_sent_data: KnockoutObservable<{}>
   abstract serialize: KnockoutObservable<{}>
   modified: KnockoutComputed<{}> = ko.computed(() => { return false })
+  differences: KnockoutComputed<string[]>
   save() {
     this.last_sent_data(this.serialize())
   }
   constructor() {
   }
   init = (): void => {
+    this.differences = ko.computed(() => {
+      return diff.getDiff(this.serialize(), this.last_sent_data())
+    })
     this.modified = ko.computed(() => {
+      let difference = this.differences()
       if (!this.last_sent_data()) {
-        return true
+        return false
       }
-      let difference = diff.getDiff(this.serialize(), this.last_sent_data())
       return Object.keys(difference).length > 0
     })
   }
