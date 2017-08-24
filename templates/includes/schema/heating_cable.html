@@ -16,27 +16,29 @@
 attr: {'id': 'heat' + id()}
 ">
       <div class="panel-body small-pad">
-        <div class="panel-group" id="heating-accordian">
+        <div class="panel-group" id="heating-accordian" data-bind="attr: {
+                            'id': 'heating-accordian' + id(),
+                          }">
 
           <div class="panel panel-default">
             <div
               class="panel-heading accordian-toggle collapsed"
               data-toggle="collapse"
-              data-parent="#heating-accordian"
               role="tab"
               data-bind="attr: {
                     'id': 'heading_select_cable' + id(),
-                    'data-target': '#panel_select_cable' + id()
+                    'data-target': '#panel_select_cable' + id(),
+                    'data-parent': '#heating-accordian' + id()
                   }">
               <h4 class="panel-title carrot">Varmekabel</h4>
             </div>
             <div
               class="panel-collapse collapse accordian-toggle collapsed"
-              data-parent="#heating-accordian"
               role="tabpanel"
               data-bind="attr: {
                     'id': 'panel_select_cable' + id(),
                     'aria-labelledby': 'heading_select_cable' + id(),
+                    'data-parent': '#heating-accordian' + id()
                   }">
               <div class="panel-body">
                 <div class="row">
@@ -53,11 +55,11 @@ attr: {'id': 'heat' + id()}
             <div
               class="panel-heading accordian-toggle collapsed"
               data-toggle="collapse"
-              data-parent="#heating-accordian"
               role="tab"
               data-bind="attr: {
                     'id': 'heading_measurements' + id(),
-                    'data-target': '#panel_measurements' + id()
+                    'data-target': '#panel_measurements' + id(),
+                    'data-parent': '#heating-accordian' + id()
                   }">
               <h4 class="panel-title carrot">Målinger</h4>
             </div>
@@ -80,11 +82,11 @@ attr: {'id': 'heat' + id()}
             <div
               class="panel-heading accordian-toggle collapsed"
               data-toggle="collapse"
-              data-parent="#heating-accordian"
               role="tab"
               data-bind="attr: {
                     'id': 'heading_others' + id(),
-                    'data-target': '#panel_others' + id()
+                    'data-target': '#panel_others' + id(),
+                    'data-parent': '#heating-accordian' + id()
                   }">
               <h4 class="panel-title carrot">Annet</h4>
             </div>
