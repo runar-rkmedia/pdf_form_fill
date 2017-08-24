@@ -34,13 +34,13 @@ interface MeasurementsInterface {
 }
 interface CalculationsInterface {
   cc?: number
-  w_per_m2?: number
+  area_output?: number
 }
 export interface HeatingCableSpecs {
   measurements?: MeasurementsInterface
   calculations?: CalculationsInterface
   cc?: InputReadOnlyToggleInterface
-  w_per_m2?: InputReadOnlyToggleInterface
+  area_output?: InputReadOnlyToggleInterface
 }
 
 interface InputReadOnlyToggleInterface {
@@ -80,7 +80,7 @@ export class HeatingCable extends Post {
   mohm_a: KnockoutObservable<number> = ko.observable();
   mohm_b: KnockoutObservable<number> = ko.observable();
   mohm_c: KnockoutObservable<number> = ko.observable();
-  w_per_m2: KnockoutObservable<InputReadOnlyToggle>
+  area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
 
   parent: HeatingCables
@@ -104,7 +104,7 @@ export class HeatingCable extends Post {
     this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
     this.parent = parent
 
-    this.w_per_m2 = ko.observable(new InputReadOnlyToggle(() => {
+    this.area_output = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product()) {
         if (this.product()!.type == 'mat') {
           return this.product()!.mainSpec
@@ -115,7 +115,7 @@ export class HeatingCable extends Post {
       if (room_effect && heated_area) {
         return room_effect / heated_area
       }
-      return Number(heating_cable.specs!.w_per_m2!.v) || 0
+      return Number(heating_cable.specs!.area_output!.v) || 0
     }))
     this.cc = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product() && this.product()!.type != 'mat') {
@@ -153,7 +153,7 @@ export class HeatingCable extends Post {
             mohm_c: (this.mohm_c() ? 999 : -1),
           },
           cc: this.cc().serialize(),
-          w_per_m2: this.w_per_m2().serialize()
+          area_output: this.area_output().serialize()
         },
       }
       return obj
@@ -179,8 +179,8 @@ export class HeatingCable extends Post {
       this.mohm_a(heating_cable.specs.measurements.mohm_a)
       this.mohm_b(heating_cable.specs.measurements.mohm_b)
       this.mohm_c(heating_cable.specs.measurements.mohm_c)
-      this.w_per_m2().override(Boolean(heating_cable.specs.w_per_m2!.m))
-      this.w_per_m2().user_input(Number(heating_cable.specs.w_per_m2!.v))
+      this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
+      this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
       this.cc().override(Boolean(heating_cable.specs.cc!.m))
       this.cc().user_input(Number(heating_cable.specs.cc!.v))
     }

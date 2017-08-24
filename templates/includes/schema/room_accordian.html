@@ -48,10 +48,28 @@
 
             <!-- /ko -->
             <!-- ko ifnot: heating_cables().list().length -->
-            <div class="well well-sm
-">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.</div>
-            <hr>
+            <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.</div>
             <!-- /ko -->
+            <div class="row well">
+              <div class="col-xs-12">
+                <h2>Sjekkliste</h2>
+                <p>Denne sjekklisten gjelder for alle kablene i dette rommet, og vil fylles ut for hver kabel. Kun de påkrevde feltene vises.</p>
+                <fieldset>
+                  <legend>Jording</legend>
+                  {{render_field( roomForm.earthed_cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
+                  {{render_field( roomForm.earthed_chicken_wire, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_chicken_wire"}) }}
+                  {{render_field( roomForm.earthed_other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
+                </fieldset>
+                <fieldset>
+                  <legend>Max temperatur</legend>
+                  <p>Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
+
+                  {{render_field( roomForm.max_temp_limited_by_planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
+                  {{render_field( roomForm.max_temp_limited_by_installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
+                  {{render_field( roomForm.max_temp_limited_by_other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
+                </fieldset>
+              </div>
+            </div>
 
           </div>
         </div>

@@ -5,9 +5,9 @@
 
   <!-- ko if: product()-->
   <!-- ko if: product().type != 'mat' -->
-  <!-- ko with: w_per_m2() -->
+  <!-- ko with: area_output() -->
   <div class="col-xs-4">
-    {{ render_field( heatingForm.specs.w_per_m2.v, 'form-group', **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+    {{ render_field( heatingForm.specs.area_output.v, 'form-group', **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
     <div class="checkbox">
       <label>
         <input data-bind="checked: override" type="checkbox">

@@ -78,6 +78,35 @@ class RoomForm(FlaskForm):
         ]
     )
     id = HiddenField()
+    earthed_cable_screen = BooleanField(
+        'Jordet kabelskjerm'
+    )
+    earthed_chicken_wire = BooleanField(
+        'Jordet netting'
+    )
+    earthed_other = StringField(
+        'Annet', validators=[Length(max=100)]
+    )
+    max_temp_limited_by_planning = BooleanField(
+        'Planlegging (innstallasjonsveiledningen er fulgt, og eier er informert om forutsetningene)'  # noqa
+    )
+    max_temp_limited_by_installation = BooleanField(
+        'Utførelse av montasje (Installasjonsveiledningen er fulgt)'  # noqa
+    )
+    max_temp_limited_by_other = StringField(
+        'Eventuell brtuk av beskyttelsesutstyr',  # noqa
+        validators=[Length(max=100)]
+    )
+    control_system_floor_sensor = BooleanField(
+        'Gulvføler'  # noqa
+    )
+    control_system_room_sensor = BooleanField(
+        'Romføler'  # noqa
+    )
+    control_system_type = StringField(
+        'Typebetegnelse',  # noqa
+        validators=[Length(max=50)]
+    )
 
 
 class SubForm(FlaskForm):
@@ -155,7 +184,7 @@ class MeasurementsForms(SubForm):
     mohm_c = DecimalField()
 
 
-class W_per_m2(SubForm):
+class AreaOutput(SubForm):
     v = DecimalField(
         'Flateeffekt ( W/m<sup>2</sup> )'
     )
@@ -172,7 +201,7 @@ class Cc(SubForm):
 class SpecsForm(SubForm):
     """Form for combining some different specs for heatingcable."""
     measurements = FormField(MeasurementsForms)
-    w_per_m2 = FormField(W_per_m2)
+    area_output = FormField(AreaOutput)
     cc = FormField(Cc)
 
 

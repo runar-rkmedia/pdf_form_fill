@@ -45,3 +45,4 @@ For instance, filling information about a product used is often a chore, with ma
 
 http://evanfredericksen.blogspot.no/2014/03/manipulating-pdf-form-fields-with-python.html
 https://www.nexans.no/eservice/Norway-no_NO/fileLibrary/Download_540156630/Norway/files/2015_Varmehandboka.pdf
+https://www.nexans.no/eservice/Norway-en/fileLibrary/Download_540158896/Norway/files/Warranty_form_heating-cables_multi.pdf

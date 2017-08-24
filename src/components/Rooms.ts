@@ -25,6 +25,12 @@ export class Room extends Post {
   normalEffect: KnockoutObservable<number> = ko.observable()
   area: KnockoutObservable<number> = ko.observable()
   heated_area: KnockoutObservable<number> = ko.observable()
+  earthed_cable_screen: KnockoutObservable<boolean> = ko.observable()
+  earthed_chicken_wire: KnockoutObservable<boolean> = ko.observable()
+  earthed_other: KnockoutObservable<string> = ko.observable()
+  max_temp_limited_by_planning: KnockoutObservable<boolean> = ko.observable()
+  max_temp_limited_by_installation: KnockoutObservable<boolean> = ko.observable()
+  max_temp_limited_by_other: KnockoutObservable<string> = ko.observable()
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({

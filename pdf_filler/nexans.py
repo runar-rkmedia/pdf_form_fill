@@ -171,7 +171,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text6',
             'type': str
         },
-        'meterEffekt': {
+        'product.watt_per_(square)_meter': {
             'text': 'Metereffekt',
             'field': 'Text7',
             'type': NumberTypes
@@ -181,7 +181,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text8',
             'type': NumberTypes
         },
-        'driftspenning': {
+        'product.voltage': {
             'text': 'Driftspenning',
             'field': 'Text9',
             'type': NumberTypes
@@ -226,12 +226,13 @@ class Nexans(StampablePdfForm):
             'field': 'Text17',
             'type': str
         },
-        'antall_elementer_matter_installert': {
+        # antall_elementer_matter_installert
+        'room.product_count': {
             'text': 'TextInPDF',
             'field': 'Text18',
             'type': str
         },
-        'oppvarmet_areal': {
+        'heated_area': {
             'text': 'TextInPDF',
             'field': 'Text19',
             'type': str

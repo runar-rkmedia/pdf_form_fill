@@ -133,4 +133,4 @@ class Product(db.Model, ByID):
     @property
     def resistance_max(self):
         return (self.restrictions.get('R_max') or
-                self.calculate_nominal_resistance() * 1.05)
+                self.calculate_nominal_resistance() * 1.10)

@@ -6,8 +6,9 @@
     {% endif %}
     {% if not no_label %}
       {% if field.type == 'BooleanField' %}
-        <label class="{{ 'checkbox' if not label_class }}{{ label_class if label_class }}">
-          {{ field(class_=class_, **kwargs) }}
+        <label class="{{ 'checkbox' if label_class == None }}{{ label_class if label_class }}">
+
+          {{ field(class_='checkbox ' + class_, **kwargs) }}
           {{ field.label.text|safe }}
         </label>
       {% else %}
