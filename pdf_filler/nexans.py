@@ -135,7 +135,7 @@ class Nexans(StampablePdfForm):
             'field': 'Check Box13',
             'type': bool
         },
-        'firma_navn': {
+        'company.name': {
             'text': 'Installert av (firma)',
             'field': 'Text1',
             'type': str
@@ -150,12 +150,12 @@ class Nexans(StampablePdfForm):
             'field': 'Text3',
             'type': str
         },
-        'rom_navn': {
+        'room.name': {
             'text': 'Rom',
             'field': 'Text4',
             'type': str
         },
-        'areal': {
+        'room.area': {
             'text': 'Areal',
             'field': 'Text5',
             'type': NumberTypes
@@ -226,12 +226,12 @@ class Nexans(StampablePdfForm):
             'field': 'Text18',
             'type': str
         },
-        'heated_area': {
+        'room.heated_area': {
             'text': 'TextInPDF',
             'field': 'Text19',
             'type': str
         },
-        'flateeffekt': {
+        'area_output': {
             'text': 'TextInPDF',
             'field': 'Text20',
             'type': str

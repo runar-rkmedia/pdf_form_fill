@@ -76,7 +76,7 @@ class FormHandler(object):
         self.dictionary.update({
             'room.name': self.room.name,
             'room.area': self.room.area,
-            'room.heated_area': self.room.area,
+            'room.heated_area': self.room.heated_area,
             'room.product_count': len(self.room.items),
             'earthed_cable_screen': self.room.earthed_cable_screen,
             'earthed_chicken_wire': self.room.earthed_chicken_wire,
@@ -93,19 +93,29 @@ class FormHandler(object):
     def push_from_room_item_modification(self):
         """Push data from room_item_modification."""
         specs = self.room_item_modification.specs.copy()
-        if specs and 'measurements' in specs:
-            measurements = specs['measurements']
-            for key, value in measurements.items():
-                try:
-                    if value and int(value) <= 0:
-                        measurements[key] = ''
-                except ValueError:
-                    pass
-                else:
-                    self.dictionary.update(measurements)
-                    self.dictionary.update({
-                        'date': self.room_item_modification.date
-                    })
+
+        if specs:
+            if 'area_output' in specs:
+                self.dictionary.update({
+                    'area_output': specs['area_output']['v'],
+                })
+            if 'cc' in specs:
+                self.dictionary.update({
+                    'cc': specs['cc']['v'],
+                })
+            if 'measurements' in specs:
+                measurements = specs['measurements']
+                for key, value in measurements.items():
+                    try:
+                        if value and int(value) <= 0:
+                            measurements[key] = ''
+                    except ValueError:
+                        pass
+                    else:
+                        self.dictionary.update(measurements)
+                        self.dictionary.update({
+                            'date': self.room_item_modification.date
+                        })
 
     def stamp_with_user(self, user, form):
         """Description."""
