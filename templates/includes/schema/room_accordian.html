@@ -1,80 +1,73 @@
 <!DOCTYPE html>
-<script type="text/html" id="room-accordian">
-  <div class="panel-group" id="accordion-room" role="tablist" aria-multiselectable="true">
-    <!-- ko foreach: $data -->
-    <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-warning': modified()}">
-      <div class="panel-heading collapsed" data-parent="#accordion-room" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + id(), 'href': '#room' + id()}">
-        <h3 class="panel-title carrot">
+<div class="panel-group" id="accordion-room" role="tablist" aria-multiselectable="true">
+  <!-- ko foreach: $data -->
+  <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-warning': modified()}">
+    <div class="panel-heading collapsed" data-parent="#accordion-room" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + id(), 'href': '#room' + id()}">
+      <h3 class="panel-title carrot">
 
-          <span data-bind="if: !name()">Nytt rom/sted</span>
-          <span data-bind="text: name"></span>
-          <span class="opaquelight"><!-- ko if: area && heated_area -->&ensp;&mdash;&ensp;<!-- /ko -->
-            <!-- ko if: area -->
-            <span data-bind="text: area() + '&nbsp;m²'"></span>
-            <!-- /ko -->
-            <!-- ko if: heated_area -->
-            <span data-bind="text:'(' +  heated_area() + '&nbsp;m²)'"></span>
-            <!-- /ko -->
-            <!-- ko if: room_effect -->
-            <span class="" data-bind="text:'&ensp;&mdash;&ensp;' +  room_effect() + '&nbsp;W'"></span>
-            <!-- /ko -->
-          </span>
-          <!-- ko if: modified -->
-          <b>Ikke lagret</b>
+        <span data-bind="if: !name()">Nytt rom/sted</span>
+        <span data-bind="text: name"></span>
+        <span class="opaquelight"><!-- ko if: area && heated_area -->&ensp;&mdash;&ensp;<!-- /ko -->
+          <!-- ko if: area -->
+          <span class="hidden-xs" data-bind="text: area() + '&nbsp;m²'"></span>
           <!-- /ko -->
+          <!-- ko if: heated_area -->
+          <span class="hidden-xs" data-bind="text:'(' +  heated_area() + '&nbsp;m²)'"></span>
+          <!-- /ko -->
+          <!-- ko if: room_effect -->
+          <span class="" data-bind="text:'&ensp;&mdash;&ensp;' +  room_effect() + '&nbsp;W'"></span>
+          <!-- /ko -->
+        </span>
+        <!-- ko if: modified -->
+        <b>Ikke lagret</b>
+        <!-- /ko -->
 
-        </h3>
-      </div>
-      <div class="panel-collapse collapse in" data-bind="
+      </h3>
+    </div>
+    <div class="panel-collapse collapse in" data-bind="
     attr: {'id': 'room' + id()}
     " role="tabpanel">
-        <div class="panel-body">
-          <!-- ko if: id() >= 0 -->
-          <button class="btn btn-primary" type="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'data-target': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">Endre info</button>
-          <button type="button" class="btn btn-info" data-bind="click: function (d, e){heating_cables().add(e)}">Legg til varmekabel</button>
+      <div class="panel-body">
+        <!-- ko if: id() >= 0 -->
+        <button class="btn btn-primary" type="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'data-target': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">Endre info</button>
+        <button type="button" class="btn btn-info" data-bind="click: function (d, e){heating_cables().add(e)}">Legg til varmekabel</button>
+        <!-- /ko -->
+        <div class="col-xs-12 well collapse" data-bind="attr: { 'id': 'room-form' + id()}">
+          <!-- ko template: { name: 'room_form_template', data: $data} -->
           <!-- /ko -->
-          <div class="col-xs-12 well collapse" data-bind="attr: { 'id': 'room-form' + id()}">
-            <!-- ko template: { name: 'room_form_template', data: $data} -->
-            <!-- /ko -->
-            <!-- ko if: bestFitEffect() -->
-            <div data-bind="text: 'Ideell effekt: ' + bestFitEffect().toFixed(0) + 'W'"></div>
-            <!-- /ko -->
-          </div>
-          <div class="select_products" data-bind="if: id() >= 0">
-            <h4>Varmekabler</h4>
-            <!-- ko if: heating_cables().list() -->
-            <!-- ko template: {name: 'heating_cable_template', data: heating_cables().list} -->
-            <!-- /ko -->
-
-            <!-- /ko -->
-            <!-- ko ifnot: heating_cables().list().length -->
-            <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.</div>
-            <!-- /ko -->
-            <div class="row well">
-              <div class="col-xs-12">
-                <h2>Sjekkliste</h2>
-                <p>Denne sjekklisten gjelder for alle kablene i dette rommet, og vil fylles ut for hver kabel. Kun de påkrevde feltene vises.</p>
-                <fieldset>
-                  <legend>Jording</legend>
-                  {{render_field( roomForm.earthed_cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
-                  {{render_field( roomForm.earthed_chicken_wire, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_chicken_wire"}) }}
-                  {{render_field( roomForm.earthed_other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
-                </fieldset>
-                <fieldset>
-                  <legend>Max temperatur</legend>
-                  <p>Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
-
-                  {{render_field( roomForm.max_temp_limited_by_planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
-                  {{render_field( roomForm.max_temp_limited_by_installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
-                  {{render_field( roomForm.max_temp_limited_by_other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
-                </fieldset>
-              </div>
-            </div>
-
-          </div>
+          <!-- ko if: bestFitEffect() -->
+          <div data-bind="text: 'Ideell effekt: ' + bestFitEffect().toFixed(0) + 'W'"></div>
+          <!-- /ko -->
         </div>
+        <div class="select_products" data-bind="if: id() >= 0">
+          <h4>Varmekabler</h4>
+          <!-- ko with: heating_cables().list() -->
+          {% include 'includes/schema/heating_cable.html' %}
+          <!-- /ko -->
+          <!-- ko ifnot: heating_cables().list().length -->
+          <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.
+          </div>
+          <!-- /ko -->
+        </div>
+        <h2>Sjekkliste</h2>
+        <p>Denne sjekklisten gjelder for alle kablene i dette rommet, og vil fylles ut for hver kabel. Kun de påkrevde feltene vises.</p>
+        <fieldset>
+          <legend>Jording</legend>
+          {{render_field( roomForm.earthed_cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
+          {{render_field( roomForm.earthed_chicken_wire, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_chicken_wire"}) }}
+          {{render_field( roomForm.earthed_other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
+        </fieldset>
+        <fieldset>
+          <legend>Max temperatur</legend>
+          <p>Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
+
+          {{render_field( roomForm.max_temp_limited_by_planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
+          {{render_field( roomForm.max_temp_limited_by_installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
+          {{render_field( roomForm.max_temp_limited_by_other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
+        </fieldset>
+
       </div>
     </div>
-    <!-- /ko -->
   </div>
-</script>
+  <!-- /ko -->
+</div>

@@ -11,9 +11,9 @@
       {{ render_field(customerForm.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }}
       {{ render_field(customerForm.address.address2,
       'form-group, col-xs-12', no_label=True, **{'data-bind':" textInput: address2 "}) }}
-      {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2', **{'data-bind':" textInput: post_code"}) }}
+      {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2 zero-pad-r', **{'data-bind':" textInput: post_code"}) }}
       {{ render_field(customerForm.address.post_area,'form-group
-      col-xs-8 col-sm-10' , **{'data-bind': "textInput: post_area", 'readonly':'readonly'}) }}
+      col-xs-8 col-sm-10 zero-pad-l' , **{'data-bind': "textInput: post_area", 'readonly':'readonly'}) }}
       <div class="col-xs-12">
         <button
           type="button"
@@ -35,7 +35,8 @@
 </h4>
 <!-- List of rooms -->
 
-<!-- ko template: { name: 'room-accordian', data: rooms().list} -->
+<!-- ko with: rooms().list() -->
+{% include 'includes/schema/room_accordian.html' %}
 <!-- /ko -->
 
 <!-- Room form -->

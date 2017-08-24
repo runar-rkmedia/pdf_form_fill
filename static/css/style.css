@@ -73,19 +73,25 @@
           color: blue; }
 
 @media only screen and (max-width: 768px) {
+  .small-pad {
+    padding-right: 6px !important;
+    padding-left: 6px !important;   }
+}
+
+@media only screen and (max-width: 768px) {
   .zero-pad, .zero-pad-l, .zero-pad-r {
     padding-right: 0;
     padding-left: 0;   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (max-width: 768px) {
   .zero-pad-l {
-    padding-left: 0;   }
+    padding-left: 0 !important;   }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (max-width: 768px) {
   .zero-pad-r {
-    padding-right: 0;   }
+    padding-right: 0 !important;   }
 }
 
 .csscolumn {
@@ -119,18 +125,29 @@
         border-top-left-radius: 0;
         border-top-right-radius: 0; }
 
-        #input-anleggs_postnummer {
-          width: 100px; }
+        .panel-body {
+          padding-left: 6px !important;
+          padding-right: 6px !important; }
 
-          legend {
-            font-size: 14px;
-            font-weight: 700;
-            border: 0;
-            margin-bottom: 5px; }
+          .panel-heading {
+            cursor: pointer; }
 
-            @media screen and (max-width: 450px) {
-              label {
-                font-size: 12px;   }
+            .icon {
+              font-size: 30px;
+              height: 1em; }
+
+              #input-anleggs_postnummer {
+                width: 100px; }
+
+                legend {
+                  font-size: 14px;
+                  font-weight: 700;
+                  border: 0;
+                  margin-bottom: 5px; }
+
+                  @media screen and (max-width: 450px) {
+                    label {
+                      font-size: 12px;   }
 }
 
 input[type=radio] {

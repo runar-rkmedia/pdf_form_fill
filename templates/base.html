@@ -3,24 +3,22 @@
 
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible"
-          content="IE=edge">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Smart varmekabel-dokumentasjon</title>
     {% assets "css_all" %}
-    <link rel="stylesheet"
-          href="{{ ASSET_URL }}" /> {% endassets %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+    {% endassets %}
   </head>
 
   <body>
     <div class="container">
-      {% include 'includes/header.html' %} {% block body %}{% endblock %}
+      {% include 'includes/header.html' %}
+      {% block body %}{% endblock %}
     </div>
   </body>
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
   {% block script %}{% endblock %}
-
 </html>

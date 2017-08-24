@@ -163,6 +163,7 @@ class Company(db.Model):
 
     def owns(self, model):
         """Check if company has rights to access this."""
+        print(self.name)
         if model.company == self:
             return True
         else:

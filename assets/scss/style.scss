@@ -158,6 +158,13 @@ canvas {
   }
 }
 
+.small-pad {
+  @include media-max(sm) {
+    padding-right: 6px !important;
+    padding-left: 6px !important;
+  }
+}
+
 .zero-pad {
   @include media-max(sm) {
     padding-right: 0;
@@ -166,15 +173,15 @@ canvas {
 }
 
 .zero-pad-l {
-  @include media-min(sm) {
-    padding-left: 0;
+  @include media-max(sm) {
+    padding-left: 0 !important;
   };
   @extend .zero-pad;
 }
 
 .zero-pad-r {
-  @include media-min(sm) {
-    padding-right: 0;
+  @include media-max(sm) {
+    padding-right: 0 !important;
   };
   @extend .zero-pad;
 }
@@ -211,5 +218,19 @@ canvas {
   border-top: none;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.panel-body {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.panel-heading {
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 30px;
+  height: 1em;
 }
 @import "form";

@@ -623,6 +623,8 @@ def json_form_modification(filled_form_modified_id):
 @app.route('/')
 def view_form():
     """View for home."""
+    # TODO: NEVER PUT THIS IN PRODUCTION!
+    login_user(User.query.filter(User.id==1).first())
     # Set up some defaults. (retrieve this from the user-config later.)
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()
