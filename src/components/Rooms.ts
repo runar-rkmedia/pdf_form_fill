@@ -146,20 +146,7 @@ export class Room extends Post {
     }
     return 0
   })
-  modified = ko.computed(() => {
-    if (!this.last_sent_data()) {
-      return true
-    }
-    if (
-      this.name() != this.last_sent_data().room_name ||
-      this.outside() != this.last_sent_data().outside ||
-      this.area() != this.last_sent_data().area ||
-      this.heated_area() != this.last_sent_data().heated_area
-    ) {
-      return true
-    }
-    return false
-  })
+
   // Add some additonal functionality when posting.
   post(h: any, event: Event, data_object?: any, url?: string) {
     return super.post(h, event, data_object, url).done(() => {
