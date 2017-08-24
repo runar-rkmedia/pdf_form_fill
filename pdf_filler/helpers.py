@@ -106,3 +106,8 @@ class DictionaryHelper(object):
         if len(string) > 0:
             return '{}{}{}'.format(pre, string, sub)
         return default
+
+    def s_bool(self, key):
+        """Output the boolean if field exists"""
+        string = self.s(key)
+        return len(string) > 0

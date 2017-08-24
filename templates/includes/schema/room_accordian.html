@@ -56,19 +56,40 @@
         <p>Denne sjekklisten gjelder for alle kablene i dette rommet, og vil fylles ut for hver kabel. Kun de påkrevde feltene vises.</p>
         <fieldset>
           <legend>Jording</legend>
-          {{render_field( roomForm.earthed_cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
-          {{render_field( roomForm.earthed_chicken_wire, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_chicken_wire"}) }}
-          {{render_field( roomForm.earthed_other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
+          {{render_field( roomForm.check_earthed.cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
+          {{render_field( roomForm.check_earthed.chicken_wire, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_chicken_wire"}) }}
+          {{render_field( roomForm.check_earthed.other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
         </fieldset>
         <fieldset>
           <legend>Max temperatur</legend>
           <p>Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
 
-          {{render_field( roomForm.max_temp_limited_by_planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
-          {{render_field( roomForm.max_temp_limited_by_installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
-          {{render_field( roomForm.max_temp_limited_by_other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
+          {{render_field( roomForm.check_max_temp.planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
+          {{render_field( roomForm.check_max_temp.installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
+          {{render_field( roomForm.check_max_temp.other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
+        </fieldset>
+        <fieldset>
+          <legend>Styresystem</legend>
+
+          {{render_field( roomForm.check_control_system.designation, formgroup='form-group', **{'data-bind':"textInput: control_system_designation"}) }}
+          {{render_field( roomForm.check_control_system.floor_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_floor_sensor"}) }}
+          {{render_field( roomForm.check_control_system.room_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_room_sensor"}) }}
+          {{render_field( roomForm.check_control_system.other, formgroup='form-group', **{'data-bind':"textInput: control_system_other"}) }}
         </fieldset>
 
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="text-right">
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
+                data-loading-text="
+                <span class='glyphicon glyphicon-refresh spinning'></span>"></button>
+
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

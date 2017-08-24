@@ -77,7 +77,17 @@ class FormHandler(object):
             'room.name': self.room.name,
             'room.area': self.room.area,
             'room.heated_area': self.room.area,
-            'room.product_count': len(self.room.items)
+            'room.product_count': len(self.room.items),
+            'earthed_cable_screen': self.room.earthed_cable_screen,
+            'earthed_chicken_wire': self.room.earthed_chicken_wire,
+            'earthed_other': self.room.earthed_other,
+            'max_temp_planning': self.room.max_temp_planning,
+            'max_temp_installation': self.room.max_temp_installation,
+            'max_temp_other': self.room.max_temp_other,
+            'control_system_floor_sensor': self.room.control_system_floor_sensor,
+            'control_system_room_sensor': self.room.control_system_room_sensor,
+            'control_system_type': self.room.control_system_type,
+            'control_system_other': self.room.control_system_other
         })
 
     def push_from_room_item_modification(self):

@@ -4,6 +4,25 @@ import { RoomTypesInfoFlat } from "./ProductModel"
 import { CustomerInterface, Customer } from './Customer'
 import { HeatingCable, HeatingCables, HeatingCableInterface } from './HeatingCable'
 
+interface CheckEarthed {
+  cable_screen: boolean
+  chicken_wire: boolean
+  other: string
+}
+
+interface CheckMaxTemp {
+  planning: boolean
+  installation: boolean
+  other: string
+}
+
+interface CheckControlSystem {
+  floor_sensor: boolean
+  room_sensor: boolean
+  designation: string
+  other: string
+}
+
 export interface RoomInterface {
   room_name: string;
   id: number;
@@ -14,6 +33,9 @@ export interface RoomInterface {
   heating_cables?: HeatingCableInterface[],
   maxEffect?: number
   normalEffect?: number
+  check_earthed?: CheckEarthed
+  check_max_temp?: CheckMaxTemp
+  check_control_system?: CheckControlSystem
 }
 
 export class Room extends Post {
@@ -28,9 +50,13 @@ export class Room extends Post {
   earthed_cable_screen: KnockoutObservable<boolean> = ko.observable()
   earthed_chicken_wire: KnockoutObservable<boolean> = ko.observable()
   earthed_other: KnockoutObservable<string> = ko.observable()
-  max_temp_limited_by_planning: KnockoutObservable<boolean> = ko.observable()
-  max_temp_limited_by_installation: KnockoutObservable<boolean> = ko.observable()
+  max_temp_limited_by_planning: KnockoutObservable<boolean> = ko.observable(true)
+  max_temp_limited_by_installation: KnockoutObservable<boolean> = ko.observable(true)
   max_temp_limited_by_other: KnockoutObservable<string> = ko.observable()
+  control_system_floor_sensor: KnockoutObservable<boolean> = ko.observable(true)
+  control_system_room_sensor: KnockoutObservable<boolean> = ko.observable(true)
+  control_system_designation: KnockoutObservable<string> = ko.observable()
+  control_system_other: KnockoutObservable<string> = ko.observable()
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({
@@ -64,13 +90,30 @@ export class Room extends Post {
         outside: this.outside(),
         customer_id: this.parent.parent.id(),
         maxEffect: this.maxEffect(),
-        normalEffect: this.normalEffect()
+        normalEffect: this.normalEffect(),
+        check_earthed: {
+          cable_screen: this.earthed_cable_screen(),
+          chicken_wire: this.earthed_chicken_wire(),
+          other: this.earthed_other(),
+        },
+        check_max_temp: {
+          planning: this.max_temp_limited_by_planning(),
+          installation: this.max_temp_limited_by_installation(),
+          other: this.max_temp_limited_by_other(),
+        },
+        check_control_system: {
+          room_sensor: this.control_system_room_sensor(),
+          floor_sensor: this.control_system_floor_sensor(),
+          designation: this.control_system_designation(),
+          other: this.control_system_other(),
+        },
       }
     })
     this.set(room)
     this.room_suggestion = ko.observable(
       new RoomSuggestion(this.root.Products().flat_room_type_info(),
         this))
+    this.init()
   }
   room_effect = ko.computed((): number => {
     let sum_effect = 0
@@ -144,6 +187,22 @@ export class Room extends Post {
     this.maxEffect(room.maxEffect || 0)
     this.normalEffect(room.normalEffect || 0)
     this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
+    if (room.check_earthed) {
+      this.earthed_cable_screen(room.check_earthed.cable_screen)
+      this.earthed_chicken_wire(room.check_earthed.chicken_wire)
+      this.earthed_other(room.check_earthed.other)
+    }
+    if (room.check_max_temp) {
+      this.max_temp_limited_by_planning(room.check_max_temp.planning)
+      this.max_temp_limited_by_installation(room.check_max_temp.installation)
+      this.max_temp_limited_by_other(room.check_max_temp.other)
+    }
+    if (room.check_control_system) {
+      this.control_system_floor_sensor(room.check_control_system.floor_sensor)
+      this.control_system_room_sensor(room.check_control_system.room_sensor)
+      this.control_system_designation(room.check_control_system.designation)
+      this.control_system_other(room.check_control_system.other)
+    }
     this.save()
   }
 }

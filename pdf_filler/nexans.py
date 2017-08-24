@@ -50,16 +50,10 @@ class Nexans(StampablePdfForm):
             'product.resistance_nominal': '{0:.1f}'.format(
                     d.g('product.resistance_nominal')
                     ),
-            'check-toleder':
-                self.TRUE
-                if d.g('product.twowires')
-                else
-                self.FALSE,
-            'check-enleder':
-                self.FALSE
-                if d.g('product.twowires')
-                else
-                self.TRUE,
+            'check-toleder': not d.s_bool('product.twowires'),
+            'check-enleder': d.s_bool('product.twowires'),
+            'max_temp_other_check': d.s_bool('max_temp_other'),
+            'earthed_other_check': d.s_bool('earthed_other')
         })
 
         date = d.g('date')
@@ -86,17 +80,17 @@ class Nexans(StampablePdfForm):
             'field': 'Check Box2',
             'type': bool
         },
-        'check-jordet_kabelskjerm': {
+        'earthed_cable_screen': {
             'text': 'TextInPDF',
             'field': 'Check Box3',
             'type': bool
         },
-        'check-jordet_netting': {
+        'earthed_chicken_wire': {
             'text': 'TextInPDF',
             'field': 'Check Box4',
             'type': bool
         },
-        'check-jording_annet': {
+        'earthed_other_check': {
             'text': 'TextInPDF',
             'field': 'Check Box5',
             'type': bool
@@ -111,32 +105,32 @@ class Nexans(StampablePdfForm):
             'field': 'Check Box7',
             'type': bool
         },
-        'check-maks_temp_planlegging': {
+        'max_temp_planning': {
             'text': 'TextInPDF',
             'field': 'Check Box8',
             'type': bool
         },
-        'check-maks_temp_utførelse': {
+        'max_temp_installation': {
             'text': 'TextInPDF',
             'field': 'Check Box9',
             'type': bool
         },
-        'check-maks_temp_annet': {
+        'max_temp_other_check': {
             'text': 'TextInPDF',
             'field': 'Check Box10',
             'type': bool
         },
-        'check-følertype-gulv': {
+        'control_system_floor_sensor': {
             'text': 'TextInPDF',
             'field': 'Check Box11',
             'type': bool
         },
-        'check-følertype-rom': {
+        'control_system_room_sensor': {
             'text': 'TextInPDF',
             'field': 'Check Box12',
             'type': bool
         },
-        'check-følertype-annet': {
+        'control_system_other_check': {
             'text': 'TextInPDF',
             'field': 'Check Box13',
             'type': bool
@@ -257,7 +251,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text23',
             'type': str
         },
-        'jording_annet': {
+        'earthed_other': {
             'text': 'TextInPDF',
             'field': 'Text24',
             'type': str
@@ -312,17 +306,17 @@ class Nexans(StampablePdfForm):
             'field': 'Text34',
             'type': str
         },
-        'maks_temp_beskrivelse': {
+        'max_temp_other': {
             'text': 'TextInPDF',
             'field': 'Text35',
             'type': str
         },
-        'styresystem_typebetegnelse': {
+        'control_system_type': {
             'text': 'TextInPDF',
             'field': 'Text36',
             'type': str
         },
-        'følertype_annet': {
+        'control_system_other': {
             'text': 'TextInPDF',
             'field': 'Text37',
             'type': str

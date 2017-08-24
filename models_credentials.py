@@ -475,6 +475,16 @@ class Room(db.Model, MyBaseModel):
     heated_area = db.Column(db.Numeric(8, 3))
     maxEffect = db.Column(db.Numeric(8, 3))
     normalEffect = db.Column(db.Numeric(8, 3))
+    earthed_cable_screen = db.Column(db.Boolean, default=False)
+    earthed_chicken_wire = db.Column(db.Boolean, default=False)
+    earthed_other = db.Column(db.String(200))
+    max_temp_planning = db.Column(db.Boolean, default=False)
+    max_temp_installation = db.Column(db.Boolean, default=False)
+    max_temp_other = db.Column(db.String(200))
+    control_system_floor_sensor = db.Column(db.Boolean, default=False)
+    control_system_room_sensor = db.Column(db.Boolean, default=False)
+    control_system_designation = db.Column(db.String(200))
+    control_system_other = db.Column(db.String(200))
 
     customer_id = db.Column(
         db.Integer, db.ForeignKey(Customer.id), nullable=False)
@@ -504,7 +514,24 @@ class Room(db.Model, MyBaseModel):
             'area': float(self.area or 0),
             'heated_area': float(self.heated_area or 0),
             'maxEffect': float(self.maxEffect or 0),
-            'normalEffect': float(self.normalEffect or 0)
+            'normalEffect': float(self.normalEffect or 0),
+            'check_earthed': {
+                'cable_screen': self.earthed_cable_screen,
+                'chicken_wire': self.earthed_chicken_wire,
+                'other': self.earthed_other,
+            },
+            'check_max_temp': {
+                'planning': self.max_temp_planning,
+                'installation': self.max_temp_installation,
+                'other': self.max_temp_other,
+            },
+            'check_control_system': {
+                'floor_sensor': self.control_system_floor_sensor,
+                'room_sensor': self.control_system_room_sensor,
+                'designation': self.control_system_designation,
+                'other': self.control_system_other,
+            }
+
         }
         return dictionary
 
@@ -652,7 +679,7 @@ class RoomItemModifications(db.Model, MyBaseModel):
 
         dictionary = {
             'id': self.id,
-            'm_date': self.date
+            'm_date': self.date,
         }
         specs = self.specs.copy()
         dictionary['product_id'] = self.product_id

@@ -539,7 +539,6 @@ def json_room():
         room = Room.by_id(
             room_id,
             current_user)
-    print(room)
     if not customer:
         return jsonify({}), 403
     if not form.validate_on_submit():
@@ -557,7 +556,18 @@ def json_room():
         'area': float(form.area.data),
         'heated_area': float(form.heated_area.data),
         'maxEffect': float(form.maxEffect.data),
-        'normalEffect': float(form.normalEffect.data)
+        'normalEffect': float(form.normalEffect.data),
+        'earthed_cable_screen': form.check_earthed.cable_screen.data,
+        'earthed_chicken_wire': form.check_earthed.chicken_wire.data,
+        'earthed_other': form.check_earthed.other.data,
+        'max_temp_planning': form.check_max_temp.planning.data,
+        'max_temp_installation': form.check_max_temp.installation.data,
+        'max_temp_other': form.check_max_temp.other.data,
+        'control_system_floor_sensor': form.check_control_system.floor_sensor.data,
+        'control_system_room_sensor': form.check_control_system.room_sensor.data,
+        'control_system_designation': form.check_control_system.designation.data,
+        'control_system_other': form.check_control_system.other.data,
+
     })
     db.session.commit()
     if customer:
@@ -624,7 +634,6 @@ def json_form_modification(filled_form_modified_id):
 def view_form():
     """View for home."""
     # TODO: NEVER PUT THIS IN PRODUCTION!
-    login_user(User.query.filter(User.id==1).first())
     # Set up some defaults. (retrieve this from the user-config later.)
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()

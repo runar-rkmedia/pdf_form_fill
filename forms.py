@@ -33,6 +33,56 @@ class Unique(object):
             raise ValidationError(self.message)
 
 
+class SubForm(FlaskForm):
+    """CsrfToken-basic."""
+
+    def __init__(self, **_kwargs):
+        _kwargs['csrf_enabled'] = False
+        super().__init__(**_kwargs)
+
+
+class CheckMaxTemp(SubForm):
+    planning = BooleanField(
+        'Planlegging (innstallasjonsveiledningen er fulgt, og eier er informert om forutsetningene)'  # noqa
+    )
+    installation = BooleanField(
+        'Utførelse av montasje (Installasjonsveiledningen er fulgt)'  # noqa
+    )
+    other = StringField(
+        'Eventuell brtuk av beskyttelsesutstyr',  # noqa
+        validators=[Length(max=100)]
+    )
+
+
+class CheckEarthed(SubForm):
+    cable_screen = BooleanField(
+        'Jordet kabelskjerm'
+    )
+    chicken_wire = BooleanField(
+        'Jordet netting'
+    )
+    other = StringField(
+        'Annet', validators=[Length(max=100)]
+    )
+
+
+class CheckControlSystem(SubForm):
+    floor_sensor = BooleanField(
+        'Gulvføler'  # noqa
+    )
+    room_sensor = BooleanField(
+        'Romføler'  # noqa
+    )
+    designation = StringField(
+        'Typebetegnelse',  # noqa
+        validators=[Length(max=50)]
+    )
+    other = StringField(
+        'Annet',  # noqa
+        validators=[Length(max=100)]
+    )
+
+
 class RoomForm(FlaskForm):
     """Input form for room."""
     room_name = StringField(
@@ -78,43 +128,9 @@ class RoomForm(FlaskForm):
         ]
     )
     id = HiddenField()
-    earthed_cable_screen = BooleanField(
-        'Jordet kabelskjerm'
-    )
-    earthed_chicken_wire = BooleanField(
-        'Jordet netting'
-    )
-    earthed_other = StringField(
-        'Annet', validators=[Length(max=100)]
-    )
-    max_temp_limited_by_planning = BooleanField(
-        'Planlegging (innstallasjonsveiledningen er fulgt, og eier er informert om forutsetningene)'  # noqa
-    )
-    max_temp_limited_by_installation = BooleanField(
-        'Utførelse av montasje (Installasjonsveiledningen er fulgt)'  # noqa
-    )
-    max_temp_limited_by_other = StringField(
-        'Eventuell brtuk av beskyttelsesutstyr',  # noqa
-        validators=[Length(max=100)]
-    )
-    control_system_floor_sensor = BooleanField(
-        'Gulvføler'  # noqa
-    )
-    control_system_room_sensor = BooleanField(
-        'Romføler'  # noqa
-    )
-    control_system_type = StringField(
-        'Typebetegnelse',  # noqa
-        validators=[Length(max=50)]
-    )
-
-
-class SubForm(FlaskForm):
-    """CsrfToken-basic."""
-
-    def __init__(self, **_kwargs):
-        _kwargs['csrf_enabled'] = False
-        super().__init__(**_kwargs)
+    check_earthed = FormField(CheckEarthed)
+    check_max_temp = FormField(CheckMaxTemp)
+    check_control_system = FormField(CheckControlSystem)
 
 
 class AddressForm(SubForm):

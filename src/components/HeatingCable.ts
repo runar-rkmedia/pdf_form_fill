@@ -120,7 +120,6 @@ export class HeatingCable extends Post {
       }
     }
     let heating_cable = Object.assign(default_data, heating_cable_)
-    console.log(heating_cable)
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
@@ -242,7 +241,6 @@ export class HeatingCables extends ByID {
       let btn = $(event.target)
       let accordian = $('#accordion-heat')
       let panel = accordian.find('#heat-1')
-      console.log(panel, panel.length)
       let panel_vk = panel.find('#panel_select_cable-1')
       panel.collapse('show')
       panel_vk.addClass('in')
