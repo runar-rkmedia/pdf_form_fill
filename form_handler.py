@@ -86,7 +86,7 @@ class FormHandler(object):
             'max_temp_other': self.room.max_temp_other,
             'control_system_floor_sensor': self.room.control_system_floor_sensor,
             'control_system_room_sensor': self.room.control_system_room_sensor,
-            'control_system_type': self.room.control_system_type,
+            'control_system_designation': self.room.control_system_designation,
             'control_system_other': self.room.control_system_other
         })
 
