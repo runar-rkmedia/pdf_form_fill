@@ -15,7 +15,7 @@ export interface HeatingCableInterface {
   c_date?: Date
   m_date?: Date
   mod_id?: number
-  specs?: HeatingCableSpecs
+  specs: HeatingCableSpecs
 }
 
 interface PostInterface {
@@ -38,9 +38,8 @@ interface CalculationsInterface {
 }
 export interface HeatingCableSpecs {
   measurements?: MeasurementsInterface
-  calculations?: CalculationsInterface
-  cc?: InputReadOnlyToggleInterface
-  area_output?: InputReadOnlyToggleInterface
+  cc: InputReadOnlyToggleInterface
+  area_output: InputReadOnlyToggleInterface
 }
 
 interface InputReadOnlyToggleInterface {
@@ -95,9 +94,33 @@ export class HeatingCable extends Post {
   constructor(
     product_model: TSProductModel,
     parent: HeatingCables,
-    heating_cable: HeatingCableInterface = { id: -1, product_id: -1 }
+    heating_cable_?: HeatingCableInterface
   ) {
     super()
+    let default_data: HeatingCableInterface = {
+      id: -1,
+      product_id: -1,
+      specs: {
+        measurements: {
+          ohm_a: -1,
+          ohm_b: -1,
+          ohm_c: -1,
+          mohm_a: -1,
+          mohm_b: -1,
+          mohm_c: -1
+        },
+        cc: {
+          v: -1,
+          m: false
+        },
+        area_output: {
+          v: -1,
+          m: false
+        },
+      }
+    }
+    let heating_cable = Object.assign(default_data, heating_cable_)
+    console.log(heating_cable)
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
@@ -115,7 +138,7 @@ export class HeatingCable extends Post {
       if (room_effect && heated_area) {
         return room_effect / heated_area
       }
-      return Number(heating_cable.specs!.area_output!.v) || 0
+      return Number(heating_cable!.specs.area_output.v) || 0
     }))
     this.cc = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product() && this.product()!.type != 'mat') {
@@ -135,7 +158,7 @@ export class HeatingCable extends Post {
         }
       }
       // Set an initial value, to keep the modified-flag from raising
-      return Number(heating_cable.specs!.cc!.v) || 0
+      return Number(heating_cable!.specs.cc.v) || 0
     }))
 
     this.serialize = ko.computed(() => {
@@ -219,10 +242,10 @@ export class HeatingCables extends ByID {
       let btn = $(event.target)
       let accordian = $('#accordion-heat')
       let panel = accordian.find('#heat-1')
-      let pane = panel.find('#pane_select_cable-1')
-      let navpill = panel.find('a[href="#pane_select_cable-1"]')
-      navpill.tab('show')
+      console.log(panel, panel.length)
+      let panel_vk = panel.find('#panel_select_cable-1')
       panel.collapse('show')
+      panel_vk.addClass('in')
     }, 20)
 
   }

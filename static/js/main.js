@@ -3122,8 +3122,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     }());
     var HeatingCable = (function (_super) {
         __extends(HeatingCable, _super);
-        function HeatingCable(product_model, parent, heating_cable) {
-            if (heating_cable === void 0) { heating_cable = { id: -1, product_id: -1 }; }
+        function HeatingCable(product_model, parent, heating_cable_) {
             var _this = _super.call(this) || this;
             _this.product_id = ko.observable();
             _this.url = '/json/v1/heat/';
@@ -3143,6 +3142,30 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     return _this.product_model.by_id(_this.product_id());
                 }
             });
+            var default_data = {
+                id: -1,
+                product_id: -1,
+                specs: {
+                    measurements: {
+                        ohm_a: -1,
+                        ohm_b: -1,
+                        ohm_c: -1,
+                        mohm_a: -1,
+                        mohm_b: -1,
+                        mohm_c: -1
+                    },
+                    cc: {
+                        v: -1,
+                        m: false
+                    },
+                    area_output: {
+                        v: -1,
+                        m: false
+                    },
+                }
+            };
+            var heating_cable = Object.assign(default_data, heating_cable_);
+            console.log(heating_cable);
             _this.product_id.extend({ required: true, number: true, min: 1000000, max: 9999999 });
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
@@ -3242,10 +3265,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                     var btn = $(event.target);
                     var accordian = $('#accordion-heat');
                     var panel = accordian.find('#heat-1');
-                    var pane = panel.find('#pane_select_cable-1');
-                    var navpill = panel.find('a[href="#pane_select_cable-1"]');
-                    navpill.tab('show');
+                    console.log(panel, panel.length);
+                    var panel_vk = panel.find('#panel_select_cable-1');
                     panel.collapse('show');
+                    panel_vk.addClass('in');
                 }, 20);
             };
             _this.parent = parent;
