@@ -3,6 +3,29 @@ from .helpers import delete_empty_value, NumberTypes
 import os
 
 
+def replace_None(d, default=''):
+    """
+    Replace None in a nested dictionary.
+
+    0-values are preserved, only strict None is replaced.
+
+    Code is modified from Martijn Pieters at
+    https://stackoverflow.com/a/27974027
+    """
+    if not isinstance(d, (dict, list)):
+        return d
+    if isinstance(d, list):
+        return [
+            v if v is not None else default
+            for v in (replace_None(v)
+                      for v in d)
+        ]
+    return {k:
+            v if v is not None else default
+            for k, v in ((k, replace_None(v))
+                         for k, v in d.items())}
+
+
 class PdfForm(object):
 
     def __init__(self,
@@ -10,7 +33,7 @@ class PdfForm(object):
                  fill_pdf_filename,
                  fields_dict,
                  checkbox_value):
-        self.dictionary = dictionary
+        self.dictionary = replace_None(dictionary)
         self.fields = {}
         self.fields_dict = fields_dict
         self.fill_pdf_path = os.path.join('static', 'forms', fill_pdf_filename)
