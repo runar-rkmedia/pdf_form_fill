@@ -16,67 +16,89 @@
 attr: {'id': 'heat' + id()}
 ">
       <div class="panel-body small-pad">
-        <ul class="nav nav-tabs tabCollapse" role="tablist">
-          <li role="presentation">
-            <a data-bind="attr: {
-            'href': '#pane_select_cable' + id(),
-            'aria-controls': '#pane_select_cable' + id()
-          },
-          }
-          " role="tab" data-toggle="tab"><img class="icon" src="{{ url_for('static', filename='icons/heating.png') }}" alt="">
-              <span class="hidden-xs">Varmekabel</span>
-            </a>
-          </li>
-          <li role="presentation" class="active">
-            <a data-bind="attr: {
-            'href': '#pane_measurements' + id(),
-            'aria-controls': '#pane_measurements' + id()
-          }" role="tab" data-toggle="tab">
-              <span class="icon glyphicon glyphicon-dashboard" aria-hidden="true"></span>
-              <span class="hidden-xs">Målinger</span>
-            </a>
-          </li>
-          <li role="presentation" class="">
-            <a data-bind="attr: {
-            'href': '#pane_other' + id(),
-            'aria-controls': '#pane_other' + id()
-          }" role="tab" data-toggle="tab">
-              <span class="icon glyphicon glyphicon-asterisk" aria-hidden="true"></span>
-              <span class="hidden-xs">Annet</span>
-            </a>
-          </li>
-        </ul>
-        <div class="tab-content panel">
-          <!-- Select product-pane -->
-          <div class="tab-pane" data-bind="attr: {
-                        'id': 'pane_select_cable' + id()
-                      }">
-            <div class="row">
-              <div class="col-xs-12">
-                <!-- ko template: { name: 'select_product_template', data: $data} -->
-                <!-- /ko -->
+        <div class="panel-group" id="heating-accordian">
+
+          <div class="panel panel-default">
+            <div
+              class="panel-heading accordian-toggle collapsed"
+              data-toggle="collapse"
+              data-parent="#heating-accordian"
+              role="tab"
+              data-bind="attr: {
+                    'id': 'heading_select_cable' + id(),
+                    'data-target': '#panel_select_cable' + id()
+                  }">
+              <h4 class="panel-title carrot">Varmekabel</h4>
+            </div>
+            <div
+              class="panel-collapse collapse accordian-toggle collapsed"
+              data-parent="#heating-accordian"
+              role="tabpanel"
+              data-bind="attr: {
+                    'id': 'panel_select_cable' + id(),
+                    'aria-labelledby': 'heading_select_cable' + id(),
+                  }">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <!-- ko template: { name: 'select_product_template', data: $data} -->
+                    <!-- /ko -->
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <!-- Measurements-pane -->
-          <div class="tab-pane" data-bind="attr: {
-                   'id': 'pane_measurements' + id()
-                 }">
-            <div class="row">
-              <div class="col-xs-12">
-                <!-- ko template: { name: 'measurements_template', data: $data} -->
-                <!-- /ko -->
+
+          <div class="panel panel-default">
+            <div
+              class="panel-heading accordian-toggle collapsed"
+              data-toggle="collapse"
+              data-parent="#heating-accordian"
+              role="tab"
+              data-bind="attr: {
+                    'id': 'heading_measurements' + id(),
+                    'data-target': '#panel_measurements' + id()
+                  }">
+              <h4 class="panel-title carrot">Målinger</h4>
+            </div>
+            <div class="panel-collapse collapse" data-bind="attr: {
+                    'id': 'panel_measurements' + id(),
+                    'aria-labelledby': 'heading_measurements' + id(),
+                  }">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <!-- ko template: { name: 'measurements_template', data: $data} -->
+                    <!-- /ko -->
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <!-- Other Pane -->
-          <div class="tab-pane active" data-bind="attr: {
-                                    'id': 'pane_other' + id()
-                                  }">
-            <div class="row">
-              <div class="col-xs-12">
-                <!-- ko template: { name: 'calculations_template', data: $data} -->
-                <!-- /ko -->
+
+          <div class="panel panel-default">
+            <div
+              class="panel-heading accordian-toggle collapsed"
+              data-toggle="collapse"
+              data-parent="#heating-accordian"
+              role="tab"
+              data-bind="attr: {
+                    'id': 'heading_others' + id(),
+                    'data-target': '#panel_others' + id()
+                  }">
+              <h4 class="panel-title carrot">Annet</h4>
+            </div>
+            <div class="panel-collapse collapse" data-bind="attr: {
+                    'id': 'panel_others' + id(),
+                    'aria-labelledby': 'heading_others' + id(),
+                  }">
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <!-- ko template: { name: 'calculations_template', data: $data} -->
+                    <!-- /ko -->
+                  </div>
+                </div>
               </div>
             </div>
           </div>
