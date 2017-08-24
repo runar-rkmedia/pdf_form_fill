@@ -2762,7 +2762,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 return 0;
             });
-            console.log(room);
             _this.parent = parent;
             _this.root = root;
             _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
@@ -2844,7 +2843,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 this.control_system_designation(room.check_control_system.designation);
                 this.control_system_other(room.check_control_system.other);
             }
-            console.log(room.check_control_system);
             this.save();
         };
         return Room;
@@ -6121,16 +6119,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
-  if (target.hasClass('scrollto')) {
-    var panelHeadingHeight = $('.panel-heading').height() * 2;
+  if (target.hasClass('scrollto') || true) {
+    var panelHeading = target.siblings('.panel-heading')
+    var panelHeadingHeight = target.siblings('.panel-heading').height();
     var animationSpeed = 200; // animation speed in milliseconds
     var currentScrollbarPosition = $(document).scrollTop();
     var topOfPanelContent = target.offset().top;
 
     $("html, body").animate({
-      scrollTop: topOfPanelContent - panelHeadingHeight
+      scrollTop: topOfPanelContent - panelHeadingHeight -25
     }, animationSpeed);
-    if (currentScrollbarPosition > topOfPanelContent - panelHeadingHeight) {}
   }
 });
 
