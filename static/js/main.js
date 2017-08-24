@@ -6071,16 +6071,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 // import 'bootstrap/js/affix';
 
-$('div').on('shown.bs.collapse', function (e) {
+$('div').on('shown.bs.collapse', function(e) {
+  var target = $(e.target);
+  if (target.hasClass('scrollto')) {
+    var panelHeadingHeight = $('.panel-heading').height() * 2;
+    var animationSpeed = 200; // animation speed in milliseconds
+    var currentScrollbarPosition = $(document).scrollTop();
+    var topOfPanelContent = target.offset().top;
 
-var panelHeadingHeight = $('.panel-heading').height() *2;
-var animationSpeed = 200; // animation speed in milliseconds
-var currentScrollbarPosition = $(document).scrollTop();
-var topOfPanelContent = $(e.target).offset().top;
-
-$("html, body").animate({ scrollTop: topOfPanelContent - panelHeadingHeight }, animationSpeed);
-if ( currentScrollbarPosition >  topOfPanelContent - panelHeadingHeight) {
-}});
+    $("html, body").animate({
+      scrollTop: topOfPanelContent - panelHeadingHeight
+    }, animationSpeed);
+    if (currentScrollbarPosition > topOfPanelContent - panelHeadingHeight) {}
+  }
+});
 
 
 /***/ }),
