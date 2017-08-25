@@ -54,13 +54,18 @@ interface InputReadOnlyToggleInterface {
 }
 
 class InputReadOnlyToggle {
-  override = <ObservableWithModification<boolean>>observable_modification(false);
-  calculated: ObservableWithModification<any>
+  override: ObservableWithModification<boolean>
+  calculated: KnockoutComputed<any>
+  output: ObservableWithModification<any>
   serialize: KnockoutObservable<InputReadOnlyToggleInterface>
-  user_input = <ObservableWithModification<number>>observable_modification();
+  user_input = <KnockoutObservable<number>>ko.observable();
 
-  constructor(calculateFunction: (() => any)) {
-    this.calculated = observable_modification(calculateFunction, ko.computed);
+  constructor(calculateFunction: (() => number), modification_observable: any) {
+    this.override = <ObservableWithModification<boolean>>modification_observable(false);
+    this.calculated = ko.computed(calculateFunction);
+    this.output = modification_observable(() => {
+      return this.override() ? this.user_input() : this.calculated()
+    }, ko.computed);
     // this.calculated = ko.computed(calculateFunction)
     this.serialize = ko.computed((): InputReadOnlyToggleInterface => {
       return {
@@ -78,29 +83,30 @@ class InputReadOnlyToggle {
 
 
 export class HeatingCable extends Post {
-  product_id = <ObservableWithModification<number>>observable_modification();
+  measurements_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+  product_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+  other_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+
+  measurements_observer = (value?: any, kind: any = ko.observable, ) => {
+    return this.observable_modification([this.measurements_modifications_list], kind, value);
+  }
+  other_observer = (value?: any, kind: any = ko.observable) => {
+    return this.observable_modification([this.other_modifications_list], kind, value);
+  }
+  product_observer = (value?: any, kind: any = ko.observable, ) => {
+    return this.observable_modification([this.product_modifications_list], kind, value);
+  }
+  product_id = <ObservableWithModification<number>>this.product_observer();
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
-  ohm_a = <ObservableWithModification<number>>observable_modification();
-  ohm_b = <ObservableWithModification<number>>observable_modification();
-  ohm_c = <ObservableWithModification<number>>observable_modification();
-  mohm_a = <ObservableWithModification<boolean>>observable_modification(-1);
-  mohm_b = <ObservableWithModification<boolean>>observable_modification(-1);
-  mohm_c = <ObservableWithModification<boolean>>observable_modification(-1);
+  ohm_a = <ObservableWithModification<number>>this.measurements_observer();
+  ohm_b = <ObservableWithModification<number>>this.measurements_observer();
+  ohm_c = <ObservableWithModification<number>>this.measurements_observer();
+  mohm_a = <ObservableWithModification<boolean>>this.measurements_observer(-1);
+  mohm_b = <ObservableWithModification<boolean>>this.measurements_observer(-1);
+  mohm_c = <ObservableWithModification<boolean>>this.measurements_observer(-1);
   area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
-  measurements_modifications_list: ObservableWithModification<any>[] = [
-    this.ohm_a,
-    this.ohm_b,
-    this.ohm_c,
-    this.mohm_a,
-    this.mohm_b,
-    this.mohm_c,
-  ]
-  product_modifications_list: ObservableWithModification<any>[] = [
-    this.product_id,
-  ]
-  other_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
 
 
   parent: HeatingCables
@@ -110,7 +116,6 @@ export class HeatingCable extends Post {
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
   })
-  last_sent_data: KnockoutObservable<HeatingCableInterface> = ko.observable()
   serialize: KnockoutObservable<HeatingCableInterface>
   constructor(
     product_model: TSProductModel,
@@ -118,6 +123,7 @@ export class HeatingCable extends Post {
     heating_cable_?: HeatingCableInterface
   ) {
     super()
+
     let default_data: HeatingCableInterface = {
       id: -1,
       product_id: -1,
@@ -156,13 +162,10 @@ export class HeatingCable extends Post {
       let heated_area = this.parent.parent.heated_area()
       let room_effect = this.parent.parent.room_effect()
       if (room_effect && heated_area) {
-        return room_effect / heated_area
+        return parseFloat((room_effect / heated_area).toFixed(1))
       }
       return Number(heating_cable!.specs.area_output.v) || 0
-    }))
-    this.other_modifications_list.push(this.area_output().user_input)
-    this.other_modifications_list.push(this.area_output().calculated)
-    this.other_modifications_list.push(this.area_output().override)
+    }, this.other_observer))
     this.cc = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product() && this.product()!.type != 'mat') {
         // For rooms with multiple cables, we need to do some guesswork to
@@ -176,16 +179,13 @@ export class HeatingCable extends Post {
           let length = this.product()!.specs!.Length
           if (length && heated_area_of_this_cable) {
             let value = heated_area_of_this_cable / length * 100
-            return value
+            return parseFloat(value.toFixed(1))
           }
         }
       }
       // Set an initial value, to keep the modified-flag from raising
       return Number(heating_cable!.specs.cc.v) || 0
-    }))
-    this.other_modifications_list.push(this.cc().user_input)
-    this.other_modifications_list.push(this.cc().calculated)
-    this.other_modifications_list.push(this.cc().override)
+    }, this.other_observer))
 
     this.serialize = ko.computed(() => {
       let obj: HeatingCableInterface = {
@@ -212,7 +212,6 @@ export class HeatingCable extends Post {
     //   this.other_modifications_list()
     // ))
     this.set(heating_cable)
-    this.init()
 
   }
   product = ko.computed((): ProductInterface | undefined => {
@@ -245,10 +244,10 @@ export class HeatingCable extends Post {
     return this.modification_check(this.other_modifications_list())
   })
   product_modifications = ko.computed(() => {
-    return this.modification_check(this.product_modifications_list)
+    return this.modification_check(this.product_modifications_list())
   })
   measurements_modifications = ko.computed(() => {
-    return this.modification_check(this.measurements_modifications_list)
+    return this.modification_check(this.measurements_modifications_list())
   })
 
 

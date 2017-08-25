@@ -35,9 +35,7 @@ export class ByID {
   }
 }
 export abstract class Base {
-  abstract last_sent_data: KnockoutObservable<{}>
   abstract serialize: KnockoutObservable<{}>
-  differences: KnockoutComputed<string[]>
   modification_tracking_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
   save(): void {
     for (let observable of this.modification_tracking_list()) {
@@ -49,14 +47,6 @@ export abstract class Base {
 
   constructor() {
   }
-  // remove init....
-  init = (): void => {
-    this.differences = ko.computed(() => {
-      return diff.getDiff(this.serialize(), this.last_sent_data())
-    })
-
-
-  }
   modification_check(list: ObservableWithModification<any>[]) {
     for (let observable of list) {
       if (observable.modified()) {
@@ -64,6 +54,10 @@ export abstract class Base {
       }
     }
     return false
+  }
+  observable_modification = (group: KnockoutObservableArray<any>[] = [], kind: any = ko.observable, value?: any) => {
+    let list = [this.modification_tracking_list].concat(group)
+    return kind(value).extend({ modification: list });
   }
   modified = ko.computed(() => {
     return this.modification_check(this.modification_tracking_list())
@@ -139,12 +133,16 @@ export interface ObservableWithModification<T> extends KnockoutObservable<T> {
   save(): void
   modified(): boolean
 }
-export let observable_modification = (value?: any, kind: any = ko.observable) => {
-  return kind(value).extend({ modification: '' });
-}
-ko.extenders.modification = (target: any, option: string) => {
+ko.extenders.modification = (target: any, option: KnockoutObservableArray<any>[]) => {
   target.last_data = ko.observable()
   target.modified = ko.computed(() => {
+    if (target() != target.last_data()) {
+      let div = target() / target.last_data()
+      // for calculated values that are almost the same.
+      if (div > 0.99999 && div < 1.00001) {
+        return false
+      }
+    }
     return target() != target.last_data()
   })
   target.reset = () => {
@@ -152,6 +150,10 @@ ko.extenders.modification = (target: any, option: string) => {
   }
   target.save = () => {
     target.last_data(target())
+  }
+  for (let list of option) {
+    list.push(target)
+    // console.log('his', option.length)
   }
   return target;
 };

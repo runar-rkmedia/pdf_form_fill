@@ -8,8 +8,7 @@
   <!-- ko with: area_output() -->
   <div class="col-xs-4">
     <div class="form-group">
-      {{ heatingForm.specs.area_output.v.label(**{'data-bind': "css: { 'text-warning': override() ? user_input.modified() :
-    calculated.modified() } " })}}
+      {{ heatingForm.specs.area_output.v.label(**{'data-bind': "css: { 'text-warning': output.modified()} " })}}
       {{ heatingForm.specs.area_output.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
     </div>
     <div class="checkbox">
@@ -23,8 +22,7 @@
   <!-- ko with: cc() -->
   <div class="col-xs-4">
     <div class="form-group">
-      {{ heatingForm.specs.cc.v.label(**{'data-bind': "css: { 'text-warning': override() ? user_input.modified() :
-    calculated.modified() } " })}}
+      {{ heatingForm.specs.cc.v.label(**{'data-bind': "css: { 'text-warning': output.modified()} " })}}
       {{ heatingForm.specs.cc.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
     </div>
     <div class="checkbox">

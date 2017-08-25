@@ -2,7 +2,6 @@ import {
   ByID,
   Post,
   ObservableWithModification,
-  observable_modification
 } from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomTypesInfoFlat } from "./ProductModel"
@@ -46,22 +45,22 @@ export interface RoomInterface {
 export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
-  name = <ObservableWithModification<string>>observable_modification();
-  outside = <ObservableWithModification<boolean>>observable_modification();
-  maxEffect = <ObservableWithModification<number>>observable_modification();
-  normalEffect = <ObservableWithModification<number>>observable_modification();
-  area = <ObservableWithModification<number>>observable_modification();
-  heated_area = <ObservableWithModification<number>>observable_modification();
-  earthed_cable_screen = <ObservableWithModification<boolean>>observable_modification();
-  earthed_chicken_wire = <ObservableWithModification<boolean>>observable_modification();
-  earthed_other = <ObservableWithModification<string>>observable_modification();
-  max_temp_limited_by_planning = <ObservableWithModification<boolean>>observable_modification(true);
-  max_temp_limited_by_installation = <ObservableWithModification<boolean>>observable_modification(true);
-  max_temp_limited_by_other = <ObservableWithModification<string>>observable_modification();
-  control_system_floor_sensor = <ObservableWithModification<boolean>>observable_modification(true);
-  control_system_room_sensor = <ObservableWithModification<boolean>>observable_modification();
-  control_system_designation = <ObservableWithModification<string>>observable_modification();
-  control_system_other = <ObservableWithModification<string>>observable_modification();
+  name = <ObservableWithModification<string>>this.observable_modification();
+  outside = <ObservableWithModification<boolean>>this.observable_modification();
+  maxEffect = <ObservableWithModification<number>>this.observable_modification();
+  normalEffect = <ObservableWithModification<number>>this.observable_modification();
+  area = <ObservableWithModification<number>>this.observable_modification();
+  heated_area = <ObservableWithModification<number>>this.observable_modification();
+  earthed_cable_screen = <ObservableWithModification<boolean>>this.observable_modification();
+  earthed_chicken_wire = <ObservableWithModification<boolean>>this.observable_modification();
+  earthed_other = <ObservableWithModification<string>>this.observable_modification();
+  max_temp_limited_by_planning = <ObservableWithModification<boolean>>this.observable_modification(undefined, undefined, true);
+  max_temp_limited_by_installation = <ObservableWithModification<boolean>>this.observable_modification(undefined, undefined, true);
+  max_temp_limited_by_other = <ObservableWithModification<string>>this.observable_modification();
+  control_system_floor_sensor = <ObservableWithModification<boolean>>this.observable_modification(undefined, undefined, true);
+  control_system_room_sensor = <ObservableWithModification<boolean>>this.observable_modification();
+  control_system_designation = <ObservableWithModification<string>>this.observable_modification();
+  control_system_other = <ObservableWithModification<string>>this.observable_modification();
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({
@@ -72,7 +71,6 @@ export class Room extends Post {
   })
   parent: Rooms
   root: TSAppViewModel
-  last_sent_data: KnockoutObservable<RoomInterface> = ko.observable()
   serialize: KnockoutComputed<RoomInterface>
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
@@ -139,7 +137,6 @@ export class Room extends Post {
     this.room_suggestion = ko.observable(
       new RoomSuggestion(this.root.Products().flat_room_type_info(),
         this))
-    this.init()
   }
   room_effect = ko.computed((): number => {
     let sum_effect = 0

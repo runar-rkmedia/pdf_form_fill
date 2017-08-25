@@ -14,11 +14,11 @@ export interface CustomerInterface {
 
 export class Customer extends Post {
   url = '/json/v1/customer/'
-  name: KnockoutObservable<string> = ko.observable()
-  address1: KnockoutObservable<string> = ko.observable()
-  address2: KnockoutObservable<string> = ko.observable()
-  post_code: KnockoutObservable<number> = ko.observable()
-  post_area: KnockoutObservable<string> = ko.observable()
+  name: KnockoutObservable<string> = this.observable_modification()
+  address1: KnockoutObservable<string> = this.observable_modification()
+  address2: KnockoutObservable<string> = this.observable_modification()
+  post_code: KnockoutObservable<number> = this.observable_modification()
+  post_area: KnockoutObservable<string> = this.observable_modification()
   root: TSAppViewModel
   rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))
   parent: TSAppViewModel
@@ -30,7 +30,6 @@ export class Customer extends Post {
     post_area: this.post_area,
   })
   id: KnockoutObservable<number> = ko.observable()
-  last_sent_data: KnockoutObservable<CustomerInterface> = ko.observable()
   serialize: KnockoutObservable<CustomerInterface>
   constructor(parent: TSAppViewModel, id: number = -1, root: TSAppViewModel = parent) {
     super()
@@ -60,7 +59,7 @@ export class Customer extends Post {
       }
       return t
     })
-    this.init()
+
   }
 
 
