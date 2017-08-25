@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-{% macro render_field(field, formgroup = 'form-group', no_label = False, label_class = None, class_ = "form-control") %}
+{% macro render_field(field, formgroup = 'form-group', no_label = False, label_class = None, class_ = "form-control", label_extra = {}) %}
   {% if formgroup %}
     <div class="{{ formgroup }}">
     {% endif %}
@@ -13,7 +13,7 @@
         </label>
       {% else %}
         {% if label_class %}
-          {{ field.label(class_=label_class) }}
+          {{ field.label(class_=label_class, **label_extra) }}
         {% else %}
           {{ field.label }}
         {% endif %}

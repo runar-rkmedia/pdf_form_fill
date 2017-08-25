@@ -1,4 +1,9 @@
-import { ByID, Post } from "./Common"
+import {
+  ByID,
+  Post,
+  ObservableWithModification,
+  observable_modification
+} from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomTypesInfoFlat } from "./ProductModel"
 import { CustomerInterface, Customer } from './Customer'
@@ -41,22 +46,22 @@ export interface RoomInterface {
 export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
-  name: KnockoutObservable<string> = ko.observable()
-  outside: KnockoutObservable<boolean> = ko.observable()
-  maxEffect: KnockoutObservable<number> = ko.observable()
-  normalEffect: KnockoutObservable<number> = ko.observable()
-  area: KnockoutObservable<number> = ko.observable()
-  heated_area: KnockoutObservable<number> = ko.observable()
-  earthed_cable_screen: KnockoutObservable<boolean> = ko.observable()
-  earthed_chicken_wire: KnockoutObservable<boolean> = ko.observable()
-  earthed_other: KnockoutObservable<string> = ko.observable()
-  max_temp_limited_by_planning: KnockoutObservable<boolean> = ko.observable(true)
-  max_temp_limited_by_installation: KnockoutObservable<boolean> = ko.observable(true)
-  max_temp_limited_by_other: KnockoutObservable<string> = ko.observable()
-  control_system_floor_sensor: KnockoutObservable<boolean> = ko.observable(true)
-  control_system_room_sensor: KnockoutObservable<boolean> = ko.observable(true)
-  control_system_designation: KnockoutObservable<string> = ko.observable()
-  control_system_other: KnockoutObservable<string> = ko.observable()
+  name = <ObservableWithModification<string>>observable_modification();
+  outside = <ObservableWithModification<boolean>>observable_modification();
+  maxEffect = <ObservableWithModification<number>>observable_modification();
+  normalEffect = <ObservableWithModification<number>>observable_modification();
+  area = <ObservableWithModification<number>>observable_modification();
+  heated_area = <ObservableWithModification<number>>observable_modification();
+  earthed_cable_screen = <ObservableWithModification<boolean>>observable_modification();
+  earthed_chicken_wire = <ObservableWithModification<boolean>>observable_modification();
+  earthed_other = <ObservableWithModification<string>>observable_modification();
+  max_temp_limited_by_planning = <ObservableWithModification<boolean>>observable_modification(true);
+  max_temp_limited_by_installation = <ObservableWithModification<boolean>>observable_modification(true);
+  max_temp_limited_by_other = <ObservableWithModification<string>>observable_modification();
+  control_system_floor_sensor = <ObservableWithModification<boolean>>observable_modification(true);
+  control_system_room_sensor = <ObservableWithModification<boolean>>observable_modification();
+  control_system_designation = <ObservableWithModification<string>>observable_modification();
+  control_system_other = <ObservableWithModification<string>>observable_modification();
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({
@@ -80,6 +85,27 @@ export class Room extends Post {
       { required: true, number: true, min: 0.1, max: 1000 });
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
+
+    this.modification_tracking_list([
+      this.name,
+      this.outside,
+      this.maxEffect,
+      this.normalEffect,
+      this.area,
+      this.heated_area,
+      this.earthed_cable_screen,
+      this.earthed_chicken_wire,
+      this.earthed_other,
+      this.max_temp_limited_by_planning,
+      this.max_temp_limited_by_installation,
+      this.max_temp_limited_by_other,
+      this.control_system_floor_sensor,
+      this.control_system_room_sensor,
+      this.control_system_designation,
+      this.control_system_other,
+      // this.heating_cables,
+      // this.room_suggestion,
+    ]);
 
     this.serialize = ko.computed((): RoomInterface => {
       return {
@@ -153,9 +179,6 @@ export class Room extends Post {
       $(event.target).closest('.collapse').collapse('hide')
     }
     )
-  }
-  save() {
-    this.last_sent_data(this.serialize())
   }
   set(room: RoomInterface = {
     room_name: '',

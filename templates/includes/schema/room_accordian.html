@@ -53,7 +53,10 @@
           <!-- /ko -->
         </div>
         <h2>Sjekkliste</h2>
-        <p>Denne sjekklisten gjelder for alle kablene i dette rommet, og vil fylles ut for hver kabel. Kun de påkrevde feltene vises.</p>
+        <div class="well well-sm">
+          <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
+          <p>Kun de påkrevde feltene vises.</p>
+        </div>
         <fieldset>
           <legend>Jording</legend>
           {{render_field( roomForm.check_earthed.cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
@@ -62,7 +65,7 @@
         </fieldset>
         <fieldset>
           <legend>Max temperatur</legend>
-          <p>Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
+          <p >Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
 
           {{render_field( roomForm.check_max_temp.planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
           {{render_field( roomForm.check_max_temp.installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}

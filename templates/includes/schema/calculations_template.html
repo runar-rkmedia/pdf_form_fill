@@ -7,9 +7,13 @@
   <!-- ko if: product().type != 'mat' -->
   <!-- ko with: area_output() -->
   <div class="col-xs-4">
-    {{ render_field( heatingForm.specs.area_output.v, 'form-group', **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+    <div class="form-group">
+      {{ heatingForm.specs.area_output.v.label(**{'data-bind': "css: { 'text-warning': override() ? user_input.modified() :
+    calculated.modified() } " })}}
+      {{ heatingForm.specs.area_output.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+    </div>
     <div class="checkbox">
-      <label>
+      <label data-bind="css: { 'text-warning': override.modified() }">
         <input data-bind="checked: override" type="checkbox">
         Manuell
       </label>
@@ -18,9 +22,13 @@
   <!-- /ko -->
   <!-- ko with: cc() -->
   <div class="col-xs-4">
-    {{ render_field( heatingForm.specs.cc.v, 'form-group', **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+    <div class="form-group">
+      {{ heatingForm.specs.cc.v.label(**{'data-bind': "css: { 'text-warning': override() ? user_input.modified() :
+    calculated.modified() } " })}}
+      {{ heatingForm.specs.cc.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+    </div>
     <div class="checkbox">
-      <label>
+      <label data-bind="css: { 'text-warning': override.modified() }">
         <input data-bind="checked: override" type="checkbox">
         Manuell
       </label>

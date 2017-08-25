@@ -37,26 +37,37 @@ export class ByID {
 export abstract class Base {
   abstract last_sent_data: KnockoutObservable<{}>
   abstract serialize: KnockoutObservable<{}>
-  modified: KnockoutComputed<{}> = ko.computed(() => { return false })
   differences: KnockoutComputed<string[]>
-  save() {
-    this.last_sent_data(this.serialize())
+  modification_tracking_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+  save(): void {
+    for (let observable of this.modification_tracking_list()) {
+      if (observable) {
+        observable.save()
+      }
+    }
   }
+
   constructor() {
   }
+  // remove init....
   init = (): void => {
     this.differences = ko.computed(() => {
       return diff.getDiff(this.serialize(), this.last_sent_data())
     })
-    this.modified = ko.computed(() => {
-      let difference = this.differences()
-      if (!this.last_sent_data()) {
-        return false
-      }
-      return Object.keys(difference).length > 0
-    })
-  }
 
+
+  }
+  modification_check(list: ObservableWithModification<any>[]) {
+    for (let observable of list) {
+      if (observable.modified()) {
+        return true
+      }
+    }
+    return false
+  }
+  modified = ko.computed(() => {
+    return this.modification_check(this.modification_tracking_list())
+  })
 }
 
 export interface FileDownloadInterface {
@@ -115,3 +126,32 @@ export abstract class Post extends Base {
   }
   constructor() { super() }
 }
+
+declare global {
+  interface KnockoutExtenders {
+    modification<T>(target: T, track: any): ObservableWithModification<T>;
+  }
+}
+
+export interface ObservableWithModification<T> extends KnockoutObservable<T> {
+  // last_data(any: any): any
+  reset(): void
+  save(): void
+  modified(): boolean
+}
+export let observable_modification = (value?: any, kind: any = ko.observable) => {
+  return kind(value).extend({ modification: '' });
+}
+ko.extenders.modification = (target: any, option: string) => {
+  target.last_data = ko.observable()
+  target.modified = ko.computed(() => {
+    return target() != target.last_data()
+  })
+  target.reset = () => {
+    target(target.last_data())
+  }
+  target.save = () => {
+    target.last_data(target())
+  }
+  return target;
+};

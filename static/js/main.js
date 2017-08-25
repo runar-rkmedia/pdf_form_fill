@@ -116,22 +116,33 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     var Base = (function () {
         function Base() {
             var _this = this;
-            this.modified = ko.computed(function () { return false; });
+            this.modification_tracking_list = ko.observableArray();
+            // remove init....
             this.init = function () {
                 _this.differences = ko.computed(function () {
                     return diff.getDiff(_this.serialize(), _this.last_sent_data());
                 });
-                _this.modified = ko.computed(function () {
-                    var difference = _this.differences();
-                    if (!_this.last_sent_data()) {
-                        return false;
-                    }
-                    return Object.keys(difference).length > 0;
-                });
             };
+            this.modified = ko.computed(function () {
+                return _this.modification_check(_this.modification_tracking_list());
+            });
         }
         Base.prototype.save = function () {
-            this.last_sent_data(this.serialize());
+            for (var _i = 0, _a = this.modification_tracking_list(); _i < _a.length; _i++) {
+                var observable = _a[_i];
+                if (observable) {
+                    observable.save();
+                }
+            }
+        };
+        Base.prototype.modification_check = function (list) {
+            for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
+                var observable = list_1[_i];
+                if (observable.modified()) {
+                    return true;
+                }
+            }
+            return false;
         };
         return Base;
     }());
@@ -196,6 +207,23 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         return Post;
     }(Base));
     exports.Post = Post;
+    exports.observable_modification = function (value, kind) {
+        if (kind === void 0) { kind = ko.observable; }
+        return kind(value).extend({ modification: '' });
+    };
+    ko.extenders.modification = function (target, option) {
+        target.last_data = ko.observable();
+        target.modified = ko.computed(function () {
+            return target() != target.last_data();
+        });
+        target.reset = function () {
+            target(target.last_data());
+        };
+        target.save = function () {
+            target.last_data(target());
+        };
+        return target;
+    };
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -2707,22 +2735,22 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             var _this = _super.call(this) || this;
             _this.url = '/json/v1/room/';
             _this.id = ko.observable();
-            _this.name = ko.observable();
-            _this.outside = ko.observable();
-            _this.maxEffect = ko.observable();
-            _this.normalEffect = ko.observable();
-            _this.area = ko.observable();
-            _this.heated_area = ko.observable();
-            _this.earthed_cable_screen = ko.observable();
-            _this.earthed_chicken_wire = ko.observable();
-            _this.earthed_other = ko.observable();
-            _this.max_temp_limited_by_planning = ko.observable(true);
-            _this.max_temp_limited_by_installation = ko.observable(true);
-            _this.max_temp_limited_by_other = ko.observable();
-            _this.control_system_floor_sensor = ko.observable(true);
-            _this.control_system_room_sensor = ko.observable(true);
-            _this.control_system_designation = ko.observable();
-            _this.control_system_other = ko.observable();
+            _this.name = Common_1.observable_modification();
+            _this.outside = Common_1.observable_modification();
+            _this.maxEffect = Common_1.observable_modification();
+            _this.normalEffect = Common_1.observable_modification();
+            _this.area = Common_1.observable_modification();
+            _this.heated_area = Common_1.observable_modification();
+            _this.earthed_cable_screen = Common_1.observable_modification();
+            _this.earthed_chicken_wire = Common_1.observable_modification();
+            _this.earthed_other = Common_1.observable_modification();
+            _this.max_temp_limited_by_planning = Common_1.observable_modification(true);
+            _this.max_temp_limited_by_installation = Common_1.observable_modification(true);
+            _this.max_temp_limited_by_other = Common_1.observable_modification();
+            _this.control_system_floor_sensor = Common_1.observable_modification(true);
+            _this.control_system_room_sensor = Common_1.observable_modification();
+            _this.control_system_designation = Common_1.observable_modification();
+            _this.control_system_other = Common_1.observable_modification();
             _this.heating_cables = ko.observable();
             _this.validationModel = ko.validatedObservable({
                 name: _this.name,
@@ -2767,6 +2795,24 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
             _this.heated_area.extend({ required: true, number: true, min: 0.1, max: 1000 });
             _this.name.extend({ required: true, minLength: 2, maxLength: 50 });
+            _this.modification_tracking_list([
+                _this.name,
+                _this.outside,
+                _this.maxEffect,
+                _this.normalEffect,
+                _this.area,
+                _this.heated_area,
+                _this.earthed_cable_screen,
+                _this.earthed_chicken_wire,
+                _this.earthed_other,
+                _this.max_temp_limited_by_planning,
+                _this.max_temp_limited_by_installation,
+                _this.max_temp_limited_by_other,
+                _this.control_system_floor_sensor,
+                _this.control_system_room_sensor,
+                _this.control_system_designation,
+                _this.control_system_other,
+            ]);
             _this.serialize = ko.computed(function () {
                 return {
                     room_name: _this.name(),
@@ -2805,9 +2851,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             return _super.prototype.post.call(this, h, event, data_object, url).done(function () {
                 $(event.target).closest('.collapse').collapse('hide');
             });
-        };
-        Room.prototype.save = function () {
-            this.last_sent_data(this.serialize());
         };
         Room.prototype.set = function (room) {
             if (room === void 0) { room = {
@@ -3128,9 +3171,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     var InputReadOnlyToggle = (function () {
         function InputReadOnlyToggle(calculateFunction) {
             var _this = this;
-            this.override = ko.observable(false);
-            this.user_input = ko.observable();
-            this.calculated = ko.computed(calculateFunction);
+            this.override = Common_1.observable_modification(false);
+            this.user_input = Common_1.observable_modification();
+            this.calculated = Common_1.observable_modification(calculateFunction, ko.computed);
+            // this.calculated = ko.computed(calculateFunction)
             this.serialize = ko.computed(function () {
                 return {
                     v: (_this.override() ? _this.user_input() : _this.calculated()) || 0,
@@ -3149,15 +3193,27 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         __extends(HeatingCable, _super);
         function HeatingCable(product_model, parent, heating_cable_) {
             var _this = _super.call(this) || this;
-            _this.product_id = ko.observable();
+            _this.product_id = Common_1.observable_modification();
             _this.url = '/json/v1/heat/';
             _this.id = ko.observable();
-            _this.ohm_a = ko.observable();
-            _this.ohm_b = ko.observable();
-            _this.ohm_c = ko.observable();
-            _this.mohm_a = ko.observable();
-            _this.mohm_b = ko.observable();
-            _this.mohm_c = ko.observable();
+            _this.ohm_a = Common_1.observable_modification();
+            _this.ohm_b = Common_1.observable_modification();
+            _this.ohm_c = Common_1.observable_modification();
+            _this.mohm_a = Common_1.observable_modification(-1);
+            _this.mohm_b = Common_1.observable_modification(-1);
+            _this.mohm_c = Common_1.observable_modification(-1);
+            _this.measurements_modifications_list = [
+                _this.ohm_a,
+                _this.ohm_b,
+                _this.ohm_c,
+                _this.mohm_a,
+                _this.mohm_b,
+                _this.mohm_c,
+            ];
+            _this.product_modifications_list = [
+                _this.product_id,
+            ];
+            _this.other_modifications_list = ko.observableArray();
             _this.validationModel = ko.validatedObservable({
                 product_id: _this.product_id,
             });
@@ -3166,6 +3222,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 if (_this.product_id() >= 0 && _this.product_model) {
                     return _this.product_model.by_id(_this.product_id());
                 }
+            });
+            _this.modifications_other = ko.computed(function () {
+                return _this.modification_check(_this.other_modifications_list());
+            });
+            _this.product_modifications = ko.computed(function () {
+                return _this.modification_check(_this.product_modifications_list);
+            });
+            _this.measurements_modifications = ko.computed(function () {
+                return _this.modification_check(_this.measurements_modifications_list);
             });
             var default_data = {
                 id: -1,
@@ -3207,6 +3272,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 return Number(heating_cable.specs.area_output.v) || 0;
             }));
+            _this.other_modifications_list.push(_this.area_output().user_input);
+            _this.other_modifications_list.push(_this.area_output().calculated);
+            _this.other_modifications_list.push(_this.area_output().override);
             _this.cc = ko.observable(new InputReadOnlyToggle(function () {
                 if (_this.product() && _this.product().type != 'mat') {
                     // For rooms with multiple cables, we need to do some guesswork to
@@ -3227,6 +3295,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 // Set an initial value, to keep the modified-flag from raising
                 return Number(heating_cable.specs.cc.v) || 0;
             }));
+            _this.other_modifications_list.push(_this.cc().user_input);
+            _this.other_modifications_list.push(_this.cc().calculated);
+            _this.other_modifications_list.push(_this.cc().override);
             _this.serialize = ko.computed(function () {
                 var obj = {
                     id: _this.id(),
@@ -3247,6 +3318,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 };
                 return obj;
             });
+            // this.modification_tracking_list(this.measurements_modifications_list.concat(
+            //   this.product_modifications_list,
+            //   this.other_modifications_list()
+            // ))
             _this.set(heating_cable);
             _this.init();
             return _this;
@@ -3259,9 +3334,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 this.ohm_a(heating_cable.specs.measurements.ohm_a);
                 this.ohm_b(heating_cable.specs.measurements.ohm_b);
                 this.ohm_c(heating_cable.specs.measurements.ohm_c);
-                this.mohm_a(heating_cable.specs.measurements.mohm_a);
-                this.mohm_b(heating_cable.specs.measurements.mohm_b);
-                this.mohm_c(heating_cable.specs.measurements.mohm_c);
+                this.mohm_a(heating_cable.specs.measurements.mohm_a >= 0);
+                this.mohm_b(heating_cable.specs.measurements.mohm_b >= 0);
+                this.mohm_c(heating_cable.specs.measurements.mohm_c >= 0);
                 this.area_output().override(Boolean(heating_cable.specs.area_output.m));
                 this.area_output().user_input(Number(heating_cable.specs.area_output.v));
                 this.cc().override(Boolean(heating_cable.specs.cc.m));

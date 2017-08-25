@@ -1,4 +1,10 @@
-import { ByID, Post, Base } from "./Common"
+import {
+  ByID,
+  Post,
+  Base,
+  ObservableWithModification,
+  observable_modification
+} from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
 import {
@@ -48,13 +54,14 @@ interface InputReadOnlyToggleInterface {
 }
 
 class InputReadOnlyToggle {
-  override: KnockoutObservable<boolean> = ko.observable(false)
-  calculated: KnockoutComputed<any>
+  override = <ObservableWithModification<boolean>>observable_modification(false);
+  calculated: ObservableWithModification<any>
   serialize: KnockoutObservable<InputReadOnlyToggleInterface>
-  user_input: KnockoutObservable<number> = ko.observable();
+  user_input = <ObservableWithModification<number>>observable_modification();
 
   constructor(calculateFunction: (() => any)) {
-    this.calculated = ko.computed(calculateFunction)
+    this.calculated = observable_modification(calculateFunction, ko.computed);
+    // this.calculated = ko.computed(calculateFunction)
     this.serialize = ko.computed((): InputReadOnlyToggleInterface => {
       return {
         v: (this.override() ? this.user_input() : this.calculated()) || 0,
@@ -69,18 +76,32 @@ class InputReadOnlyToggle {
   }
 }
 
+
 export class HeatingCable extends Post {
-  product_id: KnockoutObservable<number> = ko.observable();
+  product_id = <ObservableWithModification<number>>observable_modification();
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
-  ohm_a: KnockoutObservable<number> = ko.observable();
-  ohm_b: KnockoutObservable<number> = ko.observable();
-  ohm_c: KnockoutObservable<number> = ko.observable();
-  mohm_a: KnockoutObservable<number> = ko.observable();
-  mohm_b: KnockoutObservable<number> = ko.observable();
-  mohm_c: KnockoutObservable<number> = ko.observable();
+  ohm_a = <ObservableWithModification<number>>observable_modification();
+  ohm_b = <ObservableWithModification<number>>observable_modification();
+  ohm_c = <ObservableWithModification<number>>observable_modification();
+  mohm_a = <ObservableWithModification<boolean>>observable_modification(-1);
+  mohm_b = <ObservableWithModification<boolean>>observable_modification(-1);
+  mohm_c = <ObservableWithModification<boolean>>observable_modification(-1);
   area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
+  measurements_modifications_list: ObservableWithModification<any>[] = [
+    this.ohm_a,
+    this.ohm_b,
+    this.ohm_c,
+    this.mohm_a,
+    this.mohm_b,
+    this.mohm_c,
+  ]
+  product_modifications_list: ObservableWithModification<any>[] = [
+    this.product_id,
+  ]
+  other_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+
 
   parent: HeatingCables
   product_model: TSProductModel
@@ -139,6 +160,9 @@ export class HeatingCable extends Post {
       }
       return Number(heating_cable!.specs.area_output.v) || 0
     }))
+    this.other_modifications_list.push(this.area_output().user_input)
+    this.other_modifications_list.push(this.area_output().calculated)
+    this.other_modifications_list.push(this.area_output().override)
     this.cc = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product() && this.product()!.type != 'mat') {
         // For rooms with multiple cables, we need to do some guesswork to
@@ -159,6 +183,9 @@ export class HeatingCable extends Post {
       // Set an initial value, to keep the modified-flag from raising
       return Number(heating_cable!.specs.cc.v) || 0
     }))
+    this.other_modifications_list.push(this.cc().user_input)
+    this.other_modifications_list.push(this.cc().calculated)
+    this.other_modifications_list.push(this.cc().override)
 
     this.serialize = ko.computed(() => {
       let obj: HeatingCableInterface = {
@@ -180,6 +207,10 @@ export class HeatingCable extends Post {
       }
       return obj
     })
+    // this.modification_tracking_list(this.measurements_modifications_list.concat(
+    //   this.product_modifications_list,
+    //   this.other_modifications_list()
+    // ))
     this.set(heating_cable)
     this.init()
 
@@ -198,9 +229,9 @@ export class HeatingCable extends Post {
       this.ohm_a(heating_cable.specs.measurements.ohm_a)
       this.ohm_b(heating_cable.specs.measurements.ohm_b)
       this.ohm_c(heating_cable.specs.measurements.ohm_c)
-      this.mohm_a(heating_cable.specs.measurements.mohm_a)
-      this.mohm_b(heating_cable.specs.measurements.mohm_b)
-      this.mohm_c(heating_cable.specs.measurements.mohm_c)
+      this.mohm_a(heating_cable.specs.measurements.mohm_a >= 0)
+      this.mohm_b(heating_cable.specs.measurements.mohm_b >= 0)
+      this.mohm_c(heating_cable.specs.measurements.mohm_c >= 0)
       this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
       this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
       this.cc().override(Boolean(heating_cable.specs.cc!.m))
@@ -208,9 +239,19 @@ export class HeatingCable extends Post {
     }
     if (this.serialize) {
       this.save()
-
     }
   }
+  modifications_other = ko.computed(() => {
+    return this.modification_check(this.other_modifications_list())
+  })
+  product_modifications = ko.computed(() => {
+    return this.modification_check(this.product_modifications_list)
+  })
+  measurements_modifications = ko.computed(() => {
+    return this.modification_check(this.measurements_modifications_list)
+  })
+
+
 
 }
 

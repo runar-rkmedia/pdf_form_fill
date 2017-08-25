@@ -30,7 +30,11 @@ attr: {'id': 'heat' + id()}
                     'data-target': '#panel_select_cable' + id(),
                     'data-parent': '#heating-accordian' + id()
                   }">
-              <h4 class="panel-title carrot">Varmekabel</h4>
+              <h4 class="panel-title carrot">Varmekabel
+                <!-- ko if: product_modifications -->
+                <span class="text-warning glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <!-- /ko -->
+              </h4>
             </div>
             <div
               class="panel-collapse collapse accordian-toggle collapsed"
@@ -61,7 +65,12 @@ attr: {'id': 'heat' + id()}
                     'data-target': '#panel_measurements' + id(),
                     'data-parent': '#heating-accordian' + id()
                   }">
-              <h4 class="panel-title carrot">Målinger</h4>
+              <h4 class="panel-title carrot">Målinger
+
+                <!-- ko if: measurements_modifications -->
+                <span class="text-warning glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <!-- /ko -->
+              </h4>
             </div>
             <div class="panel-collapse collapse" data-bind="attr: {
                     'id': 'panel_measurements' + id(),
@@ -88,7 +97,12 @@ attr: {'id': 'heat' + id()}
                     'data-target': '#panel_others' + id(),
                     'data-parent': '#heating-accordian' + id()
                   }">
-              <h4 class="panel-title carrot">Annet</h4>
+              <h4 class="panel-title carrot">
+                Annet
+                <!-- ko if: modifications_other -->
+                <span class="text-warning glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <!-- /ko -->
+              </h4>
             </div>
             <div class="panel-collapse collapse" data-bind="attr: {
                     'id': 'panel_others' + id(),
@@ -113,7 +127,6 @@ attr: {'id': 'heat' + id()}
           <!-- ko if: file_download() -->
           <a target="VarmeDokPDF" data-bind="attr: {'href': file_download()}">Trykk her for å laste ned Forhåndsvisningen</a>
           <!-- /ko -->
-
           <button
             type="button"
             class="btn btn-primary"
