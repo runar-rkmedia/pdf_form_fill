@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <div class="panel-group" id="accordion-room" role="tablist" aria-multiselectable="true">
   <!-- ko foreach: $data -->
-  <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-warning': modified()}">
+  <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-mod-flag': modified()}">
     <div class="panel-heading collapsed" data-parent="#accordion-room" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + id(), 'href': '#room' + id()}">
       <h3 class="panel-title carrot">
 

@@ -52,7 +52,6 @@ from flask import (
 from flask.json import jsonify
 import forms
 from flask_scss import Scss
-from flask_assets import Environment, Bundle
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_compress import Compress
@@ -90,23 +89,7 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 
-assets = Environment(app)
-# js_main = Bundle(
-#     # 'js/ext/knockout.validation.js',
-#     # 'js/ext/nb-NO.js',
-#     'js/main.js',
-#     # filters='jsmin',
-#     output='gen/packed.js')
-# assets.register('js_main', js_main)
 
-css = Bundle(
-    # 'css/bootstrap.min.css',
-    'css/style.css',
-    'css/ko-bootstrap-typeahead.css',
-    filters='cssmin',
-    output='css/min.css'
-)
-assets.register('css_all', css)
 
 db.init_app(app)
 
@@ -693,5 +676,4 @@ if __name__ == "__main__":
         manager.run()
     else:
         if app.config['DEBUG'] is True:
-            Scss(app, static_dir='static/css/', asset_dir='assets/scss/')
             app.run(host='0.0.0.0', port=app.config['PORT'])

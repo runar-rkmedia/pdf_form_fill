@@ -1,6 +1,7 @@
 import $ = require("jquery");
 import { TSAppViewModel } from "./components/AppViewModel"
 import './bootstrap/bootstrap'
+import './less/entry'
 export var myApp: TSAppViewModel;
 
 let pad = (n: string, width: number, z: string = "0") => {
