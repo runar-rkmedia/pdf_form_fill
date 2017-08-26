@@ -6851,16 +6851,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
+  var topOfPanelContent = target.offset().top;
   if (target.hasClass('scrollto') || true) {
-    var panelHeading = target.siblings('.panel-heading')
-    var panelHeadingHeight = target.siblings('.panel-heading').height();
-    var animationSpeed = 200; // animation speed in milliseconds
-    var currentScrollbarPosition = $(document).scrollTop();
-    var topOfPanelContent = target.offset().top;
+    var panelHeadingHeight = 30;
+    if (target.hasClass('panel')) {
+      var panelHeading = target.siblings('.panel-heading');
+      panelHeadingHeight = target.siblings('.panel-heading').height();
+
+    }
 
     $("html, body").animate({
       scrollTop: topOfPanelContent - panelHeadingHeight -25
-    }, animationSpeed);
+    }, 200);
   }
 });
 
