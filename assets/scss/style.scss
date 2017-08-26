@@ -233,4 +233,12 @@ canvas {
   font-size: 30px;
   height: 1em;
 }
+
+.header-mod-flag {
+  color: #d2a650;
+}
+
+.label-mod-flag {
+  @extend .header-mod-flag;
+}
 @import "form";

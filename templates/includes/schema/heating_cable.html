@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <div class="panel-group" id="accordion-heat" role="tablist" aria-multiselectable="true">
   <!-- ko foreach: $data-->
-  <div class="panel" data-bind="css: {'panel-info': !modified(), 'panel-warning': modified()}">
     <div class="panel-heading collapsed" data-parent="#accordion-heat" data-toggle="collapse" data-bind="attr: { 'data-target': '#heat' + id(), 'href': '#heat' + id()}">
+  <div class="panel panel-default" data-bind="css: {'panel-info': !modified(), 'panel-modified': modified()}">
       <h3 class="panel-title carrot">
         <!-- ko if: product() -->
         <span data-bind="text: product().name"></span>
@@ -32,7 +32,7 @@ attr: {'id': 'heat' + id()}
                   }">
               <h4 class="panel-title carrot">Varmekabel
                 <!-- ko if: product_modifications -->
-                <span class="text-warning glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="header-mod-flag glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <!-- /ko -->
               </h4>
             </div>
@@ -68,7 +68,7 @@ attr: {'id': 'heat' + id()}
               <h4 class="panel-title carrot">Målinger
 
                 <!-- ko if: measurements_modifications -->
-                <span class="text-warning glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="header-mod-flag glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <!-- /ko -->
               </h4>
             </div>
@@ -100,7 +100,7 @@ attr: {'id': 'heat' + id()}
               <h4 class="panel-title carrot">
                 Annet
                 <!-- ko if: modifications_other -->
-                <span class="text-warning glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="header-mod-flag glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 <!-- /ko -->
               </h4>
             </div>

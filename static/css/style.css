@@ -136,18 +136,21 @@
               font-size: 30px;
               height: 1em; }
 
-              #input-anleggs_postnummer {
-                width: 100px; }
+              .header-mod-flag, .label-mod-flag {
+                color: #d2a650; }
 
-                legend {
-                  font-size: 14px;
-                  font-weight: 700;
-                  border: 0;
-                  margin-bottom: 5px; }
+                #input-anleggs_postnummer {
+                  width: 100px; }
 
-                  @media screen and (max-width: 450px) {
-                    label {
-                      font-size: 12px;   }
+                  legend {
+                    font-size: 14px;
+                    font-weight: 700;
+                    border: 0;
+                    margin-bottom: 5px; }
+
+                    @media screen and (max-width: 450px) {
+                      label {
+                        font-size: 12px;   }
 }
 
 input[type=radio] {

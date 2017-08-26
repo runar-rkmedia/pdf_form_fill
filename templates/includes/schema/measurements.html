@@ -11,17 +11,17 @@
   </small>
   <!-- /ko -->
   <div class="form-group col-xs-4">
-    <label for="input-ohm_a" data-bind="css: { 'text-warning': ohm_a.modified() }">Før
+    <label for="input-ohm_a" data-bind="css: { 'label-mod-flag': ohm_a.modified() }">Før
       <br class="visible-xs">installasjon</label>
     <input class="form-control" type="number" step="0.01" min="0" name="ohm_a" id="input-ohm_a" data-bind="textInput: ohm_a">
   </div>
   <div class="form-group col-xs-4">
-    <label for="input-ohm_b" data-bind="css: { 'text-warning': ohm_b.modified() }">Før
+    <label for="input-ohm_b" data-bind="css: { 'label-mod-flag': ohm_b.modified() }">Før
       <br class="visible-xs">støping</label>
     <input class="form-control" type="number" step="0.01" min="0" name="ohm_b" id="input-ohm_b" data-bind="textInput: ohm_b">
   </div>
   <div class="form-group col-xs-4">
-    <label for="input-ohm_c" data-bind=" css: { 'text-warning' : ohm_c.modified() }">Før
+    <label for="input-ohm_c" data-bind=" css: { 'label-mod-flag' : ohm_c.modified() }">Før
       <br class="visible-xs">tilkobling</label>
     <input class="form-control" type="number" step="0.01" min="0" name="ohm_c" id="input-ohm_c" data-bind="textInput: ohm_c">
   </div>
@@ -29,19 +29,19 @@
     <legend>Isolasjonsmotstand</legend>
     <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
     <div class="col-xs-4 col-sm-3 col-md-2">
-      <label class="checkbox-inline" data-bind="css: { 'text-warning': mohm_a.modified() }">
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': mohm_a.modified() }">
         <input type="checkbox" name="mohm_a" value="999" data-bind="checked: mohm_a">
         Før installasjon
       </label>
     </div>
     <div class="col-xs-4 col-sm-3 col-md-2">
-      <label class="checkbox-inline" data-bind="css: { 'text-warning': mohm_b.modified() }">
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': mohm_b.modified() }">
         <input type="checkbox" name="mohm_b" value="999" data-bind="checked: mohm_b">
         Før støping
       </label>
     </div>
     <div class="col-xs-4 col-sm-3 col-md-2">
-      <label class="checkbox-inline" data-bind="css: { 'text-warning': mohm_c.modified() }">
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': mohm_c.modified() }">
         <input type="checkbox" name="mohm_c" value="999" data-bind="checked: mohm_c">
         Før tilkobling
       </label>
