@@ -79,7 +79,7 @@
       <!-- ko with: product_filter -->
       <select
         class="form-control"
-        data-bind="options: sortDist(filtered_products(), effect() || $parent.parent.parent.bestFitEffect())
+        data-bind="options: sortDist(filtered_products(), effect() || $parents[1].suggested_effect())
 ,
                 optionsText: 'name',
                 optionsValue: 'id',

@@ -3,7 +3,6 @@ import {
   Post,
   Base,
   ObservableWithModification,
-  observable_modification
 } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
@@ -112,6 +111,7 @@ export class HeatingCable extends Post {
   parent: HeatingCables
   product_model: TSProductModel
   product_filter: KnockoutObservable<ProductFilter>
+  suggested_effect: KnockoutComputed<number>;
 
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
@@ -207,10 +207,13 @@ export class HeatingCable extends Post {
       }
       return obj
     })
-    // this.modification_tracking_list(this.measurements_modifications_list.concat(
-    //   this.product_modifications_list,
-    //   this.other_modifications_list()
-    // ))
+    this.suggested_effect = ko.computed(() => {
+      let this_effect = 0
+      if (this.product()) {
+        this_effect = this.product()!.effect
+      }
+      return this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
+    })
     this.set(heating_cable)
 
   }
@@ -219,6 +222,7 @@ export class HeatingCable extends Post {
       return this.product_model.by_id(this.product_id())
     }
   })
+
 
   set(heating_cable: HeatingCableInterface) {
     this.id(heating_cable.id)
