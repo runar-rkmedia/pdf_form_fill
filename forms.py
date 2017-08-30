@@ -1,5 +1,6 @@
 """Forms used for HTML.."""
 # -*- coding: utf-8 -*-
+import decimal
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -9,12 +10,12 @@ from wtforms import (
     HiddenField
 )
 from wtforms.fields.html5 import EmailField, IntegerField, DecimalField
-from wtforms_html5 import AutoAttrMeta
 from wtforms.validators import (DataRequired,
                                 # Email,
                                 Length,
                                 NumberRange,
                                 ValidationError)
+from wtforms_html5 import AutoAttrMeta
 
 
 class Unique(object):
@@ -39,6 +40,41 @@ class SubForm(FlaskForm):
     def __init__(self, **_kwargs):
         _kwargs['csrf_enabled'] = False
         super().__init__(**_kwargs)
+
+
+# https://stackoverflow.com/a/35359450/3493586
+class BetterDecimalField(DecimalField):
+    """
+    Very similar to WTForms DecimalField, except with the option of rounding
+    the data always.
+    """
+
+    def __init__(self, label=None, validators=None, places=2, rounding=None,
+                 round_always=True, **kwargs):
+        super(BetterDecimalField, self).__init__(
+            label=label,
+            validators=validators,
+            places=places,
+            rounding=rounding,
+            **kwargs
+        )
+        self.round_always = round_always
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            try:
+                self.data = decimal.Decimal(valuelist[0])
+                if self.round_always and hasattr(self.data, 'quantize'):
+                    exp = decimal.Decimal('.1') ** self.places
+                    if self.rounding is None:
+                        quantized = self.data.quantize(exp)
+                    else:
+                        quantized = self.data.quantize(
+                            exp, rounding=self.rounding)
+                    self.data = quantized
+            except (decimal.InvalidOperation, ValueError):
+                self.data = None
+                raise ValueError(self.gettext('Not a valid decimal value'))
 
 
 class CheckMaxTemp(SubForm):
@@ -96,12 +132,12 @@ class RoomForm(FlaskForm):
             )
         ]
     )
-    maxEffect = DecimalField()
-    normalEffect = DecimalField()
+    maxEffect = BetterDecimalField()
+    normalEffect = BetterDecimalField()
     outside = BooleanField(
         'Utvendig'
     )
-    area = DecimalField(
+    area = BetterDecimalField(
         'Areal',
         validators=[
             DataRequired('Feltet er påkrevd.'),
@@ -111,7 +147,7 @@ class RoomForm(FlaskForm):
             )
         ]
     )
-    heated_area = DecimalField(
+    heated_area = BetterDecimalField(
         'Oppvarmet Areal',
         validators=[
             DataRequired('Feltet er påkrevd.'),
@@ -192,23 +228,22 @@ class CustomerForm(FlaskForm):
 
 class MeasurementsForms(SubForm):
     """Form for measurements for a HeatingCable."""
-    ohm_a = DecimalField()
-    ohm_b = DecimalField()
-    ohm_c = DecimalField()
-    mohm_a = DecimalField()
-    mohm_b = DecimalField()
-    mohm_c = DecimalField()
+    ohm_a = BetterDecimalField()
+    ohm_b = BetterDecimalField()
+    ohm_c = BetterDecimalField()
+    mohm_a = BetterDecimalField()
+    mohm_b = BetterDecimalField()
+    mohm_c = BetterDecimalField()
 
 
 class AreaOutput(SubForm):
-    v = DecimalField(
-        'Flateeffekt ( W/m<sup>2</sup> )'
-    )
+    v = BetterDecimalField(
+        'Flateeffekt ( W/m<sup>2</sup> )')
     m = BooleanField()
 
 
 class Cc(SubForm):
-    v = DecimalField(
+    v = BetterDecimalField(
         'C/C-avstand ( cm )'
     )
     m = BooleanField()
