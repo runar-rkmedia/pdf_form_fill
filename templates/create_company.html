@@ -2,37 +2,37 @@
 {% extends 'base.html' %}
 {% block body %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <h2>Opprette firma-data.</h2>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <h2>Opprette firma-data.</h2>
 
-                Her kan du opprette et firma for bruk på denne siden. Noen av fordelene dette gir:
-                <ul>
-                    <li>Firma-informasjon er ferdig utfylt på alle skjemaene for dine ansatte/kollegaer.</li>
-                    <li>Skjemaene kan lagres, og alle kan hente ut skjema som andre har opprettet. Eksempel på nytten av dette: John har lagt en varmekabel og fylt ut skjemaet. Senere kommer Jim og kobler til termostaten for varmekablene. Da kan Jim få opp den skjemaet
-                        til John, og trenger dermed ikke å fylle ut alt igjen, for å legge til de siste målingene.</li>
-                </ul>
+        Her kan du opprette et firma for bruk på denne siden. Noen av fordelene dette gir:
+        <ul>
+          <li>Firma-informasjon er ferdig utfylt på alle skjemaene for dine ansatte/kollegaer.</li>
+          <li>Skjemaene kan lagres, og alle kan hente ut skjema som andre har opprettet. Eksempel på nytten av dette: John har lagt en varmekabel og fylt ut skjemaet. Senere kommer Jim og kobler til termostaten for varmekablene. Da kan Jim få opp den skjemaet
+            til John, og trenger dermed ikke å fylle ut alt igjen, for å legge til de siste målingene.</li>
+        </ul>
 
-                {% from "includes/formhelpers.html" import render_field,
-                render_field_group %}
-                <form method="post" role="form">
-                    {{ form.csrf_token }}
-                    {{ form.address.csrf_token }}
-                    <div class="col-sm-8 zero-pad-l">{{ render_field(form.name) }}</div>
-                    <div class="col-sm-4 zero-pad-r">{{ render_field(form.org_nr) }}</div>
-                    {{ render_field(form.description) }}
-                    {{ render_field(form.contact_name) }}
-                    {{ render_field(form.email) }}
-                    <fieldset>
-                        <div class="form-group">{{ render_field(form.address.address1, False) }}
-                            {{ render_field(form.address.address2, False, no_label=True) }}</div>
-                        <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.postnumber) }}</div>
-                        <div class="col-xs-8 zero-pad-r">{{ render_field(form.address.postal) }}</div>
-                    </fieldset>
-                    <button type="submit" class="btn btn-primary">Lagre</button>
-                </form>
-            </div>
-        </div>
+        {% from "includes/formhelpers.html" import render_field,
+        render_field_group %}
+        <form method="post" role="form">
+          {{ form.csrf_token }}
+          {{ form.address.csrf_token }}
+          <div class="col-sm-8 zero-pad-l">{{ render_field(form.name) }}</div>
+          <div class="col-sm-4 zero-pad-r">{{ render_field(form.org_nr) }}</div>
+          {{ render_field(form.description) }}
+          {{ render_field(form.contact_name) }}
+          {{ render_field(form.email) }}
+          <fieldset>
+            <div class="form-group">{{ render_field(form.address.address1, False) }}
+              {{ render_field(form.address.address2, False, no_label=True) }}</div>
+            <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.post_code) }}</div>
+            <div class="col-xs-8 zero-pad-r">{{ render_field(form.address.post_area) }}</div>
+          </fieldset>
+          <button type="submit" class="btn btn-primary">Lagre</button>
+        </form>
+      </div>
     </div>
+  </div>
 {% endblock %}

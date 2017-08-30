@@ -243,7 +243,7 @@ class Company(db.Model):
 
         location = get_location_from_address(
             form.address.address1.data,
-            form.address.post_area.data
+            form.address.post_code.data
         )
         if not location:
             raise LocationException('Fant ikke adressen i databasen')
