@@ -51,7 +51,6 @@ from flask import (
 )
 from flask.json import jsonify
 import forms
-from flask_scss import Scss
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_compress import Compress
@@ -71,7 +70,6 @@ from flask_login import (
 )
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from pprint import pprint
 import wtforms_json
 from flask_wtf.csrf import CSRFProtect, CSRFError
 # import schemas
@@ -87,8 +85,6 @@ Compress(app)
 migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
-
-
 
 
 db.init_app(app)
@@ -546,9 +542,9 @@ def json_room():
         'max_temp_planning': form.check_max_temp.planning.data,
         'max_temp_installation': form.check_max_temp.installation.data,
         'max_temp_other': form.check_max_temp.other.data,
-        'control_system_floor_sensor': form.check_control_system.floor_sensor.data,
-        'control_system_room_sensor': form.check_control_system.room_sensor.data,
-        'control_system_designation': form.check_control_system.designation.data,
+        'control_system_floor_sensor': form.check_control_system.floor_sensor.data, # noqa
+        'control_system_room_sensor': form.check_control_system.room_sensor.data, # noqa
+        'control_system_designation': form.check_control_system.designation.data, # noqa
         'control_system_other': form.check_control_system.other.data,
 
     })
@@ -572,7 +568,7 @@ def json_customer():
         return jsonify(customer.serialize)
 
     if not form.validate_on_submit():
-        pprint(form.errors)
+        print(form.errors)
         return 'incorrect data', 403
     if request.method == 'POST':
         address = Address()
@@ -617,6 +613,7 @@ def json_form_modification(filled_form_modified_id):
 def view_form():
     """View for home."""
     # TODO: NEVER PUT THIS IN PRODUCTION!
+    # login_user(User.query.filter(User.id==1).first())
     # Set up some defaults. (retrieve this from the user-config later.)
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()

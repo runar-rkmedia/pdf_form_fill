@@ -156,103 +156,103 @@ export class HeatingCable extends Post {
     this.area_output = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product()) {
         if (this.product()!.type == 'mat') {
-          return this.product()!.mainSpec
+        return this.product()!.mainSpec
         }
-      }
-      let heated_area = this.parent.parent.heated_area()
-      let room_effect = this.parent.parent.room_effect()
-      if (room_effect && heated_area) {
-        return parseFloat((room_effect / heated_area).toFixed(1))
-      }
-      return Number(heating_cable!.specs.area_output.v) || 0
+}
+let heated_area = this.parent.parent.heated_area()
+let room_effect = this.parent.parent.room_effect()
+if (room_effect && heated_area) {
+  return parseFloat((room_effect / heated_area).toFixed(1))
+}
+return Number(heating_cable!.specs.area_output.v) || 0
     }, this.other_observer))
-    this.cc = ko.observable(new InputReadOnlyToggle(() => {
-      if (this.product() && this.product()!.type != 'mat') {
-        // For rooms with multiple cables, we need to do some guesswork to
-        // calculate the area that this cable is covering.
-        let room_effect = this.parent.parent.room_effect()
+this.cc = ko.observable(new InputReadOnlyToggle(() => {
+  if (this.product() && this.product()!.type != 'mat') {
+    // For rooms with multiple cables, we need to do some guesswork to
+    // calculate the area that this cable is covering.
+    let room_effect = this.parent.parent.room_effect()
         let this_effect = this.product()!.effect
         if (room_effect && this_effect) {
-          let coverage_fraction = this_effect / room_effect
-          let heated_area = this.parent.parent.heated_area()
-          let heated_area_of_this_cable = heated_area * coverage_fraction
-          let length = this.product()!.specs!.Length
-          if (length && heated_area_of_this_cable) {
-            let value = heated_area_of_this_cable / length * 100
-            return parseFloat(value.toFixed(1))
-          }
-        }
+  let coverage_fraction = this_effect / room_effect
+  let heated_area = this.parent.parent.heated_area()
+  let heated_area_of_this_cable = heated_area * coverage_fraction
+  let length = this.product()!.specs!.Length
+  if (length && heated_area_of_this_cable) {
+    let value = heated_area_of_this_cable / length * 100
+    return parseFloat(value.toFixed(1))
+  }
+}
       }
-      // Set an initial value, to keep the modified-flag from raising
-      return Number(heating_cable!.specs.cc.v) || 0
+// Set an initial value, to keep the modified-flag from raising
+return Number(heating_cable!.specs.cc.v) || 0
     }, this.other_observer))
 
-    this.serialize = ko.computed(() => {
-      let obj: HeatingCableInterface = {
-        id: this.id(),
-        room_id: this.parent.parent.id(),
-        product_id: Number(this.product_id()),
-        specs: {
-          measurements: {
-            ohm_a: Number(this.ohm_a()),
-            ohm_b: Number(this.ohm_b()),
-            ohm_c: Number(this.ohm_c()),
-            mohm_a: (this.mohm_a() ? 999 : -1),
-            mohm_b: (this.mohm_b() ? 999 : -1),
-            mohm_c: (this.mohm_c() ? 999 : -1),
-          },
-          cc: this.cc().serialize(),
-          area_output: this.area_output().serialize()
-        },
-      }
-      return obj
-    })
-    this.suggested_effect = ko.computed(() => {
-      let this_effect = 0
-      if (this.product()) {
-        this_effect = this.product()!.effect
-      }
-      return this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
-    })
-    this.set(heating_cable)
+this.serialize = ko.computed(() => {
+  let obj: HeatingCableInterface = {
+    id: this.id(),
+    room_id: this.parent.parent.id(),
+    product_id: Number(this.product_id()),
+    specs: {
+      measurements: {
+        ohm_a: Number(this.ohm_a()),
+        ohm_b: Number(this.ohm_b()),
+        ohm_c: Number(this.ohm_c()),
+        mohm_a: (this.mohm_a() ? 999 : -1),
+        mohm_b: (this.mohm_b() ? 999 : -1),
+        mohm_c: (this.mohm_c() ? 999 : -1),
+      },
+      cc: this.cc().serialize(),
+      area_output: this.area_output().serialize()
+    },
+  }
+  return obj
+})
+this.suggested_effect = ko.computed(() => {
+  let this_effect = 0
+  if (this.product()) {
+    this_effect = this.product()!.effect
+  }
+  return this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
+})
+this.set(heating_cable)
 
   }
-  product = ko.computed((): ProductInterface | undefined => {
-    if (this.product_id() >= 0 && this.product_model) {
-      return this.product_model.by_id(this.product_id())
-    }
-  })
-
-
-  set(heating_cable: HeatingCableInterface) {
-    this.id(heating_cable.id)
-    this.product_id(Number(heating_cable.product_id))
-    if (heating_cable.specs && heating_cable.specs.measurements) {
-      // this.measurements().set(heating_cable.specs.measurements)
-      this.ohm_a(heating_cable.specs.measurements.ohm_a)
-      this.ohm_b(heating_cable.specs.measurements.ohm_b)
-      this.ohm_c(heating_cable.specs.measurements.ohm_c)
-      this.mohm_a(heating_cable.specs.measurements.mohm_a >= 0)
-      this.mohm_b(heating_cable.specs.measurements.mohm_b >= 0)
-      this.mohm_c(heating_cable.specs.measurements.mohm_c >= 0)
-      this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
-      this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
-      this.cc().override(Boolean(heating_cable.specs.cc!.m))
-      this.cc().user_input(Number(heating_cable.specs.cc!.v))
-    }
-    if (this.serialize) {
-      this.save()
-    }
+product = ko.computed((): ProductInterface | undefined => {
+  if (this.product_id() >= 0 && this.product_model) {
+    return this.product_model.by_id(this.product_id())
   }
-  modifications_other = ko.computed(() => {
-    return this.modification_check(this.other_modifications_list())
-  })
-  product_modifications = ko.computed(() => {
-    return this.modification_check(this.product_modifications_list())
-  })
-  measurements_modifications = ko.computed(() => {
-    return this.modification_check(this.measurements_modifications_list())
-  })
+})
+
+
+set(heating_cable: HeatingCableInterface) {
+  this.id(heating_cable.id)
+  this.product_id(Number(heating_cable.product_id))
+  if (heating_cable.specs && heating_cable.specs.measurements) {
+    // this.measurements().set(heating_cable.specs.measurements)
+    this.ohm_a(heating_cable.specs.measurements.ohm_a)
+    this.ohm_b(heating_cable.specs.measurements.ohm_b)
+    this.ohm_c(heating_cable.specs.measurements.ohm_c)
+    this.mohm_a(heating_cable.specs.measurements.mohm_a >= 0)
+    this.mohm_b(heating_cable.specs.measurements.mohm_b >= 0)
+    this.mohm_c(heating_cable.specs.measurements.mohm_c >= 0)
+    this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
+    this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
+    this.cc().override(Boolean(heating_cable.specs.cc!.m))
+    this.cc().user_input(Number(heating_cable.specs.cc!.v))
+  }
+  if (this.serialize) {
+    this.save()
+  }
+}
+modifications_other = ko.computed(() => {
+  return this.modification_check(this.other_modifications_list())
+})
+product_modifications = ko.computed(() => {
+  return this.modification_check(this.product_modifications_list())
+})
+measurements_modifications = ko.computed(() => {
+  return this.modification_check(this.measurements_modifications_list())
+})
 
 
 

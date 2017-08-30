@@ -88,7 +88,7 @@ export class TSAppViewModel {
 
       }
     });
-    this.customer().get(108)
+    this.customer().get(1)
   }
 
 
