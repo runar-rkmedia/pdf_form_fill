@@ -63,12 +63,12 @@ class InputReadOnlyToggle {
     this.override = <ObservableWithModification<boolean>>modification_observable(false);
     this.calculated = ko.computed(calculateFunction);
     this.output = modification_observable(() => {
-      return this.override() ? this.user_input() : this.calculated()
+      return Number(this.override() ? this.user_input() : this.calculated())
     }, ko.computed);
     // this.calculated = ko.computed(calculateFunction)
     this.serialize = ko.computed((): InputReadOnlyToggleInterface => {
       return {
-        v: (this.override() ? this.user_input() : this.calculated()) || 0,
+        v: this.output() || 0,
         m: this.override(),
       }
     })

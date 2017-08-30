@@ -2544,7 +2544,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 finally {
                 }
             });
-            this.customer().get(108);
+            this.customer().get(1);
         }
         return TSAppViewModel;
     }());
@@ -3179,12 +3179,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             this.override = modification_observable(false);
             this.calculated = ko.computed(calculateFunction);
             this.output = modification_observable(function () {
-                return _this.override() ? _this.user_input() : _this.calculated();
+                return Number(_this.override() ? _this.user_input() : _this.calculated());
             }, ko.computed);
             // this.calculated = ko.computed(calculateFunction)
             this.serialize = ko.computed(function () {
                 return {
-                    v: (_this.override() ? _this.user_input() : _this.calculated()) || 0,
+                    v: _this.output() || 0,
                     m: _this.override(),
                 };
             });
