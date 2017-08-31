@@ -44,6 +44,8 @@ PER_PAGE = 500
 
 class ByID(object):
     """Class which can return it's entity by id."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+
     @classmethod
     def by_id(cls, this_id):
         """Return a entity by its id."""
@@ -58,11 +60,29 @@ class ByID(object):
 
 
 class MyBaseModel(ByID):
-    """Basic functionality."""
+    """
+    Implement various methods for tables which users control.
+
+    by_id: return an entity by its ID, if users has rights to it (owns-method).
+    put_in_archive: set archived to True.
+    update: Update an entity from a dictionary.
+    """
+    archived = db.Column(db.Boolean, default=False)
 
     def owns(self, user):
         """Check if owner."""
         raise NotImplementedError("{} missing owns-method".format(type(self)))
+
+    def put_in_archive(self, user):
+        """Mark this object as archived."""
+        print('owns: ', self.owns(user))
+        if self.owns(user):
+            self.archived = True
+            db.session.add(self)
+            db.session.commit()
+            return True
+        # else:
+            # raise NoAccess("You don't have access to this item.")
 
     @classmethod
     def by_id(cls, this_id, user):

@@ -44,9 +44,8 @@ class UserRole(Enum):
     admin = 3
 
 
-class RoomTypeInfo(db.Model, ByID):
+class RoomTypeInfo(ByID, db.Model):
     """Table for room-info."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     normalEffect = db.Column(db.SmallInteger(), nullable=False)
     maxEffect = db.Column(db.SmallInteger(), nullable=False)
     names = db.Column(postgresql.ARRAY(db.String(), dimensions=1))
@@ -65,9 +64,8 @@ class RoomTypeInfo(db.Model, ByID):
         return d
 
 
-class Address(db.Model, MyBaseModel):
+class Address(MyBaseModel, db.Model):
     """Address-table for users."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     address1 = db.Column(db.String(200), nullable=False)
     address2 = db.Column(db.String(200))
     post_code = db.Column(db.SmallInteger, nullable=False)
@@ -116,19 +114,16 @@ class Address(db.Model, MyBaseModel):
         return dictionary
 
 
-class Contact(db.Model):
+class Contact(ByID, db.Model):
     """Contact-table for users, like phone, email"""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     type = db.Column(db.Enum(ContactType))
     value = db.Column(db.String(200))
     description = db.Column(db.String(200))
 
 
-class Company(db.Model):
+class Company(MyBaseModel, db.Model):
     """Company-table for users."""
-    id = db.Column(db.Integer,
-                   primary_key=True,
-                   unique=True)
+
     name = db.Column(db.String(50),
                      unique=True,
                      nullable=False)
@@ -270,9 +265,8 @@ class Company(db.Model):
         return company
 
 
-class CompanyContact(db.Model):
+class CompanyContact(ByID, db.Model):
     """Associations-table for company and contacts."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
     contact = db.relationship(
         Contact, primaryjoin='CompanyContact.contact_id==Contact.id')
@@ -282,10 +276,9 @@ class CompanyContact(db.Model):
         backref='contacts')
 
 
-class User(db.Model, UserMixin):
+class User(ByID, UserMixin, db.Model):
     """User-table for users."""
     __tablename__ = 'vk_users'
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     given_name = db.Column(db.String(50))
     family_name = db.Column(db.String(50))
     email = db.Column(db.String(100))
@@ -418,16 +411,15 @@ class Invite(db.Model):
         return dictionary
 
 
-class OAuth(db.Model, OAuthConsumerMixin):
+class OAuth(OAuthConsumerMixin, db.Model):
     """Oath-table."""
     __tablename__ = 'oauth'
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(User)
 
 
-class UserContact(db.Model):
+class UserContact(ByID, db.Model):
     """Associations-table for user and contacts."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     contact = db.relationship(
@@ -436,9 +428,8 @@ class UserContact(db.Model):
         User, primaryjoin='UserContact.user_id==User.id')
 
 
-class Customer(db.Model, MyBaseModel):
+class Customer(MyBaseModel, db.Model):
     """Customer-table."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(100))
     address_id = db.Column(db.Integer,
                            db.ForeignKey(Address.id),
@@ -452,7 +443,7 @@ class Customer(db.Model, MyBaseModel):
 
     def owns(self, user):
         """Check that user has rights to this customer."""
-        user.company.owns(self)
+        return user.company.owns(self)
 
     @property
     def serialize(self):
@@ -464,10 +455,9 @@ class Customer(db.Model, MyBaseModel):
         }
 
 
-class Room(db.Model, MyBaseModel):
+class Room(MyBaseModel, db.Model):
     """Table of forms filled by users."""
     # __tablename__ = 'room'
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     name = db.Column(db.String(50))  # e.g. room name
     archived = db.Column(db.Boolean, default=False)
     outside = db.Column(db.Boolean, default=False)
@@ -495,12 +485,7 @@ class Room(db.Model, MyBaseModel):
 
     def owns(self, user):
         """Check that user has rights to this room."""
-        self.customer.owns(user)
-
-    def archive_this(self, user):
-        """Mark this as archived."""
-        if user.owns(self):
-            self.archived = True
+        return self.customer.owns(user)
 
     @property
     def serialize(self, user=None):
@@ -536,9 +521,8 @@ class Room(db.Model, MyBaseModel):
         return dictionary
 
 
-class RoomItem(db.Model, MyBaseModel):
+class RoomItem(MyBaseModel, db.Model):
     """Holder for modifications to items."""
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     room_id = db.Column(
         db.Integer, db.ForeignKey(Room.id), nullable=False)
     room = db.relationship(
@@ -549,7 +533,7 @@ class RoomItem(db.Model, MyBaseModel):
 
     def owns(self, user):
         """Check that user has rights to this room-item."""
-        self.room.owns(user)
+        return self.room.owns(user)
 
     @property
     def serialize(self, user=None):
@@ -597,10 +581,9 @@ class RoomItem(db.Model, MyBaseModel):
         return room_item
 
 
-class RoomItemModifications(db.Model, MyBaseModel):
+class RoomItemModifications(MyBaseModel, db.Model):
     """Table of modification-dated for Room-model."""
     __tablename__ = 'room_item_modifications'
-    id = db.Column(db.Integer, primary_key=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(
         User, primaryjoin='RoomItemModifications.user_id==User.id')
@@ -639,7 +622,7 @@ class RoomItemModifications(db.Model, MyBaseModel):
                         or_(
                             RoomItemModifications.user != user,
                             RoomItemModifications.date >= (
-                                datetime.utcnow() - timedelta(seconds=1))
+                                datetime.utcnow() - timedelta(seconds=60 * 5))
                         )).first()
         if not last_modified:
             last_modified = RoomItemModifications(
@@ -650,14 +633,6 @@ class RoomItemModifications(db.Model, MyBaseModel):
         last_modified.product_id = product_id
         db.session.add(last_modified)
         return last_modified
-
-    def archive_this(self, user):
-        """Mark this object as archived."""
-        if user.owns(self):
-            self.archived = True
-            db.session.add(self)
-            db.session.commit()
-            return True
 
     @property
     def product(self):
