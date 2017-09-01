@@ -149,11 +149,22 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     exports.Base = Base;
     var Post = (function (_super) {
         __extends(Post, _super);
-        function Post() {
+        function Post(parent) {
             var _this = _super.call(this) || this;
             _this.file_download = ko.observable();
+            _this.parent = parent;
             return _this;
         }
+        Post.prototype.delete = function () {
+            var _this = this;
+            return $.ajax({
+                url: this.url,
+                type: HTTPVerbs.delete,
+                data: JSON.stringify({ id: this.id() })
+            }).done(function (result) {
+                _this.parent.list.remove(_this);
+            });
+        };
         Post.prototype.post = function (h, event, data_object, url) {
             var _this = this;
             // Abstract class for posting data. Will use PUT if id > 0
@@ -2629,7 +2640,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         function Customer(parent, id, root) {
             if (id === void 0) { id = -1; }
             if (root === void 0) { root = parent; }
-            var _this = _super.call(this) || this;
+            var _this = _super.call(this, parent) || this;
             _this.url = '/json/v1/customer/';
             _this.name = _this.observable_modification();
             _this.address1 = _this.observable_modification();
@@ -2665,7 +2676,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 // We need a rateLimiter here so that the url doesn't change too early
                 // when a user clicks a selection.
             }).extend({ rateLimit: 50 });
-            _this.parent = parent;
             _this.root = parent;
             _this.id(id);
             _this.name.extend({ required: false, minLength: 3, maxLength: 100 });
@@ -2738,7 +2748,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         __extends(Room, _super);
         function Room(root, parent, room) {
             if (room === void 0) { room = undefined; }
-            var _this = _super.call(this) || this;
+            var _this = _super.call(this, parent) || this;
             _this.url = '/json/v1/room/';
             _this.id = ko.observable();
             _this.name = _this.observable_modification();
@@ -2795,7 +2805,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 return 0;
             });
-            _this.parent = parent;
             _this.root = root;
             _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
             _this.heated_area.extend({ required: true, number: true, min: 0.1, max: 1000 });
@@ -3199,7 +3208,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     var HeatingCable = (function (_super) {
         __extends(HeatingCable, _super);
         function HeatingCable(product_model, parent, heating_cable_) {
-            var _this = _super.call(this) || this;
+            var _this = _super.call(this, parent) || this;
             _this.measurements_modifications_list = ko.observableArray();
             _this.product_modifications_list = ko.observableArray();
             _this.other_modifications_list = ko.observableArray();
@@ -3267,7 +3276,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.product_id.extend({ required: true, number: true, min: 1000000, max: 9999999 });
             _this.product_model = product_model;
             _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
-            _this.parent = parent;
             _this.area_output = ko.observable(new InputReadOnlyToggle(function () {
                 if (_this.product()) {
                     if (_this.product().type == 'mat') {

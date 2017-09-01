@@ -447,35 +447,32 @@ def create_form(room_item_modification):
     return jsonify({'file_download': form_handler.url})
 
 
-@app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT'])
+@app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
     room_item = None
-    if request.method == 'GET':
-        print('request args:', request.args)
-        room_item_id = request.args.get('id')
-        if room_item_id:
-            room_item = RoomItem.by_id(room_item_id, current_user)
-        if room_item:
-            return create_form(room_item.latest)
-            return jsonify({'yo': room_item.serialize})
-        return jsonify({'error': 'Could not find anything here'}), 403
-
     print('request:', request.json)
+    room_item_id = request.args.get('id') or request.json.get('id')
+    if room_item_id:
+        room_item = RoomItem.by_id(room_item_id, current_user)
+    if not room_item and request.method != 'POST':
+        return jsonify(
+        {
+            'error': f'did not recieve an id {room_item_id}'})
+
+    if request.method == 'GET':
+        return create_form(room_item.latest)
+
+    if request.method == 'DELETE':
+        room_item.put_in_archive(current_user)
+        return jsonify({'status': 'OK'})
+
     form = forms.HeatingCableForm.from_json(
         request.json, skip_unknown_keys=False)
     if not form.validate_on_submit():
         print(form.errors)
         return jsonify({'error': form.errors}), 403
-    room_item_id = form.id.data
-    if request.method in ['PUT']:
-        room_item = RoomItem.by_id(room_item_id, current_user)
-        if not room_item:
-            return jsonify({
-                'errors': ['Could not find this item {}'
-                           .format(room_item_id)
-                           ]}), 403
     if request.method == 'GET':
         return jsonify({'url': 'aweseome.com'})
     # TODO: This is really bad. Remove the code below.
@@ -542,9 +539,9 @@ def json_room():
         'max_temp_planning': form.check_max_temp.planning.data,
         'max_temp_installation': form.check_max_temp.installation.data,
         'max_temp_other': form.check_max_temp.other.data,
-        'control_system_floor_sensor': form.check_control_system.floor_sensor.data, # noqa
-        'control_system_room_sensor': form.check_control_system.room_sensor.data, # noqa
-        'control_system_designation': form.check_control_system.designation.data, # noqa
+        'control_system_floor_sensor': form.check_control_system.floor_sensor.data,  # noqa
+        'control_system_room_sensor': form.check_control_system.room_sensor.data,  # noqa
+        'control_system_designation': form.check_control_system.designation.data,  # noqa
         'control_system_other': form.check_control_system.other.data,
 
     })

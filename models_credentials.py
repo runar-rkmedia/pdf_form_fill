@@ -450,7 +450,7 @@ class Customer(MyBaseModel, db.Model):
         return {
             'name': self.name,
             'address': self.address.serialize,
-            'rooms': [i.serialize for i in self.rooms],
+            'rooms': [i.serialize for i in self.rooms if not i.archived],
             'id': self.id
         }
 
@@ -494,7 +494,9 @@ class Room(MyBaseModel, db.Model):
         dictionary = {
             'id': self.id,
             'room_name': self.name,
-            'heating_cables': [i.serialize for i in self.items],
+            'heating_cables': [
+                i.serialize for i in self.items if not i.archived
+            ],
             'outside': self.outside,
             'area': float(self.area or 0),
             'heated_area': float(self.heated_area or 0),

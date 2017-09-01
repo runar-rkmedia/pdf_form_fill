@@ -136,6 +136,14 @@ attr: {'id': 'heat' + id()}
                     enable: modified() && validationModel.isValid(),
                 text: id() >= 0 ? 'Endre' : 'Lagre'"
             data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bind="
+                click: $data.delete,
+                    css: {opaque: id() < 0},
+                    enable: id() >= 0"
+            data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
         </div>
       </div>
     </div>
