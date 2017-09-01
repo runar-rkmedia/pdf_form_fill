@@ -213,14 +213,23 @@ export class Room extends Post {
 }
 
 export class Rooms extends ByID {
-  list: KnockoutObservableArray<Room>
+  // list: KnockoutObservableArray<Room>
   parent: Customer
   root: TSAppViewModel
 
-  constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: Room[] = []) {
-    super(list_of_rooms)
+  constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: RoomInterface[] = []) {
+    super([])
     this.parent = parent
     this.root = root
+    if (list_of_rooms) {
+      let list_of_rooms_obects = list_of_rooms.map((x) => {
+        return new Room(this.root, this, x)
+      })
+      this.list(list_of_rooms_obects)
+
+    }
+
+
   }
   add = () => {
     let new_room = this.by_id(-1)

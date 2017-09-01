@@ -75,10 +75,7 @@ export class Customer extends Post {
       this.post_area(result.address.post_area)
     }
     if (result.rooms) {
-      let new_rooms = result.rooms.map((x) => {
-        return new Room(this.root, this.rooms(), x)
-      })
-      this.rooms(new Rooms(this.root, this, new_rooms))
+      this.rooms(new Rooms(this.root, this, result.rooms))
     }
     this.save()
   }

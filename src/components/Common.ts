@@ -1,6 +1,7 @@
 import { AddressInterface } from "./Common"
 import { TSAppViewModel } from './AppViewModel'
 var diff = require('recursive-diff');
+import bootbox = require("bootbox")
 
 export interface StrIndex<TValue> {
   [key: string]: TValue
@@ -115,6 +116,26 @@ export abstract class Post extends Base {
     }).always(function(result) {
       btn.button('reset')
     })
+  }
+  comfirm_delete_dialog(title: string, message: string) {
+    bootbox.confirm({
+      title: title,
+      message: message,
+      buttons: {
+        cancel: {
+          label: 'Nei, ikke slett',
+        },
+        confirm: {
+          label: '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> SLETT',
+          className: 'btn-danger'
+        }
+      },
+      callback: (result) => {
+        if (result) {
+          console.log(this.delete())
+        }
+      }
+    });
   }
   get_form_and_open(target: string = 'VarmeDokPDF') {
     let importantStuff = window.open('', target);

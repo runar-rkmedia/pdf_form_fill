@@ -36,7 +36,9 @@
     "url-loader": "^0.5.9"
   },
   "devDependencies": {
+    "@types/bootbox": "^4.4.34",
     "@types/node": "^8.0.10",
+    "bootbox": "^4.4.0",
     "bootswatch": "^3.3.7",
     "css-loader": "^0.28.4",
     "fork-ts-checker-webpack-plugin": "^0.2.4",
