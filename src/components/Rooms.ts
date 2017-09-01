@@ -69,13 +69,11 @@ export class Room extends Post {
     area: this.area,
     heated_area: this.heated_area
   })
-  parent: Rooms
   root: TSAppViewModel
   serialize: KnockoutComputed<RoomInterface>
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
-    super()
-    this.parent = parent
+    super(parent)
     this.root = root
     this.area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });

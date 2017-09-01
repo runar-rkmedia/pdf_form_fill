@@ -1,4 +1,5 @@
 import { AddressInterface } from "./Common"
+import { TSAppViewModel } from './AppViewModel'
 var diff = require('recursive-diff');
 
 export interface StrIndex<TValue> {
@@ -72,6 +73,7 @@ export abstract class Post extends Base {
   abstract serialize: KnockoutObservable<{}>
   abstract set(result: any): void
   abstract url: string
+  parent: any
   file_download: KnockoutObservable<string> = ko.observable()
   public post(h: any, event: Event, data_object?: any, url?: string) {
     // Abstract class for posting data. Will use PUT if id > 0
@@ -118,7 +120,10 @@ export abstract class Post extends Base {
         this.file_download(result.file_download)
       })
   }
-  constructor() { super() }
+  constructor(parent: ByID | TSAppViewModel) {
+    super()
+    this.parent = parent
+  }
 }
 
 declare global {

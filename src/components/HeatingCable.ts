@@ -108,7 +108,6 @@ export class HeatingCable extends Post {
   cc: KnockoutObservable<InputReadOnlyToggle>
 
 
-  parent: HeatingCables
   product_model: TSProductModel
   product_filter: KnockoutObservable<ProductFilter>
   suggested_effect: KnockoutComputed<number>;
@@ -122,7 +121,7 @@ export class HeatingCable extends Post {
     parent: HeatingCables,
     heating_cable_?: HeatingCableInterface
   ) {
-    super()
+    super(parent)
 
     let default_data: HeatingCableInterface = {
       id: -1,
@@ -151,7 +150,6 @@ export class HeatingCable extends Post {
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
     this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
-    this.parent = parent
 
     this.area_output = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product()) {

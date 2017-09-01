@@ -21,7 +21,6 @@ export class Customer extends Post {
   post_area: KnockoutObservable<string> = this.observable_modification()
   root: TSAppViewModel
   rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))
-  parent: TSAppViewModel
   validationModel = ko.validatedObservable({
     name: this.name,
     address1: this.address1,
@@ -32,8 +31,7 @@ export class Customer extends Post {
   id: KnockoutObservable<number> = ko.observable()
   serialize: KnockoutObservable<CustomerInterface>
   constructor(parent: TSAppViewModel, id: number = -1, root: TSAppViewModel = parent) {
-    super()
-    this.parent = parent
+    super(parent)
     this.root = parent
     this.id(id)
     this.name.extend(
