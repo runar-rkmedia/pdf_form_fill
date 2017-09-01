@@ -497,23 +497,27 @@ def json_heating_cable():
 
 
 @app.route('/json/v1/room/',
-           methods=['POST', 'PUT'])
+           methods=['POST', 'PUT', 'DELETE'])
 @login_required
 def json_room():
     """Handle a room-object"""
     form = forms.RoomForm.from_json(request.json)
-    print(request.json)
     customer_id = (form.customer_id.data)
-    room_id = (form.id.data)
+    room_id = form.id.data or request.args.get('id')
     customer = None
     room = None
-    if customer_id:
-        customer = Customer.by_id(
-            customer_id,
-            current_user)
     if room_id:
         room = Room.by_id(
             room_id,
+            current_user)
+    if not room and request.method != 'POST':
+        return jsonify({}), 403
+    if request.method == 'DELETE':
+        room.put_in_archive(current_user)
+        return jsonify({'status': 'OK'})
+    if customer_id:
+        customer = Customer.by_id(
+            customer_id,
             current_user)
     if not customer:
         return jsonify({}), 403
@@ -523,8 +527,6 @@ def json_room():
     if request.method == 'POST':
         room = Room()
         db.session.add(room)
-    if not room:
-        return jsonify({}), 403
     room.update_entity({
         'name': form.room_name.data,
         'customer': customer,

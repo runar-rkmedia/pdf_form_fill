@@ -34,6 +34,14 @@
         <!-- ko if: id() >= 0 -->
         <button class="btn btn-primary" type="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'data-target': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">Endre info</button>
         <button type="button" class="btn btn-info" data-bind="click: function (d, e){heating_cables().add(e)}">Legg til varmekabel</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bind="
+                        click: $data.delete,
+                            css: {opaque: id() < 0},
+                            enable: id() >= 0"
+          data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
         <!-- /ko -->
         <div class="col-xs-12 well collapse" data-bind="attr: { 'id': 'room-form' + id()}">
           <!-- ko template: { name: 'room_form_template', data: $data} -->
