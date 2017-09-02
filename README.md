@@ -25,7 +25,7 @@ For that reason, I don't see a problem in storing the pdf's on herokus [Ephemera
  - [X] Lagre kunder
  - [X] Lagre firma
  - [X] Lagre bruker
- - [ ] proff.no
+ - [X] proff.no
 
 ## Why not just use Acrobat?
 

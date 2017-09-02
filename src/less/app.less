@@ -123,31 +123,31 @@ canvas {
 }
 
 .small-pad {
-  @include media-max(sm) {
+  @media (min-width: @screen-sm-max) {
     padding-right: 6px !important;
     padding-left: 6px !important;
   }
 }
 
 .zero-pad {
-  @include media-max(sm) {
-    padding-right: 0;
-    padding-left: 0;
+  @media (max-width: @screen-xs-max) {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
   }
 }
 
 .zero-pad-l {
-  @include media-max(sm) {
+  @media (min-width: @screen-sm-min) {
     padding-left: 0 !important;
   };
-  @extend .zero-pad;
+  &:extend(.zero-pad);
 }
 
 .zero-pad-r {
-  @include media-max(sm) {
+  @media (min-width: @screen-sm-min) {
     padding-right: 0 !important;
   };
-  @extend .zero-pad;
+  &:extend(.zero-pad);
 }
 
 .csscolumn {

@@ -4,6 +4,7 @@ import kv = require("knockout.validation");
 import { StrIndex, AddressInterface, HTTPVerbs } from "./Common"
 import { CustomerInterface, Customer } from "./Customer"
 import { Rooms, RoomInterface } from "./Rooms"
+import { Company } from "./ControlPanel"
 import ko = require("knockout");
 import $ = require("jquery");
 
@@ -53,6 +54,7 @@ export class TSAppViewModel {
   company_forms: KnockoutObservableArray<string> = ko.observableArray();
   // validation_errors: KnockoutValidationErrors = kv.group(self);
   delete: KnockoutObservable<string> = ko.observable();
+  company = new Company()
 
   noname: any
 
