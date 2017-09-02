@@ -214,6 +214,8 @@ class AddressForm(SubForm):
         ]
     )
 
+class Invite(FlaskForm):
+    pass
 
 class CustomerForm(FlaskForm):
     address = FormField(AddressForm)

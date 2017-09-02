@@ -120,11 +120,13 @@ def handle_csrf_error(e):
     # TODO: Needs to actually send the json
     return jsonify({'errors': [str(e)]})
 
+
 @app.errorhandler(my_exceptions.MyBaseException)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
 
 @app.context_processor
 def include_user_roles():
@@ -210,21 +212,25 @@ def logout():
 @login_required
 def control_panel():
     """Control-Panel."""
+    form = forms.Invite()
     signature = None
     if current_user.signature:
         signature = base64.b64encode(
             current_user.signature).decode(encoding='UTF-8')
-    return render_template('control-panel.html', signature=signature)
+    return render_template(
+        'control-panel.html', signature=signature, form=form)
 
 
 @app.route("/cp/company/")
 @login_required
 def control_panel_company():
     """Control-Panel for viewing users company."""
+    form = forms.Invite()
     memmbers = User.query.filter(
         User.company == current_user.company
     )
-    return render_template('control-panel-company.html', memmbers=memmbers)
+    return render_template(
+        'control-panel-company.html', memmbers=memmbers, form=form)
 
 
 @app.errorhandler(429)
@@ -349,18 +355,25 @@ def edit_company(company_id=None, invite=None):
 @login_required
 def save_image():
     """Save an image from a data-string."""
-    image_b64 = request.values['imageBase64']
-    if len(image_b64) < 200000:
-        image_data = re.sub('^data:image/.+;base64,', '', image_b64)
-        imgdata = base64.b64decode(image_data)
-        if current_user.is_authenticated:
-            current_user.signature = imgdata
-            db.session.commit()
-        return jsonify({'status': 200})
-    return jsonify({
-        'status': 403,
-        'errormsg': 'Feil: Mottok en signatur-fil som var større enn antatt.'
-    })
+    image_b64 = request.json.get('imageBase64')
+    if not image_b64:
+        raise my_exceptions.MyBaseException(
+            message='Mottok ikke bildedata.',
+            status_code=403,
+            defcon_level=my_exceptions.DefconLevel.danger
+        )
+    if len(image_b64) > 200000:
+        raise my_exceptions.MyBaseException(
+            message='Bildedataen var for stor.',
+            status_code=403,
+            defcon_level=my_exceptions.DefconLevel.warning
+        )
+    image_data = re.sub('^data:image/.+;base64,', '', image_b64)
+    imgdata = base64.b64decode(image_data)
+    if current_user.is_authenticated:
+        current_user.signature = imgdata
+        db.session.commit()
+    return jsonify({})
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
@@ -374,10 +387,12 @@ def download(filename):
 
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
+@login_required
 @app.route('/invite.json', methods=['GET', 'POST'])
 def json_invite():
     """Return all invites from current user, or create a new one."""
-    if request.method == 'POST':
+    form = forms.Invite()
+    if form.validate_on_submit():
         try:
             invite = Invite.create(current_user)
             db.session.add(invite)
@@ -464,8 +479,8 @@ def json_heating_cable():
         room_item = RoomItem.by_id(room_item_id, current_user)
     if not room_item and request.method != 'POST':
         return jsonify(
-        {
-            'error': f'did not recieve an id {room_item_id}'})
+            {
+                'error': f'did not recieve an id {room_item_id}'})
 
     if request.method == 'GET':
         return create_form(room_item.latest)

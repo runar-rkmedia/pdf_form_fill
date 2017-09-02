@@ -11,6 +11,12 @@
   </head>
 
   <body>
+    <!-- ko foreach: errors -->
+    <div class="float-message alert alert-dismissable" data-bind="css: 'alert-' + defcon_level">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong data-bind="text: message"></strong>
+    </div>
+    <!-- /ko -->
     <div class="container">
       {% include 'includes/header.html' %}
       {% block body %}{% endblock %}
@@ -22,5 +28,15 @@
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script> -->
   <script src="{{url_for('static', filename='js/main.js')}}"></script>
+  <script type="text/javascript">
+    $.ajaxSetup({
+      beforeSend: function (xhr, settings) {
+        var csrf_token = '{{ form.csrf_token._value() }}'
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrf_token)
+        }
+      }
+    })
+  </script>
   {% block script %}{% endblock %}
 </html>

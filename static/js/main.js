@@ -65,99 +65,15 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(1)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, ".twitter-typeahead {\n  display: block !important;\n}\n.input-group .twitter-typeahead {\n  display: table-cell !important;\n  float: left;\n  width: 100%;\n}\n.tt-query {\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n}\n.tt-hint {\n  color: #999 !important;\n  margin: 0;\n  vertical-align: middle;\n}\n.tt-dropdown-menu {\n  width: 100%;\n  min-width: 18em;\n  margin-top: .25em;\n  padding: 8px 0;\n  background-color: #fff;\n  border: 1px solid #ccc;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 3px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);\n}\n.tt-suggestion {\n  cursor: pointer;\n  padding: .5em 1em;\n}\n.tt-suggestion p {\n  margin: 0;\n}\n.tt-suggestion strong {\n  background: #fff9cc;\n  border-radius: 3px;\n}\n.tt-suggestion .tt-no-highlight strong {\n  background: none;\n  font-weight: normal;\n}\n.tt-suggestion.tt-cursor {\n  color: #fff;\n  background-color: #0097cf;\n}\n.tt-suggestion.tt-cursor strong {\n  background-color: #0085b1;\n  text-shadow: 1px 1px 0 #265547;\n}\n.tt-suggestion.tt-cursor .tt-no-highlight strong {\n  background: none;\n  text-shadow: none;\n}\n", ""]);
-
-// exports
-
+module.exports = ko;
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
+module.exports = jQuery;
 
 /***/ }),
 /* 2 */
@@ -2208,6 +2124,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             // validation_errors: KnockoutValidationErrors = kv.group(self);
             this.delete = ko.observable();
             this.company = new ControlPanel_1.Company();
+            this.control_panel = new ControlPanel_1.ControlPanel();
             this.parse_form_download = function (result) {
                 _this.last_sent_args(_this.form_args());
                 if (result.error_fields) {
@@ -4397,6 +4314,35 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
         return Company;
     }());
     exports.Company = Company;
+    var ControlPanel = /** @class */ (function () {
+        function ControlPanel() {
+            var _this = this;
+            this.invites = ko.observableArray();
+            this.base_url = ko.observable('abc');
+            $.get("/invite.json")
+                .done(function (result) {
+                _this.invites(result.invites);
+                _this.base_url(result.base_url);
+            });
+        }
+        ControlPanel.prototype.createInvite = function () {
+            var _this = this;
+            $.post("/invite.json")
+                .done(function (result) {
+                if (result.invites) {
+                    _this.invites(result.invites);
+                }
+                if (result.base_url) {
+                    _this.base_url(result.base_url);
+                }
+            })
+                .fail(function (result, t, d) {
+                $('.flash').append('<li class="error">' + result.responseText + '</li>');
+            });
+        };
+        return ControlPanel;
+    }());
+    exports.ControlPanel = ControlPanel;
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 

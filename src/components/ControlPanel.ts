@@ -74,3 +74,29 @@ export class Company {
     return response.data;
   }
 }
+
+export class ControlPanel {
+  invites: KnockoutObservableArray<string> = ko.observableArray()
+  base_url: KnockoutObservable<string> = ko.observable('abc')
+  constructor() {
+    $.get("/invite.json")
+      .done((result) => {
+        this.invites(result.invites);
+        this.base_url(result.base_url);
+      });
+  }
+  createInvite() {
+    $.post("/invite.json")
+      .done((result) => {
+        if (result.invites) {
+          this.invites(result.invites);
+        }
+        if (result.base_url) {
+          this.base_url(result.base_url);
+        }
+      })
+      .fail(function(result, t, d) {
+        $('.flash').append('<li class="error">' + result.responseText + '</li>')
+      })
+  }
+}

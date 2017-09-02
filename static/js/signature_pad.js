@@ -64,16 +64,11 @@ $(function() {
         $.ajax({
           type: "POST",
           url: "/set_sign",
-          data:{
+          data:JSON.stringify({
             imageBase64: test
-          }
+          })
         }).done(function(resp) {
-          if (resp.status === 200) {
-            location.reload();
-          }
-          else {
-            console.log(resp.errormsg);
-          }
+          location.reload();
         });
-    })
+    });
 });

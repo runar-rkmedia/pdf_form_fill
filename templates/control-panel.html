@@ -13,31 +13,31 @@
       {% endif %}
     </div>
   </div>
-<div class="row">
-<div class="col-xs-12">
-  <h2>Signatur</h2>
-  <p class="bg-info">Du kan lagre din signatur her, så blir hvert skjema du lager signert av deg automatisk. Om du ikke vi lagre din signatur, kan du selfølgelig signere skjemaene manuelt.</p>
-  {% if current_user.signature %}
-    <div>Du har lagret din signatur.</div>
-    <div class="col-xs-4">
-      <img class="img-responsive" src="data:image/png;base64,{{ signature }}">
-    </div>
-  {% else %}
-    Du har ikke lagret din signatur.
-  {% endif %}
-  <a href="#" onclick="showSign()">Trykk her for å endre.</a>
-  <div class="invisible signature">
-    <div>Tegn inn din signatur i feltet nedenfor:</div>
-    <div>
-      <canvas id="canvas"></canvas>
-    </div>
-    <div>
-      <button class="btn-saveSign btn-primary" type="button" name="button">Lagre min signatur</button>
-      <button class="btn-clearSign btn-default" type="button" name="button">Tøm signaturfelt</button>
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>Signatur</h2>
+      <p class="bg-info">Du kan lagre din signatur her, så blir hvert skjema du lager signert av deg automatisk. Om du ikke vi lagre din signatur, kan du selfølgelig signere skjemaene manuelt.</p>
+      {% if current_user.signature %}
+        <div>Du har lagret din signatur.</div>
+        <div class="col-xs-4">
+          <img class="img-responsive" src="data:image/png;base64,{{ signature }}">
+        </div>
+      {% else %}
+        Du har ikke lagret din signatur.
+      {% endif %}
+      <a href="#" onclick="showSign()">Trykk her for å endre.</a>
+      <div class="invisible signature">
+        <div>Tegn inn din signatur i feltet nedenfor:</div>
+        <div>
+          <canvas id="canvas"></canvas>
+        </div>
+        <div>
+          <button class="btn-saveSign btn-primary" type="button" name="button">Lagre min signatur</button>
+          <button class="btn-clearSign btn-default" type="button" name="button">Tøm signaturfelt</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-</div>
 
 {% endblock %}
 {% block script %}
