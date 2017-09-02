@@ -74,6 +74,7 @@ import wtforms_json
 from flask_wtf.csrf import CSRFProtect, CSRFError
 # import schemas
 from form_handler import FormHandler
+import my_exceptions
 
 wtforms_json.init()
 
@@ -119,6 +120,11 @@ def handle_csrf_error(e):
     # TODO: Needs to actually send the json
     return jsonify({'errors': [str(e)]})
 
+@app.errorhandler(my_exceptions.MyBaseException)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 @app.context_processor
 def include_user_roles():

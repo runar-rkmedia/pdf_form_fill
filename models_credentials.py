@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import desc, or_
 from models_product import Product
 from sqlalchemy.dialects import postgresql
+import my_exceptions
 
 
 class ContactType(Enum):
@@ -162,7 +163,7 @@ class Company(MyBaseModel, db.Model):
         if model.company == self:
             return True
         else:
-            raise NoAccess("Company does not have access to this resource.")
+            raise my_exceptions.NotAuthorized()
 
     def get_forms(self, user, per_page=PER_PAGE, page=1):
         """Return all filled forms by company, not by current user."""
@@ -241,7 +242,7 @@ class Company(MyBaseModel, db.Model):
             form.address.post_code.data
         )
         if not location:
-            raise LocationException('Fant ikke adressen i databasen')
+            raise my_exceptions.LocationException()
 
         company = Company.update_or_create(
             company_id=company_id,
@@ -443,6 +444,8 @@ class Customer(MyBaseModel, db.Model):
 
     def owns(self, user):
         """Check that user has rights to this customer."""
+        if not user.company:
+            raise my_exceptions.UserHasNoCompany()
         return user.company.owns(self)
 
     @property

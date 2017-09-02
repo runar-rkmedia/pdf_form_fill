@@ -1,5 +1,5 @@
 import 'bootstrap/js/transition';
-// import 'bootstrap/js/alert';
+import 'bootstrap/js/alert';
 import 'bootstrap/js/button';
 // import 'bootstrap/js/carousel';
 import 'bootstrap/js/collapse';

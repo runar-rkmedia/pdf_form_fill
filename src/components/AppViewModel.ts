@@ -23,10 +23,21 @@ interface FileDownloadInterface {
   error_message?: string
 }
 
+interface Error {
+  message: string
+  defcon_level: string
+}
 
+enum DefconLevels {
+  danger = 1,
+  warning,
+  info,
+  successs,
+  default
+}
 
 export class TSAppViewModel {
-  error_fields: KnockoutObservableArray<string> = ko.observableArray();
+  errors: KnockoutObservableArray<Error> = ko.observableArray();
   error_message: KnockoutObservable<string> = ko.observable();
   file_download: KnockoutObservable<string> = ko.observable();
   last_sent_args: KnockoutObservable<string> = ko.observable();
@@ -43,10 +54,30 @@ export class TSAppViewModel {
   // validation_errors: KnockoutValidationErrors = kv.group(self);
   delete: KnockoutObservable<string> = ko.observable();
 
-
   noname: any
 
   constructor() {
+    $.ajaxSetup({
+      // Inject our CSRF token into our AJAX request.
+      contentType: "application/json",
+      dataType: "json",
+      error: (jqXHR, textStatus, errorThrown) => {
+        let response = jqXHR.responseJSON
+        if (response && response.errors) {
+          for (let error of response.errors) {
+            this.errors.push({
+              message: error.message,
+              defcon_level: DefconLevels[error.defcon_level]
+            })
+          }
+        } else {
+          this.errors.push({
+            message: textStatus + " " + errorThrown,
+            defcon_level: DefconLevels[2]
+          })
+        }
+      },
+    });
     kv.init({
       decorateInputElement: true,
       errorElementClass: 'has-error has-feedback',
@@ -96,7 +127,7 @@ export class TSAppViewModel {
   parse_form_download = (result: FileDownloadInterface) => {
     this.last_sent_args(this.form_args());
     if (result.error_fields) {
-      this.error_fields(result.error_fields);
+      // this.errors(result.error_fields);
     }
     if (result.file_download) {
       this.file_download(result.file_download);
@@ -131,11 +162,3 @@ export class TSAppViewModel {
       });
   }
 }
-// Inject our CSRF token into our AJAX request.
-$.ajaxSetup({
-  beforeSend: function(xhr, settings) {
-    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(String(settings.type)) && !this.crossDomain) {
-      xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
-    }
-  }
-})

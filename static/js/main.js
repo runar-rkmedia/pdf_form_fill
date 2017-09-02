@@ -2017,10 +2017,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     });
     var myObject = {};
     var mySecondReference = myObject;
-    $.ajaxSetup({
-        contentType: "application/json",
-        dataType: "json"
-    });
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -2037,10 +2033,18 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     // Switch locale for knockout.validation
     kv.defineLocale('no-NO', nb_NO);
     kv.locale('nb-NO');
+    var DefconLevels;
+    (function (DefconLevels) {
+        DefconLevels[DefconLevels["danger"] = 1] = "danger";
+        DefconLevels[DefconLevels["warning"] = 2] = "warning";
+        DefconLevels[DefconLevels["info"] = 3] = "info";
+        DefconLevels[DefconLevels["successs"] = 4] = "successs";
+        DefconLevels[DefconLevels["default"] = 5] = "default";
+    })(DefconLevels || (DefconLevels = {}));
     var TSAppViewModel = (function () {
         function TSAppViewModel() {
             var _this = this;
-            this.error_fields = ko.observableArray();
+            this.errors = ko.observableArray();
             this.error_message = ko.observable();
             this.file_download = ko.observable();
             this.last_sent_args = ko.observable();
@@ -2059,7 +2063,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             this.parse_form_download = function (result) {
                 _this.last_sent_args(_this.form_args());
                 if (result.error_fields) {
-                    _this.error_fields(result.error_fields);
+                    // this.errors(result.error_fields);
                 }
                 if (result.file_download) {
                     _this.file_download(result.file_download);
@@ -2091,6 +2095,29 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                     _this.company_forms(result.company_forms);
                 });
             };
+            $.ajaxSetup({
+                // Inject our CSRF token into our AJAX request.
+                contentType: "application/json",
+                dataType: "json",
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var response = jqXHR.responseJSON;
+                    if (response && response.errors) {
+                        for (var _i = 0, _a = response.errors; _i < _a.length; _i++) {
+                            var error = _a[_i];
+                            _this.errors.push({
+                                message: error.message,
+                                defcon_level: DefconLevels[error.defcon_level]
+                            });
+                        }
+                    }
+                    else {
+                        _this.errors.push({
+                            message: textStatus + " " + errorThrown,
+                            defcon_level: DefconLevels[2]
+                        });
+                    }
+                },
+            });
             kv.init({
                 decorateInputElement: true,
                 errorElementClass: 'has-error has-feedback',
@@ -2134,14 +2161,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
         return TSAppViewModel;
     }());
     exports.TSAppViewModel = TSAppViewModel;
-    // Inject our CSRF token into our AJAX request.
-    $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(String(settings.type)) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}");
-            }
-        }
-    });
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -6619,16 +6638,18 @@ _knockout2.default.setTemplateEngine(engine);
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bootstrap_js_transition__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bootstrap_js_transition___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_bootstrap_js_transition__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap_js_button__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap_js_button___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bootstrap_js_button__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_bootstrap_js_collapse__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_bootstrap_js_collapse___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_bootstrap_js_collapse__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_modal__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_bootstrap_js_modal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_tab__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_tab___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_bootstrap_js_tab__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap_js_alert__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap_js_alert___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bootstrap_js_alert__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_bootstrap_js_button__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_bootstrap_js_button___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_bootstrap_js_button__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_modal__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_bootstrap_js_modal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_bootstrap_js_tab__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_bootstrap_js_tab___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_bootstrap_js_tab__);
 
-// import 'bootstrap/js/alert';
+
 
 // import 'bootstrap/js/carousel';
 
@@ -7593,6 +7614,116 @@ $('div').on('shown.bs.collapse', function(e) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */
+/***/ (function(module, exports) {
+
+/* ========================================================================
+ * Bootstrap: alert.js v3.3.7
+ * http://getbootstrap.com/javascript/#alerts
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // ALERT CLASS DEFINITION
+  // ======================
+
+  var dismiss = '[data-dismiss="alert"]'
+  var Alert   = function (el) {
+    $(el).on('click', dismiss, this.close)
+  }
+
+  Alert.VERSION = '3.3.7'
+
+  Alert.TRANSITION_DURATION = 150
+
+  Alert.prototype.close = function (e) {
+    var $this    = $(this)
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = $(selector === '#' ? [] : selector)
+
+    if (e) e.preventDefault()
+
+    if (!$parent.length) {
+      $parent = $this.closest('.alert')
+    }
+
+    $parent.trigger(e = $.Event('close.bs.alert'))
+
+    if (e.isDefaultPrevented()) return
+
+    $parent.removeClass('in')
+
+    function removeElement() {
+      // detach from parent, fire event then clean up data
+      $parent.detach().trigger('closed.bs.alert').remove()
+    }
+
+    $.support.transition && $parent.hasClass('fade') ?
+      $parent
+        .one('bsTransitionEnd', removeElement)
+        .emulateTransitionEnd(Alert.TRANSITION_DURATION) :
+      removeElement()
+  }
+
+
+  // ALERT PLUGIN DEFINITION
+  // =======================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.alert')
+
+      if (!data) $this.data('bs.alert', (data = new Alert(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.alert
+
+  $.fn.alert             = Plugin
+  $.fn.alert.Constructor = Alert
+
+
+  // ALERT NO CONFLICT
+  // =================
+
+  $.fn.alert.noConflict = function () {
+    $.fn.alert = old
+    return this
+  }
+
+
+  // ALERT DATA-API
+  // ==============
+
+  $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
+
+}(jQuery);
+
 
 /***/ })
 /******/ ]);
