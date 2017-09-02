@@ -2,9 +2,17 @@ var webpack = require('webpack'),
   path = require('path'),
   srcPath = path.join(__dirname, 'src'),
   jsOutPath = path.join('static', 'js'),
+  cssOutPath = path.join('static', 'css'),
   UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
   ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // TODO: serve kncokout.validation from CDN instead of bundling it.
+
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const extractLess = new ExtractTextPlugin({
+  filename: path.join(cssOutPath, "[name].[contenthash].css"),
+  disable: process.env.NODE_ENV === "development" || true
+});
 
 module.exports = {
   // context: __dirname, // to automatically find tsconfig.json
@@ -39,13 +47,15 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: [{
-          loader: "style-loader" // creates style nodes from JS strings
-        }, {
-          loader: "css-loader" // translates CSS into CommonJS
-        }, {
-          loader: "less-loader" // compiles Less to CSS
-        }]
+        use: extractLess.extract({
+          use: [{
+            loader: "css-loader"
+          }, {
+            loader: "less-loader"
+          }],
+          // use style-loader in development
+          fallback: "style-loader"
+        })
       },
       {
         test: /\.css$/,
@@ -75,6 +85,7 @@ module.exports = {
   },
   plugins: [
     // new UglifyJSPlugin(),
+    extractLess,
     new ForkTsCheckerWebpackPlugin()
   ]
 }
