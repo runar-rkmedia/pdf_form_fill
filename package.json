@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --watch",
-    "build:watch": "watch 'npm run build' ."
+    "start": "webpack --config webpack.dev.js --watch",
+    "build": "webpack --config webpack.prod.js"
   },
   "repository": {
     "type": "git",
@@ -53,6 +53,8 @@
     "uglifyjs-webpack-plugin": "^0.4.6",
     "watch": "^1.0.2",
     "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.1"
+    "webpack-clean-obsolete-chunks": "^0.2.0",
+    "webpack-dev-server": "^2.7.1",
+    "webpack-merge": "^4.1.0"
   }
 }

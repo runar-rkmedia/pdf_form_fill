@@ -3,19 +3,16 @@ var webpack = require('webpack'),
   srcPath = path.join(__dirname, 'src'),
   jsOutPath = path.join('static', 'js'),
   cssOutPath = path.join('static', 'css'),
-  UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
   ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // TODO: serve kncokout.validation from CDN instead of bundling it.
-
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const extractLess = new ExtractTextPlugin({
-  filename: path.join(cssOutPath, "[name].[contenthash].css"),
-  disable: process.env.NODE_ENV === "development" || true
+  filename: path.join(cssOutPath, "[name].css"),
+  disable: process.env.NODE_ENV === "development"
 });
-
 module.exports = {
-  // context: __dirname, // to automatically find tsconfig.json
+  context: __dirname, // to automatically find tsconfig.json
   target: 'web',
   cache: true,
   entry: path.join(srcPath, "/main.ts"),
@@ -84,8 +81,6 @@ module.exports = {
     ]
   },
   plugins: [
-    // new UglifyJSPlugin(),
     extractLess,
-    new ForkTsCheckerWebpackPlugin()
   ]
-}
+};
