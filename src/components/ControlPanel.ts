@@ -25,6 +25,22 @@ interface Brreg {
   links: Brreg_links[]
 }
 
+ko.bindingHandlers.initValue = {
+  init: function(element, valueAccessor) {
+    var value = valueAccessor();
+    if (!ko.isWriteableObservable(value)) {
+      throw new Error('Knockout "initValue" binding expects an observable.');
+    }
+    value(element.value);
+  }
+};
+
+ko.bindingHandlers.valueWithInit = {
+  init: function(element, valueAccessor, allBindings, data, context) {
+    ko.applyBindingsToNode(element, { initValue: valueAccessor() }, context);
+    ko.applyBindingsToNode(element, { value: valueAccessor() }, context);
+  }
+};
 
 export class Company {
   search: KnockoutObservable<string> = ko.observable()
@@ -35,6 +51,22 @@ export class Company {
   address2: KnockoutObservable<string> = ko.observable()
   post_code: KnockoutObservable<number> = ko.observable()
   post_area: KnockoutObservable<string> = ko.observable()
+  selected_address: KnockoutComputed<number> = ko.computed(() => {
+    if (this.address2() != null) {
+      return -1
+    }
+    for (let i = 0; i < this.addresses().length; i++) {
+      let address = this.addresses()[i]
+      if (
+        address.adresse == this.address1() &&
+        address.postnummer == this.post_code() &&
+        address.poststed == this.post_area()
+      ) {
+        return i
+      }
+    }
+    return -1
+  })
 
   links: KnockoutObservableArray<Brreg_links> = ko.observableArray([])
   orgnumber: KnockoutObservable<number> = ko.observable()
@@ -43,8 +75,6 @@ export class Company {
     data: Brreg,
     event: any,
     element: any) => {
-    this.name()
-    console.log(data)
     value(data.navn)
     this.name(data.navn)
     this.links(data.links)
@@ -55,14 +85,17 @@ export class Company {
       this.addresses.push(Object.assign(data.forretningsadresse, { type: 'Forretningsadresse' }))
     }
     if (data.postadresse) {
-      this.addresses.push(Object.assign(data.postadresse, { type: 'Forretningsadresse' }))
+      this.addresses.push(Object.assign(data.postadresse, { type: 'Postadresse' }))
     }
     if (this.addresses().length > 0) {
-      this.address1(this.addresses()[0].adresse)
-      this.address2(null)
-      this.post_code(this.addresses()[0].postnummer)
-      this.post_area(this.addresses()[0].poststed)
+      this.set_address(this.addresses()[0])
     }
+  }
+  set_address = (data: Brreg_addresse) => {
+    this.address1(data.adresse)
+    this.address2(null)
+    this.post_code(data.postnummer)
+    this.post_area(data.poststed)
   }
   autocompleteBRreg = ko.computed(() => {
     let url: string = "http://data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10"

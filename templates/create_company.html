@@ -4,57 +4,60 @@
   <!-- ko with: company -->
   <div class="container">
     <div class="row">
-      <div class="col-xs-12">
-        <h2>Opprette firma-data.</h2>
+      <h2>Opprette firma-data.</h2>
 
-        Her kan du opprette et firma for bruk på denne siden. S
+      Her kan du opprette et firma for bruk på denne siden.
 
-        {% from "includes/formhelpers.html" import render_field,
-        render_field_group %}
-        <hr>
-        <form method="post" role="form">
-          {{ form.csrf_token }}
-          <div class="form-group">
-            <label for="#company-search">Søk etter firmaet ditt her, så hjelper vi deg med utfyllingen.</label>
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="f.eks. Petter Strømmen AS"
-                data-bind=" value: search, typeahead: autocompleteBRreg, templateName: 'brregsuggestion-template', displayKey: 'navn', onSelectFunction: suggestionOnSelect, remoteFilter:
-              brreg_remote_filter, minLength:2">
-              <span class="input-group-addon glyphicon glyphicon-search" aria-hidden="true"></span>
-            </div>
+      {% from "includes/formhelpers.html" import render_field,
+      render_field_group %}
+      <hr>
+      <form method="post" role="form">
+        {{ form.csrf_token }}
+        <div class="form-group">
+          <label for="#company-search">Søk etter firmaet ditt her, så hjelper vi deg med utfyllingen.</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="f.eks. Petter Strømmen AS"
+              data-bind=" value: search, typeahead: autocompleteBRreg, templateName: 'brregsuggestion-template', displayKey: 'navn', onSelectFunction: suggestionOnSelect, remoteFilter:
+              brreg_remote_filter, typeaheadOpts:{minLength:2}">
+            <span class="input-group-addon glyphicon glyphicon-search" aria-hidden="true"></span>
           </div>
-          <!-- ko if: selected_result -->
-          <div class="form-group">
-            {{ render_field(form.name, 'col-xs-12 col-sm-8 zero-pad-l', **{'data-bind':"textInput: name", 'placeholder': 'Petter Strømmen AS'}) }}
-            {{ render_field(form.org_nr, 'col-xs-12 col-sm-4 zero-pad-r', **{'data-bind':" textInput: orgnumber", 'placeholder': '123456789'}) }}
+        </div>
+        <hr>
+        <div class="row well hidden" data-bind="css: {hidden: !orgnumber() && !selected_result()}">
+          <div class="form-group row">
+            {{ render_field(form.name, 'col-xs-12 col-sm-8 zero-pad-l', **{'data-bind':"valueWithInit: name", 'placeholder': 'Petter Strømmen AS'}) }}
+            {{ render_field(form.org_nr, 'col-xs-12 col-sm-4 zero-pad-r', **{'data-bind':" valueWithInit: orgnumber", 'placeholder': '123456789'}) }}
           </div>
           <!-- ko if: addresses().length > 0 -->
           <div class="list-group">
             <p data-bind="text: addresses().length == 1 ? 'Følgende adresse er funnet:' : 'Velg en adresse nedenfor som du vil bruke til utfylling av skjemaer.'" class="help-block"></p>
             <div data-bind="text: console.log(selected_result())"></div>
             <!-- ko foreach: addresses -->
-            <div class="list-group-item">
-              <span class="pull-right" data-bind="text: type"></span>
-              <div data-bind="text: adresse"></div>
+            <div class="list-group-item" data-bind="css: {active: $parent.selected_address() == $index()}, click: $parent.set_address">
+              <span class="badge" data-bind="text: type"></span>
+              <h5 class="list-group-item-heading" data-bind="text: adresse"></h5>
               <div data-bind="text: postnummer"></div>
+              <!-- ko if: $parent.selected_address() == $index() -->
+              <span class="glyphicon glyphicon-ok pull-right text-success large-text" aria-hidden="true"></span>
+              <!-- /ko -->
               <div data-bind="text: poststed"></div>
             </div>
             <!-- /ko -->
             <p>Er ikke dette riktig? Trykk
-              <a data-bind="click: function(d,e) {$('#company-address').removeClass('hidden'), $(e.target).parent().hide(), console.log($('#company-address'), $('#company-address').length)}">her</a>
+              <a data-bind="click: function(d,e) {$('#company-address').removeClass('hidden'), $(e.target).parent().hide()}">her</a>
               for å fylle inn manuelt</p>
           </div>
           <!-- /ko -->
-          <div id="company-address" class="hidden well ">
+          <div id="company-address" {% if mode == 'create' %} class="hidden" {% endif %}>
             <fieldset>
-              <div class="form-group">{{ render_field(form.address.address1, 'form-group ', **{'data-bind':" textInput: address1"}) }}
-                {{ render_field(form.address.address2, False, no_label=True, **{'data-bind':" textInput: address2"}) }}</div>
-              <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.post_code,  **{'data-bind':" textInput: post_code"}) }}</div>
+              <div class="form-group">{{ render_field(form.address.address1, False, **{'data-bind':" valueWithInit: address1"}) }}
+                {{ render_field(form.address.address2, False, no_label=True, **{'data-bind':" valueWithInit: address2"}) }}</div>
+              <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.post_code,  **{'data-bind':" valueWithInit: post_code"}) }}</div>
               <div class="col-xs-8
-                zero-pad-r">{{ render_field(form.address.post_area, **{'data-bind':" textInput: post_area"}) }}</div>
+        zero-pad-r">{{ render_field(form.address.post_area, **{'data-bind':" valueWithInit: post_area"}) }}</div>
             </fieldset>
           </div>
           {{ render_field(form.description, **{'placeholder':   'Vi kobler stort og smått'}) }}
@@ -62,9 +65,8 @@
           {{ render_field(form.email, **{'placeholder':   'finn@strømmen.no'}) }}
 
           <button type="submit" class="btn btn-primary">Lagre</button>
-          <!-- /ko -->
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   </div>
   <!-- /ko -->
