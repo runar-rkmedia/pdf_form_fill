@@ -232,7 +232,7 @@ class Company(MyBaseModel, db.Model):
         address = Address.update_or_create(
             address_id=address_id,
             address1=form.address.address1.data,
-            address2=form.address.address1.data,
+            address2=form.address.address2.data,
             post_area=form.address.post_area.data,
             post_code=form.address.post_code.data,
         )
@@ -289,6 +289,9 @@ class User(ByID, UserMixin, db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='User.company_id==Company.id')
+    last_modified_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    last_modified_customer = db.relationship(
+        'Customer', primaryjoin='User.last_modified_customer_id==Customer.id', post_update=True)
 
     def get_forms(self, per_page=PER_PAGE, page=1):
         """Return all filled forms created by user."""
@@ -441,6 +444,14 @@ class Customer(MyBaseModel, db.Model):
         db.Integer, db.ForeignKey(Company.id), nullable=False)
     company = db.relationship(
         Company, primaryjoin='Customer.company_id==Company.id')
+    created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    created_by_user = db.relationship(
+        User, primaryjoin='Customer.created_by_user_id==User.id')
+    modified_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    modified_by_user = db.relationship(
+        User, primaryjoin='Customer.modified_by_user_id==User.id')
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    modified_on_date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def owns(self, user):
         """Check that user has rights to this customer."""
