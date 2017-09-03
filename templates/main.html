@@ -3,6 +3,7 @@
 {% block body %}
   {% from "includes/formhelpers.html" import render_field,
   render_field_group %}
+  <div data-bind="text: customer().get()"></div>
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="main_form">

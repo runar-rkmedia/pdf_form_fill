@@ -2221,7 +2221,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 finally {
                 }
             });
-            this.customer().get(1);
         }
         return TSAppViewModel;
     }());
@@ -4266,6 +4265,21 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     __webpack_require__(22);
+    ko.bindingHandlers.initValue = {
+        init: function (element, valueAccessor) {
+            var value = valueAccessor();
+            if (!ko.isWriteableObservable(value)) {
+                throw new Error('Knockout "initValue" binding expects an observable.');
+            }
+            value(element.value);
+        }
+    };
+    ko.bindingHandlers.valueWithInit = {
+        init: function (element, valueAccessor, allBindings, data, context) {
+            ko.applyBindingsToNode(element, { initValue: valueAccessor() }, context);
+            ko.applyBindingsToNode(element, { value: valueAccessor() }, context);
+        }
+    };
     var Company = /** @class */ (function () {
         function Company() {
             var _this = this;
@@ -4277,11 +4291,23 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             this.address2 = ko.observable();
             this.post_code = ko.observable();
             this.post_area = ko.observable();
+            this.selected_address = ko.computed(function () {
+                if (_this.address2() != null) {
+                    return -1;
+                }
+                for (var i = 0; i < _this.addresses().length; i++) {
+                    var address = _this.addresses()[i];
+                    if (address.adresse == _this.address1() &&
+                        address.postnummer == _this.post_code() &&
+                        address.poststed == _this.post_area()) {
+                        return i;
+                    }
+                }
+                return -1;
+            });
             this.links = ko.observableArray([]);
             this.orgnumber = ko.observable();
             this.suggestionOnSelect = function (value, data, event, element) {
-                _this.name();
-                console.log(data);
                 value(data.navn);
                 _this.name(data.navn);
                 _this.links(data.links);
@@ -4292,14 +4318,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                     _this.addresses.push(Object.assign(data.forretningsadresse, { type: 'Forretningsadresse' }));
                 }
                 if (data.postadresse) {
-                    _this.addresses.push(Object.assign(data.postadresse, { type: 'Forretningsadresse' }));
+                    _this.addresses.push(Object.assign(data.postadresse, { type: 'Postadresse' }));
                 }
                 if (_this.addresses().length > 0) {
-                    _this.address1(_this.addresses()[0].adresse);
-                    _this.address2(null);
-                    _this.post_code(_this.addresses()[0].postnummer);
-                    _this.post_area(_this.addresses()[0].poststed);
+                    _this.set_address(_this.addresses()[0]);
                 }
+            };
+            this.set_address = function (data) {
+                _this.address1(data.adresse);
+                _this.address2(null);
+                _this.post_code(data.postnummer);
+                _this.post_area(data.poststed);
             };
             this.autocompleteBRreg = ko.computed(function () {
                 var url = "http://data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10";
@@ -4353,7 +4382,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 
 var ko = __webpack_require__(0);
 var stringTemplateEngine = __webpack_require__(5);
-var htmlContent = "<!DOCTYPE html>\n\n<div>\n  <strong class=\"title-case\" data-bind=\"text: navn\"></strong>\n  <!-- <br /> -->\n</div>\n";
+var htmlContent = "<!DOCTYPE html>\n\n<div>\n  <strong class=\"title-case\" data-bind=\"text: navn\"></strong>\n  <!-- <br /> -->\n  <!-- ko if: $data.forretningsadresse -->\n  <small data-bind=\"text: forretningsadresse.postnummer\"></small>\n  <small class=\"title-case\" data-bind=\"text: forretningsadresse.poststed\"></small>\n  <!-- /ko -->\n</div>\n";
 ko.templates['brregsuggestion-template'] = htmlContent;
 
 /***/ }),
@@ -4377,7 +4406,9 @@ ko.bindingHandlers.typeahead = {
 
 		var templateName = ko.unwrap(allBindings().templateName);
 		var mapping = ko.unwrap(allBindings().mappingFunction);
+		var onSelect = allBindings.get("onSelectFunction");
 		var displayedProperty = ko.unwrap(allBindings().displayKey);
+		var user_typeahead_options = ko.unwrap(allBindings().typeaheadOpts) || {};
 		var value = allBindings.get("value");
 
 		var url = ko.unwrap(valueAccessor());
@@ -4430,12 +4461,14 @@ ko.bindingHandlers.typeahead = {
 		}
 
 		$(element)
-			.typeahead({
+			.typeahead(jQuery.extend({
 				hint: true,
-				highlight: true
-			}, typeaheadOpts)
+				highlight: true,
+			}, user_typeahead_options), typeaheadOpts)
 		.on("typeahead:selected typeahead:autocompleted", function (e, suggestion) {
-			if (value && ko.isObservable(value)) {
+			if (onSelect) {
+				onSelect(value, suggestion, e)
+			}else if (value && ko.isObservable(value)) {
 				value(suggestion);
 			}
 		});

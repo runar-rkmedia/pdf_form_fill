@@ -122,7 +122,7 @@ export class TSAppViewModel {
 
       }
     });
-    this.customer().get(1)
+
   }
 
 

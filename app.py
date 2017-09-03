@@ -306,6 +306,7 @@ def invite_create_company(invite):
                 flash(e, 'error')
                 return render_template(
                     'create_company.html', invite=invite, form=form)
+
             if current_user.role == UserRole.user:
                 current_user.role = UserRole.companyAdmin
             invite.invitee = current_user
@@ -313,7 +314,7 @@ def invite_create_company(invite):
             flash("Firmaet '{}' ble opprettet."
                   .format(current_user.company.name))
             return redirect(url_for('control_panel_company'))
-    return render_template('create_company.html', invite=invite, form=form)
+    return render_template('create_company.html', invite=invite, form=form, mode='create')
 
 
 @app.route('/company/<company_id>/edit', methods=['GET', 'POST'])
@@ -334,7 +335,7 @@ def edit_company(company_id=None, invite=None):
                     'create_company.html', invite=invite, form=form)
             db.session.commit()
             return redirect(url_for('control_panel_company'))
-        return render_template('create_company.html', invite=invite, form=form)
+        return render_template('create_company.html', invite=invite, form=form, mode='edit')
 
     form.name.data = current_user.company.name
     form.org_nr.data = current_user.company.orgnumber
@@ -581,32 +582,27 @@ def json_customer():
     """Handle a customer-object"""
     form = forms.CustomerForm.from_json(request.json)
     customer_id = form.id.data or request.args.get('id')
-    customer = Customer.by_id(
-        customer_id,
-        current_user)
-    if request.method == "GET" and customer:
+    customer=None
+    if customer_id:
+        customer = Customer.by_id(
+            customer_id,
+            current_user)
+
+    if request.method == "GET":
+        if not customer_id:
+            customer = current_user.last_edit
+        if not customer:
+            raise my_exceptions.MyBaseException(
+            message='Fant ingen kunde.',
+            defcon_level=my_exceptions.DefconLevel.default,
+            status_code=403
+            )
         return jsonify(customer.serialize)
 
     if not form.validate_on_submit():
         print(form.errors)
         return 'incorrect data', 403
-    if request.method == 'POST':
-        address = Address()
-        customer = Customer()
-        customer.address = address
-        customer.company = current_user.company
-        db.session.add(address)
-        db.session.add(customer)
-    if not customer:
-        return jsonify({}), 403
-    customer.address.update_entity({
-        'address1': form.address.address1.data,
-        'address2': form.address.address2.data,
-        'post_code': form.address.post_code.data,
-        'post_area': form.address.post_area.data,
-    })
-    customer.name = form.customer_name.data
-    db.session.commit()
+    customer = Customer.update_or_create(customer, form, current_user)
     if customer:
         return jsonify({'id': customer.id})
     return jsonify({}, 404)

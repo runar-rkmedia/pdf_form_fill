@@ -289,9 +289,18 @@ class User(ByID, UserMixin, db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='User.company_id==Company.id')
-    last_modified_customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    last_modified_customer_id = db.Column(
+        db.Integer, db.ForeignKey('customer.id'))
     last_modified_customer = db.relationship(
         'Customer', primaryjoin='User.last_modified_customer_id==Customer.id', post_update=True)
+
+    @property
+    def last_edit(self):
+        """Return the last edit the user made to a customer."""
+        if (
+            self.last_modified_customer.owns(self) and
+                not self.last_modified_customer.archived):
+            return self.last_modified_customer
 
     def get_forms(self, per_page=PER_PAGE, page=1):
         """Return all filled forms created by user."""
@@ -458,6 +467,33 @@ class Customer(MyBaseModel, db.Model):
         if not user.company:
             raise my_exceptions.UserHasNoCompany()
         return user.company.owns(self)
+
+    @classmethod
+    def update_or_create(cls, customer, customer_form, user):
+        if customer:
+            customer.owns(user)
+        if not customer:
+            address = Address()
+            customer = Customer()
+            customer.address = address
+            customer.company = user.company
+            customer.created_by_user = user
+            db.session.add(address)
+            db.session.add(customer)
+        if not customer:
+            return jsonify({}), 403
+        customer.address.update_entity({
+            'address1': customer_form.address.address1.data,
+            'address2': customer_form.address.address2.data,
+            'post_code': customer_form.address.post_code.data,
+            'post_area': customer_form.address.post_area.data,
+        })
+        customer.name = customer_form.customer_name.data
+        customer.modified_by_user = user
+        customer.modified_on_date = datetime.utcnow()
+        user.last_modified_customer = customer
+        db.session.commit()
+        return customer
 
     @property
     def serialize(self):

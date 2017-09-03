@@ -79,7 +79,7 @@ export class Customer extends Post {
     }
     this.save()
   }
-  get = (id: number) => {
+  get = (id?: number) => {
     $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {
         this.set(result)
