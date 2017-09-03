@@ -23,7 +23,7 @@ from sqlalchemy import desc, or_
 from models_product import Product
 from sqlalchemy.dialects import postgresql
 import my_exceptions
-
+from sqlalchemy import exc
 
 class ContactType(Enum):
     """Enumeration for types of contactfields."""
@@ -159,7 +159,6 @@ class Company(MyBaseModel, db.Model):
 
     def owns(self, model):
         """Check if company has rights to access this."""
-        print(self.name)
         if model.company == self:
             return True
         else:
@@ -214,7 +213,15 @@ class Company(MyBaseModel, db.Model):
         company.address = address
         company.lat = lat
         company.lng = lng
-        db.session.add(company)
+        try:
+            pass
+            db.session.add(company)
+            db.session.commit()
+        except exc.IntegrityError as e:
+            db.session.rollback()
+            raise my_exceptions.DuplicateCompany()
+        else:
+            pass
 
         return company
 

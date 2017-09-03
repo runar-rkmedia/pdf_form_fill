@@ -40,9 +40,7 @@ class TestingConfig(BaseConfig):
         'DATABASE_URL', 'postgres:///test_varmekabler')
     SQLALCHEMY_BINDS = {
         'products': os.environ.get(
-            'PRODUCT_DATABASE_URL', 'postgres:///vk_products'),
-        'forms': os.environ.get(
-            'FORM_DATABASE_URL', 'postgres:///test_vk_forms'),
+            'PRODUCT_DATABASE_URL', 'postgres:///vk_products')
     }
     SECRET_KEY = 'test'
     DEBUG = False
@@ -59,7 +57,6 @@ config = {
 def configure_app(app, configuration=None):
     """Retrieve configuration based on situation(dev,testing,production)."""
     config_name = os.getenv('FLASK_CONFIGURATION', configuration or 'default')
-    print("Configuring app with '{}'-config.".format(config_name))
     app.config.from_object(config[config_name])
     required_keys = ['SQLALCHEMY_DATABASE_URI']
     app.config.from_pyfile('config.cfg', silent=True)

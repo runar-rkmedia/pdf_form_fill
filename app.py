@@ -264,8 +264,6 @@ def set_fields_from_product(dictionary, product, specs=None):
     dictionary["Betegnelse"] = product.product_type.name
 
     dictionary.update(product.specs)
-    print(dictionary)
-    print('dsssssssss')
 
     return dictionary
 
@@ -290,7 +288,6 @@ def get_invite(invite_id):
         if invite.type == InviteType.company:
             invite.invitee = current_user
             current_user.company = invite.company
-            db.session.commit()
             return render_template(
                 'invite.html', invite=invite, newly_invite=True)
 
@@ -310,7 +307,6 @@ def invite_create_company(invite):
             if current_user.role == UserRole.user:
                 current_user.role = UserRole.companyAdmin
             invite.invitee = current_user
-            db.session.commit()
             flash("Firmaet '{}' ble opprettet."
                   .format(current_user.company.name))
             return redirect(url_for('control_panel_company'))
@@ -327,10 +323,11 @@ def edit_company(company_id=None, invite=None):
         if form.validate_on_submit():
             try:
                 current_user.company = Company.update_or_create_all(
-                    form,
-                    company)
-            except LocationException as e:
-                flash(e, 'error')
+                form,
+                company)
+            except (LocationException, my_exceptions.DuplicateCompany) as e:
+                print('ldksjfsd\n\n\n', e)
+                flash(e.message, 'error')
                 return render_template(
                     'create_company.html', invite=invite, form=form)
             db.session.commit()
@@ -474,7 +471,6 @@ def create_form(room_item_modification):
 def json_heating_cable():
     """Handle a heatining-cable-form."""
     room_item = None
-    print('request:', request.json)
     room_item_id = request.args.get('id') or request.json.get('id')
     if room_item_id:
         room_item = RoomItem.by_id(room_item_id, current_user)
@@ -659,7 +655,6 @@ def search_address():
         else:
             kwargs['near_post_code'] = current_user.company.address.post_code
     # Make sure 'post_code' is an int.
-    print(request.args.get('p'))
     try:
         post_code = request.args.get('p')
         if post_code:
@@ -668,7 +663,6 @@ def search_address():
         pass
     kwargs['street_name'] = request.args.get('q')
     # Try to get a valid address from search-query
-    print(kwargs)
     try:
         results = get_address_from_street_name(**kwargs)
     except ValueError:
