@@ -647,7 +647,7 @@ def search_address():
     """Search a partial address (near user)."""
     kwargs = {}
     if current_user.company:
-        if False and current_user.company.lat and current_user.company.lng:
+        if current_user.company.lat and current_user.company.lng:
             kwargs['near_geo'] = [
                 float(current_user.company.lat),
                 float(current_user.company.lng)

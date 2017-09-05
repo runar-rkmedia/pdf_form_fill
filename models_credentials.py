@@ -81,24 +81,12 @@ class Address(MyBaseModel, db.Model):
         ).first()
 
         if not address:
-            address = Address(
-                address1=address1,
-                address2=address2,
-                post_area=post_area,
-                post_code=post_code
-            )
-        else:
-            if (
-                    address.address1 != address1 or
-                    address.address2 != address2 or
-                    address.post_area != post_area or
-                    address.post_area != post_area
-            ):
-                address.address1 = address1
-                address.address2 = address2
-                address.post_area = post_area
-                address.post_area = post_area
-                db.session.add(address)
+            address = Address()
+        address.address1 = address1
+        address.address2 = address2
+        address.post_code = post_code
+        address.post_area = post_area
+        db.session.add(address)
 
         return address
 
