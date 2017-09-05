@@ -8,7 +8,7 @@ export interface StrIndex<TValue> {
 }
 export interface AddressInterface {
   post_area: string;
-  post_code: number;
+  post_code: number | null;
   street_name?: string;
 }
 

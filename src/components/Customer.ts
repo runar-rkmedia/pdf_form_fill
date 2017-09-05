@@ -79,6 +79,20 @@ export class Customer extends Post {
     }
     this.save()
   }
+  create_new = () => {
+    this.set({
+      id: -1,
+      name: '',
+      address: {
+        address1: '',
+        address2: '',
+        post_code: null,
+        post_area: ''
+      },
+      rooms: []
+    })
+    this.validationModel.errors.showAllMessages(false)
+  }
   get = (id?: number) => {
     $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {

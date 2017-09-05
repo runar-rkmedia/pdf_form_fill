@@ -2313,6 +2313,20 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 post_area: _this.post_area,
             });
             _this.id = ko.observable();
+            _this.create_new = function () {
+                _this.set({
+                    id: -1,
+                    name: '',
+                    address: {
+                        address1: '',
+                        address2: '',
+                        post_code: null,
+                        post_area: ''
+                    },
+                    rooms: []
+                });
+                _this.validationModel.errors.showAllMessages(false);
+            };
             _this.get = function (id) {
                 $.get("/json/v1/customer/", { id: id })
                     .done(function (result) {
