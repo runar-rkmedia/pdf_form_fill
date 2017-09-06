@@ -7,7 +7,11 @@
         {% if current_user.role == UserRole.companyAdmin %}
           <span class="glyphicon glyphicon-flash" aria-hidden="true"></span>
         {% endif %}
-        {{ current_user.given_name + ' ' + current_user.family_name }}</a>!
+        {{ current_user.given_name + ' ' + current_user.family_name }}</a>
+      {% if current_user.company %}
+      <a href="{{url_for('control_panel_company')}}">
+        ({{ current_user.company.name }})</a>
+      {% endif %}
       <a href="{{ url_for("logout") }}">Logg ut</a>
     {% else %}
       Du er ikke logget inn.
