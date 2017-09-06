@@ -588,12 +588,13 @@ def json_customer():
         if not customer_id:
             customer = current_user.last_edit
         if not customer:
-            raise my_exceptions.MyBaseException(
-            message='Fant ingen kunde.',
-            defcon_level=my_exceptions.DefconLevel.default,
-            status_code=403
-            )
+            raise my_exceptions.NotACustomer()
         return jsonify(customer.serialize)
+
+    if not customer and request.method != 'POST':
+        raise my_exceptions.NotACustomer()
+    if request.method == 'DELETE':
+        customer.put_in_archive(current_user)
 
     if not form.validate_on_submit():
         print(form.errors)

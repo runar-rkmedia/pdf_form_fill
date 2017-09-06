@@ -63,3 +63,9 @@ class DuplicateCompany(MyBaseException):
         'kan du prøve å snakke med en kollega om å få en invitasjonsnøkkel. '
         'Du kan også kontakte oss, om du mener noen utenom deres firma har '
         'registrert seg som dere uten samtykke.')
+
+
+class NotACustomer(MyBaseException):
+    message='Fant ingen kunde.'
+    defcon_level=DefconLevel.default
+    status_code=403
