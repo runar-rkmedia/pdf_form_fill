@@ -225,6 +225,9 @@ def control_panel():
 @login_required
 def control_panel_company():
     """Control-Panel for viewing users company."""
+    if not current_user.company:
+        flash('Du er ikke medlem av et firma enda.', 'error')
+        return redirect(url_for('control_panel'))
     form = forms.Invite()
     memmbers = User.query.filter(
         User.company == current_user.company
