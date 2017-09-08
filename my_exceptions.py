@@ -69,3 +69,15 @@ class NotACustomer(MyBaseException):
     message='Fant ingen kunde.'
     defcon_level=DefconLevel.default
     status_code=403
+
+
+class NotARoom(MyBaseException):
+    message='Fant ikke dette rommet i databasen.'
+    defcon_level=DefconLevel.default
+    status_code=403
+
+
+class NotAProduct(MyBaseException):
+    message='Fant ikke dette produktet i databasen.'
+    defcon_level=DefconLevel.default
+    status_code=403

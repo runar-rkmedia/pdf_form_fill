@@ -483,9 +483,9 @@ def json_heating_cable():
     product = Product.by_id(product_id)
     room = Room.by_id(room_id, current_user)
     if not product:
-        return jsonify({'errors': ['Could not find this product']}), 403
+        raise my_exceptions.NotAProduct
     if not room:
-        return jsonify({'errors': ['Could not find this room']}), 403
+        raise my_exceptions.NotARoom
 
     room_item = RoomItem.update_or_create(
         room_item=room_item,
@@ -513,7 +513,7 @@ def json_room():
             room_id,
             current_user)
     if not room and request.method != 'POST':
-        return jsonify({}), 403
+        raise my_exceptions.NotARoom
     if request.method == 'DELETE':
         room.put_in_archive(current_user)
         return jsonify({'status': 'OK'})
@@ -522,7 +522,7 @@ def json_room():
             customer_id,
             current_user)
     if not customer:
-        return jsonify({}), 403
+        raise my_exceptions.NotACustomer()
     if not form.validate_on_submit():
         print(form.errors)
         return jsonify(form.errors), 403
@@ -550,9 +550,7 @@ def json_room():
 
     })
     db.session.commit()
-    if customer:
-        return jsonify(room.serialize)
-    return jsonify({}, 404)
+    return jsonify(room.serialize)
 
 
 @app.route('/json/v1/customer/',
@@ -586,24 +584,7 @@ def json_customer():
     customer = Customer.update_or_create(customer, form, current_user)
     if customer:
         return jsonify({'id': customer.id})
-    return jsonify({}, 404)
-
-
-@app.route('/json/form_mod/<filled_form_modified_id>',
-           methods=['GET', 'DELETE'])
-@login_required
-def json_form_modification(filled_form_modified_id):
-    """Return a json-object of a form-modfication."""
-    form = RoomItem.by_id(current_user, filled_form_modified_id)
-    if request.method == 'GET':
-        if form:
-            result = {}
-            result['form'] = form.serialize
-            return jsonify(result)
-        return jsonify({})
-    elif request.method == 'DELETE':
-        form.archive_this(current_user)
-        return 'deleted'
+    raise my_exceptions.NotACustomer
 
 
 @app.route('/')
