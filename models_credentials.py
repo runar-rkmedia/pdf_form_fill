@@ -284,6 +284,8 @@ class User(ByID, UserMixin, db.Model):
     @property
     def last_edit(self):
         """Return the last edit the user made to a customer."""
+        if not self.last_modified_customer:
+            return None
         if (
             self.last_modified_customer.owns(self) and
                 not self.last_modified_customer.archived):
