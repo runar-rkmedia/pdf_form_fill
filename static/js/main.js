@@ -117,7 +117,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         function Base() {
             var _this = this;
             this.modification_tracking_list = ko.observableArray();
-            this.observable_modification = function (group, kind, value) {
+            this.obs_mod = function (group, kind, value) {
                 if (group === void 0) { group = []; }
                 if (kind === void 0) { kind = ko.observable; }
                 var list = [_this.modification_tracking_list].concat(group);
@@ -2304,11 +2304,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             if (root === void 0) { root = parent; }
             var _this = _super.call(this, parent) || this;
             _this.url = '/json/v1/customer/';
-            _this.name = _this.observable_modification();
-            _this.address1 = _this.observable_modification();
-            _this.address2 = _this.observable_modification();
-            _this.post_code = _this.observable_modification();
-            _this.post_area = _this.observable_modification();
+            _this.name = _this.obs_mod();
+            _this.address1 = _this.obs_mod();
+            _this.address2 = _this.obs_mod();
+            _this.post_code = _this.obs_mod();
+            _this.post_area = _this.obs_mod();
             _this.loading = ko.observable(false);
             _this.rooms = ko.observable(new Rooms_1.Rooms(_this.root, _this));
             _this.validationModel = ko.validatedObservable({
@@ -2428,22 +2428,22 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             var _this = _super.call(this, parent) || this;
             _this.url = '/json/v1/room/';
             _this.id = ko.observable();
-            _this.name = _this.observable_modification();
-            _this.outside = _this.observable_modification();
-            _this.maxEffect = _this.observable_modification();
-            _this.normalEffect = _this.observable_modification();
-            _this.area = _this.observable_modification();
-            _this.heated_area = _this.observable_modification();
-            _this.earthed_cable_screen = _this.observable_modification();
-            _this.earthed_chicken_wire = _this.observable_modification();
-            _this.earthed_other = _this.observable_modification();
-            _this.max_temp_limited_by_planning = _this.observable_modification(undefined, undefined, true);
-            _this.max_temp_limited_by_installation = _this.observable_modification(undefined, undefined, true);
-            _this.max_temp_limited_by_other = _this.observable_modification();
-            _this.control_system_floor_sensor = _this.observable_modification(undefined, undefined, true);
-            _this.control_system_room_sensor = _this.observable_modification();
-            _this.control_system_designation = _this.observable_modification();
-            _this.control_system_other = _this.observable_modification();
+            _this.name = _this.obs_mod();
+            _this.outside = _this.obs_mod();
+            _this.maxEffect = _this.obs_mod();
+            _this.normalEffect = _this.obs_mod();
+            _this.area = _this.obs_mod();
+            _this.heated_area = _this.obs_mod();
+            _this.earthed_cable_screen = _this.obs_mod();
+            _this.earthed_chicken_wire = _this.obs_mod();
+            _this.earthed_other = _this.obs_mod();
+            _this.max_temp_limited_by_planning = _this.obs_mod(undefined, undefined, true);
+            _this.max_temp_limited_by_installation = _this.obs_mod(undefined, undefined, true);
+            _this.max_temp_limited_by_other = _this.obs_mod();
+            _this.control_system_floor_sensor = _this.obs_mod(undefined, undefined, true);
+            _this.control_system_room_sensor = _this.obs_mod();
+            _this.control_system_designation = _this.obs_mod();
+            _this.control_system_other = _this.obs_mod();
             _this.heating_cables = ko.observable();
             _this.validationModel = ko.validatedObservable({
                 name: _this.name,
@@ -3891,15 +3891,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.other_modifications_list = ko.observableArray();
             _this.measurements_observer = function (value, kind) {
                 if (kind === void 0) { kind = ko.observable; }
-                return _this.observable_modification([_this.measurements_modifications_list], kind, value);
+                return _this.obs_mod([_this.measurements_modifications_list], kind, value);
             };
             _this.other_observer = function (value, kind) {
                 if (kind === void 0) { kind = ko.observable; }
-                return _this.observable_modification([_this.other_modifications_list], kind, value);
+                return _this.obs_mod([_this.other_modifications_list], kind, value);
             };
             _this.product_observer = function (value, kind) {
                 if (kind === void 0) { kind = ko.observable; }
-                return _this.observable_modification([_this.product_modifications_list], kind, value);
+                return _this.obs_mod([_this.product_modifications_list], kind, value);
             };
             _this.product_id = _this.product_observer();
             _this.url = '/json/v1/heat/';

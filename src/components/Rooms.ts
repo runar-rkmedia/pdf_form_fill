@@ -1,7 +1,7 @@
 import {
   ByID,
   Post,
-  ObservableWithModification,
+  ObsMod,
 } from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomTypesInfoFlat } from "./ProductModel"
@@ -45,22 +45,22 @@ export interface RoomInterface {
 export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
-  name = <ObservableWithModification<string>>this.observable_modification();
-  outside = <ObservableWithModification<boolean>>this.observable_modification();
-  maxEffect = <ObservableWithModification<number>>this.observable_modification();
-  normalEffect = <ObservableWithModification<number>>this.observable_modification();
-  area = <ObservableWithModification<number>>this.observable_modification();
-  heated_area = <ObservableWithModification<number>>this.observable_modification();
-  earthed_cable_screen = <ObservableWithModification<boolean>>this.observable_modification();
-  earthed_chicken_wire = <ObservableWithModification<boolean>>this.observable_modification();
-  earthed_other = <ObservableWithModification<string>>this.observable_modification();
-  max_temp_limited_by_planning = <ObservableWithModification<boolean>>this.observable_modification(undefined, undefined, true);
-  max_temp_limited_by_installation = <ObservableWithModification<boolean>>this.observable_modification(undefined, undefined, true);
-  max_temp_limited_by_other = <ObservableWithModification<string>>this.observable_modification();
-  control_system_floor_sensor = <ObservableWithModification<boolean>>this.observable_modification(undefined, undefined, true);
-  control_system_room_sensor = <ObservableWithModification<boolean>>this.observable_modification();
-  control_system_designation = <ObservableWithModification<string>>this.observable_modification();
-  control_system_other = <ObservableWithModification<string>>this.observable_modification();
+  name = <ObsMod<string>>this.obs_mod();
+  outside = <ObsMod<boolean>>this.obs_mod();
+  maxEffect = <ObsMod<number>>this.obs_mod();
+  normalEffect = <ObsMod<number>>this.obs_mod();
+  area = <ObsMod<number>>this.obs_mod();
+  heated_area = <ObsMod<number>>this.obs_mod();
+  earthed_cable_screen = <ObsMod<boolean>>this.obs_mod();
+  earthed_chicken_wire = <ObsMod<boolean>>this.obs_mod();
+  earthed_other = <ObsMod<string>>this.obs_mod();
+  max_temp_limited_by_planning = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
+  max_temp_limited_by_installation = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
+  max_temp_limited_by_other = <ObsMod<string>>this.obs_mod();
+  control_system_floor_sensor = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
+  control_system_room_sensor = <ObsMod<boolean>>this.obs_mod();
+  control_system_designation = <ObsMod<string>>this.obs_mod();
+  control_system_other = <ObsMod<string>>this.obs_mod();
   heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({

@@ -38,7 +38,7 @@ export class ByID {
 }
 export abstract class Base {
   abstract serialize: KnockoutObservable<{}>
-  modification_tracking_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+  modification_tracking_list: KnockoutObservableArray<ObsMod<any>> = ko.observableArray()
   save(): void {
     for (let observable of this.modification_tracking_list()) {
       if (observable) {
@@ -49,7 +49,7 @@ export abstract class Base {
 
   constructor() {
   }
-  modification_check(list: ObservableWithModification<any>[]) {
+  modification_check(list: ObsMod<any>[]) {
     for (let observable of list) {
       if (observable.modified()) {
         return true
@@ -57,7 +57,7 @@ export abstract class Base {
     }
     return false
   }
-  observable_modification = (group: KnockoutObservableArray<any>[] = [], kind: any = ko.observable, value?: any) => {
+  obs_mod = (group: KnockoutObservableArray<any>[] = [], kind: any = ko.observable, value?: any) => {
     let list = [this.modification_tracking_list].concat(group)
     return kind(value).extend({ modification: list });
   }
@@ -158,11 +158,11 @@ export abstract class Post extends Base {
 
 declare global {
   interface KnockoutExtenders {
-    modification<T>(target: T, track: any): ObservableWithModification<T>;
+    modification<T>(target: T, track: any): ObsMod<T>;
   }
 }
 
-export interface ObservableWithModification<T> extends KnockoutObservable<T> {
+export interface ObsMod<T> extends KnockoutObservable<T> {
   // last_data(any: any): any
   reset(): void
   save(): void

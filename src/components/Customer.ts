@@ -14,11 +14,11 @@ export interface CustomerInterface {
 
 export class Customer extends Post {
   url = '/json/v1/customer/'
-  name: KnockoutObservable<string> = this.observable_modification()
-  address1: KnockoutObservable<string> = this.observable_modification()
-  address2: KnockoutObservable<string> = this.observable_modification()
-  post_code: KnockoutObservable<number> = this.observable_modification()
-  post_area: KnockoutObservable<string> = this.observable_modification()
+  name: KnockoutObservable<string> = this.obs_mod()
+  address1: KnockoutObservable<string> = this.obs_mod()
+  address2: KnockoutObservable<string> = this.obs_mod()
+  post_code: KnockoutObservable<number> = this.obs_mod()
+  post_area: KnockoutObservable<string> = this.obs_mod()
   root: TSAppViewModel
   loading: KnockoutObservable<boolean> = ko.observable(false)
   rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))

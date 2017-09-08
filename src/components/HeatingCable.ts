@@ -2,7 +2,7 @@ import {
   ByID,
   Post,
   Base,
-  ObservableWithModification,
+  ObsMod,
 } from "./Common"
 import { Room } from "./Rooms"
 import { TSAppViewModel } from "./AppViewModel"
@@ -53,14 +53,14 @@ interface InputReadOnlyToggleInterface {
 }
 
 class InputReadOnlyToggle {
-  override: ObservableWithModification<boolean>
+  override: ObsMod<boolean>
   calculated: KnockoutComputed<any>
-  output: ObservableWithModification<any>
+  output: ObsMod<any>
   serialize: KnockoutObservable<InputReadOnlyToggleInterface>
   user_input = <KnockoutObservable<number>>ko.observable();
 
   constructor(calculateFunction: (() => number), modification_observable: any) {
-    this.override = <ObservableWithModification<boolean>>modification_observable(false);
+    this.override = <ObsMod<boolean>>modification_observable(false);
     this.calculated = ko.computed(calculateFunction);
     this.output = modification_observable(() => {
       return Number(this.override() ? this.user_input() : this.calculated())
@@ -82,28 +82,28 @@ class InputReadOnlyToggle {
 
 
 export class HeatingCable extends Post {
-  measurements_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
-  product_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
-  other_modifications_list: KnockoutObservableArray<ObservableWithModification<any>> = ko.observableArray()
+  measurements_modifications_list: KnockoutObservableArray<ObsMod<any>> = ko.observableArray()
+  product_modifications_list: KnockoutObservableArray<ObsMod<any>> = ko.observableArray()
+  other_modifications_list: KnockoutObservableArray<ObsMod<any>> = ko.observableArray()
 
   measurements_observer = (value?: any, kind: any = ko.observable, ) => {
-    return this.observable_modification([this.measurements_modifications_list], kind, value);
+    return this.obs_mod([this.measurements_modifications_list], kind, value);
   }
   other_observer = (value?: any, kind: any = ko.observable) => {
-    return this.observable_modification([this.other_modifications_list], kind, value);
+    return this.obs_mod([this.other_modifications_list], kind, value);
   }
   product_observer = (value?: any, kind: any = ko.observable, ) => {
-    return this.observable_modification([this.product_modifications_list], kind, value);
+    return this.obs_mod([this.product_modifications_list], kind, value);
   }
-  product_id = <ObservableWithModification<number>>this.product_observer();
+  product_id = <ObsMod<number>>this.product_observer();
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
-  ohm_a = <ObservableWithModification<number>>this.measurements_observer();
-  ohm_b = <ObservableWithModification<number>>this.measurements_observer();
-  ohm_c = <ObservableWithModification<number>>this.measurements_observer();
-  mohm_a = <ObservableWithModification<boolean>>this.measurements_observer(-1);
-  mohm_b = <ObservableWithModification<boolean>>this.measurements_observer(-1);
-  mohm_c = <ObservableWithModification<boolean>>this.measurements_observer(-1);
+  ohm_a = <ObsMod<number>>this.measurements_observer();
+  ohm_b = <ObsMod<number>>this.measurements_observer();
+  ohm_c = <ObsMod<number>>this.measurements_observer();
+  mohm_a = <ObsMod<boolean>>this.measurements_observer(-1);
+  mohm_b = <ObsMod<boolean>>this.measurements_observer(-1);
+  mohm_c = <ObsMod<boolean>>this.measurements_observer(-1);
   area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
 
