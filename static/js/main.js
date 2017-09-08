@@ -2168,18 +2168,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                     if (response && response.errors) {
                         for (var _i = 0, _a = response.errors; _i < _a.length; _i++) {
                             var error = _a[_i];
-                            if (error.defcon_level != DefconLevels.default) {
-                                _this.errors.push({
-                                    message: error.message,
-                                    defcon_level: DefconLevels[error.defcon_level]
-                                });
-                            }
+                            _this.reportError(error);
                         }
                     }
                     else {
-                        _this.errors.push({
+                        _this.reportError({
                             message: textStatus + " " + errorThrown,
-                            defcon_level: DefconLevels[2]
+                            defcon_level: DefconLevels.warning
                         });
                     }
                 },
@@ -2223,6 +2218,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 }
             });
         }
+        TSAppViewModel.prototype.reportError = function (error) {
+            console.log(error);
+            if (error.defcon_level != DefconLevels.default) {
+                this.errors.push({
+                    message: error.message,
+                    defcon_level: DefconLevels[error.defcon_level]
+                });
+            }
+        };
         return TSAppViewModel;
     }());
     exports.TSAppViewModel = TSAppViewModel;

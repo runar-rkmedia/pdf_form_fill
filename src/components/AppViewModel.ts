@@ -24,11 +24,6 @@ interface FileDownloadInterface {
   error_message?: string
 }
 
-interface Error {
-  message: string
-  defcon_level: string
-}
-
 enum DefconLevels {
   danger = 1,
   warning,
@@ -36,9 +31,18 @@ enum DefconLevels {
   successs,
   default
 }
+interface Error {
+  message: string
+  defcon_level: DefconLevels
+}
+interface ErrorString {
+  message: string
+  defcon_level: string
+}
+
 
 export class TSAppViewModel {
-  errors: KnockoutObservableArray<Error> = ko.observableArray();
+  errors: KnockoutObservableArray<ErrorString> = ko.observableArray();
   error_message: KnockoutObservable<string> = ko.observable();
   file_download: KnockoutObservable<string> = ko.observable();
   last_sent_args: KnockoutObservable<string> = ko.observable();
@@ -68,17 +72,12 @@ export class TSAppViewModel {
         let response = jqXHR.responseJSON
         if (response && response.errors) {
           for (let error of response.errors) {
-            if (error.defcon_level != DefconLevels.default) {
-              this.errors.push({
-                message: error.message,
-                defcon_level: DefconLevels[error.defcon_level]
-              })
-            }
+            this.reportError(error)
           }
         } else {
-          this.errors.push({
+          this.reportError({
             message: textStatus + " " + errorThrown,
-            defcon_level: DefconLevels[2]
+            defcon_level: DefconLevels.warning
           })
         }
       },
@@ -125,6 +124,15 @@ export class TSAppViewModel {
       }
     });
 
+  }
+  reportError(error: Error) {
+    console.log(error)
+    if (error.defcon_level != DefconLevels.default) {
+      this.errors.push({
+        message: error.message,
+        defcon_level: DefconLevels[error.defcon_level]
+      })
+    }
   }
 
 
