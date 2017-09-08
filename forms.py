@@ -1,20 +1,23 @@
 """Forms used for HTML.."""
 # -*- coding: utf-8 -*-
 import decimal
+
 from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    FormField,
+from wtforms import (  # RadioField,
     BooleanField,
-    # RadioField,
-    HiddenField
+    FormField,
+    HiddenField,
+    StringField,
+    IntegerField as baseIntegerField
 )
-from wtforms.fields.html5 import EmailField, IntegerField, DecimalField
-from wtforms.validators import (DataRequired,
-                                # Email,
-                                Length,
-                                NumberRange,
-                                ValidationError)
+from wtforms.widgets import HiddenInput
+from wtforms.fields.html5 import DecimalField, EmailField, IntegerField
+from wtforms.validators import (  # Email,
+    DataRequired,
+    Length,
+    NumberRange,
+    ValidationError
+)
 from wtforms_html5 import AutoAttrMeta
 
 
@@ -41,7 +44,8 @@ class SubForm(FlaskForm):
         _kwargs['csrf_enabled'] = False
         super().__init__(**_kwargs)
 
-
+class HiddenInteger(baseIntegerField):
+    widget = HiddenInput()
 # https://stackoverflow.com/a/35359450/3493586
 class BetterDecimalField(DecimalField):
     """
@@ -49,15 +53,19 @@ class BetterDecimalField(DecimalField):
     the data always.
     """
 
-    def __init__(self, label=None, validators=None, places=2, rounding=None,
-                 round_always=True, **kwargs):
+    def __init__(self,
+                 label=None,
+                 validators=None,
+                 places=2,
+                 rounding=None,
+                 round_always=True,
+                 **kwargs):
         super(BetterDecimalField, self).__init__(
             label=label,
             validators=validators,
             places=places,
             rounding=rounding,
-            **kwargs
-        )
+            **kwargs)
         self.round_always = round_always
 
     def process_formdata(self, valuelist):
@@ -65,7 +73,7 @@ class BetterDecimalField(DecimalField):
             try:
                 self.data = decimal.Decimal(valuelist[0])
                 if self.round_always and hasattr(self.data, 'quantize'):
-                    exp = decimal.Decimal('.1') ** self.places
+                    exp = decimal.Decimal('.1')**self.places
                     if self.rounding is None:
                         quantized = self.data.quantize(exp)
                     else:
@@ -86,37 +94,26 @@ class CheckMaxTemp(SubForm):
     )
     other = StringField(
         'Eventuell brtuk av beskyttelsesutstyr',  # noqa
-        validators=[Length(max=100)]
-    )
+        validators=[Length(max=100)])
 
 
 class CheckEarthed(SubForm):
-    cable_screen = BooleanField(
-        'Jordet kabelskjerm'
-    )
-    chicken_wire = BooleanField(
-        'Jordet netting'
-    )
-    other = StringField(
-        'Annet', validators=[Length(max=100)]
-    )
+    cable_screen = BooleanField('Jordet kabelskjerm')
+    chicken_wire = BooleanField('Jordet netting')
+    other = StringField('Annet', validators=[Length(max=100)])
 
 
 class CheckControlSystem(SubForm):
-    floor_sensor = BooleanField(
-        'Gulvføler'  # noqa
-    )
-    room_sensor = BooleanField(
-        'Romføler'  # noqa
-    )
+    floor_sensor = BooleanField('Gulvføler'  # noqa
+                               )
+    room_sensor = BooleanField('Romføler'  # noqa
+                              )
     designation = StringField(
         'Typebetegnelse',  # noqa
-        validators=[Length(max=50)]
-    )
+        validators=[Length(max=50)])
     other = StringField(
         'Annet',  # noqa
-        validators=[Length(max=100)]
-    )
+        validators=[Length(max=100)])
 
 
 class RoomForm(FlaskForm):
@@ -128,41 +125,27 @@ class RoomForm(FlaskForm):
             Length(
                 min=2,
                 max=100,
-                message="Navnet bør være mellom %(min)d og %(max)d tegn."
-            )
-        ]
-    )
+                message="Navnet bør være mellom %(min)d og %(max)d tegn.")
+        ])
     maxEffect = BetterDecimalField()
     normalEffect = BetterDecimalField()
-    outside = BooleanField(
-        'Utvendig'
-    )
+    outside = BooleanField('Utvendig')
     area = BetterDecimalField(
         'Areal',
         validators=[
             DataRequired('Feltet er påkrevd.'),
-            NumberRange(
-                min=0.1,
-                max=1000
-            )
-        ]
-    )
+            NumberRange(min=0.1, max=1000)
+        ])
     heated_area = BetterDecimalField(
         'Oppvarmet Areal',
         validators=[
             DataRequired('Feltet er påkrevd.'),
-            NumberRange(
-                min=0.1,
-                max=1000
-            )
-        ]
-    )
-    customer_id = HiddenField(
-        validators=[
-            DataRequired(
-                'Mottok ikke et kunde-objekt. Dette er sansynligvis en feil.')
-        ]
-    )
+            NumberRange(min=0.1, max=1000)
+        ])
+    customer_id = HiddenField(validators=[
+        DataRequired(
+            'Mottok ikke et kunde-objekt. Dette er sansynligvis en feil.')
+    ])
     id = HiddenField()
     check_earthed = FormField(CheckEarthed)
     check_max_temp = FormField(CheckMaxTemp)
@@ -179,52 +162,34 @@ class AddressForm(SubForm):
             Length(
                 min=2,
                 max=180,
-                message="Adressen bør være mellom %(min)d og %(max)d tegn."
-
-            )
-        ]
-    )
+                message="Adressen bør være mellom %(min)d og %(max)d tegn.")
+        ])
     address2 = StringField(
         'Adresse 2',
         validators=[
-            Length(max=180,
-                   message="Adresse-linje 2 er for lang (maks 180 tegn)."
-                   )
-        ]
-    )
+            Length(
+                max=180, message="Adresse-linje 2 er for lang (maks 180 tegn).")
+        ])
     post_code = IntegerField(
         'Postnummer',
         validators=[
             DataRequired('Feltet er påkrevd'),
             NumberRange(
-                min=0,
-                max=9999,
-                message="Postnummeret skal ha 4 siffer."
-            )
-        ]
-    )
+                min=0, max=9999, message="Postnummeret skal ha 4 siffer.")
+        ])
     post_area = StringField(
         'Poststed',
-        validators=[
-            DataRequired('Feltet er påkrevd'),
-            Length(
-                min=2,
-                max=180
-            )
-        ]
-    )
+        validators=[DataRequired('Feltet er påkrevd'),
+                    Length(min=2, max=180)])
+
 
 class Invite(FlaskForm):
     pass
 
+
 class CustomerForm(FlaskForm):
     address = FormField(AddressForm)
-    customer_name = StringField(
-        'Kundenavn',
-        validators=[
-            Length(max=100)
-        ]
-    )
+    customer_name = StringField('Kundenavn', validators=[Length(max=100)])
     id = HiddenField()
 
 
@@ -239,15 +204,12 @@ class MeasurementsForms(SubForm):
 
 
 class AreaOutput(SubForm):
-    v = BetterDecimalField(
-        'Flateeffekt ( W/m<sup>2</sup> )')
+    v = BetterDecimalField('Flateeffekt ( W/m<sup>2</sup> )')
     m = BooleanField()
 
 
 class Cc(SubForm):
-    v = BetterDecimalField(
-        'C/C-avstand ( cm )'
-    )
+    v = BetterDecimalField('C/C-avstand ( cm )')
     m = BooleanField()
 
 
@@ -263,17 +225,11 @@ class HeatingCableForm(FlaskForm):
     room_item_id = HiddenField()
     id = HiddenField()
     product_id = HiddenField(
-        validators=[
-            DataRequired(
-                'Vennligst velg en varmekabel.')
-        ]
-    )
-    room_id = HiddenField(
-        validators=[
-            DataRequired(
-                'Mottok ikke et id for rom. Dette er sansynligvis en feil.')
-        ]
-    )
+        validators=[DataRequired('Vennligst velg en varmekabel.')])
+    room_id = HiddenField(validators=[
+        DataRequired(
+            'Mottok ikke et id for rom. Dette er sansynligvis en feil.')
+    ])
     specs = FormField(SpecsForm)
 
 
@@ -283,12 +239,11 @@ class CreateCompany(FlaskForm):
     class Meta(AutoAttrMeta):
         pass
 
-    name = StringField('Firma navn',
-                       validators=[DataRequired('Feltet er påkrevd'),
-                                   Length(min=2,
-                                          max=180)])
-    description = StringField('Beskrivelse',
-                              validators=[Length(max=500)])
+    name = StringField(
+        'Firma navn',
+        validators=[DataRequired('Feltet er påkrevd'),
+                    Length(min=2, max=180)])
+    description = StringField('Beskrivelse', validators=[Length(max=500)])
     org_nr = IntegerField(
         'Organisasjonsnummer',
         validators=[
@@ -296,22 +251,14 @@ class CreateCompany(FlaskForm):
                 min=100000000,
                 max=999999999,
                 message='Organisasjonsnummer skal ha totalt 9 siffer.')
-        ]
-    )
+        ])
     contact_name = StringField(
         'Kontaktperson',
         validators=[
             DataRequired('Feltet er påkrevd'),
-            Length(
-                min=2,
-                message="Minst %(min)d tegn her."
-            ),
-            Length(
-                max=180,
-                message="Maksimalt %(max)d tegn her."
-            )
-        ]
-    )
+            Length(min=2, message="Minst %(min)d tegn her."),
+            Length(max=180, message="Maksimalt %(max)d tegn her.")
+        ])
     email = EmailField(
         'Epost',
         validators=[
@@ -320,8 +267,12 @@ class CreateCompany(FlaskForm):
                 min=6,
                 max=70,
                 message=("Epost-adressen bør være mellom",
-                         "%(min)d og %(max)d tegn.")
-            )
-        ]
-    )
+                         "%(min)d og %(max)d tegn."))
+        ])
     address = FormField(AddressForm)
+    lat = DecimalField(
+        DataRequired('Feltet er påkrevd'),
+        validators=[NumberRange(min=-85.0000, max=85)])
+    lng = DecimalField(
+        DataRequired('Feltet er påkrevd'),
+        validators=[NumberRange(min=-180.000, max=180)])

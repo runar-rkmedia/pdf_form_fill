@@ -278,7 +278,7 @@ def get_invite(invite_id):
         flash('Denne invitasjonsnøkkelen er ikke gyldig.')
         return redirect(url_for('control_panel'))
     if invite.type == InviteType.create_company:
-        return invite_create_company(invite)
+        return set_company(invite=invite)
     elif invite.type == InviteType.company:
         pass
     if request.method == 'GET':
@@ -292,59 +292,43 @@ def get_invite(invite_id):
                 'invite.html', invite=invite, newly_invite=True)
 
 
-def invite_create_company(invite):
-    """Handle invites for creating a company."""
-    form = forms.CreateCompany()
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            try:
-                current_user.company = Company.update_or_create_all(form)
-            except LocationException as e:
-                flash(e, 'error')
-                return render_template(
-                    'create_company.html', invite=invite, form=form)
-
-            if current_user.role == UserRole.user:
-                current_user.role = UserRole.companyAdmin
-            invite.invitee = current_user
-            flash("Firmaet '{}' ble opprettet."
-                  .format(current_user.company.name))
-            return redirect(url_for('control_panel_company'))
-    return render_template('create_company.html', invite=invite, form=form, mode='create')
-
-
-@app.route('/company/<company_id>/edit', methods=['GET', 'POST'])
+@app.route('/company/edit', methods=['GET', 'POST'])
 @login_required
-def edit_company(company_id=None, invite=None):
+def set_company(invite=None):
     """Description."""
     form = forms.CreateCompany()
-    company = Company.query.filter_by(id=company_id).first()
     if request.method == 'POST':
         if form.validate_on_submit():
             try:
                 current_user.company = Company.update_or_create_all(
                 form,
-                company)
+                current_user.company)
+                db.session.add(current_user)
+                db.session.commit()
             except (LocationException, my_exceptions.DuplicateCompany) as e:
-                print('ldksjfsd\n\n\n', e)
                 flash(e.message, 'error')
                 return render_template(
                     'create_company.html', invite=invite, form=form)
-            db.session.commit()
+            if invite:
+                invite.invitee = current_user
+                db.session.add(invite)
+                db.session.commit()
             return redirect(url_for('control_panel_company'))
         return render_template('create_company.html', invite=invite, form=form, mode='edit')
-
-    form.name.data = current_user.company.name
-    form.org_nr.data = current_user.company.orgnumber
-    form.description.data = current_user.company.description
-    # TODO: contact needs fix
-    form.contact_name.data = current_user.company.contacts[
-        0].contact.description
-    form.email.data = current_user.company.contacts[0].contact.value
-    form.address.address1.data = current_user.company.address.address1
-    form.address.address2.data = current_user.company.address.address2
-    form.address.post_area.data = current_user.company.address.post_area
-    form.address.post_code.data = current_user.company.address.post_code
+    if current_user.company:
+        form.name.data = current_user.company.name
+        form.org_nr.data = current_user.company.orgnumber
+        form.description.data = current_user.company.description
+        # TODO: contact needs fix
+        form.contact_name.data = current_user.company.contacts[
+            0].contact.description
+        form.email.data = current_user.company.contacts[0].contact.value
+        form.address.address1.data = current_user.company.address.address1
+        form.address.address2.data = current_user.company.address.address2
+        form.address.post_area.data = current_user.company.address.post_area
+        form.address.post_code.data = current_user.company.address.post_code
+        form.lat.data = current_user.company.lat
+        form.lng.data = current_user.company.lng
 
     return render_template('create_company.html', invite=invite, form=form)
 

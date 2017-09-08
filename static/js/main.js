@@ -457,9 +457,1519 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "data:application/font-woff;base64,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"
+/*=============================================================================
+	Author:			Eric M. Barnard - @ericmbarnard								
+	License:		MIT (http://opensource.org/licenses/mit-license.php)		
+																				
+	Description:	Validation Library for KnockoutJS							
+	Version:		2.0.3											
+===============================================================================
+*/
+/*globals require: false, exports: false, define: false, ko: false */
+
+(function (factory) {
+	// Module systems magic dance.
+
+	if (true) {
+		// CommonJS or Node: hard-coded dependency on "knockout"
+		factory(__webpack_require__(0), exports);
+	} else if (typeof define === "function" && define["amd"]) {
+		// AMD anonymous module with hard-coded dependency on "knockout"
+		define(["knockout", "exports"], factory);
+	} else {
+		// <script> tag: use the global `ko` object, attaching a `mapping` property
+		factory(ko, ko.validation = {});
+	}
+}(function ( ko, exports ) {
+
+	if (typeof (ko) === 'undefined') {
+		throw new Error('Knockout is required, please ensure it is loaded before loading this validation plug-in');
+	}
+
+	// create our namespace object
+	ko.validation = exports;
+
+	var kv = ko.validation,
+		koUtils = ko.utils,
+		unwrap = koUtils.unwrapObservable,
+		forEach = koUtils.arrayForEach,
+		extend = koUtils.extend;
+;/*global ko: false*/
+
+var defaults = {
+	registerExtenders: true,
+	messagesOnModified: true,
+	errorsAsTitle: true,            // enables/disables showing of errors as title attribute of the target element.
+	errorsAsTitleOnModified: false, // shows the error when hovering the input field (decorateElement must be true)
+	messageTemplate: null,
+	insertMessages: true,           // automatically inserts validation messages as <span></span>
+	parseInputAttributes: false,    // parses the HTML5 validation attribute from a form element and adds that to the object
+	writeInputAttributes: false,    // adds HTML5 input validation attributes to form elements that ko observable's are bound to
+	decorateInputElement: false,         // false to keep backward compatibility
+	decorateElementOnModified: true,// true to keep backward compatibility
+	errorClass: null,               // single class for error message and element
+	errorElementClass: 'validationElement',  // class to decorate error element
+	errorMessageClass: 'validationMessage',  // class to decorate error message
+	allowHtmlMessages: false,		// allows HTML in validation messages
+	grouping: {
+		deep: false,        //by default grouping is shallow
+		observable: true,   //and using observables
+		live: false		    //react to changes to observableArrays if observable === true
+	},
+	validate: {
+		// throttle: 10
+	}
+};
+
+// make a copy  so we can use 'reset' later
+var configuration = extend({}, defaults);
+
+configuration.html5Attributes = ['required', 'pattern', 'min', 'max', 'step'];
+configuration.html5InputTypes = ['email', 'number', 'date'];
+
+configuration.reset = function () {
+	extend(configuration, defaults);
+};
+
+kv.configuration = configuration;
+;kv.utils = (function () {
+	var seedId = new Date().getTime();
+
+	var domData = {}; //hash of data objects that we reference from dom elements
+	var domDataKey = '__ko_validation__';
+
+	return {
+		isArray: function (o) {
+			return o.isArray || Object.prototype.toString.call(o) === '[object Array]';
+		},
+		isObject: function (o) {
+			return o !== null && typeof o === 'object';
+		},
+		isNumber: function(o) {
+			return !isNaN(o);	
+		},
+		isObservableArray: function(instance) {
+			return !!instance &&
+					typeof instance["remove"] === "function" &&
+					typeof instance["removeAll"] === "function" &&
+					typeof instance["destroy"] === "function" &&
+					typeof instance["destroyAll"] === "function" &&
+					typeof instance["indexOf"] === "function" &&
+					typeof instance["replace"] === "function";
+		},
+		values: function (o) {
+			var r = [];
+			for (var i in o) {
+				if (o.hasOwnProperty(i)) {
+					r.push(o[i]);
+				}
+			}
+			return r;
+		},
+		getValue: function (o) {
+			return (typeof o === 'function' ? o() : o);
+		},
+		hasAttribute: function (node, attr) {
+			return node.getAttribute(attr) !== null;
+		},
+		getAttribute: function (element, attr) {
+			return element.getAttribute(attr);
+		},
+		setAttribute: function (element, attr, value) {
+			return element.setAttribute(attr, value);
+		},
+		isValidatable: function (o) {
+			return !!(o && o.rules && o.isValid && o.isModified);
+		},
+		insertAfter: function (node, newNode) {
+			node.parentNode.insertBefore(newNode, node.nextSibling);
+		},
+		newId: function () {
+			return seedId += 1;
+		},
+		getConfigOptions: function (element) {
+			var options = kv.utils.contextFor(element);
+
+			return options || kv.configuration;
+		},
+		setDomData: function (node, data) {
+			var key = node[domDataKey];
+
+			if (!key) {
+				node[domDataKey] = key = kv.utils.newId();
+			}
+
+			domData[key] = data;
+		},
+		getDomData: function (node) {
+			var key = node[domDataKey];
+
+			if (!key) {
+				return undefined;
+			}
+
+			return domData[key];
+		},
+		contextFor: function (node) {
+			switch (node.nodeType) {
+				case 1:
+				case 8:
+					var context = kv.utils.getDomData(node);
+					if (context) { return context; }
+					if (node.parentNode) { return kv.utils.contextFor(node.parentNode); }
+					break;
+			}
+			return undefined;
+		},
+		isEmptyVal: function (val) {
+			if (val === undefined) {
+				return true;
+			}
+			if (val === null) {
+				return true;
+			}
+			if (val === "") {
+				return true;
+			}
+		},
+		getOriginalElementTitle: function (element) {
+			var savedOriginalTitle = kv.utils.getAttribute(element, 'data-orig-title'),
+				currentTitle = element.title,
+				hasSavedOriginalTitle = kv.utils.hasAttribute(element, 'data-orig-title');
+
+			return hasSavedOriginalTitle ?
+				savedOriginalTitle : currentTitle;
+		},
+		async: function (expr) {
+			if (window.setImmediate) { window.setImmediate(expr); }
+			else { window.setTimeout(expr, 0); }
+		},
+		forEach: function (object, callback) {
+			if (kv.utils.isArray(object)) {
+				return forEach(object, callback);
+			}
+			for (var prop in object) {
+				if (object.hasOwnProperty(prop)) {
+					callback(object[prop], prop);
+				}
+			}
+		}
+	};
+}());;var api = (function () {
+
+	var isInitialized = 0,
+		configuration = kv.configuration,
+		utils = kv.utils;
+
+	function cleanUpSubscriptions(context) {
+		forEach(context.subscriptions, function (subscription) {
+			subscription.dispose();
+		});
+		context.subscriptions = [];
+	}
+
+	function dispose(context) {
+		if (context.options.deep) {
+			forEach(context.flagged, function (obj) {
+				delete obj.__kv_traversed;
+			});
+			context.flagged.length = 0;
+		}
+
+		if (!context.options.live) {
+			cleanUpSubscriptions(context);
+		}
+	}
+
+	function runTraversal(obj, context) {
+		context.validatables = [];
+		cleanUpSubscriptions(context);
+		traverseGraph(obj, context);
+		dispose(context);
+	}
+
+	function traverseGraph(obj, context, level) {
+		var objValues = [],
+			val = obj.peek ? obj.peek() : obj;
+
+		if (obj.__kv_traversed === true) {
+			return;
+		}
+
+		if (context.options.deep) {
+			obj.__kv_traversed = true;
+			context.flagged.push(obj);
+		}
+
+		//default level value depends on deep option.
+		level = (level !== undefined ? level : context.options.deep ? 1 : -1);
+
+		// if object is observable then add it to the list
+		if (ko.isObservable(obj)) {
+			// ensure it's validatable but don't extend validatedObservable because it
+			// would overwrite isValid property.
+			if (!obj.errors && !utils.isValidatable(obj)) {
+				obj.extend({ validatable: true });
+			}
+			context.validatables.push(obj);
+
+			if (context.options.live && utils.isObservableArray(obj)) {
+				context.subscriptions.push(obj.subscribe(function () {
+					context.graphMonitor.valueHasMutated();
+				}));
+			}
+		}
+
+		//get list of values either from array or object but ignore non-objects
+		// and destroyed objects
+		if (val && !val._destroy) {
+			if (utils.isArray(val)) {
+				objValues = val;
+			}
+			else if (utils.isObject(val)) {
+				objValues = utils.values(val);
+			}
+		}
+
+		//process recursively if it is deep grouping
+		if (level !== 0) {
+			utils.forEach(objValues, function (observable) {
+				//but not falsy things and not HTML Elements
+				if (observable && !observable.nodeType && (!ko.isComputed(observable) || observable.rules)) {
+					traverseGraph(observable, context, level + 1);
+				}
+			});
+		}
+	}
+
+	function collectErrors(array) {
+		var errors = [];
+		forEach(array, function (observable) {
+			// Do not collect validatedObservable errors
+			if (utils.isValidatable(observable) && !observable.isValid()) {
+				// Use peek because we don't want a dependency for 'error' property because it
+				// changes before 'isValid' does. (Issue #99)
+				errors.push(observable.error.peek());
+			}
+		});
+		return errors;
+	}
+
+	return {
+		//Call this on startup
+		//any config can be overridden with the passed in options
+		init: function (options, force) {
+			//done run this multiple times if we don't really want to
+			if (isInitialized > 0 && !force) {
+				return;
+			}
+
+			//because we will be accessing options properties it has to be an object at least
+			options = options || {};
+			//if specific error classes are not provided then apply generic errorClass
+			//it has to be done on option so that options.errorClass can override default
+			//errorElementClass and errorMessage class but not those provided in options
+			options.errorElementClass = options.errorElementClass || options.errorClass || configuration.errorElementClass;
+			options.errorMessageClass = options.errorMessageClass || options.errorClass || configuration.errorMessageClass;
+
+			extend(configuration, options);
+
+			if (configuration.registerExtenders) {
+				kv.registerExtenders();
+			}
+
+			isInitialized = 1;
+		},
+
+		// resets the config back to its original state
+		reset: kv.configuration.reset,
+
+		// recursively walks a viewModel and creates an object that
+		// provides validation information for the entire viewModel
+		// obj -> the viewModel to walk
+		// options -> {
+		//	  deep: false, // if true, will walk past the first level of viewModel properties
+		//	  observable: false // if true, returns a computed observable indicating if the viewModel is valid
+		// }
+		group: function group(obj, options) { // array of observables or viewModel
+			options = extend(extend({}, configuration.grouping), options);
+
+			var context = {
+				options: options,
+				graphMonitor: ko.observable(),
+				flagged: [],
+				subscriptions: [],
+				validatables: []
+			};
+
+			var result = null;
+
+			//if using observables then traverse structure once and add observables
+			if (options.observable) {
+				result = ko.computed(function () {
+					context.graphMonitor(); //register dependency
+					runTraversal(obj, context);
+					return collectErrors(context.validatables);
+				});
+			}
+			else { //if not using observables then every call to error() should traverse the structure
+				result = function () {
+					runTraversal(obj, context);
+					return collectErrors(context.validatables);
+				};
+			}
+
+			result.showAllMessages = function (show) { // thanks @heliosPortal
+				if (show === undefined) {//default to true
+					show = true;
+				}
+
+				result.forEach(function (observable) {
+					if (utils.isValidatable(observable)) {
+						observable.isModified(show);
+					}
+				});
+			};
+
+			result.isAnyMessageShown = function () {
+				var invalidAndModifiedPresent;
+
+				invalidAndModifiedPresent = !!result.find(function (observable) {
+					return utils.isValidatable(observable) && !observable.isValid() && observable.isModified();
+				});
+				return invalidAndModifiedPresent;
+			};
+
+			result.filter = function(predicate) {
+				predicate = predicate || function () { return true; };
+				// ensure we have latest changes
+				result();
+
+				return koUtils.arrayFilter(context.validatables, predicate);
+			};
+
+			result.find = function(predicate) {
+				predicate = predicate || function () { return true; };
+				// ensure we have latest changes
+				result();
+
+				return koUtils.arrayFirst(context.validatables, predicate);
+			};
+
+			result.forEach = function(callback) {
+				callback = callback || function () { };
+				// ensure we have latest changes
+				result();
+
+				forEach(context.validatables, callback);
+			};
+
+			result.map = function(mapping) {
+				mapping = mapping || function (item) { return item; };
+				// ensure we have latest changes
+				result();
+
+				return koUtils.arrayMap(context.validatables, mapping);
+			};
+
+			/**
+			 * @private You should not rely on this method being here.
+			 * It's a private method and it may change in the future.
+			 *
+			 * @description Updates the validated object and collects errors from it.
+			 */
+			result._updateState = function(newValue) {
+				if (!utils.isObject(newValue)) {
+					throw new Error('An object is required.');
+				}
+				obj = newValue;
+				if (options.observable) {
+					context.graphMonitor.valueHasMutated();
+				}
+				else {
+					runTraversal(newValue, context);
+					return collectErrors(context.validatables);
+				}
+			};
+			return result;
+		},
+
+		formatMessage: function (message, params, observable) {
+			if (utils.isObject(params) && params.typeAttr) {
+				params = params.value;
+			}
+			if (typeof message === 'function') {
+				return message(params, observable);
+			}
+			var replacements = unwrap(params);
+            if (replacements == null) {
+                replacements = [];
+            }
+			if (!utils.isArray(replacements)) {
+				replacements = [replacements];
+			}
+			return message.replace(/{(\d+)}/gi, function(match, index) {
+				if (typeof replacements[index] !== 'undefined') {
+					return replacements[index];
+				}
+				return match;
+			});
+		},
+
+		// addRule:
+		// This takes in a ko.observable and a Rule Context - which is just a rule name and params to supply to the validator
+		// ie: kv.addRule(myObservable, {
+		//		  rule: 'required',
+		//		  params: true
+		//	  });
+		//
+		addRule: function (observable, rule) {
+			observable.extend({ validatable: true });
+
+			var hasRule = !!koUtils.arrayFirst(observable.rules(), function(item) {
+				return item.rule && item.rule === rule.rule;
+			});
+
+			if (!hasRule) {
+				//push a Rule Context to the observables local array of Rule Contexts
+				observable.rules.push(rule);
+			}
+			return observable;
+		},
+
+		// addAnonymousRule:
+		// Anonymous Rules essentially have all the properties of a Rule, but are only specific for a certain property
+		// and developers typically are wanting to add them on the fly or not register a rule with the 'kv.rules' object
+		//
+		// Example:
+		// var test = ko.observable('something').extend{(
+		//	  validation: {
+		//		  validator: function(val, someOtherVal){
+		//			  return true;
+		//		  },
+		//		  message: "Something must be really wrong!',
+		//		  params: true
+		//	  }
+		//  )};
+		addAnonymousRule: function (observable, ruleObj) {
+			if (ruleObj['message'] === undefined) {
+				ruleObj['message'] = 'Error';
+			}
+
+			//make sure onlyIf is honoured
+			if (ruleObj.onlyIf) {
+				ruleObj.condition = ruleObj.onlyIf;
+			}
+
+			//add the anonymous rule to the observable
+			kv.addRule(observable, ruleObj);
+		},
+
+		addExtender: function (ruleName) {
+			ko.extenders[ruleName] = function (observable, params) {
+				//params can come in a few flavors
+				// 1. Just the params to be passed to the validator
+				// 2. An object containing the Message to be used and the Params to pass to the validator
+				// 3. A condition when the validation rule to be applied
+				//
+				// Example:
+				// var test = ko.observable(3).extend({
+				//	  max: {
+				//		  message: 'This special field has a Max of {0}',
+				//		  params: 2,
+				//		  onlyIf: function() {
+				//					  return specialField.IsVisible();
+				//				  }
+				//	  }
+				//  )};
+				//
+				if (params && (params.message || params.onlyIf)) { //if it has a message or condition object, then its an object literal to use
+					return kv.addRule(observable, {
+						rule: ruleName,
+						message: params.message,
+						params: utils.isEmptyVal(params.params) ? true : params.params,
+						condition: params.onlyIf
+					});
+				} else {
+					return kv.addRule(observable, {
+						rule: ruleName,
+						params: params
+					});
+				}
+			};
+		},
+
+		// loops through all kv.rules and adds them as extenders to
+		// ko.extenders
+		registerExtenders: function () { // root extenders optional, use 'validation' extender if would cause conflicts
+			if (configuration.registerExtenders) {
+				for (var ruleName in kv.rules) {
+					if (kv.rules.hasOwnProperty(ruleName)) {
+						if (!ko.extenders[ruleName]) {
+							kv.addExtender(ruleName);
+						}
+					}
+				}
+			}
+		},
+
+		//creates a span next to the @element with the specified error class
+		insertValidationMessage: function (element) {
+			var span = document.createElement('SPAN');
+			span.className = utils.getConfigOptions(element).errorMessageClass;
+			utils.insertAfter(element, span);
+			return span;
+		},
+
+		// if html-5 validation attributes have been specified, this parses
+		// the attributes on @element
+		parseInputValidationAttributes: function (element, valueAccessor) {
+			forEach(kv.configuration.html5Attributes, function (attr) {
+				if (utils.hasAttribute(element, attr)) {
+
+					var params = element.getAttribute(attr) || true;
+
+					if (attr === 'min' || attr === 'max')
+					{
+						// If we're validating based on the min and max attributes, we'll
+						// need to know what the 'type' attribute is set to
+						var typeAttr = element.getAttribute('type');
+						if (typeof typeAttr === "undefined" || !typeAttr)
+						{
+							// From http://www.w3.org/TR/html-markup/input:
+							//   An input element with no type attribute specified represents the
+							//   same thing as an input element with its type attribute set to "text".
+							typeAttr = "text";
+						}
+						params = {typeAttr: typeAttr, value: params};
+					}
+
+					kv.addRule(valueAccessor(), {
+						rule: attr,
+						params: params
+					});
+				}
+			});
+
+			var currentType = element.getAttribute('type');
+			forEach(kv.configuration.html5InputTypes, function (type) {
+				if (type === currentType) {
+					kv.addRule(valueAccessor(), {
+						rule: (type === 'date') ? 'dateISO' : type,
+						params: true
+					});
+				}
+			});
+		},
+
+		// writes html5 validation attributes on the element passed in
+		writeInputValidationAttributes: function (element, valueAccessor) {
+			var observable = valueAccessor();
+
+			if (!observable || !observable.rules) {
+				return;
+			}
+
+			var contexts = observable.rules(); // observable array
+
+			// loop through the attributes and add the information needed
+			forEach(kv.configuration.html5Attributes, function (attr) {
+				var ctx = koUtils.arrayFirst(contexts, function (ctx) {
+					return ctx.rule && ctx.rule.toLowerCase() === attr.toLowerCase();
+				});
+
+				if (!ctx) {
+					return;
+				}
+
+				// we have a rule matching a validation attribute at this point
+				// so lets add it to the element along with the params
+				ko.computed({
+					read: function() {
+						var params = ko.unwrap(ctx.params);
+
+						// we have to do some special things for the pattern validation
+						if (ctx.rule === "pattern" && params instanceof RegExp) {
+							// we need the pure string representation of the RegExpr without the //gi stuff
+							params = params.source;
+						}
+
+						element.setAttribute(attr, params);
+					},
+					disposeWhenNodeIsRemoved: element
+				});
+			});
+
+			contexts = null;
+		},
+
+		//take an existing binding handler and make it cause automatic validations
+		makeBindingHandlerValidatable: function (handlerName) {
+			var init = ko.bindingHandlers[handlerName].init;
+
+			ko.bindingHandlers[handlerName].init = function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+
+				init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+
+				return ko.bindingHandlers['validationCore'].init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+			};
+		},
+
+		// visit an objects properties and apply validation rules from a definition
+		setRules: function (target, definition) {
+			var setRules = function (target, definition) {
+				if (!target || !definition) { return; }
+
+				for (var prop in definition) {
+					if (!definition.hasOwnProperty(prop)) { continue; }
+					var ruleDefinitions = definition[prop];
+
+					//check the target property exists and has a value
+					if (!target[prop]) { continue; }
+					var targetValue = target[prop],
+						unwrappedTargetValue = unwrap(targetValue),
+						rules = {},
+						nonRules = {};
+
+					for (var rule in ruleDefinitions) {
+						if (!ruleDefinitions.hasOwnProperty(rule)) { continue; }
+						if (kv.rules[rule]) {
+							rules[rule] = ruleDefinitions[rule];
+						} else {
+							nonRules[rule] = ruleDefinitions[rule];
+						}
+					}
+
+					//apply rules
+					if (ko.isObservable(targetValue)) {
+						targetValue.extend(rules);
+					}
+
+					//then apply child rules
+					//if it's an array, apply rules to all children
+					if (unwrappedTargetValue && utils.isArray(unwrappedTargetValue)) {
+						for (var i = 0; i < unwrappedTargetValue.length; i++) {
+							setRules(unwrappedTargetValue[i], nonRules);
+						}
+						//otherwise, just apply to this property
+					} else {
+						setRules(unwrappedTargetValue, nonRules);
+					}
+				}
+			};
+			setRules(target, definition);
+		}
+	};
+
+}());
+
+// expose api publicly
+extend(ko.validation, api);
+;//Validation Rules:
+// You can view and override messages or rules via:
+// kv.rules[ruleName]
+//
+// To implement a custom Rule, simply use this template:
+// kv.rules['<custom rule name>'] = {
+//      validator: function (val, param) {
+//          <custom logic>
+//          return <true or false>;
+//      },
+//      message: '<custom validation message>' //optionally you can also use a '{0}' to denote a placeholder that will be replaced with your 'param'
+// };
+//
+// Example:
+// kv.rules['mustEqual'] = {
+//      validator: function( val, mustEqualVal ){
+//          return val === mustEqualVal;
+//      },
+//      message: 'This field must equal {0}'
+// };
+//
+kv.rules = {};
+kv.rules['required'] = {
+	validator: function (val, required) {
+		var testVal;
+
+		if (val === undefined || val === null) {
+			return !required;
+		}
+
+		testVal = val;
+		if (typeof (val) === 'string') {
+			if (String.prototype.trim) {
+				testVal = val.trim();
+			}
+			else {
+				testVal = val.replace(/^\s+|\s+$/g, '');
+			}
+		}
+
+		if (!required) {// if they passed: { required: false }, then don't require this
+			return true;
+		}
+
+		return ((testVal + '').length > 0);
+	},
+	message: 'This field is required.'
+};
+
+function minMaxValidatorFactory(validatorName) {
+    var isMaxValidation = validatorName === "max";
+
+    return function (val, options) {
+        if (kv.utils.isEmptyVal(val)) {
+            return true;
+        }
+
+        var comparisonValue, type;
+        if (options.typeAttr === undefined) {
+            // This validator is being called from javascript rather than
+            // being bound from markup
+            type = "text";
+            comparisonValue = options;
+        } else {
+            type = options.typeAttr;
+            comparisonValue = options.value;
+        }
+
+        // From http://www.w3.org/TR/2012/WD-html5-20121025/common-input-element-attributes.html#attr-input-min,
+        // if the value is parseable to a number, then the minimum should be numeric
+        if (!isNaN(comparisonValue) && !(comparisonValue instanceof Date)) {
+            type = "number";
+        }
+
+        var regex, valMatches, comparisonValueMatches;
+        switch (type.toLowerCase()) {
+            case "week":
+                regex = /^(\d{4})-W(\d{2})$/;
+                valMatches = val.match(regex);
+                if (valMatches === null) {
+                    throw new Error("Invalid value for " + validatorName + " attribute for week input.  Should look like " +
+                        "'2000-W33' http://www.w3.org/TR/html-markup/input.week.html#input.week.attrs.min");
+                }
+                comparisonValueMatches = comparisonValue.match(regex);
+                // If no regex matches were found, validation fails
+                if (!comparisonValueMatches) {
+                    return false;
+                }
+
+                if (isMaxValidation) {
+                    return (valMatches[1] < comparisonValueMatches[1]) || // older year
+                        // same year, older week
+                        ((valMatches[1] === comparisonValueMatches[1]) && (valMatches[2] <= comparisonValueMatches[2]));
+                } else {
+                    return (valMatches[1] > comparisonValueMatches[1]) || // newer year
+                        // same year, newer week
+                        ((valMatches[1] === comparisonValueMatches[1]) && (valMatches[2] >= comparisonValueMatches[2]));
+                }
+                break;
+
+            case "month":
+                regex = /^(\d{4})-(\d{2})$/;
+                valMatches = val.match(regex);
+                if (valMatches === null) {
+                    throw new Error("Invalid value for " + validatorName + " attribute for month input.  Should look like " +
+                        "'2000-03' http://www.w3.org/TR/html-markup/input.month.html#input.month.attrs.min");
+                }
+                comparisonValueMatches = comparisonValue.match(regex);
+                // If no regex matches were found, validation fails
+                if (!comparisonValueMatches) {
+                    return false;
+                }
+
+                if (isMaxValidation) {
+                    return ((valMatches[1] < comparisonValueMatches[1]) || // older year
+                        // same year, older month
+                        ((valMatches[1] === comparisonValueMatches[1]) && (valMatches[2] <= comparisonValueMatches[2])));
+                } else {
+                    return (valMatches[1] > comparisonValueMatches[1]) || // newer year
+                        // same year, newer month
+                        ((valMatches[1] === comparisonValueMatches[1]) && (valMatches[2] >= comparisonValueMatches[2]));
+                }
+                break;
+
+            case "number":
+            case "range":
+                if (isMaxValidation) {
+                    return (!isNaN(val) && parseFloat(val) <= parseFloat(comparisonValue));
+                } else {
+                    return (!isNaN(val) && parseFloat(val) >= parseFloat(comparisonValue));
+                }
+                break;
+
+            default:
+                if (isMaxValidation) {
+                    return val <= comparisonValue;
+                } else {
+                    return val >= comparisonValue;
+                }
+        }
+    };
+}
+
+kv.rules['min'] = {
+	validator: minMaxValidatorFactory("min"),
+	message: 'Please enter a value greater than or equal to {0}.'
+};
+
+kv.rules['max'] = {
+	validator: minMaxValidatorFactory("max"),
+	message: 'Please enter a value less than or equal to {0}.'
+};
+
+kv.rules['minLength'] = {
+	validator: function (val, minLength) {
+		if(kv.utils.isEmptyVal(val)) { return true; }
+		var normalizedVal = kv.utils.isNumber(val) ? ('' + val) : val;
+		return normalizedVal.length >= minLength;
+	},
+	message: 'Please enter at least {0} characters.'
+};
+
+kv.rules['maxLength'] = {
+	validator: function (val, maxLength) {
+		if(kv.utils.isEmptyVal(val)) { return true; }
+		var normalizedVal = kv.utils.isNumber(val) ? ('' + val) : val;
+		return normalizedVal.length <= maxLength;
+	},
+	message: 'Please enter no more than {0} characters.'
+};
+
+kv.rules['pattern'] = {
+	validator: function (val, regex) {
+		return kv.utils.isEmptyVal(val) || val.toString().match(regex) !== null;
+	},
+	message: 'Please check this value.'
+};
+
+kv.rules['step'] = {
+	validator: function (val, step) {
+
+		// in order to handle steps of .1 & .01 etc.. Modulus won't work
+		// if the value is a decimal, so we have to correct for that
+		if (kv.utils.isEmptyVal(val) || step === 'any') { return true; }
+		var dif = (val * 100) % (step * 100);
+		return Math.abs(dif) < 0.00001 || Math.abs(1 - dif) < 0.00001;
+	},
+	message: 'The value must increment by {0}.'
+};
+
+kv.rules['email'] = {
+	validator: function (val, validate) {
+		if (!validate) { return true; }
+
+		//I think an empty email address is also a valid entry
+		//if one want's to enforce entry it should be done with 'required: true'
+		return kv.utils.isEmptyVal(val) || (
+			// jquery validate regex - thanks Scott Gonzalez
+			validate && /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(val)
+		);
+	},
+	message: 'Please enter a proper email address.'
+};
+
+kv.rules['date'] = {
+	validator: function (value, validate) {
+		if (!validate) { return true; }
+		return kv.utils.isEmptyVal(value) || (validate && !/Invalid|NaN/.test(new Date(value)));
+	},
+	message: 'Please enter a proper date.'
+};
+
+kv.rules['dateISO'] = {
+	validator: function (value, validate) {
+		if (!validate) { return true; }
+		return kv.utils.isEmptyVal(value) || (validate && /^\d{4}[-/](?:0?[1-9]|1[012])[-/](?:0?[1-9]|[12][0-9]|3[01])$/.test(value));
+	},
+	message: 'Please enter a proper date.'
+};
+
+kv.rules['number'] = {
+	validator: function (value, validate) {
+		if (!validate) { return true; }
+		return kv.utils.isEmptyVal(value) || (validate && /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test(value));
+	},
+	message: 'Please enter a number.'
+};
+
+kv.rules['digit'] = {
+	validator: function (value, validate) {
+		if (!validate) { return true; }
+		return kv.utils.isEmptyVal(value) || (validate && /^\d+$/.test(value));
+	},
+	message: 'Please enter a digit.'
+};
+
+kv.rules['phoneUS'] = {
+	validator: function (phoneNumber, validate) {
+		if (!validate) { return true; }
+		if (kv.utils.isEmptyVal(phoneNumber)) { return true; } // makes it optional, use 'required' rule if it should be required
+		if (typeof (phoneNumber) !== 'string') { return false; }
+		phoneNumber = phoneNumber.replace(/\s+/g, "");
+		return validate && phoneNumber.length > 9 && phoneNumber.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
+	},
+	message: 'Please specify a valid phone number.'
+};
+
+kv.rules['equal'] = {
+	validator: function (val, params) {
+		var otherValue = params;
+		return val === kv.utils.getValue(otherValue);
+	},
+	message: 'Values must equal.'
+};
+
+kv.rules['notEqual'] = {
+	validator: function (val, params) {
+		var otherValue = params;
+		return val !== kv.utils.getValue(otherValue);
+	},
+	message: 'Please choose another value.'
+};
+
+//unique in collection
+// options are:
+//    collection: array or function returning (observable) array
+//              in which the value has to be unique
+//    valueAccessor: function that returns value from an object stored in collection
+//              if it is null the value is compared directly
+//    external: set to true when object you are validating is automatically updating collection
+kv.rules['unique'] = {
+	validator: function (val, options) {
+		var c = kv.utils.getValue(options.collection),
+			external = kv.utils.getValue(options.externalValue),
+			counter = 0;
+
+		if (!val || !c) { return true; }
+
+		koUtils.arrayFilter(c, function (item) {
+			if (val === (options.valueAccessor ? options.valueAccessor(item) : item)) { counter++; }
+		});
+		// if value is external even 1 same value in collection means the value is not unique
+		return counter < (!!external ? 1 : 2);
+	},
+	message: 'Please make sure the value is unique.'
+};
+
+
+//now register all of these!
+(function () {
+	kv.registerExtenders();
+}());
+;// The core binding handler
+// this allows us to setup any value binding that internally always
+// performs the same functionality
+ko.bindingHandlers['validationCore'] = (function () {
+
+	return {
+		init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+			var config = kv.utils.getConfigOptions(element);
+			var observable = valueAccessor();
+
+			// parse html5 input validation attributes, optional feature
+			if (config.parseInputAttributes) {
+				kv.utils.async(function () { kv.parseInputValidationAttributes(element, valueAccessor); });
+			}
+
+			// if requested insert message element and apply bindings
+			if (config.insertMessages && kv.utils.isValidatable(observable)) {
+
+				// insert the <span></span>
+				var validationMessageElement = kv.insertValidationMessage(element);
+
+				// if we're told to use a template, make sure that gets rendered
+				if (config.messageTemplate) {
+					ko.renderTemplate(config.messageTemplate, { field: observable }, null, validationMessageElement, 'replaceNode');
+				} else {
+					ko.applyBindingsToNode(validationMessageElement, { validationMessage: observable });
+				}
+			}
+
+			// write the html5 attributes if indicated by the config
+			if (config.writeInputAttributes && kv.utils.isValidatable(observable)) {
+
+				kv.writeInputValidationAttributes(element, valueAccessor);
+			}
+
+			// if requested, add binding to decorate element
+			if (config.decorateInputElement && kv.utils.isValidatable(observable)) {
+				ko.applyBindingsToNode(element, { validationElement: observable });
+			}
+		}
+	};
+
+}());
+
+// override for KO's default 'value', 'checked', 'textInput' and selectedOptions bindings
+kv.makeBindingHandlerValidatable("value");
+kv.makeBindingHandlerValidatable("checked");
+if (ko.bindingHandlers.textInput) {
+	kv.makeBindingHandlerValidatable("textInput");
+}
+kv.makeBindingHandlerValidatable("selectedOptions");
+
+
+ko.bindingHandlers['validationMessage'] = { // individual error message, if modified or post binding
+	update: function (element, valueAccessor) {
+		var obsv = valueAccessor(),
+			config = kv.utils.getConfigOptions(element),
+			val = unwrap(obsv),
+			msg = null,
+			isModified = false,
+			isValid = false;
+
+		if (obsv === null || typeof obsv === 'undefined') {
+			throw new Error('Cannot bind validationMessage to undefined value. data-bind expression: ' +
+				element.getAttribute('data-bind'));
+		}
+
+		isModified = obsv.isModified && obsv.isModified();
+		isValid = obsv.isValid && obsv.isValid();
+
+		var error = null;
+		if (!config.messagesOnModified || isModified) {
+			error = isValid ? null : obsv.error;
+		}
+
+		var isVisible = !config.messagesOnModified || isModified ? !isValid : false;
+		var isCurrentlyVisible = element.style.display !== "none";
+
+		if (config.allowHtmlMessages) {
+			koUtils.setHtml(element, error);
+		} else {
+			ko.bindingHandlers.text.update(element, function () { return error; });
+		}
+
+		if (isCurrentlyVisible && !isVisible) {
+			element.style.display = 'none';
+		} else if (!isCurrentlyVisible && isVisible) {
+			element.style.display = '';
+		}
+	}
+};
+
+ko.bindingHandlers['validationElement'] = {
+	update: function (element, valueAccessor, allBindingsAccessor) {
+		var obsv = valueAccessor(),
+			config = kv.utils.getConfigOptions(element),
+			val = unwrap(obsv),
+			msg = null,
+			isModified = false,
+			isValid = false;
+
+		if (obsv === null || typeof obsv === 'undefined') {
+			throw new Error('Cannot bind validationElement to undefined value. data-bind expression: ' +
+				element.getAttribute('data-bind'));
+		}
+
+		isModified = obsv.isModified && obsv.isModified();
+		isValid = obsv.isValid && obsv.isValid();
+
+		// create an evaluator function that will return something like:
+		// css: { validationElement: true }
+		var cssSettingsAccessor = function () {
+			var css = {};
+
+			var shouldShow = ((!config.decorateElementOnModified || isModified) ? !isValid : false);
+
+			// css: { validationElement: false }
+			css[config.errorElementClass] = shouldShow;
+
+			return css;
+		};
+
+		//add or remove class on the element;
+		ko.bindingHandlers.css.update(element, cssSettingsAccessor, allBindingsAccessor);
+		if (!config.errorsAsTitle) { return; }
+
+		ko.bindingHandlers.attr.update(element, function () {
+			var
+				hasModification = !config.errorsAsTitleOnModified || isModified,
+				title = kv.utils.getOriginalElementTitle(element);
+
+			if (hasModification && !isValid) {
+				return { title: obsv.error, 'data-orig-title': title };
+			} else if (!hasModification || isValid) {
+				return { title: title, 'data-orig-title': null };
+			}
+		});
+	}
+};
+
+// ValidationOptions:
+// This binding handler allows you to override the initial config by setting any of the options for a specific element or context of elements
+//
+// Example:
+// <div data-bind="validationOptions: { insertMessages: true, messageTemplate: 'customTemplate', errorMessageClass: 'mySpecialClass'}">
+//      <input type="text" data-bind="value: someValue"/>
+//      <input type="text" data-bind="value: someValue2"/>
+// </div>
+ko.bindingHandlers['validationOptions'] = (function () {
+	return {
+		init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+			var options = unwrap(valueAccessor());
+			if (options) {
+				var newConfig = extend({}, kv.configuration);
+				extend(newConfig, options);
+
+				//store the validation options on the node so we can retrieve it later
+				kv.utils.setDomData(element, newConfig);
+			}
+		}
+	};
+}());
+;// Validation Extender:
+// This is for creating custom validation logic on the fly
+// Example:
+// var test = ko.observable('something').extend{(
+//      validation: {
+//          validator: function(val, someOtherVal){
+//              return true;
+//          },
+//          message: "Something must be really wrong!',
+//          params: true
+//      }
+//  )};
+ko.extenders['validation'] = function (observable, rules) { // allow single rule or array
+	forEach(kv.utils.isArray(rules) ? rules : [rules], function (rule) {
+		// the 'rule' being passed in here has no name to identify a core Rule,
+		// so we add it as an anonymous rule
+		// If the developer is wanting to use a core Rule, but use a different message see the 'addExtender' logic for examples
+		kv.addAnonymousRule(observable, rule);
+	});
+	return observable;
+};
+
+//This is the extender that makes a Knockout Observable also 'Validatable'
+//examples include:
+// 1. var test = ko.observable('something').extend({validatable: true});
+// this will ensure that the Observable object is setup properly to respond to rules
+//
+// 2. test.extend({validatable: false});
+// this will remove the validation properties from the Observable object should you need to do that.
+ko.extenders['validatable'] = function (observable, options) {
+	if (!kv.utils.isObject(options)) {
+		options = { enable: options };
+	}
+
+	if (!('enable' in options)) {
+		options.enable = true;
+	}
+
+	if (options.enable && !kv.utils.isValidatable(observable)) {
+		var config = kv.configuration.validate || {};
+		var validationOptions = {
+			throttleEvaluation : options.throttle || config.throttle
+		};
+
+		observable.error = ko.observable(null); // holds the error message, we only need one since we stop processing validators when one is invalid
+
+		// observable.rules:
+		// ObservableArray of Rule Contexts, where a Rule Context is simply the name of a rule and the params to supply to it
+		//
+		// Rule Context = { rule: '<rule name>', params: '<passed in params>', message: '<Override of default Message>' }
+		observable.rules = ko.observableArray(); //holds the rule Contexts to use as part of validation
+
+		//in case async validation is occurring
+		observable.isValidating = ko.observable(false);
+
+		//the true holder of whether the observable is valid or not
+		observable.__valid__ = ko.observable(true);
+
+		observable.isModified = ko.observable(false);
+
+		// a semi-protected observable
+		observable.isValid = ko.computed(observable.__valid__);
+
+		//manually set error state
+		observable.setError = function (error) {
+			var previousError = observable.error.peek();
+			var previousIsValid = observable.__valid__.peek();
+
+			observable.error(error);
+			observable.__valid__(false);
+
+			if (previousError !== error && !previousIsValid) {
+				// if the observable was not valid before then isValid will not mutate,
+				// hence causing any grouping to not display the latest error.
+				observable.isValid.notifySubscribers();
+			}
+		};
+
+		//manually clear error state
+		observable.clearError = function () {
+			observable.error(null);
+			observable.__valid__(true);
+			return observable;
+		};
+
+		//subscribe to changes in the observable
+		var h_change = observable.subscribe(function () {
+			observable.isModified(true);
+		});
+
+		// we use a computed here to ensure that anytime a dependency changes, the
+		// validation logic evaluates
+		var h_obsValidationTrigger = ko.computed(extend({
+			read: function () {
+				var obs = observable(),
+					ruleContexts = observable.rules();
+
+				kv.validateObservable(observable);
+
+				return true;
+			}
+		}, validationOptions));
+
+		extend(h_obsValidationTrigger, validationOptions);
+
+		observable._disposeValidation = function () {
+			//first dispose of the subscriptions
+			observable.isValid.dispose();
+			observable.rules.removeAll();
+			h_change.dispose();
+			h_obsValidationTrigger.dispose();
+
+			delete observable['rules'];
+			delete observable['error'];
+			delete observable['isValid'];
+			delete observable['isValidating'];
+			delete observable['__valid__'];
+			delete observable['isModified'];
+            delete observable['setError'];
+            delete observable['clearError'];
+            delete observable['_disposeValidation'];
+		};
+	} else if (options.enable === false && observable._disposeValidation) {
+		observable._disposeValidation();
+	}
+	return observable;
+};
+
+function validateSync(observable, rule, ctx) {
+	//Execute the validator and see if its valid
+	if (!rule.validator(observable(), (ctx.params === undefined ? true : unwrap(ctx.params)))) { // default param is true, eg. required = true
+
+		//not valid, so format the error message and stick it in the 'error' variable
+		observable.setError(kv.formatMessage(
+					ctx.message || rule.message,
+					unwrap(ctx.params),
+					observable));
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function validateAsync(observable, rule, ctx) {
+	observable.isValidating(true);
+
+	var callBack = function (valObj) {
+		var isValid = false,
+			msg = '';
+
+		if (!observable.__valid__()) {
+
+			// since we're returning early, make sure we turn this off
+			observable.isValidating(false);
+
+			return; //if its already NOT valid, don't add to that
+		}
+
+		//we were handed back a complex object
+		if (valObj['message']) {
+			isValid = valObj.isValid;
+			msg = valObj.message;
+		} else {
+			isValid = valObj;
+		}
+
+		if (!isValid) {
+			//not valid, so format the error message and stick it in the 'error' variable
+			observable.error(kv.formatMessage(
+				msg || ctx.message || rule.message,
+				unwrap(ctx.params),
+				observable));
+			observable.__valid__(isValid);
+		}
+
+		// tell it that we're done
+		observable.isValidating(false);
+	};
+
+	kv.utils.async(function() {
+	    //fire the validator and hand it the callback
+        rule.validator(observable(), ctx.params === undefined ? true : unwrap(ctx.params), callBack);
+	});
+}
+
+kv.validateObservable = function (observable) {
+	var i = 0,
+		rule, // the rule validator to execute
+		ctx, // the current Rule Context for the loop
+		ruleContexts = observable.rules(), //cache for iterator
+		len = ruleContexts.length; //cache for iterator
+
+	for (; i < len; i++) {
+
+		//get the Rule Context info to give to the core Rule
+		ctx = ruleContexts[i];
+
+		// checks an 'onlyIf' condition
+		if (ctx.condition && !ctx.condition()) {
+			continue;
+		}
+
+		//get the core Rule to use for validation
+		rule = ctx.rule ? kv.rules[ctx.rule] : ctx;
+
+		if (rule['async'] || ctx['async']) {
+			//run async validation
+			validateAsync(observable, rule, ctx);
+
+		} else {
+			//run normal sync validation
+			if (!validateSync(observable, rule, ctx)) {
+				return false; //break out of the loop
+			}
+		}
+	}
+	//finally if we got this far, make the observable valid again!
+	observable.clearError();
+	return true;
+};
+;
+var _locales = {};
+var _currentLocale;
+
+kv.defineLocale = function(name, values) {
+	if (name && values) {
+		_locales[name.toLowerCase()] = values;
+		return values;
+	}
+	return null;
+};
+
+kv.locale = function(name) {
+	if (name) {
+		name = name.toLowerCase();
+
+		if (_locales.hasOwnProperty(name)) {
+			kv.localize(_locales[name]);
+			_currentLocale = name;
+		}
+		else {
+			throw new Error('Localization ' + name + ' has not been loaded.');
+		}
+	}
+	return _currentLocale;
+};
+
+//quick function to override rule messages
+kv.localize = function (msgTranslations) {
+	var rules = kv.rules;
+
+	//loop the properties in the object and assign the msg to the rule
+	for (var ruleName in msgTranslations) {
+		if (rules.hasOwnProperty(ruleName)) {
+			rules[ruleName].message = msgTranslations[ruleName];
+		}
+	}
+};
+
+// Populate default locale (this will make en-US.js somewhat redundant)
+(function() {
+	var localeData = {};
+	var rules = kv.rules;
+
+	for (var ruleName in rules) {
+		if (rules.hasOwnProperty(ruleName)) {
+			localeData[ruleName] = rules[ruleName].message;
+		}
+	}
+	kv.defineLocale('en-us', localeData);
+})();
+
+// No need to invoke locale because the messages are already defined along with the rules for en-US
+_currentLocale = 'en-us';
+;/**
+ * Possible invocations:
+ * 		applyBindingsWithValidation(viewModel)
+ * 		applyBindingsWithValidation(viewModel, options)
+ * 		applyBindingsWithValidation(viewModel, rootNode)
+ *		applyBindingsWithValidation(viewModel, rootNode, options)
+ */
+ko.applyBindingsWithValidation = function (viewModel, rootNode, options) {
+	var node = document.body,
+		config;
+
+	if (rootNode && rootNode.nodeType) {
+		node = rootNode;
+		config = options;
+	}
+	else {
+		config = rootNode;
+	}
+
+	kv.init();
+
+	if (config) {
+		config = extend(extend({}, kv.configuration), config);
+		kv.utils.setDomData(node, config);
+	}
+
+	ko.applyBindings(viewModel, node);
+};
+
+//override the original applyBindings so that we can ensure all new rules and what not are correctly registered
+var origApplyBindings = ko.applyBindings;
+ko.applyBindings = function (viewModel, rootNode) {
+
+	kv.init();
+
+	origApplyBindings(viewModel, rootNode);
+};
+
+ko.validatedObservable = function (initialValue, options) {
+	if (!options && !kv.utils.isObject(initialValue)) {
+		return ko.observable(initialValue).extend({ validatable: true });
+	}
+
+	var obsv = ko.observable(initialValue);
+	obsv.errors = kv.group(kv.utils.isObject(initialValue) ? initialValue : {}, options);
+	obsv.isValid = ko.observable(obsv.errors().length === 0);
+
+	if (ko.isObservable(obsv.errors)) {
+		obsv.errors.subscribe(function(errors) {
+			obsv.isValid(errors.length === 0);
+		});
+	}
+	else {
+		ko.computed(obsv.errors).subscribe(function (errors) {
+			obsv.isValid(errors.length === 0);
+		});
+	}
+
+	obsv.subscribe(function(newValue) {
+		if (!kv.utils.isObject(newValue)) {
+			/*
+			 * The validation group works on objects.
+			 * Since the new value is a primitive (scalar, null or undefined) we need
+			 * to create an empty object to pass along.
+			 */
+			newValue = {};
+		}
+		// Force the group to refresh
+		obsv.errors._updateState(newValue);
+		obsv.isValid(obsv.errors().length === 0);
+	});
+
+	return obsv;
+};
+;}));
 
 /***/ }),
 /* 5 */
@@ -526,9 +2036,53 @@ _knockout2.default.setTemplateEngine(engine);
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "static/static/89889688147bd7575d6327160d64e760.svg";
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(7), __webpack_require__(31), __webpack_require__(38)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var pad = function (n, width, z) {
+        if (z === void 0) { z = "0"; }
+        // Pad a string(n), to a certain (width), and pad with (z)
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    };
+    // webpack doesn't like to litter the global-namespace, so to force this function to be available there, we need to add the function to global. then typescript compains, so we need to add to it.
+    window.format_date = function (dateString, type) {
+        var d_names = new Array("Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Søndag");
+        var m_names = new Array("januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "october", "november", "december");
+        //
+        // let d = new Date(dateString).toISOString()
+        var d = new Date(dateString);
+        var curr_day = d.getDay();
+        var curr_date = d.getDate();
+        var curr_month = d.getMonth();
+        var curr_year = d.getFullYear();
+        var curr_hour = d.getHours();
+        var curr_minute = d.getMinutes();
+        if (type === 'short') {
+            return curr_date + '/' + curr_month + "-" + String(curr_year).slice(2) + ' ' +
+                pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
+        }
+        return curr_date + '. ' + m_names[curr_month] + " " + curr_year + ' ' +
+            pad(String(curr_hour), 2) + ':' + pad(String(curr_minute), 2);
+    };
+    $(function () {
+        exports.myApp = new AppViewModel_1.TSAppViewModel();
+        ko.applyBindings(exports.myApp);
+        $('body').on("change keyup paste click", 'input', function () {
+            exports.myApp.form_args($('#form').serialize());
+        });
+        $('input[type=tel]').on('input', function (e) {
+            var inputfield = this;
+            inputfield.value = inputfield.value.replace(/\D/g, '');
+        });
+    });
+    var myObject = {};
+    var mySecondReference = myObject;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
 
 /***/ }),
 /* 7 */
@@ -2751,6 +4305,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             this.address2 = ko.observable();
             this.post_code = ko.observable();
             this.post_area = ko.observable();
+            this.lat = ko.observable();
+            this.lng = ko.observable();
             this.selected_address = ko.computed(function () {
                 if (_this.address2() != null) {
                     return -1;
@@ -2789,7 +4345,18 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 _this.address2(null);
                 _this.post_code(data.postnummer);
                 _this.post_area(data.poststed);
+                _this.get_geo_code(data);
             };
+            this.geoListener = ko.computed(function () {
+                if (_this.lat() && _this.lng() && _this.map) {
+                    var position = new google.maps.LatLng(_this.lat(), _this.lng());
+                    var zoom = _this.map.getZoom();
+                    google.maps.event.trigger(_this.map, 'resize');
+                    _this.marker.setPosition(position);
+                    _this.map.panTo(position);
+                    _this.map.setZoom(10);
+                }
+            });
             this.autocompleteBRreg = ko.computed(function () {
                 var url = "http://data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10";
                 return url;
@@ -2800,6 +4367,91 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 return response.data;
             };
         }
+        Company.prototype.get_geo_data = function (data) {
+            return $.get('https://maps.googleapis.com/maps/api/geocode/json', Object.assign(data, { key: 'AIzaSyD8P9OPG70WZhy2YjxdF - oR47FQHJOiFFA' }));
+        };
+        Company.prototype.get_geo_code = function (address) {
+            var _this = this;
+            var query = [];
+            var query_components = [
+                address.adresse,
+                address.poststed,
+                address.postnummer,
+                address.land
+            ];
+            for (var _i = 0, query_components_1 = query_components; _i < query_components_1.length; _i++) {
+                var component = query_components_1[_i];
+                if (component) {
+                    query.push(component);
+                }
+            }
+            this.get_geo_data({
+                address: query.join(', '),
+            }).done(function (result) {
+                if (result.status == 'OK') {
+                    _this.lat(result.results[0].geometry.location.lat);
+                    _this.lng(result.results[0].geometry.location.lng);
+                }
+                else {
+                    query.splice(query.indexOf(address.adresse), 1);
+                    _this.get_geo_data({ address: query.join(', ') })
+                        .done((function (result) {
+                        if (result.status == 'OK') {
+                            _this.lat(result.results[0].geometry.location.lat);
+                            _this.lng(result.results[0].geometry.location.lng);
+                        }
+                        else {
+                            console.log('failed geo-lookup twice:', result, address);
+                        }
+                    }));
+                }
+            });
+        };
+        Company.prototype.addMapsScript = function () {
+            var _this = this;
+            var googleMapsUrl = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD8P9OPG70WZhy2YjxdF-oR47FQHJOiFFA';
+            if (!document.querySelectorAll("[src=\"" + googleMapsUrl + "\"]").length) {
+                document.body.appendChild(Object.assign(document.createElement('script'), {
+                    type: 'text/javascript',
+                    src: googleMapsUrl,
+                    onload: function () { return _this.doMapInitLogic(); }
+                }));
+            }
+            else {
+                this.doMapInitLogic();
+            }
+        };
+        Company.prototype.doMapInitLogic = function () {
+            var _this = this;
+            this.geocoder = new google.maps.Geocoder;
+            this.map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 4,
+                center: { lat: 65, lng: 12.5 }
+            });
+            this.marker = new google.maps.Marker({
+                position: { lat: 65, lng: 12 },
+                map: this.map,
+                draggable: true
+            });
+            this.marker.addListener('dragend', function (event) {
+                _this.lat(event.latLng.lat());
+                _this.lng(event.latLng.lng());
+            });
+            if (this.lat() && this.lng()) {
+                this.lat.notifySubscribers();
+            }
+        };
+        Company.prototype.set_geo_from_address = function () {
+            this.get_geo_code({
+                adresse: this.address1(),
+                postnummer: this.post_code(),
+                poststed: this.post_area(),
+                kommunenummer: -1,
+                kommune: '',
+                landkode: -1,
+                land: 'Norge'
+            });
+        };
         return Company;
     }());
     exports.Company = Company;
@@ -2842,7 +4494,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 
 var ko = __webpack_require__(0);
 var stringTemplateEngine = __webpack_require__(5);
-var htmlContent = "<!DOCTYPE html>\n\n<div>\n  <strong class=\"title-case\" data-bind=\"text: navn\"></strong>\n  <!-- <br /> -->\n  <!-- ko if: $data.forretningsadresse -->\n  <small data-bind=\"text: forretningsadresse.postnummer\"></small>\n  <small class=\"title-case\" data-bind=\"text: forretningsadresse.poststed\"></small>\n  <!-- /ko -->\n</div>\n";
+var htmlContent = "<!DOCTYPE html>\n\n<div>\n  <strong data-bind=\"text: navn\"></strong>\n  <!-- <br /> -->\n  <!-- ko if: $data.forretningsadresse -->\n  <small data-bind=\"text: forretningsadresse.postnummer\"></small>\n  <small class=\"title-case\" data-bind=\"text: forretningsadresse.poststed\"></small>\n  <!-- /ko -->\n</div>\n";
 ko.templates['brregsuggestion-template'] = htmlContent;
 
 /***/ }),
@@ -2877,9 +4529,6 @@ ko.bindingHandlers.typeahead = {
 		var auth = (allBindings.has("authToken")) ? {
 			"Authorization": "Bearer " + ko.unwrap(allBindings().authToken)
 		} : {};
-		if (remoteFilter) {
-			remoteData.filter = remoteFilter;
-		};
 
 		var resultsLimit = allBindings.get("limit") || 10;
 
@@ -2891,7 +4540,6 @@ ko.bindingHandlers.typeahead = {
 		if (localSuggestions != false) {
 			bloodhound_options.datumTokenizer = function (token) {
 				var t = token
-				// console.log(Object.prototype.toString.call(t) == "[object Object]")
 				if (Object.prototype.toString.call(t) == "[object Object]") {
 					t = token[displayedProperty]
 				}
@@ -2908,6 +4556,10 @@ ko.bindingHandlers.typeahead = {
 					headers: auth
 				}
 			};
+			if (remoteFilter) {
+				bloodhound_options.remote.filter = remoteFilter;
+			};
+
 		}
 
 		var suggestions = new Bloodhound(bloodhound_options);
@@ -6282,8 +7934,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_less__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__app_less__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bs_callout_less__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bs_callout_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__bs_callout_less__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_less__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__app_less__);
+
 
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
@@ -6305,6 +7960,12 @@ $('div').on('shown.bs.collapse', function(e) {
 
 /***/ }),
 /* 39 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 40 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

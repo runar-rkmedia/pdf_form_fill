@@ -202,7 +202,6 @@ class Company(MyBaseModel, db.Model):
         company.lat = lat
         company.lng = lng
         try:
-            pass
             db.session.add(company)
             db.session.commit()
         except exc.IntegrityError as e:
@@ -232,21 +231,14 @@ class Company(MyBaseModel, db.Model):
             post_code=form.address.post_code.data,
         )
 
-        location = get_location_from_address(
-            form.address.address1.data,
-            form.address.post_code.data
-        )
-        if not location:
-            raise my_exceptions.LocationException()
-
         company = Company.update_or_create(
             company_id=company_id,
             name=form.name.data,
             description=form.description.data,
             orgnumber=form.org_nr.data,
             address=address,
-            lat=location[0],
-            lng=location[1]
+            lat=form.lat.data,
+            lng=form.lng.data
         )
         if company.contacts:
             company.contacts[0].contact.value = form.email.data

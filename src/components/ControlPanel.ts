@@ -1,4 +1,6 @@
 require("knockout-template-loader?name=brregsuggestion-template!html-loader?-minimize!./brregsuggestion.html");
+import { } from '@types/googlemaps';
+
 
 // https://confluence.brreg.no/display/DBNPUB/Informasjonsmodell+for+Enhetsregisteret+og+Foretaksregisteret
 
@@ -51,6 +53,11 @@ export class Company {
   address2: KnockoutObservable<string> = ko.observable()
   post_code: KnockoutObservable<number> = ko.observable()
   post_area: KnockoutObservable<string> = ko.observable()
+  lat: KnockoutObservable<number> = ko.observable()
+  lng: KnockoutObservable<number> = ko.observable()
+  geocoder: google.maps.Geocoder
+  map: any
+  marker: any
   selected_address: KnockoutComputed<number> = ko.computed(() => {
     if (this.address2() != null) {
       return -1
@@ -96,7 +103,100 @@ export class Company {
     this.address2(null)
     this.post_code(data.postnummer)
     this.post_area(data.poststed)
+    this.get_geo_code(data)
   }
+  get_geo_data(data: {}) {
+    return $.get('https://maps.googleapis.com/maps/api/geocode/json',
+      Object.assign(data, { key: 'AIzaSyD8P9OPG70WZhy2YjxdF - oR47FQHJOiFFA' })
+    )
+  }
+  get_geo_code(address: Brreg_addresse) {
+    let query: any[] = []
+    let query_components = [
+      address.adresse,
+      address.poststed,
+      address.postnummer,
+      address.land
+    ]
+    for (let component of query_components) {
+      if (component) {
+        query.push(component)
+      }
+    }
+    this.get_geo_data({
+      address: query.join(', '),
+    }).done((result) => {
+      if (result.status == 'OK') {
+        this.lat(result.results[0].geometry.location.lat)
+        this.lng(result.results[0].geometry.location.lng)
+      } else {
+        query.splice(query.indexOf(address.adresse), 1)
+        this.get_geo_data({ address: query.join(', ') })
+          .done((result => {
+            if (result.status == 'OK') {
+              this.lat(result.results[0].geometry.location.lat)
+              this.lng(result.results[0].geometry.location.lng)
+            } else {
+              console.log('failed geo-lookup twice:', result, address)
+            }
+          }))
+      }
+    }
+      )
+  }
+  addMapsScript() {
+    let googleMapsUrl = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD8P9OPG70WZhy2YjxdF-oR47FQHJOiFFA'
+    if (!document.querySelectorAll(`[src="${googleMapsUrl}"]`).length) {
+      document.body.appendChild(Object.assign(
+        document.createElement('script'), {
+          type: 'text/javascript',
+          src: googleMapsUrl,
+          onload: () => this.doMapInitLogic()
+        }));
+    } else {
+      this.doMapInitLogic();
+    }
+  }
+  doMapInitLogic() {
+    this.geocoder = new google.maps.Geocoder
+    this.map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 4,
+      center: { lat: 65, lng: 12.5 }
+    });
+    this.marker = new google.maps.Marker({
+      position: { lat: 65, lng: 12 },
+      map: this.map,
+      draggable: true
+    });
+    this.marker.addListener('dragend', (event: any) => {
+      this.lat(event.latLng.lat())
+      this.lng(event.latLng.lng())
+    })
+    if (this.lat() && this.lng()) {
+      this.lat.notifySubscribers()
+    }
+  }
+  set_geo_from_address() {
+    this.get_geo_code({
+      adresse: this.address1(),
+      postnummer: this.post_code(),
+      poststed: this.post_area(),
+      kommunenummer: -1,
+      kommune: '',
+      landkode: -1,
+      land: 'Norge'
+    })
+  }
+  geoListener = ko.computed(() => {
+    if (this.lat() && this.lng() && this.map) {
+      let position = new google.maps.LatLng(this.lat(), this.lng())
+      let zoom = this.map.getZoom()
+      google.maps.event.trigger(this.map, 'resize')
+      this.marker.setPosition(position)
+      this.map.panTo(position)
+      this.map.setZoom(10)
+    }
+  })
   autocompleteBRreg = ko.computed(() => {
     let url: string = "http://data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10"
     return url

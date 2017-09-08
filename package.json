@@ -20,11 +20,13 @@
   "homepage": "https://bitbucket.org/runartrollet/pdf_form_fill#readme",
   "dependencies": {
     "@types/bootstrap": "^3.3.34",
+    "@types/googlemaps": "^3.26.20",
     "@types/jquery": "^3.2.6",
     "@types/knockout": "^3.4.41",
     "@types/knockout.validation": "0.0.33",
     "bootstrap": "^3.3.7",
     "file-loader": "^0.11.2",
+    "googlemaps": "^1.12.0",
     "jquery": "^3.2.1",
     "knockout": "^3.4.2",
     "knockout.typeahead": "git+https://github.com/runartrollet/knockout.typeahead.git",

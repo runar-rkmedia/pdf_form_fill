@@ -21,6 +21,7 @@
       {% include 'includes/header.html' %}
       {% block body %}{% endblock %}
     </div>
+    <div class="row">{% include 'includes/footer.html' %}</div>
   </body>
   <script src="{{url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script>
   <script src="{{url_for('static', filename='js/knockout-3.4.2.js')}}"></script>
