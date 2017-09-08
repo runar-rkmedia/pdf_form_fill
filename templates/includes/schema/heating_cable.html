@@ -140,7 +140,7 @@ attr: {'id': 'heat' + id()}
             type="button"
             class="btn btn-danger"
             data-bind="
-                                  click: function() {comfirm_delete_dialog('Slette <b>' + product().name + '</b>', 'Er du sikker på at du vil slette denne varmakabelen?')}"
+                                  click: function() {comfirm_delete_dialog('Slette <b>' + product().name + '</b>', 'Er du sikker på at du vil slette denne varmakabelen?', modified()? 'Du har ulagrede elementer her': undefined)}"
             data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
         </div>
       </div>

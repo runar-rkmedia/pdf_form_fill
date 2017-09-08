@@ -136,6 +136,16 @@ export class Room extends Post {
       new RoomSuggestion(this.root.Products().flat_room_type_info(),
         this))
   }
+  sub_modified = ko.computed(() => {
+    if (this.heating_cables()) {
+      for (let heating_cable of this.heating_cables().list()) {
+        if (heating_cable.modified()) {
+          return true
+        }
+      }
+    }
+    return false
+  })
   room_effect = ko.computed((): number => {
     let sum_effect = 0
     if (this.heating_cables()) {

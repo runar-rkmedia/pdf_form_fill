@@ -24,6 +24,10 @@
         <!-- ko if: modified -->
         <b>Ikke lagret</b>
         <!-- /ko -->
+        <!-- ko if: sub_modified -->
+        <span class="icon-mod-flag" aria-hidden="true"></span>
+        <!-- /ko -->
+
 
       </h3>
     </div>
@@ -38,7 +42,7 @@
           type="button"
           class="btn btn-danger"
           data-bind="
-                                  click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?')}"
+                                  click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}"
           data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
         <!-- /ko -->
         <div class="col-xs-12 well collapse" data-bind="attr: { 'id': 'room-form' + id()}">

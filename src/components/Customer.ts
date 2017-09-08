@@ -60,6 +60,16 @@ export class Customer extends Post {
     })
 
   }
+  sub_modified = ko.computed(() => {
+    if (this.rooms()) {
+      for (let room of this.rooms().list()) {
+        if (room.modified() || room.sub_modified()) {
+          return true
+        }
+      }
+    }
+    return false
+  })
 
 
   set(result: CustomerInterface) {

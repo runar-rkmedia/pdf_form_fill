@@ -200,11 +200,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 btn.button('reset');
             });
         };
-        Post.prototype.comfirm_delete_dialog = function (title, message) {
+        Post.prototype.comfirm_delete_dialog = function (title, message, warning) {
             var _this = this;
+            var message_warning = message;
+            message_warning += warning ? "<div class=\"bs-callout bs-callout-warning\"><h4>ADVARSEL!</h4><p>" + warning + "</p></div>" : '';
+            console.log(warning);
             bootbox.confirm({
                 title: title,
-                message: message,
+                message: message_warning,
                 buttons: {
                     cancel: {
                         label: 'Nei, ikke slett',
@@ -2319,6 +2322,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 post_area: _this.post_area,
             });
             _this.id = ko.observable();
+            _this.sub_modified = ko.computed(function () {
+                if (_this.rooms()) {
+                    for (var _i = 0, _a = _this.rooms().list(); _i < _a.length; _i++) {
+                        var room = _a[_i];
+                        if (room.modified() || room.sub_modified()) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
             _this.create_new = function () {
                 _this.set({
                     id: -1,
@@ -2450,6 +2464,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 outside: _this.outside,
                 area: _this.area,
                 heated_area: _this.heated_area
+            });
+            _this.sub_modified = ko.computed(function () {
+                if (_this.heating_cables()) {
+                    for (var _i = 0, _a = _this.heating_cables().list(); _i < _a.length; _i++) {
+                        var heating_cable = _a[_i];
+                        if (heating_cable.modified()) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             });
             _this.room_effect = ko.computed(function () {
                 var sum_effect = 0;

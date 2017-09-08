@@ -2,7 +2,6 @@ import { AddressInterface } from "./Common"
 import { TSAppViewModel } from './AppViewModel'
 var diff = require('recursive-diff');
 import bootbox = require("bootbox")
-
 export interface StrIndex<TValue> {
   [key: string]: TValue
 }
@@ -117,10 +116,13 @@ export abstract class Post extends Base {
       btn.button('reset')
     })
   }
-  comfirm_delete_dialog(title: string, message: string) {
+  comfirm_delete_dialog(title: string, message: string, warning?: string) {
+    let message_warning = message
+    message_warning += warning ? `<div class="bs-callout bs-callout-warning"><h4>ADVARSEL!</h4><p>${warning}</p></div>` : ''
+    console.log(warning)
     bootbox.confirm({
       title: title,
-      message: message,
+      message: message_warning,
       buttons: {
         cancel: {
           label: 'Nei, ikke slett',
