@@ -260,7 +260,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         for (var _i = 0, option_1 = option; _i < option_1.length; _i++) {
             var list = option_1[_i];
             list.push(target);
-            // console.log('his', option.length)
         }
         return target;
     };
@@ -2169,10 +2168,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                     if (response && response.errors) {
                         for (var _i = 0, _a = response.errors; _i < _a.length; _i++) {
                             var error = _a[_i];
-                            _this.errors.push({
-                                message: error.message,
-                                defcon_level: DefconLevels[error.defcon_level]
-                            });
+                            if (error.defcon_level != DefconLevels.default) {
+                                _this.errors.push({
+                                    message: error.message,
+                                    defcon_level: DefconLevels[error.defcon_level]
+                                });
+                            }
                         }
                     }
                     else {
@@ -2295,7 +2296,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
     var Customer = /** @class */ (function (_super) {
         __extends(Customer, _super);
         function Customer(parent, id, root) {
-            if (id === void 0) { id = -1; }
+            if (id === void 0) { id = -1000; }
             if (root === void 0) { root = parent; }
             var _this = _super.call(this, parent) || this;
             _this.url = '/json/v1/customer/';
@@ -2304,6 +2305,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.address2 = _this.observable_modification();
             _this.post_code = _this.observable_modification();
             _this.post_area = _this.observable_modification();
+            _this.loading = ko.observable(false);
             _this.rooms = ko.observable(new Rooms_1.Rooms(_this.root, _this));
             _this.validationModel = ko.validatedObservable({
                 name: _this.name,
@@ -2328,9 +2330,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 _this.validationModel.errors.showAllMessages(false);
             };
             _this.get = function (id) {
+                _this.loading(true);
                 $.get("/json/v1/customer/", { id: id })
                     .done(function (result) {
                     _this.set(result);
+                })
+                    .always(function () {
+                    _this.loading(false);
                 });
             };
             _this.suggestionOnSelect = function (value, address, event, element) {

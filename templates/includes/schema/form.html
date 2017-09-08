@@ -3,62 +3,80 @@
 <!-- Customer -->
 
 <!-- ko with: customer -->
-<div class="col-xs-12">
-    <h2 class="">Skjema</h2>
-    <button type="button" class="btn btn-primary  pull-right" data-bind="click: create_new">Ny kunde</button>
-</div>
-
-<div class="well col-xs-12">
-    <form id="customer_form" autocomplete="off">
-        <legend>Kundeinformasjon</legend>
-        <div class="fieldset">
-            {{ render_field(customerForm.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }}
-            {{ render_field(customerForm.address.address2,
-      'form-group, col-xs-12', no_label=True, **{'data-bind':" textInput: address2 "}) }}
-            {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2 zero-pad-r', **{'data-bind':" textInput: post_code"}) }}
-            {{ render_field(customerForm.address.post_area,'form-group
-      col-xs-8 col-sm-10 zero-pad-l' , **{'data-bind': "textInput: post_area", 'readonly':'readonly'}) }}
-            <div class="col-xs-12">
-                <button
-                    type="button"
-                    class="btn btn-primary pull-right"
-                    data-bind="
-        click: post,
-        css: {opaque: !validationModel.isValid() || !modified()},
-        enable: modified() && validationModel.isValid(),
-          text: id() >= 0 ? 'Endre' : 'Lagre'"
-                    data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    data-bind="
-                                                  click: function() {comfirm_delete_dialog('Slette kunde?', 'Er du sikker på at du vil slette denne kunden?')}"
-                    data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
-
-            </div>
-        </div>
-    </form>
-</div>
-<!-- Room -->
-<!-- ko if: rooms -->
-<h4 class="">
-    Rom/stedsinformasjon
-</h4>
-<!-- List of rooms -->
-
-<!-- ko with: rooms().list() -->
-{% include 'includes/schema/room_accordian.html' %}
-<!-- /ko -->
-
-<!-- Room form -->
-<!-- /ko -->
-<!-- ko if: id() >= 0 -->
 <div class="row">
-    <div class="text-right col-xs-12">
-        <button type="button" class="btn btn-primary" data-bind="click: rooms().add">Legg til rom</button>
-    </div>
+  <div class="col-xs-12">
+    <h2 class="">Skjema</h2>
+    <button type="button" class="btn pull-right btn-primary" data-bind="click: create_new">Ny kunde</button>
+  </div>
 </div>
 
-<!-- /ko -->
-<!-- /ko -->
+<div data-bind="if: loading">
+  Henter inn data...
+  <span class="glyphicon glyphicon-refresh spinning"></span>
+</div>
+
+<div class="row hidden" data-bind="css: {hidden: loading() || id() >= -1}">
+  <div class="bs-callout bs-callout-primary">
+    <h4>Ingen Kunde valgt.</h4>
+    Du kan velge en kunde ovenfra om det er laget noen fra før, eller lage en ny kunde ved å bruke knappen ovenfor.
+  </div>
+</div>
+
+<div data-bind="if: id() >= -1">
+  <div class="well col-xs-12">
+    <form id="customer_form" autocomplete="off">
+      <legend>Kundeinformasjon</legend>
+      <div class="fieldset">
+        {{ render_field(customerForm.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }}
+        {{ render_field(customerForm.address.address2,
+        'form-group, col-xs-12', no_label=True, **{'data-bind':" textInput: address2 "}) }}
+        {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2 zero-pad-r', **{'data-bind':" textInput: post_code"}) }}
+        {{ render_field(customerForm.address.post_area,'form-group
+        col-xs-8 col-sm-10 zero-pad-l' , **{'data-bind': "textInput: post_area", 'readonly':'readonly'}) }}
+        <div class="col-xs-12">
+          <button
+            type="button"
+            class="btn btn-primary pull-right"
+            data-bind="
+          click: post,
+          css: {opaque: !validationModel.isValid() || !modified()},
+          enable: modified() && validationModel.isValid(),
+            text: id() >= 0 ? 'Endre' : 'Lagre'"
+            data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
+          <div data-bind="if: id() >= 0">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bind="
+                                            click: function() {comfirm_delete_dialog('Slette kunde?', 'Er du sikker på at du vil slette denne kunden?')}"
+              data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
+          </div>
+
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- Room -->
+  <!-- ko if: rooms -->
+  <h4 class="">
+    Rom/stedsinformasjon
+  </h4>
+  <!-- List of rooms -->
+
+  <!-- ko with: rooms().list() -->
+  {% include 'includes/schema/room_accordian.html' %}
+  <!-- /ko -->
+
+  <!-- Room form -->
+  <!-- /ko -->
+  <!-- ko if: id() >= 0 -->
+  <div class="row">
+    <div class="text-right col-xs-12">
+      <button type="button" class="btn btn-primary" data-bind="click: rooms().add">Legg til rom</button>
+    </div>
+  </div>
+
+  <!-- /ko -->
+  <!-- /ko -->
+</div>
 <!-- /ko -->

@@ -188,7 +188,6 @@ ko.extenders.modification = (target: any, option: KnockoutObservableArray<any>[]
   }
   for (let list of option) {
     list.push(target)
-    // console.log('his', option.length)
   }
   return target;
 };

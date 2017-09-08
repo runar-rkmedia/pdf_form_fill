@@ -20,6 +20,7 @@ export class Customer extends Post {
   post_code: KnockoutObservable<number> = this.observable_modification()
   post_area: KnockoutObservable<string> = this.observable_modification()
   root: TSAppViewModel
+  loading: KnockoutObservable<boolean> = ko.observable(false)
   rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))
   validationModel = ko.validatedObservable({
     name: this.name,
@@ -30,7 +31,7 @@ export class Customer extends Post {
   })
   id: KnockoutObservable<number> = ko.observable()
   serialize: KnockoutObservable<CustomerInterface>
-  constructor(parent: TSAppViewModel, id: number = -1, root: TSAppViewModel = parent) {
+  constructor(parent: TSAppViewModel, id: number = -1000, root: TSAppViewModel = parent) {
     super(parent)
     this.root = parent
     this.id(id)
@@ -94,9 +95,13 @@ export class Customer extends Post {
     this.validationModel.errors.showAllMessages(false)
   }
   get = (id?: number) => {
+    this.loading(true)
     $.get("/json/v1/customer/", { id })
       .done((result: CustomerInterface) => {
         this.set(result)
+      })
+      .always(() => {
+        this.loading(false)
       })
   }
   suggestionOnSelect = (

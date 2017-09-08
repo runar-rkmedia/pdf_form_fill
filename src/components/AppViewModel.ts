@@ -68,10 +68,12 @@ export class TSAppViewModel {
         let response = jqXHR.responseJSON
         if (response && response.errors) {
           for (let error of response.errors) {
-            this.errors.push({
-              message: error.message,
-              defcon_level: DefconLevels[error.defcon_level]
-            })
+            if (error.defcon_level != DefconLevels.default) {
+              this.errors.push({
+                message: error.message,
+                defcon_level: DefconLevels[error.defcon_level]
+              })
+            }
           }
         } else {
           this.errors.push({
