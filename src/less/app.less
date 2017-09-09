@@ -209,13 +209,54 @@ canvas {
   width: 100%;
   z-index: 9999;
 }
-.large-text{
+
+.large-text {
   font-size: @font-size-large;
 }
+
 .company-map {
   height: 400px;
-  width: 100%
+  width: 100%;
 }
+
 .error {
   &:extend(.bg-danger);
+}
+
+.customBtn {
+  display: inline-block;
+  background: white;
+  color: #444;
+  width: 210px;
+  border-radius: 5px;
+  border: thin solid #888;
+  box-shadow: 1px 1px 1px grey;
+  white-space: nowrap;
+}
+
+.customBtn:hover {
+  cursor: pointer;
+}
+
+.customBtn>span.label {
+  font-family: serif;
+  font-weight: normal;
+}
+
+.customBtn>.icon {
+  // background: url('/identity/sign-in/g-normal.png') transparent 5px 50% no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+  width: 42px;
+  height: 42px;
+}
+
+.customBtn>span.buttonText {
+  display: inline-block;
+  vertical-align: middle;
+  // padding-left: 42px;
+  padding-right: 42px;
+  font-size: 14px;
+  font-weight: bold;
+  /* Use the Roboto font that is loaded in the <head> */
 }

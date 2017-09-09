@@ -15,7 +15,14 @@
       <a href="{{ url_for("logout") }}">Logg ut</a>
     {% else %}
       Du er ikke logget inn.
-      <a href="{{ url_for("login") }}">Logg inn</a>
+      <a href="{{ url_for("login") }}">
+      <span class="gSignInWrapper">
+        <span  class="customBtn customGPlusSignIn">
+            <img class="icon" src="{{url_for('static', filename='icons/btn_google_light_normal_ios.svg')}}" alt="Google">
+          <span class="buttonText">Logg inn med Google</span>
+        </span>
+      </span>
+    </a>
     {% endif %}
     <hr>
 </header>
