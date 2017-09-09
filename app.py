@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from config import configure_app
+from functools import wraps
 
 from flask import (Flask, flash, redirect, render_template, request,  # NOQA
                    send_from_directory, session, url_for)
@@ -71,6 +72,23 @@ blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 csrf = CSRFProtect(app)
 
 
+def company_required(f):
+    """Decorator for view where a user needs to have a company."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        """The view we are decorating."""
+        if not (
+                current_user.is_authenticated and
+                current_user.company
+        ):
+            flash(
+                'Du må være registrert på et firma for å kunne bruke denne siden. Dette krever invitasjon.' # noqa
+                , 'error')
+            return redirect(url_for('main'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @app.errorhandler(CSRFError)
 def handle_csrf_error(e):
     """Handler for csrf-errors."""
@@ -113,7 +131,7 @@ def login():
         return redirect(
             url_for(
                 "google.login",
-                redirect_url=next_redirect or url_for('view_form')))
+                redirect_url=next_redirect or url_for('main')))
     resp = google.get("/oauth2/v2/userinfo")
     assert resp.ok, resp.text
     return "You are {email} on Google".format(email=resp.json()["email"])
@@ -123,7 +141,7 @@ def login():
 def logged_in(blueprint_, token):
     """User logged in."""
     next_redirect = session.get('next')
-    return redirect(next_redirect or url_for('view_form'))
+    return redirect(next_redirect or url_for('main'))
 
 
 @oauth_authorized.connect_via(blueprint)
@@ -164,7 +182,7 @@ def logout():
     """Logout."""
     logout_user()
     flash("Du er nå logget ut")
-    return redirect(url_for("view_form"))
+    return redirect(url_for("main"))
 
 
 @app.route("/cp/")
@@ -182,6 +200,7 @@ def control_panel():
 
 @app.route("/cp/company/")
 @login_required
+@company_required
 def control_panel_company():
     """Control-Panel for viewing users company."""
     if not current_user.company:
@@ -253,6 +272,7 @@ def get_invite(invite_id):
 
 @app.route('/company/edit', methods=['GET', 'POST'])
 @login_required
+@company_required
 def set_company(invite=None):
     """Description."""
     form = forms.CreateCompany()
@@ -320,6 +340,7 @@ def save_image():
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
 @login_required
+@company_required
 def download(filename):
     """Serve a file for downloading."""
     # TODO: Make sure filename is valid. (bad input)
@@ -330,6 +351,7 @@ def download(filename):
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 @login_required
+@company_required
 @app.route('/invite.json', methods=['GET', 'POST'])
 def json_invite():
     """Return all invites from current user, or create a new one."""
@@ -351,6 +373,8 @@ def json_invite():
 @limiter.limit(
     "5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
+@company_required
+@login_required
 def json_static_data():
     """Return a json-object of all products and room-type-info."""
     manufacturors = Manufacturor.query.filter(
@@ -368,6 +392,7 @@ def json_static_data():
     "5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 @login_required
+@company_required
 def json_user_forms():
     """Return a json-object of all the users forms."""
     result = {'user_forms': [], 'company_forms': []}
@@ -406,6 +431,7 @@ def create_form(room_item_modification):
 
 @app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
+@company_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
     room_item = None
@@ -453,6 +479,7 @@ def json_heating_cable():
 
 @app.route('/json/v1/room/', methods=['POST', 'PUT', 'DELETE'])
 @login_required
+@company_required
 def json_room():
     """Handle a room-object"""
     form = forms.RoomForm.from_json(request.json)
@@ -519,6 +546,7 @@ def json_room():
 
 @app.route('/json/v1/customer/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
+@company_required
 def json_customer():
     """Handle a customer-object"""
     form = forms.CustomerForm.from_json(request.json)
@@ -549,6 +577,8 @@ def json_customer():
 
 
 @app.route('/app')
+@company_required
+@login_required
 def view_form():
     """View for home."""
     # TODO: NEVER PUT THIS IN PRODUCTION!
@@ -567,6 +597,14 @@ def view_form():
 
 
 @app.route('/')
+def main():
+    """Landing-page-view."""
+    if current_user and current_user.is_authenticated and current_user.company:
+        return redirect(url_for('view_form'))
+    return redirect(url_for('landing_page'))
+
+
+@app.route('/welcome')
 def landing_page():
     """Landing-page-view."""
     return render_template("landing.html")

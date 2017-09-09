@@ -7097,7 +7097,8 @@ a.bg-warning:hover,
 a.bg-warning:focus {
   background-color: #f7ecb5;
 }
-.bg-danger {
+.bg-danger,
+.error {
   background-color: #f2dede;
 }
 a.bg-danger:hover,
