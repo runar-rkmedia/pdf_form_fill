@@ -155,6 +155,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.parent = parent;
             return _this;
         }
+        Post.prototype.remove_instance = function () {
+            this.parent.list.remove(this);
+        };
         Post.prototype.delete = function () {
             var _this = this;
             return $.ajax({
@@ -162,7 +165,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 type: HTTPVerbs.delete,
                 data: JSON.stringify({ id: this.id() })
             }).done(function (result) {
-                _this.parent.list.remove(_this);
+                if (result.status == 'OK') {
+                    _this.remove_instance();
+                }
             });
         };
         Post.prototype.post = function (h, event, data_object, url) {
@@ -2398,6 +2403,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 this.rooms(new Rooms_1.Rooms(this.root, this, result.rooms));
             }
             this.save();
+        };
+        Customer.prototype.remove_instance = function () {
+            this.parent.customer(new Customer(this.parent));
         };
         return Customer;
     }(Common_1.Post));

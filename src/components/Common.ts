@@ -75,13 +75,18 @@ export abstract class Post extends Base {
   abstract url: string
   parent: any
   file_download: KnockoutObservable<string> = ko.observable()
-  public delete() {
+  remove_instance() {
+    this.parent.list.remove(this)
+  }
+  delete() {
     return $.ajax({
       url: this.url,
       type: HTTPVerbs.delete,
       data: JSON.stringify({ id: this.id() })
     }).done((result: any) => {
-      this.parent.list.remove(this)
+      if (result.status == 'OK') {
+        this.remove_instance()
+      }
     })
   }
   public post(h: any, event: Event, data_object?: any, url?: string) {

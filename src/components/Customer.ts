@@ -90,6 +90,9 @@ export class Customer extends Post {
     }
     this.save()
   }
+  remove_instance() {
+    this.parent.customer(new Customer(this.parent))
+  }
   create_new = () => {
     this.set({
       id: -1,

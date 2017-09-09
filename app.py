@@ -82,11 +82,16 @@ def company_required(f):
                 current_user.company
         ):
             flash(
-                'Du må være registrert på et firma for å kunne bruke denne siden. Dette krever invitasjon.' # noqa
+                'Du må være registrert på et firma for å kunne bruke denne siden. Dette krever invitasjon.'  # noqa
                 , 'error')
             return redirect(url_for('main'))
         return f(*args, **kwargs)
     return decorated_function
+
+
+def json_ok():
+    """Notify action was ok through ajax."""
+    return jsonify({'status': 'OK'})
 
 
 @app.errorhandler(CSRFError)
@@ -448,7 +453,7 @@ def json_heating_cable():
 
     if request.method == 'DELETE':
         room_item.put_in_archive(current_user)
-        return jsonify({'status': 'OK'})
+        return json_ok()
 
     form = forms.HeatingCableForm.from_json(
         request.json, skip_unknown_keys=False)
@@ -493,7 +498,7 @@ def json_room():
         raise my_exceptions.NotARoom
     if request.method == 'DELETE':
         room.put_in_archive(current_user)
-        return jsonify({'status': 'OK'})
+        return json_ok()
     if customer_id:
         customer = Customer.by_id(customer_id, current_user)
     if not customer:
@@ -566,6 +571,7 @@ def json_customer():
         raise my_exceptions.NotACustomer()
     if request.method == 'DELETE':
         customer.put_in_archive(current_user)
+        return json_ok()
 
     if not form.validate_on_submit():
         print(form.errors)
