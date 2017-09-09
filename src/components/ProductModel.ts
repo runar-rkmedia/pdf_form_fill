@@ -219,10 +219,8 @@ export class TSProductModel {
             p.manufacturor = m.name;
             p.type = d.type;
             p.outside = !d.inside;
-            p.name = m.name + " " + d.name;
+            p.name = d.name;
             if (p.effect) {
-              p.name += " " + p.effect + "W";
-            } if (p.effect) {
               p.name += " " + p.effect + "W";
             }
             if (d.mainSpec) {

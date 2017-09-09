@@ -128,19 +128,19 @@ export class HeatingCable extends Post {
       product_id: -1,
       specs: {
         measurements: {
-          ohm_a: -1,
-          ohm_b: -1,
-          ohm_c: -1,
+          ohm_a: 0,
+          ohm_b: 0,
+          ohm_c: 0,
           mohm_a: -1,
           mohm_b: -1,
           mohm_c: -1
         },
         cc: {
-          v: -1,
+          v: 0,
           m: false
         },
         area_output: {
-          v: -1,
+          v: 0,
           m: false
         },
       }

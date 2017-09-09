@@ -283,14 +283,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             var current_filter = list_to_filter_1[_i];
             var f = current_filter['value'];
             var t = current_filter['mustEqual']();
-            if (t && f != t) {
+            if (t != undefined && f != t) {
                 return false;
             }
         }
         return true;
     };
     var ProductFilter = /** @class */ (function () {
-        function ProductFilter(target, product_model) {
+        function ProductFilter(target, room, product_model) {
             var _this = this;
             this.effect = ko.observable();
             this.mainSpec = ko.observable();
@@ -321,10 +321,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 });
             };
             this.target = target;
+            this.room = room;
             this.product_model = product_model;
             this.filtered_products_no_mainSpec = ko.computed(function () {
-                if (!_this.effect() && !_this.manufacturor() && !_this.mainSpec() && !_this.vk_type()) {
-                    return _this.product_model.flat_products();
+                if (!_this.effect() && !_this.manufacturor() && !_this.mainSpec() && !_this.vk_type() && !_this.room.outside()) {
+                    // return this.product_model.flat_products();
                 }
                 return ko.utils.arrayFilter(_this.product_model.flat_products(), function (prod) {
                     return myArrayFilter([{
@@ -334,6 +335,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                         {
                             value: prod.type,
                             mustEqual: _this.vk_type
+                        },
+                        {
+                            value: prod.outside,
+                            mustEqual: _this.room.outside
                         }
                     ]);
                 }).sort(function (a, b) {
@@ -396,7 +401,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                                 var p = d.products[k];
                                 p.manufacturor = m.name;
                                 p.type = d.type;
-                                p.name = m.name + " " + d.name;
+                                p.outside = !d.inside;
+                                p.name = d.name;
                                 if (p.effect) {
                                     p.name += " " + p.effect + "W";
                                 }
@@ -2153,15 +2159,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 }
                 return -1;
             };
-            this.get_user_forms = function () {
-                $.get("/forms.json", {})
-                    .done(function (result) {
-                    result.user_forms.prefix = 'user_forms';
-                    result.company_forms.prefix = 'company_forms';
-                    _this.user_forms(result.user_forms);
-                    _this.company_forms(result.company_forms);
-                });
-            };
             $.ajaxSetup({
                 // Inject our CSRF token into our AJAX request.
                 contentType: "application/json",
@@ -2207,19 +2204,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 }
             };
             this.Products(new ProductModel_1.TSProductModel(this));
-            this.Products().getProducts();
-            this.noname = ko.computed(function () {
-                try {
-                    var f = _this.Products().flat_products();
-                    if (f.length > 0) {
-                        _this.get_user_forms();
-                    }
-                }
-                catch (e) {
-                }
-                finally {
-                }
-            });
+            // this.Products().getProducts();
         }
         TSAppViewModel.prototype.reportError = function (error) {
             console.log(error);
@@ -2361,6 +2346,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 value(titleCase(address.street_name));
                 _this.post_code((address.post_code));
                 _this.post_area(address.post_area.toUpperCase());
+                setTimeout(function () {
+                    $(event.target).focus();
+                }, 50);
             };
             _this.autocompleteAddress = ko.computed(function () {
                 var url = '/address/?q=%QUERY';
@@ -2559,6 +2547,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             });
             _this.set(room);
             _this.room_suggestion = ko.observable(new RoomSuggestion(_this.root.Products().flat_room_type_info(), _this));
+            _this.validationModel.errors.showAllMessages(false);
             return _this;
         }
         // Add some additonal functionality when posting.
@@ -3957,19 +3946,19 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 product_id: -1,
                 specs: {
                     measurements: {
-                        ohm_a: -1,
-                        ohm_b: -1,
-                        ohm_c: -1,
+                        ohm_a: 0,
+                        ohm_b: 0,
+                        ohm_c: 0,
                         mohm_a: -1,
                         mohm_b: -1,
                         mohm_c: -1
                     },
                     cc: {
-                        v: -1,
+                        v: 0,
                         m: false
                     },
                     area_output: {
-                        v: -1,
+                        v: 0,
                         m: false
                     },
                 }
@@ -3977,7 +3966,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             var heating_cable = Object.assign(default_data, heating_cable_);
             _this.product_id.extend({ required: true, number: true, min: 1000000, max: 9999999 });
             _this.product_model = product_model;
-            _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.product_model));
+            _this.product_filter = ko.observable(new ProductModel_1.ProductFilter(_this, _this.parent.parent, _this.product_model));
             _this.area_output = ko.observable(new InputReadOnlyToggle(function () {
                 if (_this.product()) {
                     if (_this.product().type == 'mat') {
@@ -4492,15 +4481,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     exports.Company = Company;
     var ControlPanel = /** @class */ (function () {
         function ControlPanel() {
-            var _this = this;
             this.invites = ko.observableArray();
             this.base_url = ko.observable('abc');
+        }
+        ControlPanel.prototype.get_invite = function () {
+            var _this = this;
             $.get("/invite.json")
                 .done(function (result) {
                 _this.invites(result.invites);
                 _this.base_url(result.base_url);
             });
-        }
+        };
         ControlPanel.prototype.createInvite = function () {
             var _this = this;
             $.post("/invite.json")
