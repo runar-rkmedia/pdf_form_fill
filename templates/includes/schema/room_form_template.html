@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <script type="text/html" id="room_form_template">
-  <form id="room_form" autocomplete="off">
+  <form id="room_form">
 
     <div class="fieldset">
       <legend>Rom/stedsinformasjon</legend>
       <div class="formgroup col-xs-12">
-        {{render_field(roomForm.room_name, False, **{'data-bind':" textInput: name, typeahead: room_suggestion().suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect"}) }}
+        <div class="form-group">
+          <label for="room_handle">Rom/stednavn</label>
+          <input type="text" class="form-control" data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect" >
+        </div>
       </div>
       {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: area"}) }}
       {{render_field( roomForm.heated_area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: $data.heated_area"}) }}

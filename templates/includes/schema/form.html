@@ -24,7 +24,7 @@
 
 <div data-bind="if: id() >= -1">
   <div class="well col-xs-12">
-    <form id="customer_form" autocomplete="off">
+    <form id="customer_form">
       <legend>Kundeinformasjon</legend>
       <div class="fieldset">
         {{ render_field(customerForm.address.address1, 'form-group, col-xs-12', **{'data-bind':" value: address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }}
