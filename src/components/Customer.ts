@@ -117,11 +117,14 @@ export class Customer extends Post {
   suggestionOnSelect = (
     value: KnockoutObservable<{}>,
     address: AddressInterface,
-    event: any,
+    event: Event,
     element: any) => {
     value(titleCase(address.street_name))
     this.post_code((address.post_code))
     this.post_area(address.post_area.toUpperCase())
+    setTimeout(() => {
+      $(event.target).focus()
+    }, 50)
   }
   autocompleteAddress = ko.computed(() => {
     let url: string = '/address/?q=%QUERY'
