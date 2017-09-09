@@ -4382,7 +4382,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 }
             });
             this.autocompleteBRreg = ko.computed(function () {
-                var url = "http://data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10";
+                var url = "data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10";
                 return url;
                 // We need a rateLimiter here so that the url doesn't change too early
                 // when a user clicks a selection.

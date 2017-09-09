@@ -198,7 +198,7 @@ export class Company {
     }
   })
   autocompleteBRreg = ko.computed(() => {
-    let url: string = "http://data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10"
+    let url: string = "data.brreg.no/enhetsregisteret/enhet.json?$filter=startswith(navn,'%QUERY')&size=10"
     return url
     // We need a rateLimiter here so that the url doesn't change too early
     // when a user clicks a selection.
