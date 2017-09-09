@@ -398,7 +398,7 @@ def json_invite():
 @limiter.limit("200/hour", error_message='200 per hour')
 def json_static_data():
     """Return a json-object of all products and room-type-info."""
-    manufacturors = Manufacturor.query.all()
+    manufacturors = Manufacturor.query.filter(Manufacturor.name !='Thermofloor').all()
     room_types = RoomTypeInfo.query.all()
     return jsonify(
         {
@@ -590,7 +590,7 @@ def json_customer():
     raise my_exceptions.NotACustomer
 
 
-@app.route('/')
+@app.route('/app')
 def view_form():
     """View for home."""
     # TODO: NEVER PUT THIS IN PRODUCTION!
@@ -608,6 +608,11 @@ def view_form():
         roomForm=roomForm
     )
 
+
+@app.route('/')
+def landing_page():
+    """Landing-page-view."""
+    return render_template("landing.html")
 
 @login_required
 @limiter.limit("200/minute", error_message='200 per minutt')

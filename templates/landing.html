@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Lager dokumentasjon for deg</h1>
+        <p>Ta et oppgjør med gjentagende informasjon og kjedelige produktoppslag. Gjør mer av det du faktisk vil.</p>
+        <p>Det har aldri vært så enkelt å fylle ut varmekabel-dokumentasjon.</p>
+      <p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Kom i gang &raquo;</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Smarte produkt-forslag</h2>
+        <img src="{{url_for('static', filename='images/room.gif')}}" alt="Beregner beste produkt for rom">
+        <p>Fortell oss størrelse på rommet, og hvilken type rom, og du får opp en sortert liste over de kablene som passer best her.
+        </p>
+        <img src="{{url_for('static', filename='images/heating.png')}}" alt="Forslag til produkt">
+        <p>
+          <a class="btn btn-default" href="#" role="button">Se eksempel &raquo;</a>
+        </p>
+      </div>
+      <div class="col-md-6">
+        <h2>Smarte adresse-forslag</h2>
+        <img src="{{url_for('static', filename='images/address.png')}}" alt="Smarte adresse-forslag">
+        <p>Det holder som oftest med tre første bokstavene i adressen, så fyller vi ut resten.
+        </p>
+        <p>
+          <a class="btn btn-default" href="#" role="button">Se eksempel &raquo;</a>
+        </p>
+      </div>
+      <div class="col-md-6">
+        <h2>Husker og regner</h2>
+        <p>Hvor mange Watt per m2 blir det? Hva var nå organisasjonsnummeret vårt igjen? Hva er nominell resistans for denne kabelen?
+          <p>Det trenger du ikke vite lengre. Vi fyller dette ut automatisk.</p>
+        </p>
+        <p>
+          <a class="btn btn-default" href="#" role="button">Se eksempel &raquo;</a>
+        </p>
+      </div>
+      </div>
+      <div class="row">
+      <div class="col-md-6">
+        <h2>En gang holder</h2>
+        <p>Legger du flere kabler for samme kunde? Flere kabler på samme rom?</p>
+        <p>Du trenger ikke fylle ut samme informasjon flere ganger.</p>
+        <p>
+          <a class="btn btn-default" href="#" role="button">Se eksempel &raquo;</a>
+        </p>
+      </div>
+      <div class="col-md-6">
+        <h2>Samler informasjon</h2>
+        <p>Skal du koble til en kabel som en kollage har installert? Da finner du dokumentasjon enkelt her, og med noen raske tastetrykk kan du legge til målingene.</p>
+        <p>
+          <a class="btn btn-default" href="#" role="button">Se eksempel &raquo;</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- /container -->
+
+{% endblock %}
