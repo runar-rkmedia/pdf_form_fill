@@ -1,6 +1,7 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { StrIndex } from "./Common"
 import { HeatingCable } from "./HeatingCable"
+import { Room } from "./Rooms"
 import ko = require("knockout");
 
 export interface ProductInterface {
@@ -9,6 +10,7 @@ export interface ProductInterface {
   // These only exist on flatten products
   manufacturor?: string;
   type?: string;
+  outside?: boolean;
   name?: string;
   mainSpec: number;
   secondarySpec?: number;
@@ -38,6 +40,7 @@ interface ProductTypeInterface {
   mainSpec: number;
   secondarySpec: number
   type: string
+  inside: string
   products: ProductInterface[]
   name: string
 }
@@ -81,7 +84,7 @@ let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
   for (let current_filter of list_to_filter) {
     let f = current_filter['value'];
     let t = current_filter['mustEqual']();
-    if (t && f != t) {
+    if (t != undefined && f != t) {
       return false;
     }
   }
@@ -90,6 +93,7 @@ let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
 
 export class ProductFilter {
   target: HeatingCable
+  room: Room
   product_model: TSProductModel
   effect: KnockoutObservable<number> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
@@ -99,12 +103,13 @@ export class ProductFilter {
   filtered_products: KnockoutComputed<ProductInterface[]>
   spec_groups: KnockoutComputed<ProductInterface[]>
 
-  constructor(target: HeatingCable, product_model: TSProductModel) {
+  constructor(target: HeatingCable, room: Room, product_model: TSProductModel) {
     this.target = target
+    this.room = room
     this.product_model = product_model
     this.filtered_products_no_mainSpec = ko.computed(() => {
-      if (!this.effect() && !this.manufacturor() && !this.mainSpec() && !this.vk_type()) {
-        return this.product_model.flat_products();
+      if (!this.effect() && !this.manufacturor() && !this.mainSpec() && !this.vk_type() && !this.room.outside()) {
+        // return this.product_model.flat_products();
       }
       return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
         return myArrayFilter(
@@ -115,6 +120,10 @@ export class ProductFilter {
           {
             value: prod.type,
             mustEqual: this.vk_type
+          },
+          {
+            value: prod.outside,
+            mustEqual: this.room.outside
           }
 
           ]
@@ -209,8 +218,11 @@ export class TSProductModel {
             var p = d.products[k];
             p.manufacturor = m.name;
             p.type = d.type;
+            p.outside = !d.inside;
             p.name = m.name + " " + d.name;
             if (p.effect) {
+              p.name += " " + p.effect + "W";
+            } if (p.effect) {
               p.name += " " + p.effect + "W";
             }
             if (d.mainSpec) {

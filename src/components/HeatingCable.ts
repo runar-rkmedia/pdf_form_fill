@@ -149,7 +149,7 @@ export class HeatingCable extends Post {
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model
-    this.product_filter = ko.observable(new ProductFilter(this, this.product_model))
+    this.product_filter = ko.observable(new ProductFilter(this, this.parent.parent, this.product_model))
 
     this.area_output = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product()) {
