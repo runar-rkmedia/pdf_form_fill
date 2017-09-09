@@ -135,6 +135,8 @@ export class Room extends Post {
     this.room_suggestion = ko.observable(
       new RoomSuggestion(this.root.Products().flat_room_type_info(),
         this))
+    this.validationModel.errors.showAllMessages(false)
+
   }
   sub_modified = ko.computed(() => {
     if (this.heating_cables()) {
