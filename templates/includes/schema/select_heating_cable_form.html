@@ -3,9 +3,16 @@
   <h4>
     Spesifikasjoner varmekabel
   </h4>
-  <div class="col-xs-12">
-    <p>Velg varmekabel nedenfor. Du kan filtrere resultatet ved å velge fabrikant, matte eller kabel, watt per meter/kvadratmeter, eller effekt, men dette er valgfritt.</p>
+  <div class="bs-callout bs-callout-primary">
+    <h4>Velg varmekabel nedenfor</h4>
+    <p>Listen nedenfor er sortert etter hvilken type og effekt vi mener burde være her.</p>
+    <p>Du kan selfølgelig lett filtrere og sortere selv. Trykk på knappen for å vise dette.</p>
+    <button class="btn btn-primary" type="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: {
+      'data-target': '#vk-filter-' + $parents[2].id() + '-' + id(),
+      'aria-controls': 'vk-filter-' + $parents[2].id() + '-' + id()
+    }">Vis filtrering</button>
   </div>
+  <div class="collapse" data-bind="attr: {id: 'vk-filter-' + $parents[2].id() + '-' + id()}" >
   <div class="form-group form-group-sm col-xs-6">
     <fieldset>
       <div>
@@ -72,6 +79,7 @@
         <!-- /ko -->
       </div>
     </fieldset>
+  </div>
   </div>
 
   <form id="heating_form" autocomplete="off">
