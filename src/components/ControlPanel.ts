@@ -212,11 +212,14 @@ export class ControlPanel {
   invites: KnockoutObservableArray<string> = ko.observableArray()
   base_url: KnockoutObservable<string> = ko.observable('abc')
   constructor() {
+  }
+  get_invite() {
     $.get("/invite.json")
       .done((result) => {
         this.invites(result.invites);
         this.base_url(result.base_url);
       });
+
   }
   createInvite() {
     $.post("/invite.json")

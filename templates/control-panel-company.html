@@ -2,7 +2,6 @@
 {% extends 'base.html' %}
 {% block body %}
   <!-- ko with: control_panel -->
-  <div data-bind="text: console.log('data', $data)"></div>
   <div class="row">
     <div class="col-xs-12">
       <h2>{{current_user.company.name}}</h2>
@@ -26,6 +25,7 @@
           </li>
         {% endfor %}
       </ul>
+      <div data-bind="text: get_invite()"></div>
       <p>Du kan invitere kollegaer til dette firmaet. Merk at all medlemmer av ditt firma kan se gjennom og endre dokumentasjonen som dere har lagret, på lik linje med deg selv.</p>
 
       <p>For å invitere en kollega, trykk nedenfor, og du vil få en ny invitasjons-lenke. Send så denne lenken til din kollega.</p>

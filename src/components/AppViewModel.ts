@@ -61,8 +61,6 @@ export class TSAppViewModel {
   company = new Company()
   control_panel = new ControlPanel()
 
-  noname: any
-
   constructor() {
     $.ajaxSetup({
       // Inject our CSRF token into our AJAX request.
@@ -109,20 +107,7 @@ export class TSAppViewModel {
       }
     };
     this.Products(new TSProductModel(this));
-    this.Products().getProducts();
-
-    this.noname = ko.computed(() => {
-      try {
-        var f = this.Products().flat_products();
-        if (f.length > 0) {
-          this.get_user_forms();
-        }
-      } catch (e) {
-
-      } finally {
-
-      }
-    });
+    // this.Products().getProducts();
 
   }
   reportError(error: Error) {
@@ -163,15 +148,5 @@ export class TSAppViewModel {
       }
     }
     return -1;
-  }
-
-  get_user_forms = () => {
-    $.get("/forms.json", {})
-      .done((result) => {
-        result.user_forms.prefix = 'user_forms';
-        result.company_forms.prefix = 'company_forms';
-        this.user_forms(result.user_forms);
-        this.company_forms(result.company_forms);
-      });
   }
 }
