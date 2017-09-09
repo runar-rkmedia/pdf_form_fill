@@ -2649,6 +2649,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 _this.parent.outside(Boolean(roomSuggestion.outside));
                 _this.parent.maxEffect(roomSuggestion.maxEffect);
                 _this.parent.normalEffect(roomSuggestion.normalEffect);
+                _this.parent.name.isModified(false);
             };
             this.list(room_type_info_flat);
             this.parent = room;

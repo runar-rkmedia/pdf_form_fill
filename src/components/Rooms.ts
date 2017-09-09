@@ -280,5 +280,6 @@ export class RoomSuggestion {
     this.parent.outside(Boolean(roomSuggestion.outside))
     this.parent.maxEffect(roomSuggestion.maxEffect)
     this.parent.normalEffect(roomSuggestion.normalEffect)
+    this.parent.name.isModified(false)
   }
 }
