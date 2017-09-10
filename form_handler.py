@@ -1,6 +1,71 @@
+"""Create forms from database-objects."""
+
 import os
-from pdf_filler.schema import get_template_schema
+
+import my_exceptions
+from models_credentials import Customer, Room, RoomItem
 from models_product import ProductCatagory
+from pdf_filler.schema import get_template_schema
+from setup_app import user_file_path
+from pdffields.fields import combine_pdfs
+
+
+class MultiForms(object):
+    """Create multiple pdf-forms recursively, depending on input."""
+
+    def __init__(self, entity, user, stamp=True, out='out.pdf'):
+        self.path = user_file_path(create_random_dir=True)
+        self.files = []
+        self.user = user
+        self.stamp = stamp
+        if isinstance(entity, RoomItem):
+            self.retrieve_by_room_item(entity)
+        elif isinstance(entity, Room):
+            self.retrieve_by_room(entity)
+        elif isinstance(entity, Customer):
+            for room in entity.rooms:
+                self.retrieve_by_room(room)
+        combined = combine_pdfs(
+            self.files,
+            os.path.join(self.path, 'out.pdf'))
+        self.file = os.path.relpath(combined)
+
+
+    def create_path(self, path):
+        """Create a path for form."""
+
+    def create_form(self, room_item_modification):
+        """Create forms, and return a json-object with the url."""
+        filename = " ".join([
+            room_item_modification.room_item.room.customer.address.address1,
+            room_item_modification.product.name
+        ])
+        import string
+        remove_punctuation_map = dict((ord(char), '-')
+                                      for char in string.punctuation)
+        slugged = filename.translate(remove_punctuation_map)
+        slugged = slugged[:60] if len(slugged) > 60 else slugged
+
+        form_handler = FormHandler(
+            room_item_modification,
+            self.user, os.path.join(self.path, slugged + '.pdf'))
+        form_handler.create(self.stamp)
+        return form_handler.path
+
+    def retrieve_by_room_item(self, room_item):
+        """Retrieve pdf-form by room_item."""
+        if not room_item:
+            raise my_exceptions.NotARoomItem()
+        if not room_item.latest:
+            raise my_exceptions.NotARoomItemModification()
+        self.files.append(self.create_form(room_item.latest))
+
+    def retrieve_by_room(self, room):
+        """Return pdf-forms by room, recursively."""
+        if not room:
+            raise my_exceptions.NotARoom()
+        for room_item in room.items:
+            self.retrieve_by_room_item(room_item)
 
 
 class FormHandler(object):

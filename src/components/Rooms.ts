@@ -71,9 +71,13 @@ export class Room extends Post {
   })
   root: TSAppViewModel
   serialize: KnockoutComputed<RoomInterface>
+  parent: Rooms
 
   constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
     super(parent)
+    let customer = parent.parent
+    this.form_url = `${this.form_url}${customer.id()}/`
+
     this.root = root
     this.area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });

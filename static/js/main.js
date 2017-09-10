@@ -151,6 +151,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         __extends(Post, _super);
         function Post(parent) {
             var _this = _super.call(this) || this;
+            _this.form_url = '/form/';
             _this.file_download = ko.observable();
             _this.parent = parent;
             return _this;
@@ -239,7 +240,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         };
         Post.prototype.get_form = function () {
             var _this = this;
-            return $.get(this.url, { id: this.id() })
+            return $.get(this.form_url + this.id())
                 .done(function (result) {
                 _this.file_download(result.file_download);
             });
@@ -2503,6 +2504,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 }
                 return 0;
             });
+            var customer = parent.parent;
+            _this.form_url = "" + _this.form_url + customer.id() + "/";
             _this.root = root;
             _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
             _this.heated_area.extend({ required: true, number: true, min: 0.1, max: 1000 });
@@ -3950,6 +3953,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.measurements_modifications = ko.computed(function () {
                 return _this.modification_check(_this.measurements_modifications_list());
             });
+            var room = parent.parent;
+            var customer = room.parent.parent;
+            _this.form_url = "" + _this.form_url + customer.id() + "/" + room.id() + "/";
             var default_data = {
                 id: -1,
                 product_id: -1,
