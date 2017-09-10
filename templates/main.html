@@ -5,6 +5,11 @@
   render_field_group %}
   <div data-bind="text: Products().getProducts()" ></div>
   <div data-bind="text: customer().get()"></div>
+  <!-- ko if: Products().products().length == 0 -->
+    Henter inn data...
+    <span class="glyphicon glyphicon-refresh spinning"></span>
+  <!-- /ko -->
+  <!-- ko if: Products().products().length > 0 -->
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="main_form">
@@ -17,6 +22,7 @@
       {% include 'includes/other/company_forms.html' %}
     </div>
   </div>
+    <!-- /ko -->
 
 
 {% endblock %}
