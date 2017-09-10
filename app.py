@@ -13,8 +13,6 @@ from flask.json import jsonify
 import forms
 import my_exceptions
 from addresses.address_pymongo import get_address_from_street_name
-from setup_app import (app, company_required, json_ok, limiter, manager,
-                   user_file_path)
 from flask_login import (LoginManager, current_user, login_required,  # NOQA
                          login_user, logout_user)
 # import schemas
@@ -24,6 +22,8 @@ from models_credentials import (Address, Company, Customer, Invite,  # NOQA
                                 InviteType, OAuth, Room, RoomItem,
                                 RoomTypeInfo, User, UserRole)
 from models_product import Manufacturor, Product
+from setup_app import (app, company_required, json_ok, limiter, manager,
+                       user_file_path)
 
 
 @app.route("/cp/")
@@ -150,7 +150,6 @@ def save_image():
 @company_required
 def download(filename):
     """Serve a file for downloading."""
-    # TODO: Make sure filename is valid. (bad input)
     directory = os.path.join(app.root_path, app.config['USER_FILES'])
     return send_from_directory(directory=directory, filename=filename)
 
@@ -226,10 +225,14 @@ def json_user_forms():
 
 def create_form(room_item_modification):
     """Create forms, and return a json-object with the url."""
+    filename = room_item_modification.room_item.room.customer.address.address1
+    import string
+    remove_punctuation_map = dict((ord(char), '-')
+                                  for char in string.punctuation)
+    slugged = filename.translate(remove_punctuation_map)
+    slugged = slugged[:60] if len(slugged) > 60 else slugged
     path = user_file_path(
-        filename=(
-            room_item_modification.room_item.room.customer.address.address1 +
-            '.pdf'),
+        filename=(slugged + '.pdf'),
         create_random_dir=True)
     form_handler = FormHandler(room_item_modification, current_user, path)
     form_handler.create()
