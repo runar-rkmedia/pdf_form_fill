@@ -81,3 +81,15 @@ class NotAProduct(MyBaseException):
     message='Fant ikke dette produktet i databasen.'
     defcon_level=DefconLevel.default
     status_code=403
+
+
+class NotARoomItem(MyBaseException):
+    message='Fant ikke denne varmekabelen.'
+    defcon_level=DefconLevel.default
+    status_code=403
+
+
+class NotARoomItemModification(MyBaseException):
+    message='Fant ikke denne varmekabelen (ingen endring).'
+    defcon_level=DefconLevel.default
+    status_code=403

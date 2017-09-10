@@ -122,6 +122,9 @@ export class HeatingCable extends Post {
     heating_cable_?: HeatingCableInterface
   ) {
     super(parent)
+    let room = parent.parent
+    let customer = room.parent.parent
+    this.form_url = `${this.form_url}${customer.id()}/${room.id()}/`
 
     let default_data: HeatingCableInterface = {
       id: -1,

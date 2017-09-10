@@ -73,6 +73,7 @@ export abstract class Post extends Base {
   abstract serialize: KnockoutObservable<{}>
   abstract set(result: any): void
   abstract url: string
+  form_url = '/form/'
   parent: any
   file_download: KnockoutObservable<string> = ko.observable()
   remove_instance() {
@@ -152,7 +153,7 @@ export abstract class Post extends Base {
     })
   }
   get_form() {
-    return $.get(this.url, { id: this.id() })
+    return $.get(this.form_url + this.id())
       .done((result: FileDownloadInterface) => {
         this.file_download(result.file_download)
       })

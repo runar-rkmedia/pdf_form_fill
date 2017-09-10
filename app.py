@@ -16,14 +16,13 @@ from addresses.address_pymongo import get_address_from_street_name
 from flask_login import (LoginManager, current_user, login_required,  # NOQA
                          login_user, logout_user)
 # import schemas
-from form_handler import FormHandler
+from form_handler import MultiForms
 from models import db
 from models_credentials import (Address, Company, Customer, Invite,  # NOQA
                                 InviteType, OAuth, Room, RoomItem,
                                 RoomTypeInfo, User, UserRole)
 from models_product import Manufacturor, Product
-from setup_app import (app, company_required, json_ok, limiter, manager,
-                       user_file_path)
+from setup_app import app, company_required, json_ok, limiter, manager
 
 
 @app.route("/cp/")
@@ -192,6 +191,35 @@ def json_static_data():
     })
 
 
+@app.route('/form/<customer_id>/<room_id>/<room_item_id>/')
+@app.route('/form/<customer_id>/<room_id>/')
+@app.route('/form/<customer_id>/')
+# @app.route('/form/')
+@limiter.limit(
+    "5/10seconds", error_message='Fem per ti sekunder')
+@company_required
+@login_required
+def retrieve_pdf_form(customer_id, room_id=None, room_item_id=None):
+    """Create and retrieve all pdf-forms recursively."""
+    if room_item_id:
+        entity = RoomItem.by_id(room_item_id, current_user)
+    elif room_id:
+        entity = Room.by_id(room_id, current_user)
+    elif customer_id:
+        entity = Customer.by_id(customer_id, current_user)
+    multi_forms = MultiForms(entity, current_user)
+    pdf_file = multi_forms.file
+    if not pdf_file:
+        raise my_exceptions.MyBaseException(
+            message='Kunne ikke lage skjema. Det har skjedd enn feil.',
+            status_code=403,
+            defcon_level=my_exceptions.DefconLevel.danger
+        )
+    return jsonify({
+        'file_download': pdf_file
+    })
+
+
 @app.route('/forms.json')
 # @limiter.limit("1/second", error_message='Èn per sekund')
 @limiter.limit(
@@ -223,23 +251,7 @@ def json_user_forms():
     return jsonify(result)
 
 
-def create_form(room_item_modification):
-    """Create forms, and return a json-object with the url."""
-    filename = room_item_modification.room_item.room.customer.address.address1
-    import string
-    remove_punctuation_map = dict((ord(char), '-')
-                                  for char in string.punctuation)
-    slugged = filename.translate(remove_punctuation_map)
-    slugged = slugged[:60] if len(slugged) > 60 else slugged
-    path = user_file_path(
-        filename=(slugged + '.pdf'),
-        create_random_dir=True)
-    form_handler = FormHandler(room_item_modification, current_user, path)
-    form_handler.create()
-    return jsonify({'file_download': form_handler.url})
-
-
-@app.route('/json/v1/heat/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/json/v1/heat/', methods=['POST', 'PUT', 'DELETE'])
 @login_required
 @company_required
 def json_heating_cable():
@@ -252,9 +264,6 @@ def json_heating_cable():
         return jsonify({
             'error': 'did not recieve an id {}'.format(room_item_id)
         })
-
-    if request.method == 'GET':
-        return create_form(room_item.latest)
 
     if request.method == 'DELETE':
         room_item.put_in_archive(current_user)
