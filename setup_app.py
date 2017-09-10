@@ -86,19 +86,21 @@ def login():
     next_redirect = request.args.get('next')
     session['next'] = next_redirect
     if not google.authorized:
-        return redirect(
-            url_for(
-                "google.login",
-                redirect_url=next_redirect or url_for('main')))
+        return render_template(
+            'login_screen.html',
+            redirect_url=redirect or url_for('main')
+        )
     resp = google.get("/oauth2/v2/userinfo")
     assert resp.ok, resp.text
     return "You are {email} on Google".format(email=resp.json()["email"])
+
 
 @oauth_authorized.connect
 def logged_in(blueprint_, token):
     """User logged in."""
     next_redirect = session.get('next')
     return redirect(next_redirect or url_for('main'))
+
 
 @oauth_authorized.connect_via(blueprint)
 def google_logged_in(blueprint, token):  # noqa

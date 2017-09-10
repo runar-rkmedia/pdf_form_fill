@@ -267,7 +267,6 @@ def json_heating_cable():
         return jsonify({'error': form.errors}), 403
     if request.method == 'GET':
         return jsonify({'url': 'aweseome.com'})
-    # TODO: This is really bad. Remove the code below.
     product_id = form.product_id.data
     room_id = form.room_id.data
     product = Product.by_id(product_id)
@@ -392,7 +391,7 @@ def json_customer():
 @login_required
 def view_form():
     """View for home."""
-    # TODO: NEVER PUT THIS IN PRODUCTION!
+    # WARNING: NEVER PUT THIS IN PRODUCTION!
     # login_user(User.query.filter(User.id==1).first())
     # Set up some defaults. (retrieve this from the user-config later.)
     heatingForm = forms.HeatingCableForm()
