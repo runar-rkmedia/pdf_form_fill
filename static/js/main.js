@@ -2102,7 +2102,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(3), __webpack_require__(8), __webpack_require__(4), __webpack_require__(9), __webpack_require__(21), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, ControlPanel_1, ko, $) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(3), __webpack_require__(8), __webpack_require__(4), __webpack_require__(9), __webpack_require__(55), __webpack_require__(21), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, Customers_1, ControlPanel_1, ko, $) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     __webpack_require__(23);
@@ -2132,6 +2132,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             this.address_id = ko.observable();
             this.editing_heating_cable_id = ko.observable();
             this.customer = ko.observable(new Customer_1.Customer(this));
+            this.customers = ko.observable(new Customers_1.Customers(this));
             this.filled_form_modified_id = ko.observable();
             this.user_forms = ko.observableArray();
             this.company_forms = ko.observableArray();
@@ -8192,6 +8193,45 @@ $('div').on('shown.bs.collapse', function(e) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, AppViewModel_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Customers = /** @class */ (function () {
+        function Customers(parent) {
+            this.list = ko.observableArray();
+            parent = AppViewModel_1.TSAppViewModel;
+            this.get();
+        }
+        Customers.prototype.get = function () {
+            var _this = this;
+            $.get('/json/v1/list/customers')
+                .done(function (result) {
+                _this.list(result);
+            });
+        };
+        return Customers;
+    }());
+    exports.Customers = Customers;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
 
 /***/ })
 /******/ ]);

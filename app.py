@@ -361,6 +361,15 @@ def json_room():
     db.session.commit()
     return jsonify(room.serialize)
 
+@app.route('/json/v1/list/customers/')
+@login_required
+@company_required
+def json_customers():
+    """Retrieve a list of all customers relevant to a user."""
+    customers = current_user.company.customers
+    print(customers)
+    return jsonify([i.serialize_short for i in customers if i.archived != True])
+
 
 @app.route('/json/v1/customer/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @login_required
