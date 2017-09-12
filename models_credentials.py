@@ -486,11 +486,26 @@ class Customer(MyBaseModel, db.Model):
 
     @property
     def serialize_short(self):
-        return {
+        """Serialize for lists of customer."""
+        dictionary = {
             'name': self.name,
             'address': self.address.serialize,
-            'id': self.id
+            'id': self.id,
+            'created': {
+                'given_name': self.created_by_user.given_name,
+                'family_name': self.created_by_user.family_name,
+                'date': self.date
+            },
         }
+        if (self.date-self.modified_on_date).seconds:
+            dictionary['modified'] = {
+                'given_name': self.created_by_user.given_name,
+                'family_name': self.created_by_user.family_name,
+                'date': self.date
+            }
+        if self.rooms:
+            dictionary['rooms'] = [i.name for i in self.rooms if i.archived != True]
+        return dictionary
 
 
 class Room(MyBaseModel, db.Model):

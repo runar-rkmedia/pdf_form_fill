@@ -17798,3 +17798,7 @@ canvas {
   font-weight: bold;
   /* Use the Roboto font that is loaded in the <head> */
 }
+.justified {
+  display: flex;
+  justify-content: space-between;
+}

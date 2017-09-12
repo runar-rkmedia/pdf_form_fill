@@ -4,11 +4,36 @@
   <p>Her kan du se en list over alle varmekablene som er lagt av dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
   <div class="col-xs-12"></div>
   <!-- ko if: customers()-->
-  <ul class="list-group">
+  <ul class="list-group"  >
     <!-- ko foreach: customers().list -->
-  <li class="list-group-item" data-bind="text: name? name : address.address1" ></li>
-  <!-- /ko -->
+    <a href="#" class="list-group-item hover" data-bind="click: function() {
+       $parent.customer().get(id)
+    }">
+      <h4 class="list-group-item-heading justified">
+        <span class="text-primary" data-bind="text: name? name : address.address1"></span>
+        <!-- ko if: $data.rooms -->
+        <small class="badge badge-default" data-bind="text: rooms.join(', ').replace(/,(?=[^,]+$)/, ' og')" ></small>
+        <!-- /ko -->
+      </h4>
+      <p class="list-group-item-text">
+        <div class="text-muted">
+          Opprettet:
+          <span data-bind="text: format_date(created.date)"></span>
+          av
+          <span data-bind="text: created.given_name"></span>
+        </div>
+        <!-- ko if: $data.modified -->
+        <div class="text-muted">
+          Endret:
+          <span data-bind="text: format_date(modified.date)"></span>
+          av
+          <span data-bind="text: modified.given_name"></span>
+        </div>
+        <!-- /ko -->
+      </p>
+    </a>
+    <!-- /ko -->
 
-</ul>
+  </ul>
   <!-- /ko -->
 </div>
