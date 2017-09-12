@@ -3,7 +3,7 @@ import 'bootstrap/js/alert';
 import 'bootstrap/js/button';
 // import 'bootstrap/js/carousel';
 import 'bootstrap/js/collapse';
-// import 'bootstrap/js/dropdown';
+import 'bootstrap/js/dropdown';
 import 'bootstrap/js/modal';
 // import 'bootstrap/js/tooltip';
 // import 'bootstrap/js/popover';

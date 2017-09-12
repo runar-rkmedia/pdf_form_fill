@@ -28,7 +28,6 @@
         <span class="icon-mod-flag" aria-hidden="true"></span>
         <!-- /ko -->
 
-
       </h3>
     </div>
     <div class="panel panel-collapse scrollto collapse in" data-bind="
@@ -36,15 +35,6 @@
     " role="tabpanel">
       <div class="panel-body">
         <!-- ko if: id() >= 0 -->
-        <button class="btn btn-primary" type="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'data-target': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">Endre info</button>
-        <button type="button" class="btn btn-info" data-bind="click: function (d, e){heating_cables().add(e)}">Legg til varmekabel</button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          data-bind="
-                                  click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}"
-          data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">Slett</button>
-        <!-- /ko -->
         <div class="col-xs-12 well collapse" data-bind="attr: { 'id': 'room-form' + id()}">
           <!-- ko template: { name: 'room_form_template', data: $data} -->
           <!-- /ko -->
@@ -62,6 +52,33 @@
           </div>
           <!-- /ko -->
         </div>
+        <div class="clearfix">
+          <div class="btn-group pull-right">
+            <button type="button" class="btn btn-primary" data-bind="click: function (d, e){heating_cables().add(e)}">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              Legg til varmekabel</button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Vis dropdown-meny</span>
+            </button>
+            <ul class="dropdown-menu dropdown-primary">
+              <li>
+                <a data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'href': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                  Endre rom</a>
+              </li>
+              <li>
+                <a
+                  class="c-danger"
+                  data-bind="
+                click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}">
+                  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                  Slett rom</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <hr>
         <h2>Sjekkliste</h2>
         <div class="well well-sm">
           <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
@@ -103,6 +120,7 @@
             </div>
           </div>
         </div>
+        <!-- /ko -->
       </div>
     </div>
   </div>
