@@ -1,0 +1,43 @@
+@import '../bootstrap/bootstrap.less';
+
+.for(@lista, @listb, @listc, @code) {
+    & {
+        .loop(@i:1) when (@i =< length(@lista)) {
+            @valuea: extract(@lista, @i);
+            @valueb: extract(@listb, @i);
+            @valuec: extract(@listc, @i);
+
+            @code();
+
+            .loop(@i + 1);
+        }
+
+        .loop();
+    }
+}
+
+@colors: success, info, warning, danger;
+@dark-success: darken(@btn-success-bg, 8%);
+@dark-info: darken(@btn-info-bg, 8%);
+@dark-warning: darken(@btn-warning-bg, 8%);
+@dark-danger: darken(@btn-danger-bg, 8%);
+@hover-colors: @dark-success,  @dark-info, @dark-warning, @dark-danger;
+@bg-colors: @btn-success-bg,  @btn-info-bg, @btn-warning-bg, @btn-danger-bg;
+
+// .for(@colors, @hover-colors, @bg-colors, {
+//   // .dropdown-menu.dropdown-@{valuea} li > a:focus,
+//   // .dropdown-menu.dropdown-@{valuea} li > a:hover,
+//   // .dropdown-submenu.dropdown-@{valuea}:hover > a {
+//   //   background-image: None !important;
+//   // }
+//   .c-@{valuea} {
+//     background-color: @valuec;
+//     &:hover{
+//       background-color: @valueb !important;
+//     }
+//   }
+//   });
+//
+// .dropdown-menu li > a:hover{
+//   background-image: None !important;
+// }
