@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- ko with: customerList()-->
+<div class="panel-group" id="customer-list-accordian" role="tablist">
+  <div class="panel panel-primary">
+    <div class="panel-heading collapsed" role="tab" id="customer-list-heading" data-toggle="collapse" data-parent="#customer-list-accordian" href="#customerList" aria-expanded="true" aria-controls="customerList" data-bind="click: function(){get_list()}" >
+      <h3 class="panel-title justified">
+        Kundeskjemaer
+        <span class="carrot">
+        <!-- ko if: loading  -->
+        <span class="pull-left glyphicon glyphicon-refresh spinning"></span>
+        <!-- /ko -->
+        </span>
+      </h3>
+
+    </div>
+    <div class="panel-collapse collapse" id="customerList" role="tabpanel" aria-labelledby="customer-list-heading">
+      <div class="panel-body">
+        <p>Her kan du se en list over alle varmekablene som er lagt av dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
+      </div>
+      <!-- ko if: list().length > 0-->
+      <ul class="list-group">
+        <!-- ko foreach: list -->
+        <a href="#" class="list-group-item hover" data-bind="click: function() {$('#customerList').collapse('toggle')
+         $root.customer().get(id)
+      }">
+          <h4 class="list-group-item-heading justified">
+            <span class="text-primary" data-bind="text: name? name : address.address1"></span>
+            <!-- ko if: $data.rooms -->
+            <small class="badge badge-default" data-bind="text: rooms.join(', ').replace(/,(?=[^,]+$)/, ' og')"></small>
+            <!-- /ko -->
+          </h4>
+          <p class="list-group-item-text">
+            <div class="text-muted">
+              Opprettet:
+              <span data-bind="text: format_date(created.date)"></span>
+              av
+              <span data-bind="text: created.given_name"></span>
+            </div>
+            <div class="text-muted" style="min-height: 1.5em;">
+              <!-- ko if: $data.modified -->
+              Endret:
+              <span data-bind="text: format_date(modified.date)"></span>
+              av
+              <span data-bind="text: modified.given_name"></span>
+              <!-- /ko -->
+            </div>
+          </p>
+        </a>
+        <!-- /ko -->
+
+      </ul>
+      <nav aria-label="Page navigation">
+        <ul class="pagination justified">
+          <li class="pointer" data-bind="click: function(){get_list(page()-1)}, css: {'disabled': page() <= 1}" disable>
+            <a aria-label="Forrige side">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <!-- ko foreach: new Array(pages()) -->
+          <li data-bind="css: {active: ($index()+1) == $parent.page()}">
+            <a class="pointer" data-bind="click: function(){$parent.get_list($index()+1)}">
+              <span data-bind="text: $index() + 1"></span>
+            </a>
+          </li>
+          <!-- /ko -->
+          <li class="pointer" data-bind="click: function(){get_list(page()+1)}, css: {disabled: page() >= pages()}">
+            <a class="pointer" aria-label="Neste side">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /ko -->
+    </div>
+  </div>
+</div>
+<!-- /ko -->

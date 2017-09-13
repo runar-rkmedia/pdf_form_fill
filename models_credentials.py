@@ -1,29 +1,19 @@
-from enum import Enum
-from sqlalchemy.sql.expression import func
-from flask_login import (
-    UserMixin,
-)
-from models import (
-    db,
-    MyBaseModel,
-    NoAccess,
-    PER_PAGE,
-    ByID
-)
-from my_exceptions import LocationException
-from addresses.address_pymongo import (
-    get_location_from_address
-)
-from flask_dance.consumer.backend.sqla import (
-    OAuthConsumerMixin,
-)
-from pdf_filler.helpers import id_generator
+"""User-tables for pdf_form_fill."""
+
 from datetime import datetime, timedelta
-from sqlalchemy import desc, or_
-from models_product import Product
+
+from enum import Enum
+from sqlalchemy import desc, exc, or_
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.sql.expression import func
+
 import my_exceptions
-from sqlalchemy import exc
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
+from flask_login import UserMixin
+from models import PER_PAGE, ByID, MyBaseModel, NoAccess, db
+from models_product import Product
+from pdf_filler.helpers import id_generator
+
 
 class ContactType(Enum):
     """Enumeration for types of contactfields."""
@@ -54,6 +44,7 @@ class RoomTypeInfo(ByID, db.Model):
 
     @property
     def serialize(self):
+        """Return stuff."""
         d = {
             'id': self.id,
             'normalEffect': self.normalEffect,
@@ -441,7 +432,7 @@ class Customer(MyBaseModel, db.Model):
     company_id = db.Column(
         db.Integer, db.ForeignKey(Company.id), nullable=False)
     company = db.relationship(
-        Company, primaryjoin='Customer.company_id==Company.id')
+        Company, primaryjoin='Customer.company_id==Company.id', backref='customers')
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     created_by_user = db.relationship(
         User, primaryjoin='Customer.created_by_user_id==User.id')
@@ -470,7 +461,7 @@ class Customer(MyBaseModel, db.Model):
             db.session.add(address)
             db.session.add(customer)
         if not customer:
-            return jsonify({}), 403
+            raise my_exceptions.NotACustomer
         customer.address.update_entity({
             'address1': customer_form.address.address1.data,
             'address2': customer_form.address.address2.data,
@@ -492,6 +483,29 @@ class Customer(MyBaseModel, db.Model):
             'rooms': [i.serialize for i in self.rooms if not i.archived],
             'id': self.id
         }
+
+    @property
+    def serialize_short(self):
+        """Serialize for lists of customer."""
+        dictionary = {
+            'name': self.name,
+            'address': self.address.serialize,
+            'id': self.id,
+            'created': {
+                'given_name': self.created_by_user.given_name,
+                'family_name': self.created_by_user.family_name,
+                'date': self.date
+            },
+        }
+        if (self.date-self.modified_on_date).seconds:
+            dictionary['modified'] = {
+                'given_name': self.created_by_user.given_name,
+                'family_name': self.created_by_user.family_name,
+                'date': self.date
+            }
+        if self.rooms:
+            dictionary['rooms'] = [i.name for i in self.rooms if i.archived != True]
+        return dictionary
 
 
 class Room(MyBaseModel, db.Model):

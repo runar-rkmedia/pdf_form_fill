@@ -6,7 +6,9 @@ import {
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomTypesInfoFlat } from "./ProductModel"
 import { CustomerInterface, Customer } from './Customer'
-import { HeatingCable, HeatingCables, HeatingCableInterface } from './HeatingCable'
+import { HeatingCable, HeatingCableInterface } from './HeatingCable'
+import { HeatingCableList } from './HeatingCableList'
+import { RoomList } from './RoomList'
 
 interface CheckEarthed {
   cable_screen: boolean
@@ -61,7 +63,7 @@ export class Room extends Post {
   control_system_room_sensor = <ObsMod<boolean>>this.obs_mod();
   control_system_designation = <ObsMod<string>>this.obs_mod();
   control_system_other = <ObsMod<string>>this.obs_mod();
-  heating_cables: KnockoutObservable<HeatingCables> = ko.observable()
+  heating_cables: KnockoutObservable<HeatingCableList> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
   validationModel = ko.validatedObservable({
     name: this.name,
@@ -71,9 +73,9 @@ export class Room extends Post {
   })
   root: TSAppViewModel
   serialize: KnockoutComputed<RoomInterface>
-  parent: Rooms
+  parent: RoomList
 
-  constructor(root: TSAppViewModel, parent: Rooms, room: RoomInterface | undefined = undefined) {
+  constructor(root: TSAppViewModel, parent: RoomList, room: RoomInterface | undefined = undefined) {
     super(parent)
     let customer = parent.parent
     this.form_url = `${this.form_url}${customer.id()}/`
@@ -207,7 +209,7 @@ export class Room extends Post {
     this.outside(room.outside)
     this.maxEffect(room.maxEffect || 0)
     this.normalEffect(room.normalEffect || 0)
-    this.heating_cables(new HeatingCables(this.root, this, room.heating_cables))
+    this.heating_cables(new HeatingCableList(this.root, this, room.heating_cables))
     if (room.check_earthed) {
       this.earthed_cable_screen(room.check_earthed.cable_screen)
       this.earthed_chicken_wire(room.check_earthed.chicken_wire)
@@ -228,43 +230,6 @@ export class Room extends Post {
   }
 }
 
-export class Rooms extends ByID {
-  // list: KnockoutObservableArray<Room>
-  parent: Customer
-  root: TSAppViewModel
-
-  constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: RoomInterface[] = []) {
-    super([])
-    this.parent = parent
-    this.root = root
-    if (list_of_rooms) {
-      let list_of_rooms_obects = list_of_rooms.map((x) => {
-        return new Room(this.root, this, x)
-      })
-      this.list(list_of_rooms_obects)
-
-    }
-
-
-  }
-  add = () => {
-    let new_room = this.by_id(-1)
-    if (!new_room) {
-      this.list.push(new Room(this.root, this))
-    }
-    let accordian = $('#accordion-room')
-    let panel = accordian.find('#room-1')
-    let room_form = panel.find('#room-form-1')
-    let first_input = panel.find('input').first()
-    room_form.addClass('in')
-    panel.collapse('show')
-    // Focus does not work becaus of an issue with using typeahead.Workaround
-    // with using a setTimeOut doesnt seemt to work inside animated stuff, so
-    // for now, I will leave it not working.
-    first_input.focus()
-    return new_room
-  }
-}
 
 export class RoomSuggestion {
   list: KnockoutObservableArray<RoomTypesInfoFlat> = ko.observableArray()
@@ -281,6 +246,7 @@ export class RoomSuggestion {
     roomSuggestion: RoomTypesInfoFlat,
     event: Event
   ) => {
+    value(roomSuggestion.name)
     this.parent.outside(Boolean(roomSuggestion.outside))
     this.parent.maxEffect(roomSuggestion.maxEffect)
     this.parent.normalEffect(roomSuggestion.normalEffect)
