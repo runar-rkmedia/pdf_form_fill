@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -280,137 +280,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(5), __webpack_require__(10), __webpack_require__(6), __webpack_require__(11), __webpack_require__(23), __webpack_require__(8), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, Customers_1, ControlPanel_1, ko, $) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    __webpack_require__(24);
-    __webpack_require__(31);
-    // Switch locale for knockout.validation
-    kv.defineLocale('no-NO', nb_NO);
-    kv.locale('nb-NO');
-    var DefconLevels;
-    (function (DefconLevels) {
-        DefconLevels[DefconLevels["danger"] = 1] = "danger";
-        DefconLevels[DefconLevels["warning"] = 2] = "warning";
-        DefconLevels[DefconLevels["info"] = 3] = "info";
-        DefconLevels[DefconLevels["successs"] = 4] = "successs";
-        DefconLevels[DefconLevels["default"] = 5] = "default";
-    })(DefconLevels || (DefconLevels = {}));
-    var TSAppViewModel = /** @class */ (function () {
-        function TSAppViewModel() {
-            var _this = this;
-            this.errors = ko.observableArray();
-            this.error_message = ko.observable();
-            this.file_download = ko.observable();
-            this.last_sent_args = ko.observable();
-            this.form_args = ko.observable($('#form').serialize());
-            this.Products = ko.observable();
-            this.selected_vk = ko.observable();
-            this.forced_selected_vk = ko.observable();
-            this.address_id = ko.observable();
-            this.editing_heating_cable_id = ko.observable();
-            this.customer = ko.observable(new Customer_1.Customer(this));
-            this.customers = ko.observable(new Customers_1.Customers(this));
-            this.filled_form_modified_id = ko.observable();
-            this.user_forms = ko.observableArray();
-            this.company_forms = ko.observableArray();
-            // validation_errors: KnockoutValidationErrors = kv.group(self);
-            this.delete = ko.observable();
-            this.company = new ControlPanel_1.Company();
-            this.control_panel = new ControlPanel_1.ControlPanel();
-            this.parse_form_download = function (result) {
-                _this.last_sent_args(_this.form_args());
-                if (result.error_fields) {
-                    // this.errors(result.error_fields);
-                }
-                if (result.file_download) {
-                    _this.file_download(result.file_download);
-                    if (result.address_id) {
-                        _this.address_id(result.address_id);
-                    }
-                    if (result.filled_form_modified_id) {
-                        _this.filled_form_modified_id(result.filled_form_modified_id);
-                    }
-                }
-                if (result.error_message) {
-                    _this.error_message(result.error_message);
-                }
-            };
-            this.findWithAttr = function (array, attr, value) {
-                for (var i = 0; i < array.length; i += 1) {
-                    if (array[i][attr] === value) {
-                        return i;
-                    }
-                }
-                return -1;
-            };
-            $.ajaxSetup({
-                // Inject our CSRF token into our AJAX request.
-                contentType: "application/json",
-                dataType: "json",
-                error: function (jqXHR, textStatus, errorThrown) {
-                    var response = jqXHR.responseJSON;
-                    if (response && response.errors) {
-                        for (var _i = 0, _a = response.errors; _i < _a.length; _i++) {
-                            var error = _a[_i];
-                            _this.reportError(error);
-                        }
-                    }
-                    else {
-                        _this.reportError({
-                            message: textStatus + " " + errorThrown,
-                            defcon_level: DefconLevels.warning
-                        });
-                    }
-                },
-            });
-            kv.init({
-                decorateInputElement: true,
-                errorElementClass: 'has-error has-feedback',
-                // successElementClass: 'has-feedback has-success',
-                insertMessages: true,
-                // decorateElement: true,
-                // errorElementClass: 'error',
-                errorMessageClass: 'bg-danger'
-            });
-            // Add bootstrap-validation-css to parent of field
-            var init = ko.bindingHandlers['validationCore'].init;
-            ko.bindingHandlers['validationCore'].init = function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-                init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-                var config = kv.utils.getConfigOptions(element);
-                // if requested, add binding to decorate element
-                if (config.decorateInputElement && kv.utils.isValidatable(valueAccessor())) {
-                    var parent = $(element).parent();
-                    if (parent.length) {
-                        ko.applyBindingsToNode(parent[0], {
-                            validationElement: valueAccessor()
-                        });
-                    }
-                }
-            };
-            this.Products(new ProductModel_1.TSProductModel(this));
-            // this.Products().getProducts();
-        }
-        TSAppViewModel.prototype.reportError = function (error) {
-            console.log(error);
-            if (error.defcon_level != DefconLevels.default) {
-                this.errors.push({
-                    message: error.message,
-                    defcon_level: DefconLevels[error.defcon_level]
-                });
-            }
-        };
-        return TSAppViewModel;
-    }());
-    exports.TSAppViewModel = TSAppViewModel;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -471,7 +340,7 @@ _knockout2.default.templates = templates;
 _knockout2.default.setTemplateEngine(engine);
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ko) {
@@ -664,7 +533,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*=============================================================================
@@ -2180,10 +2049,10 @@ ko.validatedObservable = function (initialValue, options) {
 ;}));
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(3), __webpack_require__(32), __webpack_require__(40)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(1), __webpack_require__(7), __webpack_require__(32), __webpack_require__(40)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var pad = function (n, width, z) {
@@ -2225,6 +2094,137 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     });
     var myObject = {};
     var mySecondReference = myObject;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(4), __webpack_require__(10), __webpack_require__(5), __webpack_require__(11), __webpack_require__(23), __webpack_require__(8), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, Customers_1, ControlPanel_1, ko, $) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    __webpack_require__(24);
+    __webpack_require__(31);
+    // Switch locale for knockout.validation
+    kv.defineLocale('no-NO', nb_NO);
+    kv.locale('nb-NO');
+    var DefconLevels;
+    (function (DefconLevels) {
+        DefconLevels[DefconLevels["danger"] = 1] = "danger";
+        DefconLevels[DefconLevels["warning"] = 2] = "warning";
+        DefconLevels[DefconLevels["info"] = 3] = "info";
+        DefconLevels[DefconLevels["successs"] = 4] = "successs";
+        DefconLevels[DefconLevels["default"] = 5] = "default";
+    })(DefconLevels || (DefconLevels = {}));
+    var TSAppViewModel = /** @class */ (function () {
+        function TSAppViewModel() {
+            var _this = this;
+            this.errors = ko.observableArray();
+            this.error_message = ko.observable();
+            this.file_download = ko.observable();
+            this.last_sent_args = ko.observable();
+            this.form_args = ko.observable($('#form').serialize());
+            this.Products = ko.observable();
+            this.selected_vk = ko.observable();
+            this.forced_selected_vk = ko.observable();
+            this.address_id = ko.observable();
+            this.editing_heating_cable_id = ko.observable();
+            this.customer = ko.observable(new Customer_1.Customer(this));
+            this.customers = ko.observable(new Customers_1.Customers(this));
+            this.filled_form_modified_id = ko.observable();
+            this.user_forms = ko.observableArray();
+            this.company_forms = ko.observableArray();
+            // validation_errors: KnockoutValidationErrors = kv.group(self);
+            this.delete = ko.observable();
+            this.company = new ControlPanel_1.Company();
+            this.control_panel = new ControlPanel_1.ControlPanel();
+            this.parse_form_download = function (result) {
+                _this.last_sent_args(_this.form_args());
+                if (result.error_fields) {
+                    // this.errors(result.error_fields);
+                }
+                if (result.file_download) {
+                    _this.file_download(result.file_download);
+                    if (result.address_id) {
+                        _this.address_id(result.address_id);
+                    }
+                    if (result.filled_form_modified_id) {
+                        _this.filled_form_modified_id(result.filled_form_modified_id);
+                    }
+                }
+                if (result.error_message) {
+                    _this.error_message(result.error_message);
+                }
+            };
+            this.findWithAttr = function (array, attr, value) {
+                for (var i = 0; i < array.length; i += 1) {
+                    if (array[i][attr] === value) {
+                        return i;
+                    }
+                }
+                return -1;
+            };
+            $.ajaxSetup({
+                // Inject our CSRF token into our AJAX request.
+                contentType: "application/json",
+                dataType: "json",
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var response = jqXHR.responseJSON;
+                    if (response && response.errors) {
+                        for (var _i = 0, _a = response.errors; _i < _a.length; _i++) {
+                            var error = _a[_i];
+                            _this.reportError(error);
+                        }
+                    }
+                    else {
+                        _this.reportError({
+                            message: textStatus + " " + errorThrown,
+                            defcon_level: DefconLevels.warning
+                        });
+                    }
+                },
+            });
+            kv.init({
+                decorateInputElement: true,
+                errorElementClass: 'has-error has-feedback',
+                // successElementClass: 'has-feedback has-success',
+                insertMessages: true,
+                // decorateElement: true,
+                // errorElementClass: 'error',
+                errorMessageClass: 'bg-danger'
+            });
+            // Add bootstrap-validation-css to parent of field
+            var init = ko.bindingHandlers['validationCore'].init;
+            ko.bindingHandlers['validationCore'].init = function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+                var config = kv.utils.getConfigOptions(element);
+                // if requested, add binding to decorate element
+                if (config.decorateInputElement && kv.utils.isValidatable(valueAccessor())) {
+                    var parent = $(element).parent();
+                    if (parent.length) {
+                        ko.applyBindingsToNode(parent[0], {
+                            validationElement: valueAccessor()
+                        });
+                    }
+                }
+            };
+            this.Products(new ProductModel_1.TSProductModel(this));
+            // this.Products().getProducts();
+        }
+        TSAppViewModel.prototype.reportError = function (error) {
+            console.log(error);
+            if (error.defcon_level != DefconLevels.default) {
+                this.errors.push({
+                    message: error.message,
+                    defcon_level: DefconLevels[error.defcon_level]
+                });
+            }
+        };
+        return TSAppViewModel;
+    }());
+    exports.TSAppViewModel = TSAppViewModel;
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -2453,7 +2453,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 /***/ (function(module, exports, __webpack_require__) {
 
 var ko = __webpack_require__(0);
-var stringTemplateEngine = __webpack_require__(4);
+var stringTemplateEngine = __webpack_require__(3);
 var htmlContent = "<!DOCTYPE html>\n\n<div>\n  <strong data-bind=\"text: navn\"></strong>\n  <!-- <br /> -->\n  <!-- ko if: $data.forretningsadresse -->\n  <small data-bind=\"text: forretningsadresse.postnummer\"></small>\n  <small class=\"title-case\" data-bind=\"text: forretningsadresse.poststed\"></small>\n  <!-- /ko -->\n</div>\n";
 ko.templates['brregsuggestion-template'] = htmlContent;
 
@@ -2469,7 +2469,7 @@ ko.templates['brregsuggestion-template'] = htmlContent;
     /*global require,ko.validation,define,module*/
     if (true) {
         // CommonJS or Node
-        module.exports = factory(__webpack_require__(6));
+        module.exports = factory(__webpack_require__(5));
     } else if (typeof define === 'function' && define['amd']) {
         // AMD anonymous module
         define(['knockout.validation'], factory);
@@ -4110,7 +4110,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1) {
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(4)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, ProductModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var InputReadOnlyToggle = /** @class */ (function () {
@@ -4549,15 +4549,28 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
     var Customers = /** @class */ (function () {
         function Customers(parent) {
             this.list = ko.observableArray();
+            this.page = ko.observable();
+            this.pages = ko.observable();
             parent = parent;
             this.get_list();
         }
-        Customers.prototype.get_list = function () {
+        Customers.prototype.get_list = function (page) {
             var _this = this;
-            $.get('/json/v1/list/customers')
+            if (page === void 0) { page = 1; }
+            page = Math.min(Math.max(page, 1), this.pages() || 1);
+            if (page == this.page() || isNaN(page)) {
+                return null;
+            }
+            this.page(page);
+            $.get('/json/v1/list/customers', {
+                page: page,
+                per_page: 10
+            })
                 .done(function (result) {
                 console.log(result);
-                _this.list(result);
+                _this.list(result.customers);
+                _this.pages(result.pages);
+                _this.page(result.page);
             });
         };
         return Customers;
@@ -6942,7 +6955,7 @@ process.umask = function() { return 0; };
 /***/ (function(module, exports, __webpack_require__) {
 
 var ko = __webpack_require__(0);
-var stringTemplateEngine = __webpack_require__(4);
+var stringTemplateEngine = __webpack_require__(3);
 var htmlContent = "<!DOCTYPE html>\n\n\n<div>\n    <strong class=\"title-case\" data-bind=\"text: street_name\"></strong>\n    <!-- <br /> -->\n    <small data-bind=\"text: post_code\"></small>\n    <small class=\"title-case\" data-bind=\"text: post_area\"></small>\n</div>\n";
 ko.templates['suggestion-template'] = htmlContent;
 

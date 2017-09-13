@@ -3,16 +3,17 @@
   <h2>Våre varmekabler</h2>
   <p>Her kan du se en list over alle varmekablene som er lagt av dine kollegaer. Trykk på overskriften for å gjøre endringer.</p>
   <div class="col-xs-12"></div>
-  <!-- ko if: customers()-->
-  <ul class="list-group"  >
-    <!-- ko foreach: customers().list -->
+  <!-- ko with: customers()-->
+  <!-- ko if: list().length > 0-->
+  <ul class="list-group">
+    <!-- ko foreach: list -->
     <a href="#" class="list-group-item hover" data-bind="click: function() {
        $parent.customer().get(id)
     }">
       <h4 class="list-group-item-heading justified">
         <span class="text-primary" data-bind="text: name? name : address.address1"></span>
         <!-- ko if: $data.rooms -->
-        <small class="badge badge-default" data-bind="text: rooms.join(', ').replace(/,(?=[^,]+$)/, ' og')" ></small>
+        <small class="badge badge-default" data-bind="text: rooms.join(', ').replace(/,(?=[^,]+$)/, ' og')"></small>
         <!-- /ko -->
       </h4>
       <p class="list-group-item-text">
@@ -22,18 +23,40 @@
           av
           <span data-bind="text: created.given_name"></span>
         </div>
-        <!-- ko if: $data.modified -->
-        <div class="text-muted">
+        <div class="text-muted" style="min-height: 1.5em;">
+          <!-- ko if: $data.modified -->
           Endret:
           <span data-bind="text: format_date(modified.date)"></span>
           av
           <span data-bind="text: modified.given_name"></span>
+          <!-- /ko -->
         </div>
-        <!-- /ko -->
       </p>
     </a>
     <!-- /ko -->
 
   </ul>
+  <nav aria-label="Page navigation">
+    <ul class="pagination justified">
+      <li class="pointer" data-bind="click: function(){get_list(page()-1)}, css: {disabled: page() <= 1}" disable>
+        <a aria-label="Forrige side">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <!-- ko foreach: new Array(pages()) -->
+      <li data-bind="css: {active: ($index()+1) == $parent.page()}">
+        <a class="pointer" data-bind="click: function(){$parent.get_list($index()+1)}">
+          <span data-bind="text: $index() + 1"></span>
+        </a>
+      </li>
+      <!-- /ko -->
+      <li class="pointer" data-bind="click: function(){get_list(page()+1)}">
+        <a class="pointer" aria-label="Neste side">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /ko -->
   <!-- /ko -->
 </div>

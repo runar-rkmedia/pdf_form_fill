@@ -361,14 +361,40 @@ def json_room():
     db.session.commit()
     return jsonify(room.serialize)
 
+
 @app.route('/json/v1/list/customers/')
 @login_required
 @company_required
 def json_customers():
     """Retrieve a list of all customers relevant to a user."""
-    customers = current_user.company.customers
-    print(customers)
-    return jsonify([i.serialize_short for i in customers if i.archived != True])
+    # customers = current_user.company.customers
+    data = request.json or request.args or {}
+    try:
+        page = int(data.get('page', 1))
+        per_page = int(data.get('per_page', 10))
+    except ValueError as e:
+        raise my_exceptions.DuplicateCompany()
+        raise my_exceptions.MyBaseException(
+            message='lsdkjf',
+            status_code=403,
+            defcon_level=my_exceptions.DefconLevel.danger
+            )
+    customers = Customer.query.\
+        filter(
+            ((Customer.company_id == current_user.company_id)
+             #  & (Customer.archived != False)
+             )
+        )\
+        .order_by(Customer.modified_on_date.desc())\
+        .paginate(page, per_page, False)
+    print('pagination', customers.items)
+    return jsonify({
+        'pages': customers.pages,
+        'page': customers.page,
+        'customers': [
+            i.serialize_short
+            for i in customers.items]
+    })
 
 
 @app.route('/json/v1/customer/', methods=['GET', 'POST', 'PUT', 'DELETE'])
