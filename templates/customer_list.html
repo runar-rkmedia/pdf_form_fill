@@ -8,7 +8,7 @@
   <ul class="list-group">
     <!-- ko foreach: list -->
     <a href="#" class="list-group-item hover" data-bind="click: function() {
-       $parent.customer().get(id)
+       $root.customer().get(id)
     }">
       <h4 class="list-group-item-heading justified">
         <span class="text-primary" data-bind="text: name? name : address.address1"></span>
