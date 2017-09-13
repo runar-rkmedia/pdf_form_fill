@@ -18091,6 +18091,9 @@ canvas {
   display: flex;
   justify-content: space-between;
 }
+.noheight {
+  height: 0 !important;
+}
 .pagination > .disabled > a {
   visibility: hidden;
 }

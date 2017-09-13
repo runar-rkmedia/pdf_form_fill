@@ -4102,6 +4102,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 return _this.list();
             });
             this.roomSuggestionOnSelect = function (value, roomSuggestion, event) {
+                value(roomSuggestion.name);
                 _this.parent.outside(Boolean(roomSuggestion.outside));
                 _this.parent.maxEffect(roomSuggestion.maxEffect);
                 _this.parent.normalEffect(roomSuggestion.normalEffect);

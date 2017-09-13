@@ -246,6 +246,7 @@ export class RoomSuggestion {
     roomSuggestion: RoomTypesInfoFlat,
     event: Event
   ) => {
+    value(roomSuggestion.name)
     this.parent.outside(Boolean(roomSuggestion.outside))
     this.parent.maxEffect(roomSuggestion.maxEffect)
     this.parent.normalEffect(roomSuggestion.normalEffect)
