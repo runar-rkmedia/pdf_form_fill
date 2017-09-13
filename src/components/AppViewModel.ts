@@ -3,8 +3,9 @@ import nb_NO = require('./../../node_modules/knockout.validation/localization/nb
 import kv = require("knockout.validation");
 import { AddressInterface } from "./Common"
 import { CustomerInterface, Customer } from "./Customer"
-import { Customers } from "./Customers"
-import { Rooms, RoomInterface } from "./Rooms"
+import { CustomerList } from "./CustomerList"
+import { RoomInterface } from "./Room"
+import { RoomList } from "./RoomList"
 import { Company, ControlPanel } from "./ControlPanel"
 import ko = require("knockout");
 import $ = require("jquery");
@@ -54,7 +55,7 @@ export class TSAppViewModel {
   address_id: KnockoutObservable<number> = ko.observable();
   editing_heating_cable_id: KnockoutObservable<number> = ko.observable();
   customer: KnockoutObservable<Customer> = ko.observable(new Customer(this))
-  customers: KnockoutObservable<Customer> = ko.observable(new Customers(this))
+  customers: KnockoutObservable<CustomerList> = ko.observable(new CustomerList(this))
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
   company_forms: KnockoutObservableArray<string> = ko.observableArray();

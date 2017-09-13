@@ -12,7 +12,7 @@ interface Pagination {
   pages: number
 }
 
-export interface Customers {
+export interface CustomerListInterface {
   id: number
   name: string
   address: AddressInterface
@@ -21,11 +21,11 @@ export interface Customers {
 }
 
 interface CustomerPages extends Pagination {
-  customers: Customers[]
+  customers: CustomerListInterface[]
 }
 
-export class Customers implements Customers {
-  list: KnockoutObservableArray<Customers> = ko.observableArray()
+export class CustomerList {
+  list: KnockoutObservableArray<CustomerListInterface> = ko.observableArray()
   page: KnockoutObservable<number> = ko.observable()
   pages: KnockoutObservable<number> = ko.observable()
   parent: TSAppViewModel
@@ -46,7 +46,6 @@ export class Customers implements Customers {
       per_page: 10
     })
       .done((result: CustomerPages) => {
-        console.log(result)
         this.list(result.customers)
         this.pages(result.pages)
         this.page(result.page)

@@ -1,5 +1,6 @@
 import { TSAppViewModel } from "./AppViewModel"
-import { RoomInterface, Rooms, Room } from "./Rooms"
+import { RoomInterface, Room } from "./Room"
+import { RoomList } from "./RoomList"
 import { StrIndex, AddressFullInterface, HTTPVerbs, Post, AddressInterface } from "./Common"
 import ko = require("knockout");
 let titleCase = require('title-case')
@@ -21,7 +22,7 @@ export class Customer extends Post {
   post_area: KnockoutObservable<string> = this.obs_mod()
   root: TSAppViewModel
   loading: KnockoutObservable<boolean> = ko.observable(false)
-  rooms: KnockoutObservable<Rooms> = ko.observable(new Rooms(this.root, this))
+  rooms: KnockoutObservable<RoomList> = ko.observable(new RoomList(this.root, this))
   validationModel = ko.validatedObservable({
     name: this.name,
     address1: this.address1,
@@ -86,7 +87,7 @@ export class Customer extends Post {
       this.post_area(result.address.post_area)
     }
     if (result.rooms) {
-      this.rooms(new Rooms(this.root, this, result.rooms))
+      this.rooms(new RoomList(this.root, this, result.rooms))
     }
     this.save()
   }

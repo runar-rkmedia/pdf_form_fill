@@ -2102,7 +2102,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(4), __webpack_require__(10), __webpack_require__(5), __webpack_require__(11), __webpack_require__(23), __webpack_require__(8), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, Customers_1, ControlPanel_1, ko, $) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(4), __webpack_require__(10), __webpack_require__(5), __webpack_require__(11), __webpack_require__(60), __webpack_require__(8), __webpack_require__(0), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, ProductModel_1, nb_NO, kv, Customer_1, CustomerList_1, ControlPanel_1, ko, $) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     __webpack_require__(24);
@@ -2132,7 +2132,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
             this.address_id = ko.observable();
             this.editing_heating_cable_id = ko.observable();
             this.customer = ko.observable(new Customer_1.Customer(this));
-            this.customers = ko.observable(new Customers_1.Customers(this));
+            this.customers = ko.observable(new CustomerList_1.CustomerList(this));
             this.filled_form_modified_id = ko.observable();
             this.user_forms = ko.observableArray();
             this.company_forms = ko.observableArray();
@@ -2516,7 +2516,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(12), __webpack_require__(2), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Rooms_1, Common_1, ko) {
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(58), __webpack_require__(2), __webpack_require__(0)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, RoomList_1, Common_1, ko) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var titleCase = __webpack_require__(16);
@@ -2533,7 +2533,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.post_code = _this.obs_mod();
             _this.post_area = _this.obs_mod();
             _this.loading = ko.observable(false);
-            _this.rooms = ko.observable(new Rooms_1.Rooms(_this.root, _this));
+            _this.rooms = ko.observable(new RoomList_1.RoomList(_this.root, _this));
             _this.validationModel = ko.validatedObservable({
                 name: _this.name,
                 address1: _this.address1,
@@ -2630,7 +2630,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 this.post_area(result.address.post_area);
             }
             if (result.rooms) {
-                this.rooms(new Rooms_1.Rooms(this.root, this, result.rooms));
+                this.rooms(new RoomList_1.RoomList(this.root, this, result.rooms));
             }
             this.save();
         };
@@ -2645,255 +2645,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
 
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(15)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, HeatingCable_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Room = /** @class */ (function (_super) {
-        __extends(Room, _super);
-        function Room(root, parent, room) {
-            if (room === void 0) { room = undefined; }
-            var _this = _super.call(this, parent) || this;
-            _this.url = '/json/v1/room/';
-            _this.id = ko.observable();
-            _this.name = _this.obs_mod();
-            _this.outside = _this.obs_mod();
-            _this.maxEffect = _this.obs_mod();
-            _this.normalEffect = _this.obs_mod();
-            _this.area = _this.obs_mod();
-            _this.heated_area = _this.obs_mod();
-            _this.earthed_cable_screen = _this.obs_mod();
-            _this.earthed_chicken_wire = _this.obs_mod();
-            _this.earthed_other = _this.obs_mod();
-            _this.max_temp_limited_by_planning = _this.obs_mod(undefined, undefined, true);
-            _this.max_temp_limited_by_installation = _this.obs_mod(undefined, undefined, true);
-            _this.max_temp_limited_by_other = _this.obs_mod();
-            _this.control_system_floor_sensor = _this.obs_mod(undefined, undefined, true);
-            _this.control_system_room_sensor = _this.obs_mod();
-            _this.control_system_designation = _this.obs_mod();
-            _this.control_system_other = _this.obs_mod();
-            _this.heating_cables = ko.observable();
-            _this.validationModel = ko.validatedObservable({
-                name: _this.name,
-                outside: _this.outside,
-                area: _this.area,
-                heated_area: _this.heated_area
-            });
-            _this.sub_modified = ko.computed(function () {
-                if (_this.heating_cables()) {
-                    for (var _i = 0, _a = _this.heating_cables().list(); _i < _a.length; _i++) {
-                        var heating_cable = _a[_i];
-                        if (heating_cable.modified()) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            });
-            _this.room_effect = ko.computed(function () {
-                var sum_effect = 0;
-                if (_this.heating_cables()) {
-                    for (var _i = 0, _a = _this.heating_cables().list(); _i < _a.length; _i++) {
-                        var heating_cable = _a[_i];
-                        if (heating_cable.product()) {
-                            sum_effect += Number(heating_cable.product().effect);
-                        }
-                    }
-                }
-                return sum_effect;
-            });
-            _this.room_title = ko.computed(function () {
-                if (_this.id() >= 0) {
-                    var result = _this.name();
-                    if (_this.area()) {
-                        result += ', ' + _this.area() + 'm²';
-                    }
-                    if (_this.heated_area()) {
-                        result += ' (' + _this.heated_area() + ' m²)';
-                    }
-                    return result;
-                }
-                return 'Nytt rom/sted';
-            });
-            _this.bestFitEffect = ko.computed(function () {
-                if (_this.normalEffect() > 0 && _this.heated_area() > 0) {
-                    return _this.normalEffect() * _this.heated_area();
-                }
-                return 0;
-            });
-            var customer = parent.parent;
-            _this.form_url = "" + _this.form_url + customer.id() + "/";
-            _this.root = root;
-            _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
-            _this.heated_area.extend({ required: true, number: true, min: 0.1, max: 1000 });
-            _this.name.extend({ required: true, minLength: 2, maxLength: 50 });
-            _this.modification_tracking_list([
-                _this.name,
-                _this.outside,
-                _this.maxEffect,
-                _this.normalEffect,
-                _this.area,
-                _this.heated_area,
-                _this.earthed_cable_screen,
-                _this.earthed_chicken_wire,
-                _this.earthed_other,
-                _this.max_temp_limited_by_planning,
-                _this.max_temp_limited_by_installation,
-                _this.max_temp_limited_by_other,
-                _this.control_system_floor_sensor,
-                _this.control_system_room_sensor,
-                _this.control_system_designation,
-                _this.control_system_other,
-            ]);
-            _this.serialize = ko.computed(function () {
-                return {
-                    room_name: _this.name(),
-                    id: _this.id(),
-                    area: _this.area(),
-                    heated_area: _this.heated_area(),
-                    outside: _this.outside(),
-                    customer_id: _this.parent.parent.id(),
-                    maxEffect: _this.maxEffect(),
-                    normalEffect: _this.normalEffect(),
-                    check_earthed: {
-                        cable_screen: _this.earthed_cable_screen(),
-                        chicken_wire: _this.earthed_chicken_wire(),
-                        other: _this.earthed_other(),
-                    },
-                    check_max_temp: {
-                        planning: _this.max_temp_limited_by_planning(),
-                        installation: _this.max_temp_limited_by_installation(),
-                        other: _this.max_temp_limited_by_other(),
-                    },
-                    check_control_system: {
-                        room_sensor: _this.control_system_room_sensor(),
-                        floor_sensor: _this.control_system_floor_sensor(),
-                        designation: _this.control_system_designation(),
-                        other: _this.control_system_other(),
-                    },
-                };
-            });
-            _this.set(room);
-            _this.room_suggestion = ko.observable(new RoomSuggestion(_this.root.Products().flat_room_type_info(), _this));
-            _this.validationModel.errors.showAllMessages(false);
-            return _this;
-        }
-        // Add some additonal functionality when posting.
-        Room.prototype.post = function (h, event, data_object, url) {
-            return _super.prototype.post.call(this, h, event, data_object, url).done(function () {
-                $(event.target).closest('.collapse').collapse('hide');
-            });
-        };
-        Room.prototype.set = function (room) {
-            if (room === void 0) { room = {
-                room_name: '',
-                id: -1,
-                area: null,
-                heated_area: null,
-                outside: false,
-                normalEffect: 0,
-                maxEffect: 0
-            }; }
-            this.name(room.room_name);
-            this.id(room.id);
-            this.area(room.area);
-            this.heated_area(room.heated_area);
-            this.outside(room.outside);
-            this.maxEffect(room.maxEffect || 0);
-            this.normalEffect(room.normalEffect || 0);
-            this.heating_cables(new HeatingCable_1.HeatingCables(this.root, this, room.heating_cables));
-            if (room.check_earthed) {
-                this.earthed_cable_screen(room.check_earthed.cable_screen);
-                this.earthed_chicken_wire(room.check_earthed.chicken_wire);
-                this.earthed_other(room.check_earthed.other);
-            }
-            if (room.check_max_temp) {
-                this.max_temp_limited_by_planning(room.check_max_temp.planning);
-                this.max_temp_limited_by_installation(room.check_max_temp.installation);
-                this.max_temp_limited_by_other(room.check_max_temp.other);
-            }
-            if (room.check_control_system) {
-                this.control_system_floor_sensor(room.check_control_system.floor_sensor);
-                this.control_system_room_sensor(room.check_control_system.room_sensor);
-                this.control_system_designation(room.check_control_system.designation);
-                this.control_system_other(room.check_control_system.other);
-            }
-            this.save();
-        };
-        return Room;
-    }(Common_1.Post));
-    exports.Room = Room;
-    var Rooms = /** @class */ (function (_super) {
-        __extends(Rooms, _super);
-        function Rooms(root, parent, list_of_rooms) {
-            if (list_of_rooms === void 0) { list_of_rooms = []; }
-            var _this = _super.call(this, []) || this;
-            _this.add = function () {
-                var new_room = _this.by_id(-1);
-                if (!new_room) {
-                    _this.list.push(new Room(_this.root, _this));
-                }
-                var accordian = $('#accordion-room');
-                var panel = accordian.find('#room-1');
-                var room_form = panel.find('#room-form-1');
-                var first_input = panel.find('input').first();
-                room_form.addClass('in');
-                panel.collapse('show');
-                // Focus does not work becaus of an issue with using typeahead.Workaround
-                // with using a setTimeOut doesnt seemt to work inside animated stuff, so
-                // for now, I will leave it not working.
-                first_input.focus();
-                return new_room;
-            };
-            _this.parent = parent;
-            _this.root = root;
-            if (list_of_rooms) {
-                var list_of_rooms_obects = list_of_rooms.map(function (x) {
-                    return new Room(_this.root, _this, x);
-                });
-                _this.list(list_of_rooms_obects);
-            }
-            return _this;
-        }
-        return Rooms;
-    }(Common_1.ByID));
-    exports.Rooms = Rooms;
-    var RoomSuggestion = /** @class */ (function () {
-        function RoomSuggestion(room_type_info_flat, room) {
-            var _this = this;
-            this.list = ko.observableArray();
-            this.suggestRoom = ko.computed(function () {
-                return _this.list();
-            });
-            this.roomSuggestionOnSelect = function (value, roomSuggestion, event) {
-                _this.parent.outside(Boolean(roomSuggestion.outside));
-                _this.parent.maxEffect(roomSuggestion.maxEffect);
-                _this.parent.normalEffect(roomSuggestion.normalEffect);
-                _this.parent.name.isModified(false);
-            };
-            this.list(room_type_info_flat);
-            this.parent = room;
-        }
-        return RoomSuggestion;
-    }());
-    exports.RoomSuggestion = RoomSuggestion;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
+/* 12 */,
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4297,40 +4049,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         return HeatingCable;
     }(Common_1.Post));
     exports.HeatingCable = HeatingCable;
-    var HeatingCables = /** @class */ (function (_super) {
-        __extends(HeatingCables, _super);
-        function HeatingCables(root, parent, heating_cables) {
-            if (heating_cables === void 0) { heating_cables = []; }
-            var _this = _super.call(this, []) || this;
-            _this.add = function (event) {
-                var new_heating_cable = _this.by_id(-1);
-                if (!new_heating_cable) {
-                    _this.list.push(new HeatingCable(_this.root.Products(), _this));
-                }
-                _this.root.editing_heating_cable_id(-1);
-                setTimeout(function () {
-                    var btn = $(event.target);
-                    var accordian = $('#accordion-heat');
-                    var panel = accordian.find('#heat-1');
-                    var panel_vk = panel.find('#panel_select_cable-1');
-                    panel.collapse('show');
-                    panel_vk.addClass('in');
-                }, 20);
-            };
-            _this.parent = parent;
-            _this.root = root;
-            var heating_cables_objects = [];
-            if (heating_cables_objects) {
-                heating_cables_objects = heating_cables.map(function (x) {
-                    return new HeatingCable(_this.root.Products(), _this, x);
-                });
-            }
-            _this.list(heating_cables_objects);
-            return _this;
-        }
-        return HeatingCables;
-    }(Common_1.ByID));
-    exports.HeatingCables = HeatingCables;
 }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -4540,47 +4258,7 @@ module.exports = function (str, locale) {
 
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Customers = /** @class */ (function () {
-        function Customers(parent) {
-            this.list = ko.observableArray();
-            this.page = ko.observable();
-            this.pages = ko.observable();
-            parent = parent;
-            this.get_list();
-        }
-        Customers.prototype.get_list = function (page) {
-            var _this = this;
-            if (page === void 0) { page = 1; }
-            page = Math.min(Math.max(page, 1), this.pages() || 1);
-            if (page == this.page() || isNaN(page)) {
-                return null;
-            }
-            this.page(page);
-            $.get('/json/v1/list/customers', {
-                page: page,
-                per_page: 10
-            })
-                .done(function (result) {
-                console.log(result);
-                _this.list(result.customers);
-                _this.pages(result.pages);
-                _this.page(result.page);
-            });
-        };
-        return Customers;
-    }());
-    exports.Customers = Customers;
-}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ }),
+/* 23 */,
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8234,6 +7912,384 @@ $('div').on('shown.bs.collapse', function(e) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(59)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, HeatingCableList_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Room = /** @class */ (function (_super) {
+        __extends(Room, _super);
+        function Room(root, parent, room) {
+            if (room === void 0) { room = undefined; }
+            var _this = _super.call(this, parent) || this;
+            _this.url = '/json/v1/room/';
+            _this.id = ko.observable();
+            _this.name = _this.obs_mod();
+            _this.outside = _this.obs_mod();
+            _this.maxEffect = _this.obs_mod();
+            _this.normalEffect = _this.obs_mod();
+            _this.area = _this.obs_mod();
+            _this.heated_area = _this.obs_mod();
+            _this.earthed_cable_screen = _this.obs_mod();
+            _this.earthed_chicken_wire = _this.obs_mod();
+            _this.earthed_other = _this.obs_mod();
+            _this.max_temp_limited_by_planning = _this.obs_mod(undefined, undefined, true);
+            _this.max_temp_limited_by_installation = _this.obs_mod(undefined, undefined, true);
+            _this.max_temp_limited_by_other = _this.obs_mod();
+            _this.control_system_floor_sensor = _this.obs_mod(undefined, undefined, true);
+            _this.control_system_room_sensor = _this.obs_mod();
+            _this.control_system_designation = _this.obs_mod();
+            _this.control_system_other = _this.obs_mod();
+            _this.heating_cables = ko.observable();
+            _this.validationModel = ko.validatedObservable({
+                name: _this.name,
+                outside: _this.outside,
+                area: _this.area,
+                heated_area: _this.heated_area
+            });
+            _this.sub_modified = ko.computed(function () {
+                if (_this.heating_cables()) {
+                    for (var _i = 0, _a = _this.heating_cables().list(); _i < _a.length; _i++) {
+                        var heating_cable = _a[_i];
+                        if (heating_cable.modified()) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
+            _this.room_effect = ko.computed(function () {
+                var sum_effect = 0;
+                if (_this.heating_cables()) {
+                    for (var _i = 0, _a = _this.heating_cables().list(); _i < _a.length; _i++) {
+                        var heating_cable = _a[_i];
+                        if (heating_cable.product()) {
+                            sum_effect += Number(heating_cable.product().effect);
+                        }
+                    }
+                }
+                return sum_effect;
+            });
+            _this.room_title = ko.computed(function () {
+                if (_this.id() >= 0) {
+                    var result = _this.name();
+                    if (_this.area()) {
+                        result += ', ' + _this.area() + 'm²';
+                    }
+                    if (_this.heated_area()) {
+                        result += ' (' + _this.heated_area() + ' m²)';
+                    }
+                    return result;
+                }
+                return 'Nytt rom/sted';
+            });
+            _this.bestFitEffect = ko.computed(function () {
+                if (_this.normalEffect() > 0 && _this.heated_area() > 0) {
+                    return _this.normalEffect() * _this.heated_area();
+                }
+                return 0;
+            });
+            var customer = parent.parent;
+            _this.form_url = "" + _this.form_url + customer.id() + "/";
+            _this.root = root;
+            _this.area.extend({ required: true, number: true, min: 0.1, max: 1000 });
+            _this.heated_area.extend({ required: true, number: true, min: 0.1, max: 1000 });
+            _this.name.extend({ required: true, minLength: 2, maxLength: 50 });
+            _this.modification_tracking_list([
+                _this.name,
+                _this.outside,
+                _this.maxEffect,
+                _this.normalEffect,
+                _this.area,
+                _this.heated_area,
+                _this.earthed_cable_screen,
+                _this.earthed_chicken_wire,
+                _this.earthed_other,
+                _this.max_temp_limited_by_planning,
+                _this.max_temp_limited_by_installation,
+                _this.max_temp_limited_by_other,
+                _this.control_system_floor_sensor,
+                _this.control_system_room_sensor,
+                _this.control_system_designation,
+                _this.control_system_other,
+            ]);
+            _this.serialize = ko.computed(function () {
+                return {
+                    room_name: _this.name(),
+                    id: _this.id(),
+                    area: _this.area(),
+                    heated_area: _this.heated_area(),
+                    outside: _this.outside(),
+                    customer_id: _this.parent.parent.id(),
+                    maxEffect: _this.maxEffect(),
+                    normalEffect: _this.normalEffect(),
+                    check_earthed: {
+                        cable_screen: _this.earthed_cable_screen(),
+                        chicken_wire: _this.earthed_chicken_wire(),
+                        other: _this.earthed_other(),
+                    },
+                    check_max_temp: {
+                        planning: _this.max_temp_limited_by_planning(),
+                        installation: _this.max_temp_limited_by_installation(),
+                        other: _this.max_temp_limited_by_other(),
+                    },
+                    check_control_system: {
+                        room_sensor: _this.control_system_room_sensor(),
+                        floor_sensor: _this.control_system_floor_sensor(),
+                        designation: _this.control_system_designation(),
+                        other: _this.control_system_other(),
+                    },
+                };
+            });
+            _this.set(room);
+            _this.room_suggestion = ko.observable(new RoomSuggestion(_this.root.Products().flat_room_type_info(), _this));
+            _this.validationModel.errors.showAllMessages(false);
+            return _this;
+        }
+        // Add some additonal functionality when posting.
+        Room.prototype.post = function (h, event, data_object, url) {
+            return _super.prototype.post.call(this, h, event, data_object, url).done(function () {
+                $(event.target).closest('.collapse').collapse('hide');
+            });
+        };
+        Room.prototype.set = function (room) {
+            if (room === void 0) { room = {
+                room_name: '',
+                id: -1,
+                area: null,
+                heated_area: null,
+                outside: false,
+                normalEffect: 0,
+                maxEffect: 0
+            }; }
+            this.name(room.room_name);
+            this.id(room.id);
+            this.area(room.area);
+            this.heated_area(room.heated_area);
+            this.outside(room.outside);
+            this.maxEffect(room.maxEffect || 0);
+            this.normalEffect(room.normalEffect || 0);
+            this.heating_cables(new HeatingCableList_1.HeatingCableList(this.root, this, room.heating_cables));
+            if (room.check_earthed) {
+                this.earthed_cable_screen(room.check_earthed.cable_screen);
+                this.earthed_chicken_wire(room.check_earthed.chicken_wire);
+                this.earthed_other(room.check_earthed.other);
+            }
+            if (room.check_max_temp) {
+                this.max_temp_limited_by_planning(room.check_max_temp.planning);
+                this.max_temp_limited_by_installation(room.check_max_temp.installation);
+                this.max_temp_limited_by_other(room.check_max_temp.other);
+            }
+            if (room.check_control_system) {
+                this.control_system_floor_sensor(room.check_control_system.floor_sensor);
+                this.control_system_room_sensor(room.check_control_system.room_sensor);
+                this.control_system_designation(room.check_control_system.designation);
+                this.control_system_other(room.check_control_system.other);
+            }
+            this.save();
+        };
+        return Room;
+    }(Common_1.Post));
+    exports.Room = Room;
+    var RoomSuggestion = /** @class */ (function () {
+        function RoomSuggestion(room_type_info_flat, room) {
+            var _this = this;
+            this.list = ko.observableArray();
+            this.suggestRoom = ko.computed(function () {
+                return _this.list();
+            });
+            this.roomSuggestionOnSelect = function (value, roomSuggestion, event) {
+                _this.parent.outside(Boolean(roomSuggestion.outside));
+                _this.parent.maxEffect(roomSuggestion.maxEffect);
+                _this.parent.normalEffect(roomSuggestion.normalEffect);
+                _this.parent.name.isModified(false);
+            };
+            this.list(room_type_info_flat);
+            this.parent = room;
+        }
+        return RoomSuggestion;
+    }());
+    exports.RoomSuggestion = RoomSuggestion;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
+/* 57 */,
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(56)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, Room_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var RoomList = /** @class */ (function (_super) {
+        __extends(RoomList, _super);
+        function RoomList(root, parent, list_of_rooms) {
+            if (list_of_rooms === void 0) { list_of_rooms = []; }
+            var _this = _super.call(this, []) || this;
+            _this.add = function () {
+                var new_room = _this.by_id(-1);
+                if (!new_room) {
+                    _this.list.push(new Room_1.Room(_this.root, _this));
+                }
+                var accordian = $('#accordion-room');
+                var panel = accordian.find('#room-1');
+                var room_form = panel.find('#room-form-1');
+                var first_input = panel.find('input').first();
+                room_form.addClass('in');
+                panel.collapse('show');
+                // Focus does not work becaus of an issue with using typeahead.Workaround
+                // with using a setTimeOut doesnt seemt to work inside animated stuff, so
+                // for now, I will leave it not working.
+                first_input.focus();
+                return new_room;
+            };
+            _this.parent = parent;
+            _this.root = root;
+            if (list_of_rooms) {
+                var list_of_rooms_obects = list_of_rooms.map(function (x) {
+                    return new Room_1.Room(_this.root, _this, x);
+                });
+                _this.list(list_of_rooms_obects);
+            }
+            return _this;
+        }
+        return RoomList;
+    }(Common_1.ByID));
+    exports.RoomList = RoomList;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(15)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, Common_1, HeatingCable_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var HeatingCableList = /** @class */ (function (_super) {
+        __extends(HeatingCableList, _super);
+        function HeatingCableList(root, parent, heating_cables) {
+            if (heating_cables === void 0) { heating_cables = []; }
+            var _this = _super.call(this, []) || this;
+            _this.add = function (event) {
+                var new_heating_cable = _this.by_id(-1);
+                if (!new_heating_cable) {
+                    _this.list.push(new HeatingCable_1.HeatingCable(_this.root.Products(), _this));
+                }
+                _this.root.editing_heating_cable_id(-1);
+                setTimeout(function () {
+                    var btn = $(event.target);
+                    var accordian = $('#accordion-heat');
+                    var panel = accordian.find('#heat-1');
+                    var panel_vk = panel.find('#panel_select_cable-1');
+                    panel.collapse('show');
+                    panel_vk.addClass('in');
+                }, 20);
+            };
+            _this.parent = parent;
+            _this.root = root;
+            var heating_cables_objects = [];
+            if (heating_cables_objects) {
+                heating_cables_objects = heating_cables.map(function (x) {
+                    return new HeatingCable_1.HeatingCable(_this.root.Products(), _this, x);
+                });
+            }
+            _this.list(heating_cables_objects);
+            return _this;
+        }
+        return HeatingCableList;
+    }(Common_1.ByID));
+    exports.HeatingCableList = HeatingCableList;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var CustomerList = /** @class */ (function () {
+        function CustomerList(parent) {
+            this.list = ko.observableArray();
+            this.page = ko.observable();
+            this.pages = ko.observable();
+            parent = parent;
+            this.get_list();
+        }
+        CustomerList.prototype.get_list = function (page) {
+            var _this = this;
+            if (page === void 0) { page = 1; }
+            page = Math.min(Math.max(page, 1), this.pages() || 1);
+            if (page == this.page() || isNaN(page)) {
+                return null;
+            }
+            this.page(page);
+            $.get('/json/v1/list/customers', {
+                page: page,
+                per_page: 10
+            })
+                .done(function (result) {
+                _this.list(result.customers);
+                _this.pages(result.pages);
+                _this.page(result.page);
+            });
+        };
+        return CustomerList;
+    }());
+    exports.CustomerList = CustomerList;
+}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
 
 /***/ })
 /******/ ]);
