@@ -34,7 +34,6 @@
     attr: {'id': 'room' + id()}
     " role="tabpanel">
       <div class="panel-body">
-        <!-- ko if: id() >= 0 -->
         <div class="col-xs-12 well collapse" data-bind="attr: { 'id': 'room-form' + id()}">
           <!-- ko template: { name: 'room_form_template', data: $data} -->
           <!-- /ko -->
@@ -120,7 +119,6 @@
             </div>
           </div>
         </div>
-        <!-- /ko -->
       </div>
     </div>
   </div>

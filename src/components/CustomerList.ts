@@ -27,13 +27,13 @@ interface CustomerPages extends Pagination {
 export class CustomerList {
   list: KnockoutObservableArray<CustomerListInterface> = ko.observableArray()
   page: KnockoutObservable<number> = ko.observable()
-  pages: KnockoutObservable<number> = ko.observable()
-  parent: TSAppViewModel
-  constructor(parent: TSAppViewModel) {
-    parent = parent
-    this.get_list()
+  loading: KnockoutObservable<boolean> = ko.observable(false)
+  pages: KnockoutObservable<number> = ko.observable(1)
+  root: TSAppViewModel
+  constructor(root: TSAppViewModel) {
+    root = root
   }
-  get_list(page = 1) {
+  get_list = (page = 1) => {
     page = Math.min(
       Math.max(page, 1),
       this.pages() || 1)
@@ -41,6 +41,7 @@ export class CustomerList {
       return null
     }
     this.page(page)
+    this.loading(true)
     $.get('/json/v1/list/customers', {
       page: page,
       per_page: 10
@@ -49,6 +50,9 @@ export class CustomerList {
         this.list(result.customers)
         this.pages(result.pages)
         this.page(result.page)
+      })
+      .always(() => {
+        this.loading(false)
       })
   }
 }

@@ -102,6 +102,7 @@ canvas {
   content: "\e114";
   float: right;
   // color: grey;
+  padding-left: 0.5em;
 }
 
 .collapsed .carrot:after {
@@ -233,10 +234,11 @@ canvas {
   box-shadow: 1px 1px 1px grey;
   white-space: nowrap;
 
-  &.customBtnWide{
+  &.customBtnWide {
     width: 210px;
-    .buttonText:before{
-      content: 'Logg inn med '
+
+    .buttonText:before {
+      content: 'Logg inn med ';
     }
   }
 
@@ -267,9 +269,17 @@ canvas {
   }
 }
 
-.justified{
+.justified {
   display: flex;
   justify-content: space-between;
 }
-.justified>*{
+
+.justified > * {}
+
+.noheight {
+  height: 0 !important;
+}
+
+.pagination > .disabled > a{
+  visibility: hidden;
 }

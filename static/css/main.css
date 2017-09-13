@@ -17951,6 +17951,7 @@ canvas {
   font-family: 'Glyphicons Halflings';
   content: "\E114";
   float: right;
+  padding-left: 0.5em;
 }
 .collapsed .carrot:after {
   content: "\E080";
@@ -18089,4 +18090,7 @@ canvas {
 .justified {
   display: flex;
   justify-content: space-between;
+}
+.pagination > .disabled > a {
+  visibility: hidden;
 }

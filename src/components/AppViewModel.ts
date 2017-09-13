@@ -55,7 +55,7 @@ export class TSAppViewModel {
   address_id: KnockoutObservable<number> = ko.observable();
   editing_heating_cable_id: KnockoutObservable<number> = ko.observable();
   customer: KnockoutObservable<Customer> = ko.observable(new Customer(this))
-  customers: KnockoutObservable<CustomerList> = ko.observable(new CustomerList(this))
+  customerList: KnockoutObservable<CustomerList> = ko.observable(new CustomerList(this))
   filled_form_modified_id: KnockoutObservable<number> = ko.observable();
   user_forms: KnockoutObservableArray<string> = ko.observableArray();
   company_forms: KnockoutObservableArray<string> = ko.observableArray();

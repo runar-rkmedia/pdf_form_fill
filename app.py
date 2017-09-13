@@ -365,7 +365,7 @@ def json_room():
 @app.route('/json/v1/list/customers/')
 @login_required
 @company_required
-def json_customers():
+def json_customer_list():
     """Retrieve a list of all customers relevant to a user."""
     # customers = current_user.company.customers
     data = request.json or request.args or {}
