@@ -372,18 +372,19 @@ def json_customer_list():
     try:
         page = int(data.get('page', 1))
         per_page = int(data.get('per_page', 10))
-    except ValueError as e:
-        raise my_exceptions.DuplicateCompany()
+    except ValueError:
         raise my_exceptions.MyBaseException(
-            message='lsdkjf',
+            message='Mottok feil side-data. Forventet tall, men fikk {},{}'
+            .format(page, per_page),
             status_code=403,
             defcon_level=my_exceptions.DefconLevel.danger
-            )
+        )
     customers = Customer.query.\
         filter(
-            ((Customer.company_id == current_user.company_id)
-             #  & (Customer.archived != False)
-             )
+            (
+                (Customer.company_id == current_user.company_id)
+                & (Customer.archived != True)
+            )
         )\
         .order_by(Customer.modified_on_date.desc())\
         .paginate(page, per_page, False)

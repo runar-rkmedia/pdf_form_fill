@@ -4148,9 +4148,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 _this.root.editing_heating_cable_id(-1);
                 setTimeout(function () {
                     var btn = $(event.target);
-                    var accordian = $('#accordion-heat');
+                    var accordian = btn.parent().parent().parent();
                     var panel = accordian.find('#heat-1');
                     var panel_vk = panel.find('#panel_select_cable-1');
+                    console.log(btn, accordian, panel, panel_vk);
+                    console.log(btn.length, accordian.length, panel.length, panel_vk.length);
                     panel.collapse('show');
                     panel_vk.addClass('in');
                 }, 20);
@@ -8258,16 +8260,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
   var topOfPanelContent = target.offset().top;
-  if (target.hasClass('scrollto') || true) {
+  console.log(target);
+  if (target.hasClass('scrollto')) {
     var panelHeadingHeight = 30;
     if (target.hasClass('panel')) {
       var panelHeading = target.siblings('.panel-heading');
-      panelHeadingHeight = target.siblings('.panel-heading').height();
+      panelHeadingHeight = panelHeading.height();
 
     }
-
     $("html, body").animate({
-      scrollTop: topOfPanelContent - panelHeadingHeight -25
+      scrollTop: -70 + topOfPanelContent - panelHeadingHeight -25
     }, 200);
   }
 });

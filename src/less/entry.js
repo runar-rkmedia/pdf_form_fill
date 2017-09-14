@@ -4,16 +4,16 @@ import './app.less';
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
   var topOfPanelContent = target.offset().top;
-  if (target.hasClass('scrollto') || true) {
+  console.log(target);
+  if (target.hasClass('scrollto')) {
     var panelHeadingHeight = 30;
     if (target.hasClass('panel')) {
       var panelHeading = target.siblings('.panel-heading');
-      panelHeadingHeight = target.siblings('.panel-heading').height();
+      panelHeadingHeight = panelHeading.height();
 
     }
-
     $("html, body").animate({
-      scrollTop: topOfPanelContent - panelHeadingHeight -25
+      scrollTop: -70 + topOfPanelContent - panelHeadingHeight -25
     }, 200);
   }
 });

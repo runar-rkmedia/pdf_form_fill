@@ -209,11 +209,11 @@ export class HeatingCable extends Post {
       return this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
     })
     this.set(heating_cable)
-
   }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
       return this.product_model.by_id(this.product_id())
+
     }
   })
 
