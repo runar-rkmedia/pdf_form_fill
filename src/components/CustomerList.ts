@@ -32,6 +32,11 @@ export class CustomerList {
   root: TSAppViewModel
   constructor(root: TSAppViewModel) {
     root = root
+    $("a[href='#customer-list-pane']").on('show.bs.tab', (e) => {
+      if (this.list().length == 0) {
+        this.get_list()
+      }
+    })
   }
   get_list = (page = 1) => {
     page = Math.min(
@@ -55,4 +60,5 @@ export class CustomerList {
         this.loading(false)
       })
   }
+
 }

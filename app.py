@@ -413,6 +413,8 @@ def json_customer():
             customer = current_user.last_edit
         if not customer:
             raise my_exceptions.NotACustomer()
+        current_user.last_modified_customer = customer
+        db.session.commit()
         return jsonify(customer.serialize)
 
     if not customer and request.method != 'POST':
@@ -433,7 +435,7 @@ def json_customer():
 @app.route('/app')
 @company_required
 @login_required
-def view_form():
+def view_form(pane=0):
     """View for home."""
     # WARNING: NEVER PUT THIS IN PRODUCTION!
     # login_user(User.query.filter(User.id==1).first())
@@ -442,12 +444,20 @@ def view_form():
     customerForm = forms.CustomerForm()
     form = forms.CustomerForm()
     roomForm = forms.RoomForm()
+    pane = request.args.get('pane', pane)
+    try:
+        pane = int(pane)
+    except ValueError:
+        pane = 0
+    if not (0 <= pane <= 1):
+        pane = 0
     return render_template(
         'main.html',
         heatingForm=heatingForm,
         customerForm=customerForm,
         form=form,
-        roomForm=roomForm)
+        roomForm=roomForm,
+        pane=pane)
 
 
 @app.route('/')

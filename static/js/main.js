@@ -2052,7 +2052,7 @@ ko.validatedObservable = function (initialValue, options) {
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(7), __webpack_require__(34), __webpack_require__(42)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(2), __webpack_require__(7), __webpack_require__(34), __webpack_require__(47)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, $, AppViewModel_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var pad = function (n, width, z) {
@@ -4618,6 +4618,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 });
             };
             root = root;
+            $("a[href='#customer-list-pane']").on('show.bs.tab', function (e) {
+                if (_this.list().length == 0) {
+                    _this.get_list();
+                }
+            });
         }
         return CustomerList;
     }());
@@ -7017,13 +7022,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_bootstrap_js_alert___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_bootstrap_js_alert__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_bootstrap_js_button__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_bootstrap_js_button___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_bootstrap_js_button__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_bootstrap_js_collapse__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_dropdown__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_dropdown__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_js_dropdown___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_bootstrap_js_dropdown__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_bootstrap_js_modal__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_bootstrap_js_modal__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_bootstrap_js_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_bootstrap_js_modal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_bootstrap_js_tab__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_bootstrap_js_tab__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_bootstrap_js_tab___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_bootstrap_js_tab__);
 
 
@@ -7336,7 +7341,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 38 */
+/* 38 */,
+/* 39 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -7554,7 +7560,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -7725,7 +7731,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -8070,7 +8076,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 41 */
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */
 /***/ (function(module, exports) {
 
 /* ========================================================================
@@ -8231,16 +8240,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 42 */
+/* 46 */,
+/* 47 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bs_callout_less__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bs_callout_less__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bs_callout_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__bs_callout_less__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__bs_dropdown_less__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__bs_dropdown_less__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__bs_dropdown_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__bs_dropdown_less__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_less__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_less__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_less___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__app_less__);
 
 
@@ -8264,19 +8274,19 @@ $('div').on('shown.bs.collapse', function(e) {
 
 
 /***/ }),
-/* 43 */
+/* 48 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 44 */
+/* 49 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

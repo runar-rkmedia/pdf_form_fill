@@ -280,6 +280,58 @@ canvas {
   height: 0 !important;
 }
 
-.pagination > .disabled > a{
-  visibility: hidden;
+body {
+  padding-top: 70px;
+}
+
+.py-0 {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+.fixed-size {
+  width: @font-size-large*2;
+  height: @font-size-large*2;
+}
+
+.relative {
+  position: relative;
+}
+
+.fixed-container {
+  // padding-left: @font-size-large;
+  padding-right: @font-size-large*1.5;
+  // width: 400px;
+  // min-width: 400px;
+  // float: left;
+}
+
+.fixed-icon {
+  &:extend(.fixed-size);
+  position: absolute;
+  top: 3px;
+  left: 0;
+  // padding: 40px;
+}
+
+ul.list-group.list-group-striped a {
+  &:nth-of-type(even) {
+    background: @table-bg-accent;
+  }
+
+  &:hover {
+    background: darken(@table-bg-hover, 10%);
+
+    > .list-group-item-heading {
+      color: @primary-color;
+    }
+
+    > .text-muted {
+      color: @text-color;
+    }
+  }
 }
