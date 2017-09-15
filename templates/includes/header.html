@@ -46,7 +46,7 @@
                 <a href="{{ url_for('control_panel') }}">Innstillinger</a>
               </li>
               <li>
-                <a href="{{ url_for('control_panel_company') }}">Kristiansand Elektro AS</a>
+                <a href="{{ url_for('control_panel_company') }}">{{ current_user.company.name }}</a>
               </li>
               <li role="separator" class="divider"></li>
               <li>
