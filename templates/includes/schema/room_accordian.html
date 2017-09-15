@@ -43,7 +43,32 @@
         </div>
         <!-- ko if: id() >= 0 -->
         <div class="select_products" data-bind="if: id() >= 0">
-          <h4>Varmekabler</h4>
+          <h3>Varmekabler
+            <div class="btn-group pull-right">
+              <button type="button" class="btn btn-sm btn-primary" data-bind="click: function (d, e){heating_cables().add(e)}">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                Legg til varmekabel</button>
+              <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Vis dropdown-meny</span>
+              </button>
+              <ul class="dropdown-menu dropdown-primary">
+                <li>
+                  <a data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'href': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    Endre rom</a>
+                </li>
+                <li>
+                  <a
+                    class="c-danger"
+                    data-bind="
+                                  click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    Slett rom</a>
+                </li>
+              </ul>
+            </div>
+          </h3>
           <!-- ko with: heating_cables().list() -->
           {% include 'includes/schema/heating_cable.html' %}
           <!-- /ko -->
@@ -51,32 +76,6 @@
           <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.
           </div>
           <!-- /ko -->
-        </div>
-        <div class="clearfix">
-          <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary" data-bind="click: function (d, e){heating_cables().add(e)}">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-              Legg til varmekabel</button>
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <span class="caret"></span>
-              <span class="sr-only">Vis dropdown-meny</span>
-            </button>
-            <ul class="dropdown-menu dropdown-primary">
-              <li>
-                <a data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'href': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">
-                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                  Endre rom</a>
-              </li>
-              <li>
-                <a
-                  class="c-danger"
-                  data-bind="
-                click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}">
-                  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                  Slett rom</a>
-              </li>
-            </ul>
-          </div>
         </div>
         <hr>
         <h2>Sjekkliste</h2>
