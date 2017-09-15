@@ -8,3 +8,6 @@
 [submodule "addresses"]
 	path = addresses
 	url = https://github.com/runartrollet/addresses.git
+[submodule "vk_data_extract"]
+	path = vk_data_extract
+	url = git@github.com:runartrollet/vk_data_exstract.git
