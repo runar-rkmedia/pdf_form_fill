@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+  <!-- ko with: control_panel -->
+  <div class="row">
+    <div class="col-xs-12">
+      <h2>{{current_user.company.name}}</h2>
+      Adresse:
+      {{current_user.company.address.address1}}
+      {% if current_user.company.address.address2 %}
+        ,
+        {{current_user.company.address.address2}}
+      {% endif %}
+      {{current_user.company.address.post_code}}
+      {{current_user.company.address.post_area}}
+      <div>
+        <a class="btn btn-primary" href="{{url_for('set_company')}}">Endre informasjon</a>
+      </div>
+      <h3>Medlemmer</h3>
+      <ul>
+        {% for member in memmbers %}
+          <li>
+            {{ member.given_name }}
+            ({{ member.email }})
+          </li>
+        {% endfor %}
+      </ul>
+      <div data-bind="text: get_invite()"></div>
+      <p>Du kan invitere kollegaer til dette firmaet. Merk at all medlemmer av ditt firma kan se gjennom og endre dokumentasjonen som dere har lagret, på lik linje med deg selv.</p>
+
+      <p>For å invitere en kollega, trykk nedenfor, og du vil få en ny invitasjons-lenke. Send så denne lenken til din kollega.</p>
+      <button class="btn btn-primary" data-bind="click: createInvite">Inviter kollega</button>
+      <!-- ko if: invites().length > 0 -->
+      <!-- ko foreach: invites -->
+      <div>
+        <a data-bind="text: document.location.origin + $parent.base_url() + url, attr: {href: $parent.base_url() + url}"></a>
+      </div>
+      <!-- /ko -->
+      <!-- /ko -->
+    </div>
+  </div>
+
+  <!-- /ko -->
+{% endblock %}
+{% block script %}{% endblock %}

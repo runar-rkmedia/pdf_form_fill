@@ -1,10 +1,10 @@
 [submodule "pdffields"]
-	path = pdffields
+	path = app/pdffields
 	url = https://github.com/runartrollet/pdffields.git
 	branch = utf8
 [submodule "pdfstamp"]
-	path = pdfstamp
+	path = app/pdfstamp
 	url = https://github.com/CrossRef/pdfstamp.git
 [submodule "addresses"]
-	path = addresses
+	path = app/addresses
 	url = https://github.com/runartrollet/addresses.git

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+  {% from "includes/formhelpers.html" import render_field,
+  render_field_group %}
+  <div data-bind="text: Products().getProducts()" ></div>
+  <div data-bind="text: customer().get()"></div>
+  <!-- ko if: Products().products().length == 0 -->
+    Henter inn data...
+    <span class="glyphicon glyphicon-refresh spinning"></span>
+  <!-- /ko -->
+  <!-- ko if: Products().products().length > 0 -->
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane {% if pane == 0 %}active{%endif%}" id="customer-pane">
+      {% include 'includes/schema/form.html' %}
+    </div>
+    <div role="tabpanel" class="tab-pane {% if pane == 1 %}active{%endif%}" id="customer-list-pane">
+      {% if pane == 1 %}<div data-bind="text: customerList().list().length == 0?customerList().get_list() : ''" ></div>{%endif%}
+      {% include 'customer_list.html' %}
+    </div>
+  </div>
+    <!-- /ko -->
+
+{% endblock %}
+{% block script %}
+  {% from "includes/formhelpers.html" import render_field,
+  render_field_group %}
+  {% include 'includes/schema/select_heating_cable_form.html' %}
+  {% include 'includes/schema/room_form_template.html' %}
+  {% include 'includes/schema/measurements.html' %}
+  {% include 'includes/schema/calculations_template.html' %}
+{% endblock %}

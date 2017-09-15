@@ -1,0 +1,62 @@
+{
+  "name": "pdf_form_fill",
+  "version": "0.4.0",
+  "description": "Fill pdf-docuumetation easily ",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --config webpack.dev.js --watch",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://runartrollet@bitbucket.org/runartrollet/pdf_form_fill.git"
+  },
+  "author": "Runar Kristoffersen",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/runartrollet/pdf_form_fill#readme",
+  "dependencies": {
+    "@types/bootstrap": "^3.3.34",
+    "@types/googlemaps": "^3.26.20",
+    "@types/jquery": "^3.2.6",
+    "@types/knockout": "^3.4.41",
+    "@types/knockout.validation": "0.0.33",
+    "bootstrap": "^3.3.7",
+    "file-loader": "^0.11.2",
+    "googlemaps": "^1.12.0",
+    "jquery": "^3.2.1",
+    "knockout": "^3.4.2",
+    "knockout.typeahead": "git+https://github.com/runartrollet/knockout.typeahead.git",
+    "knockout.validation": "^2.0.3",
+    "title-case": "^2.1.1",
+    "typeahead": "^0.2.2",
+    "typescript": "^2.6.0-dev.20170902",
+    "uglify-js": "^3.0.23",
+    "url-loader": "^0.5.9"
+  },
+  "devDependencies": {
+    "@types/bootbox": "^4.4.34",
+    "@types/node": "^8.0.10",
+    "bootbox": "^4.4.0",
+    "bootswatch": "^3.3.7",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "fork-ts-checker-webpack-plugin": "^0.2.4",
+    "html-loader": "^0.4.5",
+    "knockout-template-loader": "^1.0.1",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.5",
+    "recursive-diff": "^0.1.2",
+    "style-loader": "^0.18.2",
+    "ts-loader": "^2.2.2",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "watch": "^1.0.2",
+    "webpack": "^3.0.0",
+    "webpack-clean-obsolete-chunks": "^0.2.0",
+    "webpack-dev-server": "^2.7.1",
+    "webpack-merge": "^4.1.0"
+  }
+}

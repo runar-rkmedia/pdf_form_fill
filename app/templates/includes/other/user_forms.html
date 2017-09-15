@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<div class="col-xs-12">
+  <h2>Mine varmekabler</h2>
+  <p>Her kan du se en list over alle varmekablene du har lagt inn. Trykk på overskriften for å gjøre endringer.</p>
+  <div class="col-xs-12"></div>
+  <!-- ko if: user_forms()-->
+  <div class="panel-group"
+       role="tablist"
+       aria-multiselectable="true">
+    <!-- ko template: { name: 'form_template', data: user_forms} -->
+    <!-- /ko -->
+  </div>
+  <!-- /ko -->
+</div>

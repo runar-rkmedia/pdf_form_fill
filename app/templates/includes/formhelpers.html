@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+{% macro render_field(field, formgroup = 'form-group', no_label = False, label_class = None, class_ = "form-control", label_extra = {}) %}
+  {% if formgroup %}
+    <div class="{{ formgroup }}">
+    {% endif %}
+    {% if not no_label %}
+      {% if field.type == 'BooleanField' %}
+        <label class="{{ 'checkbox' if label_class == None }}{{ label_class if label_class }}">
+
+          {{ field(class_='checkbox ' + class_, **kwargs) }}
+          {{ field.label.text|safe }}
+        </label>
+      {% else %}
+        {% if label_class %}
+          {{ field.label(class_=label_class, **label_extra) }}
+        {% else %}
+          {{ field.label }}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    {% if field.type != 'BooleanField' %}
+      {{ field(class_=class_, **kwargs)|safe }}
+    {% endif %}
+
+    {% if field.errors %}
+      <ul class="errors">
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if formgroup %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro render_field_group(field) %}
+  <div class="form-group">
+    {{ render_field(field, **kwargs) }}
+  </div>
+{% endmacro %}

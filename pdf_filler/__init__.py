@@ -1,1 +1,0 @@
-NumberTypes = (int, float, complex)

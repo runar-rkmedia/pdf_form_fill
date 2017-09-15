@@ -1,0 +1,9 @@
+<a href="{{ url_for("google.login", redirect_url=redirect_url) }}">
+  <span class="gSignInWrapper">
+    <span class="customBtn customGPlusSignIn{% if login_text == True %} customBtnWide{% endif %}">
+      <img class="icon" src="{{url_for('static', filename='icons/btn_google_light_normal_ios.svg')}}" alt="Google">
+      <span class="buttonText">
+        Google</span>
+    </span>
+  </span>
+</a>
