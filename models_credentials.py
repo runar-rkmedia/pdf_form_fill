@@ -143,35 +143,17 @@ class Company(MyBaseModel, db.Model):
         else:
             raise my_exceptions.NotAuthorized()
 
-    def get_forms(self, user, per_page=PER_PAGE, page=1):
-        """Return all filled forms by company, not by current user."""
-        return None, None
-    # TODO: Fix this again
-        query = Room\
-            .query\
-            .filter(Room.customer.company == self)\
-            .paginate(
-                page=page,
-                per_page=per_page,
-                error_out=True
-            )
-        filled_forms = []
-        for i in query.items:
-            if (
-                    any(
-                        True for mod in
-                        i.modifications
-                        if not mod.archived
-                    ) and
-                    any(
-                        True for mod in
-                        i.modifications
-                        if not mod.user == user
-                    )
-            ):
-                filled_forms.append(i)
+    @classmethod
+    def customer_list_query(cls, company_id):
+        """Return a query with all the customers at a company."""
+        return Customer.query.\
+            filter(
+                (
+                    (Customer.company_id == company_id)
+                    & (Customer.archived != True)
+                )
+            )\
 
-        return filled_forms, query.pages
 
     @classmethod
     def update_or_create(

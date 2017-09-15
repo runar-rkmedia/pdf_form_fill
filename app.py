@@ -367,7 +367,6 @@ def json_room():
 @company_required
 def json_customer_list():
     """Retrieve a list of all customers relevant to a user."""
-    # customers = current_user.company.customers
     data = request.json or request.args or {}
     try:
         page = int(data.get('page', 1))
@@ -379,16 +378,9 @@ def json_customer_list():
             status_code=403,
             defcon_level=my_exceptions.DefconLevel.danger
         )
-    customers = Customer.query.\
-        filter(
-            (
-                (Customer.company_id == current_user.company_id)
-                & (Customer.archived != True)
-            )
-        )\
+    customers = Company.customer_list_query(current_user.company_id)\
         .order_by(Customer.modified_on_date.desc())\
         .paginate(page, per_page, False)
-    print('pagination', customers.items)
     return jsonify({
         'pages': customers.pages,
         'page': customers.page,
