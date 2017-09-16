@@ -14,7 +14,7 @@ class BaseConfig(object):
             'PRODUCT_DATABASE_URL', 'postgres:///vk_products'),
     }
     G_CLIENT_ID = os.environ.get(
-        'G_CLIENT_ID', 'postgres:///varmekabler')
+        'G_CLIENT_ID' )
     G_CLIENT_SECRET = os.environ.get(
         'G_CLIENT_SECRET', '')
     OAUTHLIB_INSECURE_TRANSPORT = os.environ.get(
