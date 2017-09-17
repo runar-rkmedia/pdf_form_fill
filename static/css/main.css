@@ -19592,3 +19592,50 @@ ul.list-group.list-group-striped a:hover > .text-muted {
 .mr-1 {
   margin-right: 0.25em;
 }
+@media only screen and (max-width: 1250px) {
+  .jumbotron h1 {
+    font-size: 6rem;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .jumbotron h1 {
+    font-size: 4rem;
+  }
+  .jumbotron p {
+    font-size: 1.6rem;
+  }
+  .jumbotron p .btn {
+    padding: 0.5em;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .jumbotron h1 {
+    font-size: 2.8rem;
+  }
+  .jumbotron p {
+    font-size: 1.5rem;
+  }
+}
+@media only screen and (max-width: 400px) {
+  .jumbotron h1 {
+    font-size: 2.2rem;
+  }
+  .jumbotron p {
+    font-size: 1.5rem;
+  }
+}
+@media only screen and (max-width: 767px) {
+  h2 {
+    font-size: 2rem;
+  }
+  h3 {
+    font-size: 1.8rem;
+  }
+  h4 {
+    font-size: 1.6rem;
+  }
+}
+body {
+  overflow: hidden;
+  overflow-y: auto;
+}

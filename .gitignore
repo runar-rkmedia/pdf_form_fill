@@ -280,5 +280,6 @@ typings/
 # dotenv environment variables file
 .env
 .clever.json
-
+static/css/main.css
+static/js/main.js
 # End of https://www.gitignore.io/api/node

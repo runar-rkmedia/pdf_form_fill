@@ -280,6 +280,7 @@ canvas {
   height: 0 !important;
 }
 @top-padding: 70px;
+
 body {
   padding-top: @top-padding;
 }
@@ -335,7 +336,62 @@ ul.list-group.list-group-striped a {
     }
   }
 }
-@spacer:  1em;
+@spacer: 1em;
+
 .mr-1 {
   margin-right: @spacer * .25;
+}
+
+.jumbotron {
+  // padding: 0.5em 0.6em;
+  @media only screen and (max-width : 1250px) {
+    h1 {
+      font-size: 6rem;
+    }
+  }
+  @media only screen and (max-width : @screen-sm-max) {
+    h1 {
+      font-size: 4rem;
+    }
+    p {
+      font-size: 1.6rem;
+
+      .btn {
+        padding: 0.5em;
+      }
+    }
+  }
+  @media only screen and (max-width : @screen-xs-max) {
+    h1 {
+      font-size: 2.8rem;
+    }
+    p {
+      font-size: 1.5rem;
+    }
+  }
+  @media only screen and (max-width : 400px) {
+    h1 {
+      font-size: 2.2rem;
+    }
+    p {
+      font-size: 1.5rem;
+    }
+  }
+
+}
+
+  @media only screen and (max-width : @screen-xs-max) {
+    h2 {
+      font-size: 2rem;
+    }
+    h3 {
+      font-size: 1.8rem;
+    }
+    h4 {
+      font-size: 1.6rem;
+    }
+  }
+body{
+  overflow: hidden;
+  overflow-y: auto;
 }

@@ -504,8 +504,11 @@ def main():
 @app.route('/welcome')
 def landing_page():
     """Landing-page-view."""
-    db.session.commit()
-    return render_template("landing.html")
+    create_company_invite = None
+    if not (current_user and current_user.is_authenticated and current_user.company):
+        create_company_invite = Invite.query.filter(Invite.type=='create_company').first()
+        print('gett')
+    return render_template("landing.html", create_company_invite=create_company_invite)
 
 
 @login_required
