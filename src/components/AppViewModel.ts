@@ -122,7 +122,11 @@ export class TSAppViewModel {
       })
     }
   }
-
+  set_user_setting(key: string, value: any) {
+    let data: any = {}
+    data[key] = value
+    $.post('/json/v1/user/set_setting/', JSON.stringify(data))
+  }
 
 
   parse_form_download = (result: FileDownloadInterface) => {

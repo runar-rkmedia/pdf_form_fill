@@ -19589,3 +19589,6 @@ ul.list-group.list-group-striped a:hover > .list-group-item-heading {
 ul.list-group.list-group-striped a:hover > .text-muted {
   color: #2C3E50;
 }
+.mr-1 {
+  margin-right: 0.25em;
+}

@@ -1,7 +1,25 @@
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="alert alert-dismissable alert-{{ category }}" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        {{ message|safe }}</div>
-    {% endfor %}
+{% with messages = get_flashed_messages(with_categories = true) %}
+{% for category, message in messages %}
+  {% if message == 'tip-signature'%}
+    <div id="tip-signature-alert" class="alert alert-dismissable alert-info" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong ><span class="glyphicon glyphicon-pushpin mr-1" aria-hidden="true"></span>Tips:
+      </strong>Legg til signaturen din i innstillingene, så blir alle dine skjemaer signert automatisk.
+      <a class="alert-link" href="{{url_for('control_panel')}}">Trykk her for å legge til en signatur nå. </a>
+      <div>
+        <small>
+          <a class="opaque pointer alert-link" data-bind="click: function(){$root.set_user_setting('disable-tips-signature', true);$('#tip-signature-alert').hide()}">Ikke vis denne beskjeden igjen</a>
+        </small>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-dismissable alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{ message|safe }}</div>
+  {% endif %}
+{% endfor %}
 {% endwith %}

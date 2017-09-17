@@ -2222,6 +2222,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_
                 });
             }
         };
+        TSAppViewModel.prototype.set_user_setting = function (key, value) {
+            var data = {};
+            data[key] = value;
+            $.post('/json/v1/user/set_setting/', JSON.stringify(data));
+        };
         return TSAppViewModel;
     }());
     exports.TSAppViewModel = TSAppViewModel;

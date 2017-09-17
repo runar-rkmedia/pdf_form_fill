@@ -20,7 +20,7 @@ from form_handler import MultiForms
 from models import db
 from models_credentials import (Address, Company, Customer, Invite,  # NOQA
                                 InviteType, OAuth, Room, RoomItem,
-                                RoomTypeInfo, User, UserRole)
+                                RoomTypeInfo, User, UserRole, user_settings)
 from models_product import Manufacturor, Product
 from setup_app import app, company_required, json_ok, limiter, manager
 
@@ -426,6 +426,17 @@ def json_customer():
     raise my_exceptions.NotACustomer
 
 
+def user_setting(setting, equal_to):
+    """Check if user has a setting equal to."""
+    if (
+            current_user and
+            current_user.settings and
+            current_user.settings.get(setting) == equal_to
+    ):
+        return True
+    return False
+
+
 @app.route('/app')
 @company_required
 @login_required
@@ -434,15 +445,8 @@ def view_form(pane=0):
     # WARNING: NEVER PUT THIS IN PRODUCTION!
     # login_user(User.query.filter(User.id==1).first())
     # Set up some defaults. (retrieve this from the user-config later.)
-    if not current_user.signature:
-        flash((
-            '<strong>TIPS</strong>: '
-            'Du kan legge til din signatur i innstillinger, '
-            'så blir alle dine skjema signert automatisk.'
-            '<a class="pull-right text-muted" href="'
-             + url_for('control_panel') +
-            '">Trykk her for å legge til en signatur.<a>'
-            ), 'info')
+    if not current_user.signature and not user_setting('disable-tips-signature', True):
+        flash('tip-signature')
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()
     form = forms.CustomerForm()
@@ -463,6 +467,32 @@ def view_form(pane=0):
         pane=pane)
 
 
+@login_required
+@app.route('/json/v1/user/set_setting/', methods=['POST'])
+def set_user_setting():
+    """Set a user-setting."""
+    if not request.json:
+        raise my_exceptions.MyBaseException(
+            message='Mottok ikke noe data',
+            defcon_level=my_exceptions.DefconLevel.warning,
+            status_code=403
+        )
+    if not current_user.settings:
+        current_user.settings = {}
+    for key, value in request.json.items():
+        if key in user_settings:
+            current_user.settings[key] = value
+        else:
+            db.session.rollback()
+            raise my_exceptions.MyBaseException(
+                message='Fikk en ugyldig verdi {}'.format(key),
+                defcon_level=my_exceptions.DefconLevel.danger,
+                status_code=403
+            )
+    db.session.commit()
+    return json_ok()
+
+
 @app.route('/')
 def main():
     """Landing-page-view."""
@@ -474,6 +504,7 @@ def main():
 @app.route('/welcome')
 def landing_page():
     """Landing-page-view."""
+    db.session.commit()
     return render_template("landing.html")
 
 

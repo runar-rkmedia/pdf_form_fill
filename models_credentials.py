@@ -5,12 +5,11 @@ from datetime import datetime, timedelta
 from enum import Enum
 from sqlalchemy import desc, exc, or_
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.sql.expression import func
 
 import my_exceptions
 from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
 from flask_login import UserMixin
-from models import PER_PAGE, ByID, MyBaseModel, NoAccess, db
+from models import ByID, MyBaseModel, NoAccess, db
 from models_product import Product
 from pdf_filler.helpers import id_generator
 
@@ -54,6 +53,11 @@ class RoomTypeInfo(ByID, db.Model):
         if self.outside:
             d['outside'] = self.outside
         return d
+
+
+user_settings = [
+    'disable-tips-signature'
+]
 
 
 class Address(MyBaseModel, db.Model):
@@ -177,7 +181,7 @@ class Company(MyBaseModel, db.Model):
         try:
             db.session.add(company)
             db.session.commit()
-        except exc.IntegrityError as e:
+        except exc.IntegrityError:
             db.session.rollback()
             raise my_exceptions.DuplicateCompany()
         else:
@@ -253,6 +257,7 @@ class User(ByID, UserMixin, db.Model):
         db.Integer, db.ForeignKey('customer.id'))
     last_modified_customer = db.relationship(
         'Customer', primaryjoin='User.last_modified_customer_id==Customer.id', post_update=True)
+    settings = (db.Column(db.JSON()))
 
     @property
     def last_edit(self):
@@ -260,38 +265,9 @@ class User(ByID, UserMixin, db.Model):
         if not self.last_modified_customer:
             return None
         if (
-            self.last_modified_customer.owns(self) and
+                self.last_modified_customer.owns(self) and
                 not self.last_modified_customer.archived):
             return self.last_modified_customer
-
-    def get_forms(self, per_page=PER_PAGE, page=1):
-        """Return all filled forms created by user."""
-        return [], 0
-        subq = db.session\
-            .query(
-                func.max(RoomItem.id)
-            )\
-            .filter(
-                (RoomItem.user == self) &
-                (RoomItem.archived != True)  # noqa
-            )\
-            .group_by(RoomItem.room_id)\
-            .subquery()
-        query = RoomItem\
-            .query\
-            .filter(RoomItem.id.in_(subq))\
-            .paginate(
-                page=page,
-                per_page=per_page,
-                error_out=True
-            )
-
-        filled_forms = []
-        for mod in query.items:
-            if mod.room and not mod.room.archived:
-                filled_forms.append(mod.room)
-
-        return filled_forms, query.pages
 
     def owns(self, model):
         """Check if user has rights to access this."""
@@ -432,6 +408,7 @@ class Customer(MyBaseModel, db.Model):
 
     @classmethod
     def update_or_create(cls, customer, customer_form, user):
+        """Create a new customer, or update if exists."""
         if customer:
             customer.owns(user)
         if not customer:
@@ -459,6 +436,7 @@ class Customer(MyBaseModel, db.Model):
 
     @property
     def serialize(self):
+        """Serialize."""
         return {
             'name': self.name,
             'address': self.address.serialize,
@@ -479,14 +457,15 @@ class Customer(MyBaseModel, db.Model):
                 'date': self.date
             },
         }
-        if (self.date-self.modified_on_date).seconds:
+        if (self.date - self.modified_on_date).seconds:
             dictionary['modified'] = {
                 'given_name': self.created_by_user.given_name,
                 'family_name': self.created_by_user.family_name,
                 'date': self.date
             }
         if self.rooms:
-            dictionary['rooms'] = [i.name for i in self.rooms if i.archived != True]
+            dictionary['rooms'] = [
+                i.name for i in self.rooms if i.archived != True]
         return dictionary
 
 
