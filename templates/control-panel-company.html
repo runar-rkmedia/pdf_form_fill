@@ -17,11 +17,14 @@
         <a class="btn btn-primary" href="{{url_for('set_company')}}">Endre informasjon</a>
       </div>
       <h3>Medlemmer</h3>
-      <ul>
+      <ul class="list-group">
         {% for member in memmbers %}
-          <li>
-            {{ member.given_name }}
-            ({{ member.email }})
+          <li class="list-group-item{% if member == current_user %} list-group-item-info{% endif %}">
+            <h4 class="list-group-item-heading">
+              {{ member.given_name }}
+              {{ member.family_name }}
+            </h4>
+            <p class="list-group-item-text">({{ member.email }})</p>
           </li>
         {% endfor %}
       </ul>

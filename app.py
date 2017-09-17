@@ -57,6 +57,7 @@ def control_panel_company():
 @login_required
 def get_invite(invite_id):
     """Route for getting an invite."""
+    form = forms.HeatingCableForm()
     invite = Invite.get_invite_from_id(invite_id)
     if not invite:
         flash('Denne invitasjonsnøkkelen er ikke gyldig.')
@@ -66,19 +67,20 @@ def get_invite(invite_id):
     elif invite.type == InviteType.company:
         pass
     if request.method == 'GET':
-        return render_template('invite.html', invite=invite)
+        return render_template('invite.html', invite=invite, form=form)
 
-    if request.method == 'POST' and invite:
+    if request.method == 'POST':
         if invite.type == InviteType.company:
             invite.invitee = current_user
             current_user.company = invite.company
+            db.session.commit()
             return render_template(
-                'invite.html', invite=invite, newly_invite=True)
+                'invite.html', invite=invite,form=form)
 
 
 @app.route('/company/edit', methods=['GET', 'POST'])
 @login_required
-@company_required
+# @company_required
 def set_company(invite=None):
     """Description."""
     form = forms.CreateCompany()

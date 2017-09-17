@@ -15,11 +15,11 @@
     <p>Trykk knappen nedenfor for å bekrefte innmelding.</p>
     {% endif %}
     <form action="{{url_for('get_invite', invite_id=invite.id)}}" method="post">
+      {{ form.csrf_token }}
       <input class="btn btn-primary" type="submit" value="Meld meg inn">
     </form>
     {% endif %}
   </div>
   {% else %} Denne invitasjonsnøkkelen er dessverre ikke gyldig. {% endif %}
 </div>
-
 {% endblock %}
