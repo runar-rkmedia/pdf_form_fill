@@ -44,7 +44,7 @@ def control_panel():
 def control_panel_company():
     """Control-Panel for viewing users company."""
     if not current_user.company:
-        flash('Du er ikke medlem av et firma enda.', 'error')
+        flash('Du er ikke medlem av et firma enda.', 'warning')
         return redirect(url_for('control_panel'))
     form = forms.Invite()
     memmbers = User.query.filter(User.company == current_user.company)
@@ -54,13 +54,13 @@ def control_panel_company():
 
 @app.route('/invite/<invite_id>', methods=['GET', 'POST'])
 @app.route('/invite/')
-@login_required
+# @login_required
 def get_invite(invite_id):
     """Route for getting an invite."""
     form = forms.HeatingCableForm()
     invite = Invite.get_invite_from_id(invite_id)
     if not invite:
-        flash('Denne invitasjonsnøkkelen er ikke gyldig.')
+        flash('Denne invitasjonsnøkkelen er ikke gyldig.', 'warning')
         return redirect(url_for('control_panel'))
     if invite.type == InviteType.create_company:
         return set_company(invite=invite)
@@ -74,8 +74,7 @@ def get_invite(invite_id):
             invite.invitee = current_user
             current_user.company = invite.company
             db.session.commit()
-            return render_template(
-                'invite.html', invite=invite,form=form)
+            return redirect(url_for('view_form', pane=1))
 
 
 @app.route('/company/edit', methods=['GET', 'POST'])
@@ -95,7 +94,7 @@ def set_company(invite=None):
                     my_exceptions.LocationException,
                     my_exceptions.DuplicateCompany
             ) as e:
-                flash(e.message, 'error')
+                flash(e.message, 'danger')
                 return render_template(
                     'create_company.html', invite=invite, form=form)
             if invite:
@@ -435,6 +434,15 @@ def view_form(pane=0):
     # WARNING: NEVER PUT THIS IN PRODUCTION!
     # login_user(User.query.filter(User.id==1).first())
     # Set up some defaults. (retrieve this from the user-config later.)
+    if not current_user.signature:
+        flash((
+            '<strong>TIPS</strong>: '
+            'Du kan legge til din signatur i innstillinger, '
+            'så blir alle dine skjema signert automatisk.'
+            '<a class="pull-right text-muted" href="'
+             + url_for('control_panel') +
+            '">Trykk her for å legge til en signatur.<a>'
+            ), 'info')
     heatingForm = forms.HeatingCableForm()
     customerForm = forms.CustomerForm()
     form = forms.CustomerForm()
