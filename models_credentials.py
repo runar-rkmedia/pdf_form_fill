@@ -326,6 +326,7 @@ class Invite(db.Model):
     def get_invites_from_user(cls, inviter):
         """Return all invites from user which are still valid for signup."""
         return Invite.query.filter(
+            Invite.type == 'company',
             Invite.inviter_user_id == inviter.id,
             Invite.invitee_user_id == None)  # noqa
 
