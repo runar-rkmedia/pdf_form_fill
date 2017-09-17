@@ -21,12 +21,14 @@
         {% elif current_user and current_user.is_authenticated and current_user.company %}
           <a class="btn btn-primary btn-lg" href="{{ url_for('view_form') }}" role="button">Kom i gang &raquo;</a>
         {% else %}
-          <a class="btn btn-primary btn-lg" role="button" type="button" data-toggle="collapse" data-target="#ingen-invitasjoner" aria-expanded="false" aria-controls="ingen-invitasjoner">Kom i gang &raquo;</a>
+          <a class="btn btn-primary btn-lg" role="button" type="button" data-toggle="collapse" data-target="#ingen-invitasjoner" aria-expanded="false" aria-controls="ingen-invitasjoner">Registrer firma &raquo;</a>
           <div class="collapse" id="ingen-invitasjoner">
               <div class="well">
                 <h2>Ikke flere invitasjoner igjen</h2>
                 <p>Vi har dessverre ingen ledige invitasjoner.</p>
                 <p>Sjekk inn her senere. Vi legger stadig ut nye invitasjoner.</p>
+                <p>Om du kjenner noen som bruker VarmeDok, kan du spørre de etter en invitasjon.</p>
+                <p>Alternativt, kan du alltid sende en hyggelig epost til oss.</p>
               </div>
           </div>
         {% endif %}

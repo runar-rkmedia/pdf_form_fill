@@ -506,7 +506,11 @@ def landing_page():
     """Landing-page-view."""
     create_company_invite = None
     if not (current_user and current_user.is_authenticated and current_user.company):
-        create_company_invite = Invite.query.filter(Invite.type=='create_company').first()
+        create_company_invite = Invite.query\
+            .filter(
+                (Invite.type == 'create_company') &
+                (Invite.invitee_user_id == None)
+                ).first()
         print('gett')
     return render_template("landing.html", create_company_invite=create_company_invite)
 
