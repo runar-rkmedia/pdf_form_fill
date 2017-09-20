@@ -17,13 +17,14 @@ module.exports = {
   cache: true,
   entry: path.join(srcPath, "/main.ts"),
   output: {
-    filename: path.join(jsOutPath, "/main.js")
+    filename: path.join(jsOutPath, "/main.js"),
   },
   externals: {
     // require("jquery") is external and available
     //  on the global var jQuery
     "jquery": 'jQuery',
     "knockout": 'ko',
+    // "moment": 'moment',
     // "kv": 'knockout_validation'
   },
   resolve: {

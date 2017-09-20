@@ -13,7 +13,7 @@ $('div').on('shown.bs.collapse', function(e) {
 
     }
     $("html, body").animate({
-      scrollTop: -70 + topOfPanelContent - panelHeadingHeight -25
+      scrollTop: -70 + topOfPanelContent - panelHeadingHeight - 25
     }, 200);
   }
 });

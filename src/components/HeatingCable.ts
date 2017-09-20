@@ -5,6 +5,87 @@ import {
   ProductInterface,
   ProductFilter,
 } from "./ProductModel"
+let moment = require('moment')
+import 'moment/locale/nb';
+moment.locale('nb')
+// import BootstrapV3DatetimePicker = require("eonasdan-bootstrap-datetimepicker")
+require("eonasdan-bootstrap-datetimepicker")
+// import * as datepicker from 'bootstrap-datepicker'
+
+
+ko.bindingHandlers.dateTimePicker = {
+  init: function(element, valueAccessor, allBindingsAccessor) {
+    // initialize datepicker with some optional options
+    var options = allBindingsAccessor!().dateTimePickerOptions || {};
+    let default_options = {
+      format: "L",
+      // minDate: moment(),
+      calendarWeeks: true,
+      showTodayButton: true,
+      maxDate: '2030-12-30',
+      ignoreReadonly: true,
+      tooltips: {
+        today: 'Gå til i dag',
+        clear: 'Nullstill',
+        close: 'Lukk',
+        selectMonth: 'Velg måned',
+        prevMonth: 'Forrige måned',
+        nextMonth: 'Neste måned',
+        selectYear: 'Velg år',
+        prevYear: 'Forrige år',
+        nextYear: 'Neste år',
+        selectDecade: 'Velg tiår',
+        prevDecade: 'Forrige tiår',
+        nextDecade: 'Neste tiår',
+        prevCentury: 'Forrige tiår',
+        nextCentury: 'Neste tiår',
+        incrementHour: 'Øk med en time',
+        pickHour: 'Velg time',
+        decrementHour: 'Reduser med en time',
+        incrementMinute: 'Øk med et minutt',
+        pickMinute: 'Velg minutt',
+        decrementMinute: 'Reduser med et minutt',
+        incrementSecond: 'Øk med et sekund',
+        pickSecond: 'Velg sekund',
+        decrementSecond: 'Reduser med en sekund',
+      }
+    }
+    $(element).datetimepicker(default_options);
+
+    //when a user changes the date, update the view model
+    ko.utils.registerEventHandler(element, "dp.change", function(event: any) {
+      var value = valueAccessor();
+      if (ko.isObservable(value)) {
+        if (event.date === false) {
+          value(null);
+        } else {
+          value(event.date.toDate());
+        }
+      }
+    });
+
+    ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
+      var picker = $(element).data("DateTimePicker");
+      if (picker) {
+        picker.destroy();
+      }
+    });
+  },
+  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+
+    var picker = $(element).data("DateTimePicker");
+    //when the view model is updated, update the widget
+    if (picker) {
+      var koDate = ko.utils.unwrapObservable(valueAccessor());
+
+      //in case return from server datetime i am get in this form for example /Date(93989393)/ then fomat this
+      koDate = (typeof (koDate) !== 'object') ? new Date(parseFloat(koDate.replace(/[^0-9]/g, ''))) : koDate;
+
+      picker.date(koDate);
+    }
+  }
+};
+
 
 export interface HeatingCableInterface {
   id: number
@@ -22,13 +103,17 @@ interface PostInterface {
   serialize(): {}
 }
 
+interface MeasurementInterface {
+  ohm: number
+  mohm: number
+  date: Date | null | string
+}
+
 interface MeasurementsInterface {
-  ohm_a: number
-  ohm_b: number
-  ohm_c: number
-  mohm_a: number
-  mohm_b: number
-  mohm_c: number
+  // TODO: This should be split into seperate interfaces
+  install: MeasurementInterface
+  pour: MeasurementInterface
+  connect: MeasurementInterface
 }
 interface CalculationsInterface {
   cc?: number
@@ -43,6 +128,43 @@ export interface HeatingCableSpecs {
 interface InputReadOnlyToggleInterface {
   v: any
   m: boolean
+}
+
+class Measurement {
+  ohm: KnockoutObservable<number>
+  mohm: KnockoutObservable<number>
+  date: KnockoutObservable<Date | string>
+  serialize: KnockoutComputed<MeasurementInterface>
+  constructor(modification_observable: any) {
+    this.ohm = <ObsMod<number>>modification_observable();
+    this.mohm = <ObsMod<number>>modification_observable();
+    this.date = <ObsMod<string>>modification_observable(null);
+
+    this.serialize = ko.computed(() => {
+      let date;
+      if (this.date() instanceof Date) {
+        date = moment(this.date()).format("YYYY-MM-DD")
+      }
+      let data = {
+        ohm: this.ohm(),
+        mohm: this.mohm(),
+        date: date
+      }
+      return data
+    })
+  }
+  set(measurement: MeasurementInterface) {
+    if (!measurement) {
+      return null
+    }
+    let date = measurement.date
+    if (typeof date === 'string' || date instanceof String) {
+      date = new Date(date) // TS-linter complaints this is not a string. It is.
+    }
+    this.ohm(measurement.ohm)
+    this.mohm(measurement.mohm)
+    this.date(date)
+  }
 }
 
 class InputReadOnlyToggle {
@@ -91,12 +213,10 @@ export class HeatingCable extends Post {
   product_id = <ObsMod<number>>this.product_observer();
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
-  ohm_a = <ObsMod<number>>this.measurements_observer();
-  ohm_b = <ObsMod<number>>this.measurements_observer();
-  ohm_c = <ObsMod<number>>this.measurements_observer();
-  mohm_a = <ObsMod<boolean>>this.measurements_observer(-1);
-  mohm_b = <ObsMod<boolean>>this.measurements_observer(-1);
-  mohm_c = <ObsMod<boolean>>this.measurements_observer(-1);
+  measurement_install = ko.observable(new Measurement(this.measurements_observer))
+  measurement_pour = ko.observable(new Measurement(this.measurements_observer))
+  measurement_connect = ko.observable(new Measurement(this.measurements_observer))
+  fill_measurement_smartly: KnockoutObservable<boolean> = ko.observable(false)
   area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
 
@@ -119,17 +239,19 @@ export class HeatingCable extends Post {
     let customer = room.parent.parent
     this.form_url = `${this.form_url}${customer.id()}/${room.id()}/`
 
+    let default_measurement: MeasurementInterface = {
+      ohm: 0,
+      mohm: 999,
+      date: ''
+    }
     let default_data: HeatingCableInterface = {
       id: -1,
       product_id: -1,
       specs: {
         measurements: {
-          ohm_a: 0,
-          ohm_b: 0,
-          ohm_c: 0,
-          mohm_a: -1,
-          mohm_b: -1,
-          mohm_c: -1
+          install: default_measurement,
+          pour: default_measurement,
+          connect: default_measurement
         },
         cc: {
           v: 0,
@@ -188,12 +310,9 @@ export class HeatingCable extends Post {
         product_id: Number(this.product_id()),
         specs: {
           measurements: {
-            ohm_a: Number(this.ohm_a()),
-            ohm_b: Number(this.ohm_b()),
-            ohm_c: Number(this.ohm_c()),
-            mohm_a: (this.mohm_a() ? 999 : -1),
-            mohm_b: (this.mohm_b() ? 999 : -1),
-            mohm_c: (this.mohm_c() ? 999 : -1),
+            install: this.measurement_install().serialize(),
+            pour: this.measurement_pour().serialize(),
+            connect: this.measurement_connect().serialize()
           },
           cc: this.cc().serialize(),
           area_output: this.area_output().serialize()
@@ -210,6 +329,11 @@ export class HeatingCable extends Post {
     })
     this.set(heating_cable)
   }
+  bindDatePicker() {
+    // $('.datepicker').datepicker({
+    // useCurrent: false
+    // })
+  }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
       return this.product_model.by_id(this.product_id())
@@ -222,13 +346,9 @@ export class HeatingCable extends Post {
     this.id(heating_cable.id)
     this.product_id(Number(heating_cable.product_id))
     if (heating_cable.specs && heating_cable.specs.measurements) {
-      // this.measurements().set(heating_cable.specs.measurements)
-      this.ohm_a(heating_cable.specs.measurements.ohm_a)
-      this.ohm_b(heating_cable.specs.measurements.ohm_b)
-      this.ohm_c(heating_cable.specs.measurements.ohm_c)
-      this.mohm_a(heating_cable.specs.measurements.mohm_a >= 0)
-      this.mohm_b(heating_cable.specs.measurements.mohm_b >= 0)
-      this.mohm_c(heating_cable.specs.measurements.mohm_c >= 0)
+      this.measurement_install().set(heating_cable.specs.measurements.install)
+      this.measurement_pour().set(heating_cable.specs.measurements.pour)
+      this.measurement_connect().set(heating_cable.specs.measurements.connect)
       this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
       this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
       this.cc().override(Boolean(heating_cable.specs.cc!.m))

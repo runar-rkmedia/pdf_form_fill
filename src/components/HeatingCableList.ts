@@ -32,9 +32,6 @@ export class HeatingCableList extends ByID {
       let accordian = btn.parent().parent().parent()
       let panel = accordian.find('#heat-1')
       let panel_vk = panel.find('#panel_select_cable-1')
-      console.log(btn, accordian, panel, panel_vk)
-      console.log(btn.length, accordian.length, panel.length, panel_vk.length)
-      panel.collapse('show')
       panel_vk.addClass('in')
     }, 20)
 

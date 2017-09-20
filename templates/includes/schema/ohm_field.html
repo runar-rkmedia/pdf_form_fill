@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script type="text/html" id="ohm_field">
+  <label for="input-ohm_a" data-bind="css: { 'label-mod-flag': $data.data().ohm.modified() }">
+    <!-- ko ifnot: $parent.fill_measurement_smartly -->
+    <span data-bind="html: title"></span>
+    <!-- /ko -->
+    <!-- ko if: $parent.fill_measurement_smartly -->
+    <span>Ledermotstand</span>
+    <!-- /ko -->
+  </label>
+  <div class="input-group xxs-block">
+    <input class="form-control" type="number" step="0.01" min="0" id="input-ohm_a" data-bind="textInput: data().ohm">
+    <div class="input-group-addon hidden-xxs">Ω</div>
+  </div>
+  <!-- ko if: $parent.product()-->
+  <a class="quick-fill" href="#" data-bind="click: function(){$data.data().ohm($parent.product().restrictions.min.toFixed(2))}">Sett til nominell verdi
+    <span class="text-nowrap" data-bind="text:'( ' + $parent.product().restrictions.min.toFixed(2) +' Ω )'"></span>
+  </a>
+  <!-- /ko -->
+</script>

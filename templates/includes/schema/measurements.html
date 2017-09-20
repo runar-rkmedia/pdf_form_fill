@@ -3,48 +3,105 @@
   <h4>
     Målinger
   </h4>
-  <!-- ko if: product()-->
-  <small class="col-xs-12 well well-lg">
-    Målingene bør ligge mellom:
-    <span data-bind="text: product().restrictions.min.toFixed(2)"></span>&nbsp;Ω og
-    <span data-bind="text: product().restrictions.max.toFixed(2)"></span>&nbsp;Ω for denne varmekabelen.
-  </small>
-  <!-- /ko -->
-  <div class="form-group col-xs-4">
-    <label for="input-ohm_a" data-bind="css: { 'label-mod-flag': ohm_a.modified() }">Før
-      <br class="visible-xs">installasjon</label>
-    <input class="form-control" type="number" step="0.01" min="0" name="ohm_a" id="input-ohm_a" data-bind="textInput: ohm_a">
-  </div>
-  <div class="form-group col-xs-4">
-    <label for="input-ohm_b" data-bind="css: { 'label-mod-flag': ohm_b.modified() }">Før
-      <br class="visible-xs">støping</label>
-    <input class="form-control" type="number" step="0.01" min="0" name="ohm_b" id="input-ohm_b" data-bind="textInput: ohm_b">
-  </div>
-  <div class="form-group col-xs-4">
-    <label for="input-ohm_c" data-bind=" css: { 'label-mod-flag' : ohm_c.modified() }">Før
-      <br class="visible-xs">tilkobling</label>
-    <input class="form-control" type="number" step="0.01" min="0" name="ohm_c" id="input-ohm_c" data-bind="textInput: ohm_c">
-  </div>
-  <fieldset class="col-xs-12">
-    <legend>Isolasjonsmotstand</legend>
-    <p>Kryss av i hvert under felt hvor Isolasjonsmotstanden i varmekabelen er tilfredstillende god (100 MΩ)</p>
-    <div class="col-xs-4 col-sm-3 col-md-2">
-      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': mohm_a.modified() }">
-        <input type="checkbox" name="mohm_a" value="999" data-bind="checked: mohm_a">
-        Før installasjon
-      </label>
+  <div class="col-xs-12">
+    <div class="[ form-group ]">
+      <input type="checkbox" name="fancy-checkbox-info" id="fancy-checkbox-info" autocomplete="off"/>
+      <div class="[ form-group ]">
+        <input type="checkbox" id="fancy-checkbox-default" autocomplete="off" data-bind="checked: fill_measurement_smartly, attr: {id: 'fill_check_' + id()}"/>
+        <div class="[ btn-group ]">
+          <label class="[ btn btn-default active ]" data-bind="attr: {for: 'fill_check_' + id()}">
+            Smart utfylling av målinger
+          </label>
+          <label for="fancy-checkbox-default" class="[ btn btn-info ]" data-bind="attr: {for: 'fill_check_' + id()}">
+            <span class="[ glyphicon glyphicon-ok ]"></span>
+            <span></span>
+          </label>
+        </div>
+      </div>
     </div>
-    <div class="col-xs-4 col-sm-3 col-md-2">
-      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': mohm_b.modified() }">
-        <input type="checkbox" name="mohm_b" value="999" data-bind="checked: mohm_b">
-        Før støping
-      </label>
+    <hr>
+    <div class="row"></div>
+    <!-- ko if: product()-->
+    <small class="col-xs-12 well well-lg">
+      Ledermotstanden bør ligge mellom:
+      <span data-bind="text: product().restrictions.min.toFixed(2)"></span>&nbsp;Ω og
+      <span data-bind="text: product().restrictions.max.toFixed(2)"></span>&nbsp;Ω for denne varmekabelen.
+    </small>
+    <!-- /ko -->
+
+    <!-- ko ifnot: fill_measurement_smartly -->
+    <h3>Ledermotstand<span class="visible-xs-inline">
+        ( Ω )</span>
+    </h3>
+    <!-- /ko -->
+
+    <div data-bind="css: {'col-xs-6': fill_measurement_smartly(), 'col-xs-4': !fill_measurement_smartly()}">
+      <!-- ko template: { name: 'ohm_field', data: {data: measurement_install, title: 'Før <br class="visible-xs">installasjon'} } -->
+      <!-- /ko -->
+      <!-- sdfs -->
     </div>
-    <div class="col-xs-4 col-sm-3 col-md-2">
-      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': mohm_c.modified() }">
-        <input type="checkbox" name="mohm_c" value="999" data-bind="checked: mohm_c">
-        Før tilkobling
-      </label>
+    <!-- ko ifnot: fill_measurement_smartly -->
+    <div class="col-xs-4">
+      <!-- ko template: { name: 'ohm_field', data: {data: measurement_pour, title: 'Før <br class="visible-xs">innstøping'} } -->
+      <!-- /ko -->
     </div>
-  </fieldset>
-</script>
+    <div class="col-xs-4">
+      <!-- ko template: { name: 'ohm_field', data: {data: measurement_connect, title: 'Før <br class="visible-xs">tilkobling'} } -->
+      <!-- /ko -->
+    </div>
+    <!-- /ko -->
+
+    <!-- ko ifnot: fill_measurement_smartly -->
+    <h3>Isolasjonsmotstand<span class="visible-xs-inline">
+        ( MΩ )</span>
+    </h3>
+    <!-- /ko -->
+
+    <div class="form-group" data-bind="css: {'col-xs-6': fill_measurement_smartly(), 'col-xs-4': !fill_measurement_smartly()}">
+      <!-- ko template: { name: 'mohm_field', data: {data: measurement_install, title: 'Før <br class="visible-xs">installasjon'} } -->
+      <!-- /ko -->
+      <!-- sdfs -->
+    </div>
+    <!-- ko ifnot: fill_measurement_smartly -->
+    <div class="col-xs-4 form-group">
+      <!-- ko template: { name: 'mohm_field', data: {data: measurement_pour, title: 'Før <br class="visible-xs">innstøping'} } -->
+      <!-- /ko -->
+    </div>
+    <div class="col-xs-4 form-group">
+      <!-- ko template: { name: 'mohm_field', data: {data: measurement_connect, title: 'Før <br class="visible-xs">tilkobling'} } -->
+      <!-- /ko -->
+    </div>
+    <!-- /ko -->
+
+    <!-- Dato -->
+
+    <div class="row">
+      <div class="col-xs-12 col-md-4 form-group">
+        <label for="input-date_a" data-bind="css: { 'label-mod-flag': measurement_install().date.modified() }">Dato installasjon</label>
+        <div class="input-group date" data-bind="dateTimePicker: measurement_install().date">
+          <input class="form-control datepicker " type="text">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-4 form-group">
+        <label for="input-date_b" data-bind="css: { 'label-mod-flag': measurement_pour().date.modified() }">Dato støp</label>
+        <div class="input-group date" data-bind="dateTimePicker:  measurement_pour().date">
+          <input class="form-control datepicker" type="text">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-4 form-group">
+        <label for="input-date_c" data-bind="css: { 'label-mod-flag': measurement_connect().date.modified() }">Dato montering</label>
+        <div class="input-group date" data-bind="dateTimePicker:  measurement_connect().date">
+          <input class="form-control datepicker" type="text">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </script>

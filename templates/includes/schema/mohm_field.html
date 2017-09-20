@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script type="text/html" id="mohm_field">
+  <label for="input-mohm_a" data-bind="css: { 'label-mod-flag': $data.data().mohm.modified() }">
+    <!-- ko ifnot: $parent.fill_measurement_smartly -->
+    <span data-bind="html: title"></span>
+    <!-- /ko -->
+    <!-- ko if: $parent.fill_measurement_smartly -->
+    <span>Isolasjonsmotstand</span>
+    <!-- /ko -->
+  </label>
+  <div class="input-group xxs-block">
+    <input class="form-control" type="number" step="0.01" min="0" id="input-mohm_a" data-bind="textInput: $data.data().mohm">
+    <div class="input-group-addon hidden-xxs">Ω</div>
+  </div>
+</script>

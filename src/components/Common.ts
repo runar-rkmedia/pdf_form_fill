@@ -1,4 +1,3 @@
-import { AddressInterface } from "./Common"
 import { TSAppViewModel } from './AppViewModel'
 var diff = require('recursive-diff');
 import bootbox = require("bootbox")
@@ -125,7 +124,6 @@ export abstract class Post extends Base {
   comfirm_delete_dialog(title: string, message: string, warning?: string) {
     let message_warning = message
     message_warning += warning ? `<div class="bs-callout bs-callout-warning"><h4>ADVARSEL!</h4><p>${warning}</p></div>` : ''
-    console.log(warning)
     bootbox.confirm({
       title: title,
       message: message_warning,
@@ -140,7 +138,7 @@ export abstract class Post extends Base {
       },
       callback: (result) => {
         if (result) {
-          console.log(this.delete())
+          this.delete()
         }
       }
     });
@@ -185,6 +183,9 @@ ko.extenders.modification = (target: any, option: KnockoutObservableArray<any>[]
       if (div > 0.99999 && div < 1.00001) {
         return false
       }
+    }
+    if (target() != target.last_data()) {
+      // console.log(target(), target.last_data())
     }
     return target() != target.last_data()
   })
