@@ -4,7 +4,6 @@ import './app.less';
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
   var topOfPanelContent = target.offset().top;
-  console.log(target);
   if (target.hasClass('scrollto')) {
     var panelHeadingHeight = 30;
     if (target.hasClass('panel')) {

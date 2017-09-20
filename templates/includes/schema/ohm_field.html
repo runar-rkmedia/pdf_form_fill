@@ -13,8 +13,8 @@
     <div class="input-group-addon hidden-xxs">Ω</div>
   </div>
   <!-- ko if: $parent.product()-->
-  <a class="quick-fill" href="#" data-bind="click: function(){$data.data().ohm($parent.product().restrictions.min.toFixed(2))}">Sett til nominell verdi
-    <span class="text-nowrap" data-bind="text:'( ' + $parent.product().restrictions.min.toFixed(2) +' Ω )'"></span>
+  <a class="quick-fill" href="#" data-bind="click: function(){$data.data().ohm($parent.product().restrictions.nom.toFixed(2))}">Sett til nominell verdi
+    <span class="text-nowrap" data-bind="text:'( ' + $parent.product().restrictions.nom.toFixed(2) +' Ω )'"></span>
   </a>
   <!-- /ko -->
 </script>

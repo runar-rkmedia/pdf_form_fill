@@ -19757,7 +19757,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             var options = allBindingsAccessor().dateTimePickerOptions || {};
             var default_options = {
                 format: "L",
-                // minDate: moment(),
+                useCurrent: false,
                 calendarWeeks: true,
                 showTodayButton: true,
                 maxDate: '2030-12-30',
@@ -19841,7 +19841,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
                 var ohm = _this.ohm();
                 var mohm = _this.mohm();
                 if (_this.mimmick && _this.mimmick() && _this.mimmickTarget) {
-                    console.log(_this.mimmick());
                     ohm = _this.mimmickTarget().ohm();
                     mohm = _this.mimmickTarget().mohm();
                 }
@@ -20034,9 +20033,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             this.id(heating_cable.id);
             this.product_id(Number(heating_cable.product_id));
             if (heating_cable.specs && heating_cable.specs.measurements) {
-                this.measurement_install().set(heating_cable.specs.measurements.install);
-                this.measurement_pour().set(heating_cable.specs.measurements.pour);
+                // The order in which we set these matters. (minDate)
                 this.measurement_connect().set(heating_cable.specs.measurements.connect);
+                this.measurement_pour().set(heating_cable.specs.measurements.pour);
+                this.measurement_install().set(heating_cable.specs.measurements.install);
                 this.area_output().override(Boolean(heating_cable.specs.area_output.m));
                 this.area_output().user_input(Number(heating_cable.specs.area_output.v));
                 this.cc().override(Boolean(heating_cable.specs.cc.m));
@@ -26859,7 +26859,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 $('div').on('shown.bs.collapse', function(e) {
   var target = $(e.target);
   var topOfPanelContent = target.offset().top;
-  console.log(target);
   if (target.hasClass('scrollto')) {
     var panelHeadingHeight = 30;
     if (target.hasClass('panel')) {

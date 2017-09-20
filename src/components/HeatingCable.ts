@@ -20,7 +20,7 @@ ko.bindingHandlers.dateTimePicker = {
 
     let default_options = {
       format: "L",
-      // minDate: moment(),
+      useCurrent: false,
       calendarWeeks: true,
       showTodayButton: true,
       maxDate: '2030-12-30',
@@ -162,7 +162,6 @@ class Measurement {
       let ohm = this.ohm()
       let mohm = this.mohm()
       if (this.mimmick && this.mimmick() && this.mimmickTarget) {
-        console.log(this.mimmick())
         ohm = this.mimmickTarget().ohm()
         mohm = this.mimmickTarget().mohm()
       }
@@ -376,9 +375,11 @@ export class HeatingCable extends Post {
     this.id(heating_cable.id)
     this.product_id(Number(heating_cable.product_id))
     if (heating_cable.specs && heating_cable.specs.measurements) {
-      this.measurement_install().set(heating_cable.specs.measurements.install)
-      this.measurement_pour().set(heating_cable.specs.measurements.pour)
+      // The order in which we set these matters. (minDate)
       this.measurement_connect().set(heating_cable.specs.measurements.connect)
+      this.measurement_pour().set(heating_cable.specs.measurements.pour)
+      this.measurement_install().set(heating_cable.specs.measurements.install)
+
       this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
       this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
       this.cc().override(Boolean(heating_cable.specs.cc!.m))
