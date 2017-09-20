@@ -19810,8 +19810,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         },
         update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
             var picker = $(element).data("DateTimePicker");
+            var minDate = allBindings().minDate;
             //when the view model is updated, update the widget
             if (picker) {
+                if (minDate) {
+                    picker.minDate(minDate());
+                }
                 var koDate = ko.utils.unwrapObservable(valueAccessor());
                 //in case return from server datetime i am get in this form for example /Date(93989393)/ then fomat this
                 koDate = (typeof (koDate) !== 'object') ? new Date(parseFloat(koDate.replace(/[^0-9]/g, ''))) : koDate;
@@ -19820,19 +19824,30 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
         }
     };
     var Measurement = /** @class */ (function () {
-        function Measurement(modification_observable) {
+        function Measurement(modification_observable, mimmick, mimmickTarget) {
             var _this = this;
             this.ohm = modification_observable();
             this.mohm = modification_observable();
             this.date = modification_observable(null);
+            if (mimmick && mimmickTarget) {
+                this.mimmick = mimmick;
+                this.mimmickTarget = mimmickTarget;
+            }
             this.serialize = ko.computed(function () {
                 var date;
                 if (_this.date() instanceof Date) {
                     date = moment(_this.date()).format("YYYY-MM-DD");
                 }
+                var ohm = _this.ohm();
+                var mohm = _this.mohm();
+                if (_this.mimmick && _this.mimmick() && _this.mimmickTarget) {
+                    console.log(_this.mimmick());
+                    ohm = _this.mimmickTarget().ohm();
+                    mohm = _this.mimmickTarget().mohm();
+                }
                 var data = {
-                    ohm: _this.ohm(),
-                    mohm: _this.mohm(),
+                    ohm: ohm,
+                    mohm: mohm,
                     date: date
                 };
                 return data;
@@ -19898,10 +19913,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             _this.product_id = _this.product_observer();
             _this.url = '/json/v1/heat/';
             _this.id = ko.observable();
+            _this.fill_measurement_smartly = _this.measurements_observer(true);
             _this.measurement_install = ko.observable(new Measurement(_this.measurements_observer));
-            _this.measurement_pour = ko.observable(new Measurement(_this.measurements_observer));
-            _this.measurement_connect = ko.observable(new Measurement(_this.measurements_observer));
-            _this.fill_measurement_smartly = ko.observable(false);
+            _this.measurement_pour = ko.observable(new Measurement(_this.measurements_observer, _this.fill_measurement_smartly, _this.measurement_install));
+            _this.measurement_connect = ko.observable(new Measurement(_this.measurements_observer, _this.fill_measurement_smartly, _this.measurement_install));
             _this.validationModel = ko.validatedObservable({
                 product_id: _this.product_id,
             });
@@ -20030,6 +20045,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __extends = 
             if (this.serialize) {
                 this.save();
             }
+            var fill_measurement_smartly = (this.measurement_install().ohm() === this.measurement_pour().ohm() &&
+                this.measurement_install().ohm() === this.measurement_connect().ohm() &&
+                this.measurement_install().mohm() === this.measurement_pour().mohm() &&
+                this.measurement_install().mohm() === this.measurement_connect().mohm());
+            this.fill_measurement_smartly(fill_measurement_smartly);
+            this.fill_measurement_smartly.save();
         };
         return HeatingCable;
     }(Common_1.Post));

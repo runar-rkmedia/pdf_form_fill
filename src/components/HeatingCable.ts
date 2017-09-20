@@ -17,6 +17,7 @@ ko.bindingHandlers.dateTimePicker = {
   init: function(element, valueAccessor, allBindingsAccessor) {
     // initialize datepicker with some optional options
     var options = allBindingsAccessor!().dateTimePickerOptions || {};
+
     let default_options = {
       format: "L",
       // minDate: moment(),
@@ -74,8 +75,12 @@ ko.bindingHandlers.dateTimePicker = {
   update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
 
     var picker = $(element).data("DateTimePicker");
+    var minDate = allBindings!().minDate;
     //when the view model is updated, update the widget
     if (picker) {
+      if (minDate) {
+        picker.minDate(minDate())
+      }
       var koDate = ko.utils.unwrapObservable(valueAccessor());
 
       //in case return from server datetime i am get in this form for example /Date(93989393)/ then fomat this
@@ -134,20 +139,36 @@ class Measurement {
   ohm: KnockoutObservable<number>
   mohm: KnockoutObservable<number>
   date: KnockoutObservable<Date | string>
+  mimmick: KnockoutObservable<boolean>
+  mimmickTarget: KnockoutObservable<Measurement>
   serialize: KnockoutComputed<MeasurementInterface>
-  constructor(modification_observable: any) {
+  constructor(
+    modification_observable: any,
+    mimmick?: KnockoutObservable<boolean>,
+    mimmickTarget?: KnockoutObservable<Measurement>
+  ) {
     this.ohm = <ObsMod<number>>modification_observable();
     this.mohm = <ObsMod<number>>modification_observable();
     this.date = <ObsMod<string>>modification_observable(null);
-
+    if (mimmick && mimmickTarget) {
+      this.mimmick = mimmick
+      this.mimmickTarget = mimmickTarget
+    }
     this.serialize = ko.computed(() => {
       let date;
       if (this.date() instanceof Date) {
         date = moment(this.date()).format("YYYY-MM-DD")
       }
+      let ohm = this.ohm()
+      let mohm = this.mohm()
+      if (this.mimmick && this.mimmick() && this.mimmickTarget) {
+        console.log(this.mimmick())
+        ohm = this.mimmickTarget().ohm()
+        mohm = this.mimmickTarget().mohm()
+      }
       let data = {
-        ohm: this.ohm(),
-        mohm: this.mohm(),
+        ohm: ohm,
+        mohm: mohm,
         date: date
       }
       return data
@@ -213,10 +234,18 @@ export class HeatingCable extends Post {
   product_id = <ObsMod<number>>this.product_observer();
   url = '/json/v1/heat/'
   id: KnockoutObservable<number> = ko.observable();
+  fill_measurement_smartly: KnockoutObservable<boolean> = this.measurements_observer(true)
   measurement_install = ko.observable(new Measurement(this.measurements_observer))
-  measurement_pour = ko.observable(new Measurement(this.measurements_observer))
-  measurement_connect = ko.observable(new Measurement(this.measurements_observer))
-  fill_measurement_smartly: KnockoutObservable<boolean> = ko.observable(false)
+  measurement_pour = ko.observable(new Measurement(
+    this.measurements_observer,
+    this.fill_measurement_smartly,
+    this.measurement_install
+  ))
+  measurement_connect = ko.observable(new Measurement(
+    this.measurements_observer,
+    this.fill_measurement_smartly,
+    this.measurement_install
+  ))
   area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
 
@@ -304,6 +333,7 @@ export class HeatingCable extends Post {
     }, this.other_observer))
 
     this.serialize = ko.computed(() => {
+
       let obj: HeatingCableInterface = {
         id: this.id(),
         room_id: this.parent.parent.id(),
@@ -357,6 +387,14 @@ export class HeatingCable extends Post {
     if (this.serialize) {
       this.save()
     }
+    let fill_measurement_smartly = (
+      this.measurement_install().ohm() === this.measurement_pour().ohm() &&
+      this.measurement_install().ohm() === this.measurement_connect().ohm() &&
+      this.measurement_install().mohm() === this.measurement_pour().mohm() &&
+      this.measurement_install().mohm() === this.measurement_connect().mohm()
+    )
+    this.fill_measurement_smartly(fill_measurement_smartly)
+    this.fill_measurement_smartly.save()
   }
   modifications_other = ko.computed(() => {
     return this.modification_check(this.other_modifications_list())

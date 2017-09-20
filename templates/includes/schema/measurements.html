@@ -87,7 +87,7 @@
       </div>
       <div class="col-xs-12 col-md-4 form-group">
         <label for="input-date_b" data-bind="css: { 'label-mod-flag': measurement_pour().date.modified() }">Dato støp</label>
-        <div class="input-group date" data-bind="dateTimePicker:  measurement_pour().date">
+        <div class="input-group date" data-bind="dateTimePicker:  measurement_pour().date, minDate: measurement_install().date">
           <input class="form-control datepicker" type="text">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
@@ -96,7 +96,7 @@
       </div>
       <div class="col-xs-12 col-md-4 form-group">
         <label for="input-date_c" data-bind="css: { 'label-mod-flag': measurement_connect().date.modified() }">Dato montering</label>
-        <div class="input-group date" data-bind="dateTimePicker:  measurement_connect().date">
+        <div class="input-group date" data-bind="dateTimePicker:  measurement_connect().date, minDate: measurement_pour().date">
           <input class="form-control datepicker" type="text">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
