@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
-from .helpers import NumberTypes, month_name, group_number, DictionaryHelper
+from .helpers import (DictionaryHelper, NumberTypes,
+                      group_number, month_name, date_format)
 from .stamp import StampablePdfForm, signatere_location_size
+from dateutil.parser import parse
 
 
 class Nexans(StampablePdfForm):
@@ -33,6 +35,8 @@ class Nexans(StampablePdfForm):
                     'h': 16
                 }
             ])
+        from pprint import pprint
+        pprint(dictionary)
 
     def translate(self):
 
@@ -56,12 +60,26 @@ class Nexans(StampablePdfForm):
             'earthed_other_check': d.s_bool('earthed_other')
         })
 
-        date = d.g('date')
-        if date:
+        pour_date = d.g('pour.date')
+        install_date = d.g('install.date')
+        connect_date = d.g('connect.date')
+        last_date = None
+        for date in [pour_date, install_date, connect_date]:
+            if date:
+                parsed = parse(date)
+                if parsed and not last_date or parsed > last_date:
+                    last_date = parsed
+        if pour_date:
             self.dict_update({
-                'dato-År': date.year,
-                'dato-måned': month_name(date.month, short=True),
-                'dato-dag': date.day
+                'pour.date.formatted': date_format(parse(pour_date))
+            })
+        if last_date:
+            last_date_formatted = date_format(last_date)
+            self.dict_update({
+                'ohm_dato_og_underskrift': last_date_formatted,
+                'mohm_dato_og_underskrift': last_date_formatted,
+                'dato_spesielle_forhold': last_date_formatted,
+
             })
 
     FILL_PDF_FILENAME = '2012_Garantiskjema_V2_varmekabel_Nexans Norway.pdf'
@@ -180,17 +198,17 @@ class Nexans(StampablePdfForm):
             'field': 'Text9',
             'type': NumberTypes
         },
-        'ohm_a': {
+        'install.ohm': {
             'text': 'TextInPDF',
             'field': 'Text10',
             'type': str
         },
-        'ohm_b': {
+        'pour.ohm': {
             'text': 'TextInPDF',
             'field': 'Text11',
             'type': str
         },
-        'ohm_c': {
+        'connect.ohm': {
             'text': 'TextInPDF',
             'field': 'Text12',
             'type': str
@@ -200,17 +218,17 @@ class Nexans(StampablePdfForm):
             'field': 'Text13',
             'type': str
         },
-        'mohm_a': {
+        'install.mohm': {
             'text': 'TextInPDF',
             'field': 'Text14',
             'type': str
         },
-        'mohm_b': {
+        'pour.mohm': {
             'text': 'TextInPDF',
             'field': 'Text15',
             'type': str
         },
-        'mohm_c': {
+        'connect.mohm': {
             'text': 'TextInPDF',
             'field': 'Text16',
             'type': str
@@ -286,7 +304,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text30',
             'type': str
         },
-        'dato_støper': {
+        'pour.date.formatted': {
             'text': 'TextInPDF',
             'field': 'Text31',
             'type': str
@@ -322,44 +340,3 @@ class Nexans(StampablePdfForm):
             'type': str
         }
     }
-
-
-translator = {
-    'type_og_effekt': [
-        '{}',
-        lambda x: (x['Betegnelse'],)
-    ],
-    'flateeffekt': [
-        '{:.2f}',
-        lambda x: (commafloat(x['effekt']) / commafloat(x['oppvarmet_areal']),)
-    ],
-    'anleggs_adresse2': [
-        '{} {}',
-        lambda x: (x['anleggs_postnummer'], x['anleggs_poststed'])
-    ],
-    'ohm_dato_og_underskrift': [
-        '{}',
-        lambda x: (currentDate(),)
-    ],
-    'mohm_dato_og_underskrift': [
-        '{}',
-        lambda x: (currentDate(),)
-    ],
-    'dato_spesielle_forhold': [
-        '{}',
-        lambda x: (currentDate(),)
-    ],
-    'mohm_a': [
-        '{}',
-        lambda x: ('999' if x['mohm_a'] == 'true' else '',)
-    ],
-    'mohm_b': [
-        '{}',
-        lambda x: ('999' if x['mohm_b'] == 'true' else '',)
-    ],
-    'mohm_c': [
-        '{}',
-        lambda x: ('999' if x['mohm_c'] == 'true' else '',)
-    ],
-
-}

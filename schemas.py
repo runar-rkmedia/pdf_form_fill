@@ -144,17 +144,6 @@ room_item = RoomItemSchema(exclude=('archived'))
 room_item_modifications = RoomItemModificationsSchema(exclude=())
 
 
-def flatten_dict(d):
-    def items():
-        for key, value in d.items():
-            if isinstance(value, dict):
-                for subkey, subvalue in flatten_dict(value).items():
-                    yield key + "." + subkey, subvalue
-            else:
-                yield key, value
-
-    return dict(items())
-
 
 def room_item_modification_recurcively(entity):
     """Return all info from this and parents."""

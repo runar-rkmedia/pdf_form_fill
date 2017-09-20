@@ -10,6 +10,17 @@ from setup_app import user_file_path
 from pdffields.fields import combine_pdfs
 
 
+def flatten_dict(d):
+    def items():
+        for key, value in d.items():
+            if isinstance(value, dict):
+                for subkey, subvalue in flatten_dict(value).items():
+                    yield key + "." + subkey, subvalue
+            else:
+                yield key, value
+
+    return dict(items())
+
 class MultiForms(object):
     """Create multiple pdf-forms recursively, depending on input."""
 
@@ -169,18 +180,8 @@ class FormHandler(object):
                     'cc': specs['cc']['v'],
                 })
             if 'measurements' in specs:
-                measurements = specs['measurements']
-                for key, value in measurements.items():
-                    try:
-                        if value and int(value) <= 0:
-                            measurements[key] = ''
-                    except ValueError:
-                        pass
-                    else:
-                        self.dictionary.update(measurements)
-                        self.dictionary.update({
-                            'date': self.room_item_modification.date
-                        })
+                self.dictionary.update(flatten_dict(specs['measurements']))
+
 
     def stamp_with_user(self, user, form):
         """Description."""

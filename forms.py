@@ -3,21 +3,13 @@
 import decimal
 
 from flask_wtf import FlaskForm
-from wtforms import (  # RadioField,
-    BooleanField,
-    FormField,
-    HiddenField,
-    StringField,
-    IntegerField as baseIntegerField
-)
+from wtforms import IntegerField as baseIntegerField  # RadioField,
+from wtforms import BooleanField, FormField, HiddenField, StringField
+from wtforms.fields.html5 import (DateField, DecimalField, EmailField,
+                                  IntegerField)
+from wtforms.validators import (DataRequired, Length, NumberRange,  # Email,
+                                ValidationError)
 from wtforms.widgets import HiddenInput
-from wtforms.fields.html5 import DecimalField, EmailField, IntegerField
-from wtforms.validators import (  # Email,
-    DataRequired,
-    Length,
-    NumberRange,
-    ValidationError
-)
 from wtforms_html5 import AutoAttrMeta
 
 
@@ -44,9 +36,12 @@ class SubForm(FlaskForm):
         _kwargs['csrf_enabled'] = False
         super().__init__(**_kwargs)
 
+
 class HiddenInteger(baseIntegerField):
     widget = HiddenInput()
 # https://stackoverflow.com/a/35359450/3493586
+
+
 class BetterDecimalField(DecimalField):
     """
     Very similar to WTForms DecimalField, except with the option of rounding
@@ -193,14 +188,18 @@ class CustomerForm(FlaskForm):
     id = HiddenField()
 
 
+class Measurement(SubForm):
+    """Form for measurements for a HeatingCable."""
+    ohm = BetterDecimalField()
+    mohm = BetterDecimalField()
+    date = DateField(format='%Y-%m-%d')
+
+
 class MeasurementsForms(SubForm):
     """Form for measurements for a HeatingCable."""
-    ohm_a = BetterDecimalField()
-    ohm_b = BetterDecimalField()
-    ohm_c = BetterDecimalField()
-    mohm_a = BetterDecimalField()
-    mohm_b = BetterDecimalField()
-    mohm_c = BetterDecimalField()
+    install = FormField(Measurement)
+    pour = FormField(Measurement)
+    connect = FormField(Measurement)
 
 
 class AreaOutput(SubForm):

@@ -1,7 +1,8 @@
 """part of smart pdf filler."""
-from time import gmtime, strftime
-import string
 import random
+import string
+from time import gmtime, strftime
+
 NumberTypes = (int, float, complex)
 
 
@@ -73,6 +74,32 @@ def month_name(month_number, short=False):
     if short:
         return month_name[:3]
     return month_name
+
+
+def date_format(date, format_='{d}. {M} {y}'):
+    """
+    Custom date-format.
+
+    args:
+    'date': the date to format.
+    'format_': the format to use. Should be a string. Can have these values:
+
+    d: the day of the month.
+    m: the month, numerical.
+    M: the month, string, short,
+    MM: the month, string, long.
+    y: the year.
+
+    Example format: '{d}. {M} {y}'
+
+    """
+    return format_.format(**{
+        'y': date.year,
+        'M': month_name(date.month, short=True),
+        'MM': month_name(date.month, short=False),
+        'm': date.month,
+        'd': date.day
+    })
 
 
 class DictionaryHelper(object):
