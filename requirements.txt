@@ -12,6 +12,7 @@ fdfgen==0.16.0
 Flask==0.12.2
 Flask-Compress==1.4.0
 Flask-Dance==0.10.1
+Flask-HTMLmin==1.2.1
 Flask-Limiter==0.9.4
 Flask-Login==0.4.0
 Flask-Migrate==2.0.4
@@ -20,6 +21,7 @@ Flask-Scss==0.5
 Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
 html5lib==0.999999999
+htmlmin==0.1.10
 idna==2.5
 isort==4.2.15
 itsdangerous==0.24

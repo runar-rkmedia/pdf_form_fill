@@ -28,6 +28,7 @@ from models_credentials import (Address, Company, Customer, Invite,  # NOQA
                                 InviteType, OAuth, Room, RoomItem,
                                 RoomTypeInfo, User, UserRole)
 from pdf_filler.helpers import id_generator
+from flask.ext.htmlmin import HTMLMIN
 
 wtforms_json.init()
 
@@ -39,6 +40,9 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 db.init_app(app)
+HTMLMIN(app, options={
+    'remove_comments': False,
+})
 
 limiter = Limiter(
     app,
