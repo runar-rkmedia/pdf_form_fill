@@ -10,7 +10,7 @@ penthouse({
   // OPTIONAL params
   width: 500, // viewport width
   height: 900, // viewport height
-  forceInclude: [],
+  forceInclude: ['.hidden', 'footer'],
   timeout: 30000, // ms; abort critical CSS generation after this timeout
   strict: false, // set to true to throw on CSS errors (will run faster if no errors)
   maxEmbeddedBase64Length: 1000, // characters; strip out inline base64 encoded resources larger than this

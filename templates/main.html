@@ -5,13 +5,13 @@
   render_field_group %}
   <div data-bind="text: Products().getProducts()" ></div>
   <div data-bind="text: customer().get()"></div>
-  <!-- ko if: Products().products().length == 0 -->
+  <!-- ko if: Products().products().length == 0 || customer().loading() -->
     Henter inn data...
     <span class="glyphicon glyphicon-refresh spinning"></span>
   <!-- /ko -->
-  <!-- ko if: Products().products().length > 0 -->
+  <!-- ko if: Products().products().length > 0 && customer -->
   <!-- Tab panes -->
-  <div class="tab-content">
+  <div class="tab-content hidden" data-bind="css: {hidden: !customer || customer().loading()}" >
     <div role="tabpanel" class="tab-pane {% if pane == 0 %}active{%endif%}" id="customer-pane">
       {% include 'includes/schema/form.html' %}
     </div>
