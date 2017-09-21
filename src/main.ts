@@ -1,3 +1,4 @@
+import $ = require("jquery");
 var WebFont = require('webfontloader');
 import { TSAppViewModel } from "./components/AppViewModel"
 import './bootstrap/bootstrap'

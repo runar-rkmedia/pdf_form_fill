@@ -7,6 +7,8 @@ import { CustomerList } from "./CustomerList"
 import { RoomInterface } from "./Room"
 import { RoomList } from "./RoomList"
 import { Company, ControlPanel } from "./ControlPanel"
+import ko = require("knockout");
+import $ = require("jquery");
 
 
 require("knockout.typeahead");

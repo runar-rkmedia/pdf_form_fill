@@ -8,8 +8,8 @@ penthouse({
   url: 'https://www.varmedok.no/welcome',
   css: path.join(__basedir + 'static/css/main.css'),
   // OPTIONAL params
-  width: 500, // viewport width
-  height: 900, // viewport height
+  width: 414, // viewport width
+  height: 736, // viewport height
   forceInclude: ['.hidden', 'footer'],
   timeout: 30000, // ms; abort critical CSS generation after this timeout
   strict: false, // set to true to throw on CSS errors (will run faster if no errors)
