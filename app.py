@@ -498,8 +498,8 @@ def set_user_setting():
 def main():
     """Landing-page-view."""
     if current_user and current_user.is_authenticated and current_user.company:
-        return redirect(url_for('view_form'))
-    return redirect(url_for('landing_page'))
+        return view_form()
+    return landing_page()
 
 
 @app.route('/welcome')
