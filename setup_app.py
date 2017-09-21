@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ Bare app settings and functionality. """
 import os
 from config import configure_app
@@ -10,7 +12,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 import my_exceptions
 import wtforms_json
-from flask_compress import Compress
 from flask_dance.consumer import oauth_authorized
 from flask_dance.consumer.backend.sqla import SQLAlchemyBackend
 from flask_dance.contrib.google import google, make_google_blueprint
@@ -33,7 +34,6 @@ wtforms_json.init()
 app = Flask(__name__, instance_relative_config=True)
 app.json_encoder = MyJSONEncoder
 configure_app(app)
-Compress(app)
 migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)

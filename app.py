@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """PDF-fill for heating cables."""
 # pylama:ignore=W0512
 

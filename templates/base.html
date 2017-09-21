@@ -23,13 +23,12 @@
       {% block body %}{% endblock %}
     </div>
     <div class="row">{% include 'includes/footer.html' %}</div>
-  </body>
-  <script src="{{url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script>
-  <script src="{{url_for('static', filename='js/knockout-3.4.2.js')}}"></script>
+  <!-- <script src="{{url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script> -->
+  <!-- <script src="{{url_for('static', filename='js/knockout-3.4.2.js')}}"></script> -->
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script> -->
-  <script src="{{url_for('static', filename='js/main.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+  <script async defer src="{{url_for('static', filename='js/main.js')}}"></script>
   {% if form %}
   <script type="text/javascript">
     $.ajaxSetup({
@@ -43,4 +42,5 @@
   </script>
   {% endif %}
   {% block script %}{% endblock %}
+  </body>
 </html>
