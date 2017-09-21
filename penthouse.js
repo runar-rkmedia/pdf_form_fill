@@ -23,7 +23,6 @@ penthouse({
     throw err;
   }
 
-  fs.writeFileSync('outfile.css', criticalCss);
   cssnano.process(criticalCss).then(function(result) {
     fs.writeFileSync(path.join(__basedir + 'templates/critical.css'), result);
   });

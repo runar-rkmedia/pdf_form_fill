@@ -27,8 +27,7 @@
       {% block body %}{% endblock %}
     </div>
     <div class="row">{% include 'includes/footer.html' %}</div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/webfontloader@1.6.28,npm/jquery@3.2.1,npm/knockout@3.4.2/build/output/knockout-latest.min.js"></script>
     <script async defer src="{{url_for('static', filename='js/main.js')}}"></script>
     {% if form %}
       <script type="text/javascript">

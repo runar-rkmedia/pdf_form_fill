@@ -1,4 +1,4 @@
-import $ = require("jquery");
+var WebFont = require('webfontloader');
 import { TSAppViewModel } from "./components/AppViewModel"
 import './bootstrap/bootstrap'
 import './less/entry'
@@ -9,6 +9,12 @@ let pad = (n: string, width: number, z: string = "0") => {
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
+
+WebFont.load({
+  google: {
+    families: ['Lato:400,700,400i']
+  }
+});
 // webpack doesn't like to litter the global-namespace, so to force this function to be available there, we need to add the function to global. then typescript compains, so we need to add to it.
 (<any>window).format_date = (dateString: string, type: string) => {
   var d_names = new Array("Søndag", "Mandag", "Tirsdag",

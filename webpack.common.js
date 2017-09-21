@@ -24,6 +24,7 @@ module.exports = {
     //  on the global var jQuery
     "jquery": 'jQuery',
     "knockout": 'ko',
+    "webfontloader": 'WebFont',
     // "moment": 'moment',
     // "kv": 'knockout_validation'
   },

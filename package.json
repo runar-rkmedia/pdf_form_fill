@@ -26,6 +26,7 @@
     "@types/jquery": "^3.2.6",
     "@types/knockout": "^3.4.41",
     "@types/knockout.validation": "0.0.33",
+    "@types/webfontloader": "^1.6.29",
     "bootstrap": "^3.3.7",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "file-loader": "^0.11.2",
@@ -43,7 +44,8 @@
     "typeahead": "^0.2.2",
     "typescript": "^2.6.0-dev.20170902",
     "uglify-js": "^3.0.23",
-    "url-loader": "^0.5.9"
+    "url-loader": "^0.5.9",
+    "webfontloader": "^1.6.28"
   },
   "devDependencies": {
     "@types/bootbox": "^4.4.34",
