@@ -212,11 +212,24 @@ class Cc(SubForm):
     m = BooleanField()
 
 
+class InstallationDepth(SubForm):
+    v = BetterDecimalField('Montasjedybde ( mm )')
+    m = BooleanField()
+
+
+class CurcuitBreakerSize(SubForm):
+    v = BetterDecimalField('Sikringsstørrelse')
+    m = BooleanField()
+
+
 class SpecsForm(SubForm):
     """Form for combining some different specs for heatingcable."""
     measurements = FormField(MeasurementsForms)
     area_output = FormField(AreaOutput)
     cc = FormField(Cc)
+    curcuit_breaker_size = FormField(CurcuitBreakerSize)
+    installation_depth = FormField(InstallationDepth)
+    ground_fault_protection = BetterDecimalField('Utløserstrøm jordfeil')
 
 
 class HeatingCableForm(FlaskForm):

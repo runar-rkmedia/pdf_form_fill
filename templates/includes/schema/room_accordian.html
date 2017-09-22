@@ -83,6 +83,30 @@
           <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
           <p>Kun de påkrevde feltene vises.</p>
         </div>
+                <div class="row">
+                  <div class="col-xs-6">
+                    <label data-bind="css: { 'label-mod-flag': curcuit_breaker_size.modified() }" >Sikringsstørrelse</label>
+                    <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
+                            optionsText: 'text',
+                            optionsValue: 'id',
+                            value: curcuit_breaker_size"></select>
+                  </div>
+                  <div class="col-xs-6">
+                    <div class="form-group">
+                      <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm jordfeil</label>
+                      <input type="number" min="0" data-bind="textInput:ground_fault_protection" class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <div class="form-group">
+                      <label data-bind="css: { 'label-mod-flag': installation_depth.modified() }">Montasjedybde (mm)</label>
+                      <input type="number" min="0" data-bind="textInput: installation_depth" class="form-control">
+                    </div>
+                  </div>
+                </div>
         <fieldset>
           <legend>Jording</legend>
           {{render_field( roomForm.check_earthed.cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}

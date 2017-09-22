@@ -5,34 +5,86 @@
 
   <!-- ko if: product()-->
   <!-- ko if: product().type != 'mat' -->
-  <!-- ko with: area_output() -->
-  <div class="col-xs-6">
-    <div class="form-group">
-      {{ heatingForm.specs.area_output.v.label(**{'data-bind': "css: { 'label-mod-flag': output.modified()} " })}}
-      {{ heatingForm.specs.area_output.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+  <div class="row">
+    <!-- ko with: area_output() -->
+    <div class="col-xs-6">
+      <div class="form-group">
+        {{ heatingForm.specs.area_output.v.label(**{'data-bind': "css: { 'label-mod-flag': output.modified()} " })}}
+        {{ heatingForm.specs.area_output.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : calculated() , 'attr': { 'readonly': !override() }"}) }}
+      </div>
+      <div class="checkbox">
+        <label data-bind="css: { 'label-mod-flag': override.modified() }">
+          <input data-bind="checked: override" type="checkbox">
+          Manuell
+        </label>
+      </div>
     </div>
-    <div class="checkbox">
-      <label data-bind="css: { 'label-mod-flag': override.modified() }">
-        <input data-bind="checked: override" type="checkbox">
-        Manuell
-      </label>
+    <!-- /ko -->
+    <!-- ko with: cc() -->
+    <div class="col-xs-6">
+      <div class="form-group">
+        {{ heatingForm.specs.cc.v.label(**{'data-bind': "css: { 'label-mod-flag': output.modified()} " })}}
+        {{ heatingForm.specs.cc.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : calculated(), 'attr': { 'readonly': !override() }"}) }}
+      </div>
+      <div class="checkbox">
+        <label data-bind="css: { 'label-mod-flag': override.modified() }">
+          <input data-bind="checked: override" type="checkbox">
+          Manuell
+        </label>
+      </div>
     </div>
+    <!-- /ko -->
   </div>
   <!-- /ko -->
-  <!-- ko with: cc() -->
-  <div class="col-xs-6">
-    <div class="form-group">
-      {{ heatingForm.specs.cc.v.label(**{'data-bind': "css: { 'label-mod-flag': output.modified()} " })}}
-      {{ heatingForm.specs.cc.v(class_='form-control',  **{'data-bind': "textInput: override() ? user_input : (calculated()).toFixed(1) , 'attr': { 'readonly': !override() }"}) }}
+  <!-- /ko -->
+<!-- ko if: $parent.parent.list().length > 1 -->
+<hr>
+<div class="well well-sm" >
+  <div class="row">
+    <div class="bs-callout bs-callout-primary mt-0">
+      <h3>For rom med flere varmekabler</h3>
+      <span>For å lette utfyllingen hentes verdiene under fra det som er satt på dette rommet, ettersom de vanligvis vil være like. Du kan imidlertid overstyre disse under.</span>
     </div>
-    <div class="checkbox">
+    <hr>
+    <!-- ko with: curcuit_breaker_size() -->
+    <div class="col-xs-6">
+      <label data-bind="css: { 'label-mod-flag': output.modified() }" >Sikringsstørrelse</label>
+      <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
+              optionsText: 'text',
+              optionsValue: 'id',
+              value: override() ? user_input : calculated(), enable: override"></select>
+    </div>
+    <div class="col-xs-6">
+      <div class="form-group">
+        <label data-bind="css: { 'label-mod-flag': $parent.ground_fault_protection().output.modified() }">Utløserstrøm jordfeil</label>
+        <input type="number" min="0" data-bind="textInput: override() ? $parent.ground_fault_protection().user_input : $parent.ground_fault_protection().calculated(), enable: override()" class="form-control">
+      </div>
+    </div>
+    <div class="col-xs-12 checkbox">
       <label data-bind="css: { 'label-mod-flag': override.modified() }">
         <input data-bind="checked: override" type="checkbox">
-        Manuell
+        Bruk annen sikring enn resten av rommet.
       </label>
     </div>
+    <!-- /ko -->
   </div>
-  <!-- /ko -->
-  <!-- /ko -->
-  <!-- /ko -->
+  <hr>
+  <div class="row">
+    <!-- ko with: installation_depth() -->
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label data-bind="css: { 'label-mod-flag': output.modified() }">Montasjedybde (mm)</label>
+        <input type="number" min="0" data-bind="textInput: override() ? user_input : calculated(), enable: override()" class="form-control">
+      </div>
+    </div>
+    <div class="col-xs-12 checkbox">
+      <label data-bind="css: { 'label-mod-flag': override.modified() }">
+        <input data-bind="checked: override" type="checkbox">
+        Annen montasjedybde enn resten av rommet.
+      </label>
+    </div>
+    <!-- /ko -->
+  </div>
+</div>
+<!-- /ko -->
 </script>

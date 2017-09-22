@@ -42,6 +42,11 @@ interface ErrorString {
   defcon_level: string
 }
 
+interface Select {
+  text: string,
+  id: number
+}
+
 
 export class TSAppViewModel {
   errors: KnockoutObservableArray<ErrorString> = ko.observableArray();
@@ -63,6 +68,12 @@ export class TSAppViewModel {
   delete: KnockoutObservable<string> = ko.observable();
   company = new Company()
   control_panel = new ControlPanel()
+  curcuit_breaker_list = [10, 13, 15, 16, 20, 25].map((i) => {
+    return {
+      text: `${i} A`,
+      id: i
+    }
+  })
 
   constructor() {
     $.ajaxSetup({

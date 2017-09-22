@@ -128,6 +128,9 @@ export interface HeatingCableSpecs {
   measurements?: MeasurementsInterface
   cc: InputReadOnlyToggleInterface
   area_output: InputReadOnlyToggleInterface
+  installation_depth?: InputReadOnlyToggleInterface
+  curcuit_breaker_size?: InputReadOnlyToggleInterface
+  ground_fault_protection?: number
 }
 
 interface InputReadOnlyToggleInterface {
@@ -189,10 +192,16 @@ class Measurement {
 
 class InputReadOnlyToggle {
   override: ObsMod<boolean>
-  calculated: KnockoutComputed<any>
+  calculated: KnockoutComputed<number>
   output: ObsMod<any>
   serialize: KnockoutObservable<InputReadOnlyToggleInterface>
   user_input = <KnockoutObservable<number>>ko.observable();
+  set_from_object(object: InputReadOnlyToggleInterface) {
+    if (object.m && object.v) {
+      this.override(object.m)
+      this.user_input(object.v)
+    }
+  }
 
   constructor(calculateFunction: (() => number), modification_observable: any) {
     this.override = <ObsMod<boolean>>modification_observable(false);
@@ -200,7 +209,6 @@ class InputReadOnlyToggle {
     this.output = modification_observable(() => {
       return Number(this.override() ? this.user_input() : this.calculated())
     }, ko.computed);
-    // this.calculated = ko.computed(calculateFunction)
     this.serialize = ko.computed((): InputReadOnlyToggleInterface => {
       return {
         v: this.output() || 0,
@@ -209,12 +217,11 @@ class InputReadOnlyToggle {
     })
     ko.computed(() => {
       if (!this.override()) {
-        this.user_input(this.calculated().toFixed(1))
+        this.user_input(Number(Number(this.calculated()).toFixed(1)))
       }
     })
   }
 }
-
 
 export class HeatingCable extends Post {
   measurements_modifications_list: KnockoutObservableArray<ObsMod<any>> = ko.observableArray()
@@ -247,6 +254,10 @@ export class HeatingCable extends Post {
   ))
   area_output: KnockoutObservable<InputReadOnlyToggle>
   cc: KnockoutObservable<InputReadOnlyToggle>
+  installation_depth: KnockoutObservable<InputReadOnlyToggle>
+
+  curcuit_breaker_size: KnockoutObservable<InputReadOnlyToggle>
+  ground_fault_protection: KnockoutObservable<InputReadOnlyToggle>
 
 
   product_model: TSProductModel
@@ -289,6 +300,15 @@ export class HeatingCable extends Post {
           v: 0,
           m: false
         },
+        installation_depth: {
+          v: 0,
+          m: false
+        },
+        curcuit_breaker_size: {
+          v: 0,
+          m: false
+        },
+        ground_fault_protection: 30
       }
     }
     let heating_cable = Object.assign(default_data, heating_cable_)
@@ -310,6 +330,27 @@ export class HeatingCable extends Post {
       }
       return Number(heating_cable!.specs.area_output.v) || 0
     }, this.other_observer))
+
+    this.installation_depth = ko.observable(new InputReadOnlyToggle(() => {
+      return this.parent.parent.installation_depth()
+    }, this.other_observer))
+
+    this.curcuit_breaker_size = ko.observable(new InputReadOnlyToggle(() => {
+      return this.parent.parent.curcuit_breaker_size()
+    }, this.other_observer))
+
+    this.ground_fault_protection = ko.observable(new InputReadOnlyToggle(() => {
+      return this.parent.parent.ground_fault_protection()
+    }, this.other_observer))
+
+    ko.computed(() => {
+      this.ground_fault_protection().override(Boolean(this.curcuit_breaker_size().override))
+    })
+
+    this.installation_depth = ko.observable(new InputReadOnlyToggle(() => {
+      return this.parent.parent.installation_depth()
+    }, this.other_observer))
+
     this.cc = ko.observable(new InputReadOnlyToggle(() => {
       if (this.product() && this.product()!.type != 'mat') {
         // For rooms with multiple cables, we need to do some guesswork to
@@ -331,7 +372,7 @@ export class HeatingCable extends Post {
       return Number(heating_cable!.specs.cc.v) || 0
     }, this.other_observer))
 
-    this.serialize = ko.computed(() => {
+    this.serialize = ko.computed((): HeatingCableInterface => {
 
       let obj: HeatingCableInterface = {
         id: this.id(),
@@ -344,8 +385,18 @@ export class HeatingCable extends Post {
             connect: this.measurement_connect().serialize()
           },
           cc: this.cc().serialize(),
-          area_output: this.area_output().serialize()
+          area_output: this.area_output().serialize(),
+          // installation_depth: this.installation_depth().serialize(),
+          // curcuit_breaker_size: this.curcuit_breaker_size().serialize(),
+          // ground_fault_protection: this.ground_fault_protection().output(),
         },
+      }
+      if (this.installation_depth().override()) {
+        obj.specs.installation_depth = this.installation_depth().serialize()
+      }
+      if (this.curcuit_breaker_size().override()) {
+        obj.specs.curcuit_breaker_size = this.curcuit_breaker_size().serialize()
+        obj.specs.ground_fault_protection = this.ground_fault_protection().output()
       }
       return obj
     })
@@ -374,16 +425,34 @@ export class HeatingCable extends Post {
   set(heating_cable: HeatingCableInterface) {
     this.id(heating_cable.id)
     this.product_id(Number(heating_cable.product_id))
-    if (heating_cable.specs && heating_cable.specs.measurements) {
-      // The order in which we set these matters. (minDate)
-      this.measurement_connect().set(heating_cable.specs.measurements.connect)
-      this.measurement_pour().set(heating_cable.specs.measurements.pour)
-      this.measurement_install().set(heating_cable.specs.measurements.install)
+    if (heating_cable.specs) {
+      if (heating_cable.specs.curcuit_breaker_size) {
+        this.curcuit_breaker_size().set_from_object(heating_cable.specs.curcuit_breaker_size)
+        if (heating_cable.specs.ground_fault_protection) {
+          this.ground_fault_protection().set_from_object({
+            v: heating_cable.specs.ground_fault_protection,
+            m: heating_cable.specs.curcuit_breaker_size.m,
+          })
+        }
+      }
+      if (heating_cable.specs.installation_depth) {
+        this.installation_depth().set_from_object(heating_cable.specs.installation_depth)
+      }
+      if (heating_cable.specs.installation_depth) {
+        this.installation_depth().set_from_object(heating_cable.specs.installation_depth)
+      }
+      if (heating_cable.specs.area_output) {
+        this.area_output().set_from_object(heating_cable.specs.area_output)
+      } if (heating_cable.specs.cc) {
+        this.cc().set_from_object(heating_cable.specs.cc)
+      }
 
-      this.area_output().override(Boolean(heating_cable.specs.area_output!.m))
-      this.area_output().user_input(Number(heating_cable.specs.area_output!.v))
-      this.cc().override(Boolean(heating_cable.specs.cc!.m))
-      this.cc().user_input(Number(heating_cable.specs.cc!.v))
+      if (heating_cable.specs.measurements) {
+        // The order in which we set these matters. (minDate)
+        this.measurement_connect().set(heating_cable.specs.measurements.connect)
+        this.measurement_pour().set(heating_cable.specs.measurements.pour)
+        this.measurement_install().set(heating_cable.specs.measurements.install)
+      }
     }
     if (this.serialize) {
       this.save()

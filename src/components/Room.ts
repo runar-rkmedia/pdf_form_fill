@@ -38,7 +38,10 @@ export interface RoomInterface {
   customer_id?: number
   heating_cables?: HeatingCableInterface[],
   maxEffect?: number
-  normalEffect?: number
+  normalEffect: number
+  curcuit_breaker_size: number
+  ground_fault_protection: number
+  installation_depth?: number
   check_earthed?: CheckEarthed
   check_max_temp?: CheckMaxTemp
   check_control_system?: CheckControlSystem
@@ -62,6 +65,9 @@ export class Room extends Post {
   control_system_floor_sensor = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   control_system_room_sensor = <ObsMod<boolean>>this.obs_mod();
   control_system_designation = <ObsMod<string>>this.obs_mod();
+  curcuit_breaker_size = <ObsMod<number>>this.obs_mod(undefined, undefined, 16);
+  installation_depth = <ObsMod<number>>this.obs_mod(undefined, undefined, 30);
+  ground_fault_protection = <ObsMod<number>>this.obs_mod(undefined, undefined, 30);
   control_system_other = <ObsMod<string>>this.obs_mod();
   heating_cables: KnockoutObservable<HeatingCableList> = ko.observable()
   room_suggestion: KnockoutObservable<RoomSuggestion>
@@ -102,6 +108,9 @@ export class Room extends Post {
       this.max_temp_limited_by_installation,
       this.max_temp_limited_by_other,
       this.control_system_floor_sensor,
+      this.curcuit_breaker_size,
+      this.installation_depth,
+      this.ground_fault_protection,
       this.control_system_room_sensor,
       this.control_system_designation,
       this.control_system_other,
@@ -119,6 +128,9 @@ export class Room extends Post {
         customer_id: this.parent.parent.id(),
         maxEffect: this.maxEffect(),
         normalEffect: this.normalEffect(),
+        curcuit_breaker_size: this.curcuit_breaker_size(),
+        ground_fault_protection: this.ground_fault_protection(),
+        installation_depth: this.installation_depth(),
         check_earthed: {
           cable_screen: this.earthed_cable_screen(),
           chicken_wire: this.earthed_chicken_wire(),
@@ -200,7 +212,10 @@ export class Room extends Post {
     heated_area: null,
     outside: false,
     normalEffect: 0,
-    maxEffect: 0
+    maxEffect: 0,
+    installation_depth: 30,
+    curcuit_breaker_size: 16,
+    ground_fault_protection: 30
   }) {
     this.name(room.room_name)
     this.id(room.id)
@@ -208,6 +223,9 @@ export class Room extends Post {
     this.heated_area(room.heated_area)
     this.outside(room.outside)
     this.maxEffect(room.maxEffect || 0)
+    this.installation_depth(room.installation_depth || 30)
+    this.ground_fault_protection(room.ground_fault_protection || 30)
+    this.curcuit_breaker_size(room.curcuit_breaker_size || 16)
     this.normalEffect(room.normalEffect || 0)
     this.heating_cables(new HeatingCableList(this.root, this, room.heating_cables))
     if (room.check_earthed) {
