@@ -94,6 +94,13 @@ export class Customer extends Post {
   remove_instance() {
     this.parent.customer(new Customer(this.parent))
   }
+  confirm_create_new = () => {
+    if (this.modified() || this.sub_modified()) {
+      this.comfirm_unsaved_dialog('Opprette ny kunde', 'Er du sikker på at du vil opprette en ny kunde?', this.create_new)
+    } else {
+      this.create_new()
+    }
+  }
   create_new = () => {
     this.set({
       id: -1,
@@ -107,6 +114,7 @@ export class Customer extends Post {
       rooms: []
     })
     this.validationModel.errors.showAllMessages(false)
+    $('#customer_form_collapse').collapse('show')
   }
   get = (id?: number) => {
     this.loading(true)

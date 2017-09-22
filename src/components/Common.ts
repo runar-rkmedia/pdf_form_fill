@@ -78,7 +78,7 @@ export abstract class Post extends Base {
   remove_instance() {
     this.parent.list.remove(this)
   }
-  delete() {
+  delete = () => {
     return $.ajax({
       url: this.url,
       type: HTTPVerbs.delete,
@@ -121,7 +121,10 @@ export abstract class Post extends Base {
       btn.button('reset')
     })
   }
-  comfirm_delete_dialog(title: string, message: string, warning?: string) {
+  comfirm_delete_dialog(title: string, message: string, warning = '') {
+    this.comfirm_dialog(title, message, warning, this.delete)
+  }
+  comfirm_dialog(title: string, message: string, warning = '', callback: any) {
     let message_warning = message
     message_warning += warning ? `<div class="bs-callout bs-callout-warning"><h4>ADVARSEL!</h4><p>${warning}</p></div>` : ''
     bootbox.confirm({
@@ -129,7 +132,7 @@ export abstract class Post extends Base {
       message: message_warning,
       buttons: {
         cancel: {
-          label: 'Nei, ikke slett',
+          label: 'Avbryt',
         },
         confirm: {
           label: '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> SLETT',
@@ -138,7 +141,29 @@ export abstract class Post extends Base {
       },
       callback: (result) => {
         if (result) {
-          this.delete()
+          callback()
+        }
+      }
+    });
+  }
+  comfirm_unsaved_dialog(title: string, message: string, callback: any) {
+    let message_warning = message
+    message_warning += `<div class="bs-callout bs-callout-warning"><h4>ADVARSEL!</h4><p>Du har ulagrede elementer. Om du går videre nå, uten å lagre, vil du miste dine endringer.</p></div>`
+    bootbox.confirm({
+      title: title,
+      message: message_warning,
+      buttons: {
+        cancel: {
+          label: 'Avbryt',
+        },
+        confirm: {
+          label: `<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Ja, jeg er sikker`,
+          className: 'btn-danger'
+        }
+      },
+      callback: (result) => {
+        if (result) {
+          callback()
         }
       }
     });
@@ -183,9 +208,6 @@ ko.extenders.modification = (target: any, option: KnockoutObservableArray<any>[]
       if (div > 0.99999 && div < 1.00001) {
         return false
       }
-    }
-    if (target() != target.last_data()) {
-      // console.log(target(), target.last_data())
     }
     return target() != target.last_data()
   })
