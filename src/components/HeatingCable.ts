@@ -78,8 +78,10 @@ ko.bindingHandlers.dateTimePicker = {
     var minDate = allBindings!().minDate;
     //when the view model is updated, update the widget
     if (picker) {
-      if (minDate && !isNaN(minDate().getTime())) {
-        picker.minDate(minDate())
+      if (minDate && minDate()) {
+        if (!isNaN(minDate().getTime())) {
+          picker.minDate(minDate())
+        }
       }
       var koDate = ko.utils.unwrapObservable(valueAccessor());
 
