@@ -30,7 +30,7 @@ export class ByID {
   }
   by_id(id: number) {
     return this.list().find(myObj => {
-      return myObj.id === Number(id)
+      return myObj.id() === Number(id)
     });
   }
 }
