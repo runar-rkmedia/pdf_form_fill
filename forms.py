@@ -88,7 +88,7 @@ class CheckMaxTemp(SubForm):
         'Utførelse av montasje (Installasjonsveiledningen er fulgt)'  # noqa
     )
     other = StringField(
-        'Eventuell brtuk av beskyttelsesutstyr',  # noqa
+        'Eventuell bruk av beskyttelsesutstyr',  # noqa
         validators=[Length(max=100)])
 
 
@@ -145,6 +145,9 @@ class RoomForm(FlaskForm):
     check_earthed = FormField(CheckEarthed)
     check_max_temp = FormField(CheckMaxTemp)
     check_control_system = FormField(CheckControlSystem)
+    curcuit_breaker_size = BetterDecimalField()
+    ground_fault_protection = BetterDecimalField()
+    installation_depth = BetterDecimalField()
 
 
 class AddressForm(SubForm):

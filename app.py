@@ -258,8 +258,6 @@ def json_user_forms():
 @company_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
-    from pprint import pprint
-    pprint(request.json)
     room_item = None
     room_item_id = request.args.get('id') or request.json.get('id')
     if room_item_id:
@@ -288,7 +286,6 @@ def json_heating_cable():
         raise my_exceptions.NotAProduct
     if not room:
         raise my_exceptions.NotARoom
-    pprint(form.specs.data)
     room_item = RoomItem.update_or_create(
         room_item=room_item,
         user=current_user,
@@ -513,8 +510,7 @@ def landing_page():
             .filter(
                 (Invite.type == 'create_company') &
                 (Invite.invitee_user_id == None)
-                ).first()
-        print('gett')
+            ).first()
     return render_template("landing.html", create_company_invite=create_company_invite)
 
 

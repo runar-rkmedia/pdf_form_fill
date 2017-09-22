@@ -28,7 +28,7 @@ from models_credentials import (Address, Company, Customer, Invite,  # NOQA
                                 InviteType, OAuth, Room, RoomItem,
                                 RoomTypeInfo, User, UserRole)
 from pdf_filler.helpers import id_generator
-from flask.ext.htmlmin import HTMLMIN
+from flask_htmlmin import HTMLMIN
 
 wtforms_json.init()
 

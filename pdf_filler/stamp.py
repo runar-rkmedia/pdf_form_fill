@@ -28,7 +28,6 @@ class Stamp(object):
             "Use imagemagick and vectorgraphics instead of java-stamp",
             DeprecationWarning)
         for signature_location_size in self.signature_location_sizes:
-            print(signature_location_size['w'],)
             dpi = max(
                 image_size[0] * 72 / signature_location_size['w'],
                 image_size[1] * 72 / signature_location_size['h']

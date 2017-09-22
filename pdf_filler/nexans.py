@@ -4,7 +4,6 @@
 from .helpers import (DictionaryHelper, NumberTypes,
                       group_number, month_name, date_format)
 from .stamp import StampablePdfForm, signatere_location_size
-from dateutil.parser import parse
 
 
 class Nexans(StampablePdfForm):
@@ -35,8 +34,6 @@ class Nexans(StampablePdfForm):
                     'h': 16
                 }
             ])
-        from pprint import pprint
-        pprint(dictionary)
 
     def translate(self):
 
@@ -57,7 +54,9 @@ class Nexans(StampablePdfForm):
             'check-toleder': not d.s_bool('product.twowires'),
             'check-enleder': d.s_bool('product.twowires'),
             'max_temp_other_check': d.s_bool('max_temp_other'),
-            'earthed_other_check': d.s_bool('earthed_other')
+            'earthed_other_check': d.s_bool('earthed_other'),
+            'control_system_other_check': d.s_bool('control_system_other'),
+            'check-montert_i_henhold_til_installasjonsveiledning': self.TRUE
         })
 
         pour_date = d.g('pour.date')
@@ -65,13 +64,11 @@ class Nexans(StampablePdfForm):
         connect_date = d.g('connect.date')
         last_date = None
         for date in [pour_date, install_date, connect_date]:
-            if date:
-                parsed = parse(date)
-                if parsed and not last_date or parsed > last_date:
-                    last_date = parsed
+            if date and not last_date or date > last_date:
+                last_date = date
         if pour_date:
             self.dict_update({
-                'pour.date.formatted': date_format(parse(pour_date))
+                'pour.date.formatted': date_format(pour_date)
             })
         if last_date:
             last_date_formatted = date_format(last_date)
@@ -233,7 +230,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text16',
             'type': str
         },
-        'montasjedybde': {
+        'installation_depth': {
             'text': 'TextInPDF',
             'field': 'Text17',
             'type': str
@@ -254,12 +251,12 @@ class Nexans(StampablePdfForm):
             'field': 'Text20',
             'type': str
         },
-        'sikringstørrelse': {
+        'curcuit_breaker_size': {
             'text': 'TextInPDF',
             'field': 'Text21',
             'type': str
         },
-        'utløserstrøm_for_fordfeilvern': {
+        'ground_fault_protection': {
             'text': 'TextInPDF',
             'field': 'Text22',
             'type': str
@@ -329,7 +326,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text35',
             'type': str
         },
-        'control_system_type': {
+        'control_system_designation': {
             'text': 'TextInPDF',
             'field': 'Text36',
             'type': str

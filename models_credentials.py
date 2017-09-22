@@ -480,6 +480,9 @@ class Room(MyBaseModel, db.Model):
     heated_area = db.Column(db.Numeric(8, 3))
     maxEffect = db.Column(db.Numeric(8, 3))
     normalEffect = db.Column(db.Numeric(8, 3))
+    curcuit_breaker_size = db.Column(db.SmallInteger(), default=16)
+    installation_depth = db.Column(db.Numeric(8, 3), default=30.0)
+    ground_fault_protection = db.Column(db.Numeric(8, 3), default=30.0)
     earthed_cable_screen = db.Column(db.Boolean, default=False)
     earthed_chicken_wire = db.Column(db.Boolean, default=False)
     earthed_other = db.Column(db.String(200))
@@ -532,7 +535,11 @@ class Room(MyBaseModel, db.Model):
                 'room_sensor': self.control_system_room_sensor,
                 'designation': self.control_system_designation,
                 'other': self.control_system_other,
-            }
+            },
+            'ground_fault_protection': self.ground_fault_protection,
+            'installation_depth': self.installation_depth,
+            'curcuit_breaker_size': self.curcuit_breaker_size,
+
 
         }
         return dictionary

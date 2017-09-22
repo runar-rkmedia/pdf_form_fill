@@ -176,7 +176,4 @@ def room_item_modification_recurcively(entity):
         'room': room_data,
     }
 
-    # from pprint import pprint
-    # pprint(data)
-    # pprint(flatten_dict(data))
     return data

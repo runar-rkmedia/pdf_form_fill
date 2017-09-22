@@ -3,11 +3,12 @@
 import os
 
 import my_exceptions
+from dateutil.parser import parse
 from models_credentials import Customer, Room, RoomItem
 from models_product import ProductCatagory
 from pdf_filler.schema import get_template_schema
-from setup_app import user_file_path
 from pdffields.fields import combine_pdfs
+from setup_app import user_file_path
 
 
 def flatten_dict(d):
@@ -20,6 +21,7 @@ def flatten_dict(d):
                 yield key, value
 
     return dict(items())
+
 
 class MultiForms(object):
     """Create multiple pdf-forms recursively, depending on input."""
@@ -40,7 +42,6 @@ class MultiForms(object):
             self.files,
             os.path.join(self.path, 'out.pdf'))
         self.file = os.path.relpath(combined)
-
 
     def create_path(self, path):
         """Create a path for form."""
@@ -163,7 +164,10 @@ class FormHandler(object):
             'control_system_floor_sensor': self.room.control_system_floor_sensor,
             'control_system_room_sensor': self.room.control_system_room_sensor,
             'control_system_designation': self.room.control_system_designation,
-            'control_system_other': self.room.control_system_other
+            'control_system_other': self.room.control_system_other,
+            'installation_depth': self.room.installation_depth,
+            'ground_fault_protection': self.room.ground_fault_protection,
+            'curcuit_breaker_size': self.room.curcuit_breaker_size,
         })
 
     def push_from_room_item_modification(self):
@@ -171,17 +175,24 @@ class FormHandler(object):
         specs = self.room_item_modification.specs.copy()
 
         if specs:
-            if 'area_output' in specs:
-                self.dictionary.update({
-                    'area_output': specs['area_output']['v'],
-                })
-            if 'cc' in specs:
-                self.dictionary.update({
-                    'cc': specs['cc']['v'],
-                })
-            if 'measurements' in specs:
-                self.dictionary.update(flatten_dict(specs['measurements']))
+            for variable in [
+                    'area_output',
+                    'cc',
+                    'installation_depth',
+                    'curcuit_breaker_size'
+                ]:
+                if variable in specs:
+                    self.dictionary.update({
+                        variable: specs[variable]['v'],
+                    })
 
+            if 'measurements' in specs:
+                m = specs['measurements'].copy()
+                for key, value in m.items():  # noqa
+                    date = m[key].get('date')
+                    if date:
+                        m[key]['date'] = parse(date)
+                self.dictionary.update(flatten_dict(m))
 
     def stamp_with_user(self, user, form):
         """Description."""
