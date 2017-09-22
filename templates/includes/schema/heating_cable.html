@@ -146,7 +146,7 @@ attr: {'id': 'heat' + id()}
             </li>
             <li>
               <a class="c-danger" data-bind="
-                click: function() {comfirm_delete_dialog('Slette <b>' + product().name + '</b>', 'Er du sikker på at du vil slette denne varmakabelen?', modified()? 'Du har ulagrede elementer her': undefined)}">
+                click: function() {comfirm_dialog('Slette <b>' + product().name + '</b>', 'Er du sikker på at du vil slette denne varmakabelen?', modified()? 'Du har ulagrede elementer her': undefined, this.delete)}">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 Slett varmekabel</a>
             </li>

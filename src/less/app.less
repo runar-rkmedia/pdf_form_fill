@@ -292,10 +292,23 @@ body {
   padding-bottom: 0 !important;
 }
 
+.mr-1 {
+  margin-right: @spacer * .25;
+}
+
 .p-0 {
   padding: 0 !important;
 }
-.mt-0{
+
+.pt-0 {
+  padding-top: 0 !important;
+}
+
+.pb-0 {
+  padding-bottom: 0 !important;
+}
+
+.mt-0 {
   margin-top: 0 !important;
 }
 
@@ -342,10 +355,6 @@ ul.list-group.list-group-striped a {
   }
 }
 @spacer: 1em;
-
-.mr-1 {
-  margin-right: @spacer * .25;
-}
 
 .jumbotron {
   // padding: 0.5em 0.6em;
@@ -424,4 +433,25 @@ body {
   @media only screen and (max-width : @screen-xxs-max) {
     display: none !important;
   }
+}
+
+.btn-group.nowrap {
+  white-space: nowrap;
+
+  > .btn {
+    float: inherit;
+  }
+
+  > .btn + .btn {
+    margin-left: -8px;
+  }
+}
+
+.collapsing+.hidden-button,
+.in+.hidden-button {
+  display: none;
+}
+
+.close.close-dark {
+  color: @text-color;
 }

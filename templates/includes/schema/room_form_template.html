@@ -2,14 +2,12 @@
 <script type="text/html" id="room_form_template">
   <form id="room_form">
 
-    <div class="fieldset">
-      <legend>Rom/stedsinformasjon</legend>
-
+      <h3>Rom/stedsinformasjon</h3>
 
       <div class="formgroup col-xs-12">
         <div class="form-group">
           <label for="room_handle">Rom/stednavn</label>
-          <input type="text" class="form-control" data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect, value: name" >
+          <input type="text" class="form-control" data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect, value: name">
         </div>
       </div>
       {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: area"}) }}
@@ -19,16 +17,28 @@
       <div class="row">
         <div class="col-xs-12">
           <div class="text-right">
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
-              data-loading-text="
+            <div class="btn-group nowrap">
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
+                data-loading-text="
         <span class='glyphicon glyphicon-refresh spinning'></span>"></button>
-
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Vis dropdown-meny</span>
+              </button>
+              <ul class="dropdown-menu dropdown-primary">
+                <li>
+                  <a data-bind="
+                        click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    Slett rom</a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
   </form>
 </script>
