@@ -189,9 +189,10 @@ class FormHandler(object):
             if 'measurements' in specs:
                 m = specs['measurements'].copy()
                 for key, value in m.items():  # noqa
-                    date = m[key].get('date')
-                    if date:
-                        m[key]['date'] = parse(date)
+                    if isinstance(m[key], dict)
+                        date = m[key].get('date')
+                        if date:
+                            m[key]['date'] = parse(date)
                 self.dictionary.update(flatten_dict(m))
 
     def stamp_with_user(self, user, form):
