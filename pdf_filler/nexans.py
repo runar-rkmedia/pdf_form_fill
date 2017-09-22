@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
 from .helpers import (DictionaryHelper, NumberTypes,
-                      group_number, month_name, date_format)
-from .stamp import StampablePdfForm, signatere_location_size
+                      date_format)
+from .stamp import StampablePdfForm
+import datetime
 
 
 class Nexans(StampablePdfForm):
@@ -64,7 +65,7 @@ class Nexans(StampablePdfForm):
         connect_date = d.g('connect.date')
         last_date = None
         for date in [pour_date, install_date, connect_date]:
-            if date and not last_date or date > last_date:
+            if date and isinstance(date, datetime.date) and (not last_date or date > last_date):
                 last_date = date
         if pour_date:
             self.dict_update({

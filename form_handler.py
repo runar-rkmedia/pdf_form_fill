@@ -189,7 +189,7 @@ class FormHandler(object):
             if 'measurements' in specs:
                 m = specs['measurements'].copy()
                 for key, value in m.items():  # noqa
-                    if isinstance(m[key], dict)
+                    if isinstance(m[key], dict):
                         date = m[key].get('date')
                         if date:
                             m[key]['date'] = parse(date)
