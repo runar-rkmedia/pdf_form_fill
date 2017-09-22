@@ -464,7 +464,8 @@ def view_form(pane=0):
         customerForm=customerForm,
         form=form,
         roomForm=roomForm,
-        pane=pane)
+        pane=pane,
+        is_app=True)
 
 
 @login_required
