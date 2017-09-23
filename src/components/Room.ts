@@ -223,9 +223,10 @@ export class Room extends Post {
     this.heated_area(room.heated_area)
     this.outside(room.outside)
     this.maxEffect(room.maxEffect || 0)
-    this.installation_depth(room.installation_depth || 30)
-    this.ground_fault_protection(room.ground_fault_protection || 30)
-    this.curcuit_breaker_size(room.curcuit_breaker_size || 16)
+    this.installation_depth(Number(room.installation_depth) || 30)
+    this.ground_fault_protection(Number(room.ground_fault_protection) || 30)
+    console.log(room.installation_depth)
+    this.curcuit_breaker_size(Number(room.curcuit_breaker_size) || 16)
     this.normalEffect(room.normalEffect || 0)
     this.heating_cables(new HeatingCableList(this.root, this, room.heating_cables))
     if (room.check_earthed) {

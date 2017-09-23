@@ -206,17 +206,17 @@ class MeasurementsForms(SubForm):
 
 
 class AreaOutput(SubForm):
-    v = BetterDecimalField('Flateeffekt ( W/m<sup>2</sup> )')
+    v = BetterDecimalField('Flateeffekt <br class="visible-xs-inline" /><span class="text-nowrap">( W/m<sup>2</sup> )</span>')
     m = BooleanField()
 
 
 class Cc(SubForm):
-    v = BetterDecimalField('C/C-avstand ( cm )')
+    v = BetterDecimalField('C/C-avstand <br class="visible-xs-inline" /><span class="text-nowrap">( cm )</span>')
     m = BooleanField()
 
 
 class InstallationDepth(SubForm):
-    v = BetterDecimalField('Montasjedybde ( mm )')
+    v = BetterDecimalField('Montasjedybde <span class="text-nowrap">( mm )</span>')
     m = BooleanField()
 
 

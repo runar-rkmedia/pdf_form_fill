@@ -48,7 +48,7 @@
     <hr>
     <!-- ko with: curcuit_breaker_size() -->
     <div class="col-xs-6">
-      <label data-bind="css: { 'label-mod-flag': output.modified() }" >Sikringsstørrelse</label>
+      <label data-bind="css: { 'label-mod-flag': output.modified() }" ><br class="visible-xs-inline">Sikringsstørrelse</label>
       <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
               optionsText: 'text',
               optionsValue: 'id',
@@ -56,7 +56,7 @@
     </div>
     <div class="col-xs-6">
       <div class="form-group">
-        <label data-bind="css: { 'label-mod-flag': $parent.ground_fault_protection().output.modified() }">Utløserstrøm jordfeil</label>
+        <label data-bind="css: { 'label-mod-flag': $parent.ground_fault_protection().output.modified() }">Utløserstrøm <br class="visible-xs-inline"> jordfeil</label>
         <input type="number" min="0" data-bind="textInput: override() ? $parent.ground_fault_protection().user_input : $parent.ground_fault_protection().calculated(), enable: override()" class="form-control">
       </div>
     </div>

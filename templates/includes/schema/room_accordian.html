@@ -82,7 +82,7 @@
         </div>
         <div class="row">
           <div class="col-xs-6">
-            <label data-bind="css: { 'label-mod-flag': curcuit_breaker_size.modified() }">Sikringsstørrelse</label>
+            <label data-bind="css: { 'label-mod-flag': curcuit_breaker_size.modified() }"><br class="visible-xs-inline">Sikringsstørrelse</label>
             <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
                             optionsText: 'text',
                             optionsValue: 'id',
@@ -90,7 +90,7 @@
           </div>
           <div class="col-xs-6">
             <div class="form-group">
-              <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm jordfeil</label>
+              <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm<br class="visible-xs-inline"> jordfeil</label>
               <input type="number" min="0" data-bind="textInput:ground_fault_protection" class="form-control">
             </div>
           </div>
