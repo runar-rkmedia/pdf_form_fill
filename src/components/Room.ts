@@ -225,7 +225,6 @@ export class Room extends Post {
     this.maxEffect(room.maxEffect || 0)
     this.installation_depth(Number(room.installation_depth) || 30)
     this.ground_fault_protection(Number(room.ground_fault_protection) || 30)
-    console.log(room.installation_depth)
     this.curcuit_breaker_size(Number(room.curcuit_breaker_size) || 16)
     this.normalEffect(room.normalEffect || 0)
     this.heating_cables(new HeatingCableList(this.root, this, room.heating_cables))

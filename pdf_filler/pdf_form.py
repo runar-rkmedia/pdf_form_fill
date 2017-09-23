@@ -1,6 +1,10 @@
-import pdffields.fields
-from .helpers import delete_empty_value, NumberTypes
 import os
+
+import pdffields.fields
+
+from .helpers import NumberTypes, delete_empty_value
+import collections
+from decimal import Decimal
 
 
 def replace_None(d, default=''):
@@ -46,6 +50,26 @@ class PdfForm(object):
         raise NotImplementedError(
             "{} missing translate-method".format(type(self)))
 
+    def translate_common(self):
+        def parse_float(d, u):
+            """Parse all floats in a nested dictionary."""
+            for k, v in u.items():
+                if isinstance(v, collections.Mapping):
+                    r = parse_float(d.get(k, {}), v)
+                    d[k] = r
+                elif isinstance(v, bool):
+                    d[k] = self.checkbox_value[0] if v else self.checkbox_value[1]
+                elif isinstance(v, (float, Decimal, str)):
+                    d[k] = v
+                    try:
+                        d[k] = ('%.2f' % float(v)).rstrip('0').rstrip('.')
+                    except (TypeError, ValueError):
+                        pass
+                else:
+                    d[k] = u[k]
+            return d
+        self.dictionary = parse_float({}, self.dictionary)
+
     def set_fields_from_dict(self):
         """Set multiple fields in pdf from a dictionary."""
         for key, value in self.dictionary.items():
@@ -54,37 +78,15 @@ class PdfForm(object):
             except KeyError:
                 pass
 
-    def set_field(self, fieldVariable, value, typeCheckBypass=False):
-        """
-        Set a field in the pdf to a value.
-
-        Will also typecast, and thereby also set the bool-values correctly
-        to whatever checkbox_value is set to. (Like, 'yes', 'no').
-
-        The reason for this is that some pdf's uses text instead of an actual
-        bool-value to set the checkbox.
-        """
+    def set_field(self, fieldVariable, value):
+        """ Set a field in the pdf to a value. """
         thisDict = self.fields_dict[fieldVariable]
-        thisType = thisDict['type']
-        # Cast the value to the needed type.
-        if (value and thisType == NumberTypes
-                and not isinstance(value, thisType)):
-            for t in NumberTypes:
-                try:
-                    value = t(value)
-                    break
-                except ValueError:
-                    pass
-        elif thisType == bool:
-            if value:
-                value = self.checkbox_value[0]
-            else:
-                value = self.checkbox_value[1]
         self.fields[thisDict['field']] = value
 
     def create_filled_pdf(self, filename, flatten=False):
         """Creates a pdf with all fields filled."""
         self.translate()
+        self.translate_common()
         self.set_fields_from_dict()
         pdffields.fields.write_pdf(
             self.fill_pdf_path, self.fields, filename, flatten)

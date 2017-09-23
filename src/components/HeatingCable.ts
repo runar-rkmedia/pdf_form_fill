@@ -159,13 +159,13 @@ class Measurement {
       if (this.date() instanceof Date) {
         date = moment(this.date()).format("YYYY-MM-DD")
       }
-      let ohm = this.ohm()
-      let mohm = this.mohm()
+      let ohm = Number(this.ohm())
+      let mohm = Number(this.mohm())
       if (this.mimmick && this.mimmick() && this.mimmickTarget) {
         ohm = this.mimmickTarget().ohm()
         mohm = this.mimmickTarget().mohm()
       }
-      if (date = 'Invalid date') {
+      if (date == 'Invalid date') {
         date = null
       }
       let data = {

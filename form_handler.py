@@ -175,17 +175,18 @@ class FormHandler(object):
         specs = self.room_item_modification.specs.copy()
 
         if specs:
-            for variable in [
+            for key in [
                     'area_output',
                     'cc',
                     'installation_depth',
                     'curcuit_breaker_size'
                 ]:
-                if variable in specs:
-                    self.dictionary.update({
-                        variable: specs[variable]['v'],
-                    })
-
+                if key in specs:
+                    variable = specs[key]['v']
+                    if variable and len(variable) > 0:
+                        self.dictionary.update({
+                            key: variable,
+                        })
             if 'measurements' in specs:
                 m = specs['measurements'].copy()
                 for key, value in m.items():  # noqa

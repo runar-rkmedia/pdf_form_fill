@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
-from .helpers import (DictionaryHelper, NumberTypes,
-                      date_format)
-from .stamp import StampablePdfForm
 import datetime
+
+from .helpers import DictionaryHelper, NumberTypes, date_format
+from .stamp import StampablePdfForm
 
 
 class Nexans(StampablePdfForm):
@@ -59,7 +59,6 @@ class Nexans(StampablePdfForm):
             'control_system_other_check': d.s_bool('control_system_other'),
             'check-montert_i_henhold_til_installasjonsveiledning': self.TRUE
         })
-
         pour_date = d.g('pour.date')
         install_date = d.g('install.date')
         connect_date = d.g('connect.date')
