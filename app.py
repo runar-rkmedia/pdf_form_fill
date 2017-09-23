@@ -302,6 +302,9 @@ def json_heating_cable():
 def json_room():
     """Handle a room-object"""
     form = forms.RoomForm.from_json(request.json)
+    from pprint import pprint
+    pprint(request.json)
+    pprint(form.data)
     customer_id = (form.customer_id.data)
     room_id = form.id.data or request.args.get('id')
     customer = None
@@ -324,40 +327,26 @@ def json_room():
         room = Room()
         db.session.add(room)
     room.update_entity({
-        'name':
-            form.room_name.data,
-        'customer':
-            customer,
-        'outside':
-            form.outside.data,
-        'area':
-            float(form.area.data),
-        'heated_area':
-            float(form.heated_area.data),
-        'maxEffect':
-            float(form.maxEffect.data),
-        'normalEffect':
-            float(form.normalEffect.data),
-        'earthed_cable_screen':
-            form.check_earthed.cable_screen.data,
-        'earthed_chicken_wire':
-            form.check_earthed.chicken_wire.data,
-        'earthed_other':
-            form.check_earthed.other.data,
-        'max_temp_planning':
-            form.check_max_temp.planning.data,
-        'max_temp_installation':
-            form.check_max_temp.installation.data,
-        'max_temp_other':
-            form.check_max_temp.other.data,
-        'control_system_floor_sensor':
-            form.check_control_system.floor_sensor.data,  # noqa
-        'control_system_room_sensor':
-            form.check_control_system.room_sensor.data,  # noqa
-        'control_system_designation':
-            form.check_control_system.designation.data,  # noqa
-        'control_system_other':
-            form.check_control_system.other.data,
+        'area': float(form.area.data),
+        'control_system_designation': form.check_control_system.designation.data,  # noqa
+        'control_system_floor_sensor': form.check_control_system.floor_sensor.data,  # noqa
+        'control_system_other': form.check_control_system.other.data,
+        'control_system_room_sensor': form.check_control_system.room_sensor.data,  # noqa
+        'curcuit_breaker_size': form.curcuit_breaker_size.data,
+        'customer': customer,
+        'earthed_cable_screen': form.check_earthed.cable_screen.data,
+        'earthed_chicken_wire': form.check_earthed.chicken_wire.data,
+        'earthed_other': form.check_earthed.other.data,
+        'ground_fault_protection': form.ground_fault_protection.data,
+        'heated_area': float(form.heated_area.data),
+        'installation_depth': form.installation_depth.data,
+        'max_temp_installation': form.check_max_temp.installation.data,
+        'max_temp_other': form.check_max_temp.other.data,
+        'max_temp_planning': form.check_max_temp.planning.data,
+        'maxEffect': float(form.maxEffect.data),
+        'name': form.room_name.data,
+        'normalEffect': float(form.normalEffect.data),
+        'outside': form.outside.data,
     })
     db.session.commit()
     return jsonify(room.serialize)
