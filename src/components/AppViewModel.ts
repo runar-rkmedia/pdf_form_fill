@@ -117,7 +117,6 @@ export class TSAppViewModel {
       }
     };
     this.Products(new TSProductModel(this));
-    // this.Products().getProducts();
 
   }
   reportError(error: Error) {

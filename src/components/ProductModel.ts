@@ -2,6 +2,9 @@ import { TSAppViewModel } from "./AppViewModel"
 import { StrIndex } from "./Common"
 import { HeatingCable } from "./HeatingCable"
 import { Room } from "./Room"
+import * as data from '../data.json';
+
+const static_data: StaticData = data;
 
 export interface ProductInterface {
   effect: number;
@@ -201,21 +204,10 @@ export class TSProductModel {
   room_type_info: KnockoutObservableArray<RoomTypeInfoServer> = ko.observableArray()
 
   constructor(private parentModel: TSAppViewModel) {
-    // this.products = ko.observableArray(<ManufacturorInterface[]>[])
+    this.products(static_data.products);
+    this.room_type_info(static_data.room_type_info)
+    this.parentModel.selected_vk(this.parentModel.forced_selected_vk());
   }
-
-
-  getProducts = () => {
-    $.get(this.url)
-      .done((result: StaticData) => {
-        this.products(result.products);
-        this.room_type_info(result.room_type_info)
-        this.parentModel.selected_vk(this.parentModel.forced_selected_vk());
-      })
-      .fail((e) => {
-        console.log('Could not retrieve data = Error ' + e.status);
-      });
-  };
   flatten_products = (products_to_parse: ManufacturorInterface[]) => {
     var r = [];
     if (products_to_parse) {
