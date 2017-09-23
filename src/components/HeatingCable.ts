@@ -170,6 +170,9 @@ class Measurement {
         ohm = this.mimmickTarget().ohm()
         mohm = this.mimmickTarget().mohm()
       }
+      if (date = 'Invalid date') {
+        date = null
+      }
       let data = {
         ohm: ohm,
         mohm: mohm,
