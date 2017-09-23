@@ -15,6 +15,7 @@ export interface ProductInterface {
   secondarySpec?: number;
   restrictions?: ProductRestrictions
   specs?: ProductSpecs
+  short_name?: string
 }
 
 
@@ -164,15 +165,24 @@ export class ProductFilter {
   // kings road: 760m
   // queens road: 850m
   // princes road: 750m
-  sortDist = (list: any[], setPoint: number, key = 'effect') => {
+  sortDist = (list: any[], setPoint: number, keyA = 'effect', keyB = 'name') => {
     return list.sort((a, b) => {
+      let diff = 0;
       if (setPoint) {
-        let diffA = Math.abs(setPoint - a[key])
-        let diffB = Math.abs(setPoint - b[key])
-        return diffA - diffB
+        let diffA = Math.abs(setPoint - a[keyA])
+        let diffB = Math.abs(setPoint - b[keyA])
+        diff = diffA - diffB
       } else {
-        return (a[key]) - (b[key]);
+        diff = (a[keyA]) - (b[keyA]);
       }
+      if (diff == 0) {
+        if (a[keyB] < b[keyB]) {
+          return -1
+        }
+        return 1
+      }
+      return diff
+
     });
   }
 
@@ -219,11 +229,12 @@ export class TSProductModel {
             p.type = d.type;
             p.outside = !d.inside;
             p.name = d.name;
+            p.short_name = d.name;
             if (p.effect) {
-              p.name += " " + p.effect + "W";
+              p.name += ` – ${p.effect}W`;
             }
             if (d.mainSpec) {
-              p.name += " " + d.mainSpec + "W/m";
+              p.name += ` – ${d.mainSpec}W/m`;
             }
             if (d.type == 'mat') {
               p.name += "²";
