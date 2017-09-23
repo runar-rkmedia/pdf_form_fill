@@ -1,14 +1,15 @@
 var webpack = require('webpack'),
   path = require('path'),
   srcPath = path.join(__dirname, 'src'),
-  jsOutPath = path.join('static', 'js'),
-  cssOutPath = path.join('static', 'css'),
+  genOutPath = path.join('static', 'gen'),
   ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // TODO: serve kncokout.validation from CDN instead of bundling it.
+const AssetsPlugin = require('assets-webpack-plugin')
+const assetsPluginInstance = new AssetsPlugin()
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const extractLess = new ExtractTextPlugin({
-  filename: path.join(cssOutPath, "[name].css"),
+  filename: path.join(genOutPath, "style.[hash].css"),
   disable: process.env.NODE_ENV === "development"
 });
 module.exports = {
@@ -17,7 +18,7 @@ module.exports = {
   cache: true,
   entry: path.join(srcPath, "/main.ts"),
   output: {
-    filename: path.join(jsOutPath, "/main.js"),
+    filename: path.join(genOutPath, "/vk_app.[hash].js"),
   },
   externals: {
     // require("jquery") is external and available
@@ -86,5 +87,6 @@ module.exports = {
   },
   plugins: [
     extractLess,
+    assetsPluginInstance
   ]
 };

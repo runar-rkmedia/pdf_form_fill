@@ -16,8 +16,8 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-M45WZD3');</script>
     <!-- End Google Tag Manager -->
-    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}" media="none" onload="if(media!='all')media='all'">
-    <noscript><link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"></noscript>
+    <link rel="stylesheet" href="{{webbassets.css}}" media="none" onload="if(media!='all')media='all'">
+    <noscript><link rel="stylesheet" href="{{webbassets.css}}"></noscript>
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
 
 
@@ -41,7 +41,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="row">{% include 'includes/footer.html' %}</div>
     <script src="https://cdn.jsdelivr.net/combine/npm/webfontloader@1.6.28,npm/jquery@3.2.1,npm/knockout@3.4.2/build/output/knockout-latest.min.js,npm/knockout.validation@2.0.3,npm/knockout.validation@2.0.3/localization/nb-NO.min.js,npm/bootbox@4.4.0,npm/moment@2.18.1,npm/eonasdan-bootstrap-datetimepicker@4.17.47,npm/moment@2.18.1/locale/nb.min.js"></script>
-    <script async defer src="{{url_for('static', filename='js/main.js')}}"></script>
+    <script async defer src="{{ webbassets.js }}"></script>
     {% if form %}
       <script type="text/javascript">
         $.ajaxSetup({

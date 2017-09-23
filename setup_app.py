@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """ Bare app settings and functionality. """
+import json
 import os
 from config import configure_app
 from functools import wraps
@@ -15,6 +16,7 @@ import wtforms_json
 from flask_dance.consumer import oauth_authorized
 from flask_dance.consumer.backend.sqla import SQLAlchemyBackend
 from flask_dance.contrib.google import google, make_google_blueprint
+from flask_htmlmin import HTMLMIN
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import (LoginManager, current_user, login_required,  # NOQA
@@ -28,7 +30,6 @@ from models_credentials import (Address, Company, Customer, Invite,  # NOQA
                                 InviteType, OAuth, Room, RoomItem,
                                 RoomTypeInfo, User, UserRole)
 from pdf_filler.helpers import id_generator
-from flask_htmlmin import HTMLMIN
 
 wtforms_json.init()
 
@@ -43,6 +44,7 @@ db.init_app(app)
 HTMLMIN(app, options={
     'remove_comments': False,
 })
+
 
 limiter = Limiter(
     app,
@@ -65,6 +67,22 @@ login_manager.init_app(app)
 # setup SQLAlchemy backend
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 csrf = CSRFProtect(app)
+
+
+def read_webassets():
+    """Read web-assets from file."""
+    with open('webpack-assets.json') as json_file:
+        return json.load(json_file)
+
+webpack_assets = read_webassets()
+
+
+@app.context_processor
+def inject_web_assets():
+    """Inject web-assets into all templates Refreshes from disk on debug."""
+    if app.config['DEBUG']:
+        webpack_assets = read_webassets() # noqa
+    return dict(webbassets=webpack_assets['main'])
 
 
 @app.context_processor

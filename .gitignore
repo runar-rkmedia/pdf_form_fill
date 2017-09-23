@@ -284,3 +284,5 @@ static/css/main.css
 static/js/main.js
 # End of https://www.gitignore.io/api/node
 src/data.json
+static/gen/
+webpack-assets.json

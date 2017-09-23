@@ -186,6 +186,7 @@ def json_static_data():
     """Return a json-object of all products and room-type-info."""
     return jsonify(static_data())
 
+
 def static_data():
     """Return all static-data. (products, room-type)"""
     manufacturors = Manufacturor.query.filter(
@@ -195,6 +196,7 @@ def static_data():
         'products': [i.serialize for i in manufacturors],
         'room_type_info': [i.serialize for i in room_types]
     }
+
 
 @app.route('/form/<customer_id>/<room_id>/<room_item_id>/')
 @app.route('/form/<customer_id>/<room_id>/')
@@ -556,7 +558,7 @@ if __name__ == "__main__":
             json.JSONEncoder = MyJSONEncoder
 
             with open('src/data.json', 'w') as fp:
-                json.dump(data, fp, cls=MyJSONEncoder, separators=(',',':'))
+                json.dump(data, fp, cls=MyJSONEncoder, separators=(',', ':'))
     else:
         if app.config['DEBUG'] is True:
             app.run(host='0.0.0.0', port=app.config['PORT'])
