@@ -1,101 +1,137 @@
 <!DOCTYPE html>
 <script type="text/html" id="select_product_template">
-  <h4>
-    Spesifikasjoner varmekabel
-  </h4>
-  <div class="collapse" data-bind="attr: {id: 'vk-filter-' + $parents[2].id() + '-' + id()}" >
-  <div class="form-group form-group-sm col-xs-6">
-    <fieldset>
-      <div>
-        <legend>Fabrikant</legend>
-      </div>
-      <!-- ko foreach: $root.Products().products -->
-      <div class="col-xs-12">
-        <label class="radio-inline">
-          <input type="radio" name="manufacturor" data-bind="checked: $parent.product_filter().manufacturor, value: name">
-          <!-- ko text: name  -->
-          <!-- /ko -->
-        </label>
-      </div>
-      <!-- /ko -->
-    </fieldset>
-  </div>
-  <div class="form-group form-group-sm col-xs-6">
-    <fieldset>
-      <legend>Type</legend>
-      <div class="col-xs-12">
-        <label class="radio-inline">
-          <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'mat'">
-          Matte
-        </label>
-      </div>
-      <div class="col-xs-12">
-        <label class="radio-inline">
-          <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'cable'">
-          Kabel
-        </label>
-      </div>
-      <!-- /ko -->
-    </fieldset>
-  </div>
-  <div class="form-group form-group-sm col-xs-6">
-    <label for="input-effekt">Effekt
-      <small>(sorterer etter nærmeste effekt)</small>
-    </label>
-    <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: product_filter().effect">
-  </div>
 
-  <div class="form-group col-xs-12">
-    <fieldset>
-      <legend>Watt per
-        <span data-bind="visible: product_filter().vk_type() == 'mat'">kvadrat</span>
-        <span data-bind="visible: !product_filter().vk_type()">(kvadrat)</span>meter</legend>
-      <div class="csscolumn">
-        <!-- ko foreach: product_filter().spec_groups().sort(function (a,b) {
-                                    return a.mainSpec-b.mainSpec
-                                }) -->
-        <!-- ko if: $data.mainSpec -->
-        <div>
-          <label class="radio-inline">
-            <input type="radio" name="meterEffekt" data-bind="checked: $parent.product_filter().mainSpec, value: $data.mainSpec">
-            <span data-bind="text: $data.mainSpec"></span>
-            <span>
-              W/m<!-- ko if: $data.type == "mat" -->²
+  <div class="row">
+    <div class="col-xs-12">
+      <form id="heating_form">
+        <div class="form-group col-xs-12 no-error">
+          <!-- ko with: product_filter -->
+          <label>Varmekabel</label>
+          <p class="help-block">
+              <!-- ko if: manufacturor() || vk_type() || mainSpec -->
+              Viser bare:
+              <!-- ko if: manufacturor() -->
+              <span class="badge" data-bind="text: manufacturor()"></span>
               <!-- /ko -->
-            </span>
-            <!-- /ko -->
-          </label>
+              <!-- ko if: mainSpec() -->
+              <span class="badge">
+                <!-- ko text: mainSpec() -->
+                <!-- /ko -->&thinsp;W/m
+                <!-- ko if: vk_type() == 'mat' -->
+                ²
+                <!-- /ko -->
+              </span>
+              <!-- /ko -->
+              <!-- ko if: vk_type() -->
+              <span class="badge">
+                <!-- ko if: vk_type() == 'mat' -->
+                matter
+                <!-- /ko -->
+                <!-- ko if: vk_type() == 'cable' -->
+                kabler
+                <!-- /ko -->
+              </span>
+              <!-- /ko -->
+              <!-- /ko -->
+              <!-- ko if: effect() || $parents[1].suggested_effect() >= 100 -->
+              Sortert etter
+              <span class="badge">effekt nær
+                <span data-bind="text: effect() || $parents[1].suggested_effect()"></span>&thinsp;W</span>
+              <span data-bind="if: !effect() && $parents[1].suggested_effect()">, som er anbefalt effekt på dette rommet.</span>
+              <!-- /ko -->
+          </p>
+          <select class="form-control" data-bind="
+          options: sortDist(filtered_products(), effect() || $parents[1].suggested_effect()),
+          optionsText: 'name',
+          optionsValue: 'id',
+          value: $parent.product_id" size=7></select>
+          <!-- /ko -->
+<p class="help-block">
+  Du kan tilpasset søket ved å
+  <a data-toggle="collapse" aria-expanded="false" data-bind="attr: {
+    'href': '#vk-filter-' + $parents[2].id() + '-' + id(),
+    'aria-controls': 'vk-filter-' + $parents[2].id() + '-' + id()
+  }">trykke her.</a>
+</p>
         </div>
-        <!-- /ko -->
-        <!-- /ko -->
+
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="collapse" data-bind="attr: {id: 'vk-filter-' + $parents[2].id() + '-' + id()}">
+      <div class="col-xs-12 well">
+        <h3>Filtrering av varmeprodukt</h3>
+        <p>Hvis du ikke finner ditt varmeprodukt raskt, kan du filtrere listen videre, ved å bruke skjemaet nedenfor.</p>
+        <div class="form-group form-group-sm col-xs-6">
+          <fieldset>
+            <div>
+              <legend>Fabrikant</legend>
+            </div>
+            <!-- ko foreach: $root.Products().products -->
+            <div class="col-xs-12">
+              <label class="radio-inline">
+                <input type="radio" name="manufacturor" data-bind="checked: $parent.product_filter().manufacturor, value: name">
+                <!-- ko text: name  -->
+                <!-- /ko -->
+              </label>
+            </div>
+            <!-- /ko -->
+          </fieldset>
+        </div>
+        <div class="form-group form-group-sm col-xs-6">
+          <fieldset>
+            <legend>Type</legend>
+            <div class="col-xs-12">
+              <label class="radio-inline">
+                <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'mat'">
+                Matte
+              </label>
+            </div>
+            <div class="col-xs-12">
+              <label class="radio-inline">
+                <input type="radio" name="vk_type" data-bind="checked: product_filter().vk_type, value: 'cable'">
+                Kabel
+              </label>
+            </div>
+            <!-- /ko -->
+          </fieldset>
+        </div>
+        <div class="form-group form-group-sm col-xs-6">
+          <label for="input-effekt">Effekt
+            <small>(sorterer etter nærmeste effekt)</small>
+          </label>
+          <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: product_filter().effect">
+        </div>
+
+        <div class="form-group col-xs-12">
+          <fieldset>
+            <legend>Watt per
+              <span data-bind="visible: product_filter().vk_type() == 'mat'">kvadrat</span>
+              <span data-bind="visible: !product_filter().vk_type()">(kvadrat)</span>meter</legend>
+            <div class="csscolumn">
+              <!-- ko foreach: product_filter().spec_groups().sort(function (a,b) {
+                                      return a.mainSpec-b.mainSpec
+                                  }) -->
+              <!-- ko if: $data.mainSpec -->
+              <div>
+                <label class="radio-inline">
+                  <input type="radio" name="meterEffekt" data-bind="checked: $parent.product_filter().mainSpec, value: $data.mainSpec">
+                  <span data-bind="text: $data.mainSpec"></span>
+                  <span>
+                    W/m<!-- ko if: $data.type == "mat" -->²
+                    <!-- /ko -->
+                  </span>
+                  <!-- /ko -->
+                </label>
+              </div>
+              <!-- /ko -->
+              <!-- /ko -->
+            </div>
+          </fieldset>
+        </div>
       </div>
-    </fieldset>
-  </div>
-  </div>
-    <div class="bs-callout bs-callout-primary hidden-button">
-      <h4>Velg varmekabel nedenfor</h4>
-      <p>Listen nedenfor er sortert etter hvilken type og effekt vi mener burde være her.</p>
-      <p>Du kan selfølgelig lett filtrere og sortere selv. Trykk på knappen for å vise dette.</p>
-      <button class="btn btn-primary" type="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: {
-        'data-target': '#vk-filter-' + $parents[2].id() + '-' + id(),
-        'aria-controls': 'vk-filter-' + $parents[2].id() + '-' + id()
-      }">Vis filtrering</button>
     </div>
+  </div>
 
-
-  <form id="heating_form">
-    <div class="form-group col-xs-12">
-      <!-- ko with: product_filter -->
-      <select
-        class="form-control"
-        data-bind="options: sortDist(filtered_products(), effect() || $parents[1].suggested_effect())
-,
-                optionsText: 'name',
-                optionsValue: 'id',
-                value: $parent.product_id,
-                optionsCaption: 'Velg en vamekabel her... (' + filtered_products().length + ')'"></select>
-      <!-- /ko -->
-    </div>
-
-  </form>
 </script>

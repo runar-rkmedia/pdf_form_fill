@@ -455,3 +455,16 @@ body {
 .close.close-dark {
   color: @text-color;
 }
+@manufacturor-logo-width: 38px;
+.panel-title .manufacturor-logo{
+  height: 30px;
+  width: @manufacturor-logo-width;
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-left: -@manufacturor-logo-width - 3px;
+  margin-top: -7px;
+}
+.panel-title.has-logo{
+  margin-left: @manufacturor-logo-width - 7px;
+}

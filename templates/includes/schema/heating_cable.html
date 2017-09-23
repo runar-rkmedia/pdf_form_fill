@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <div class="panel-group" role="tablist" aria-multiselectable="true" data-bind="attr: {'id': 'accordian-heat' + $parent.id()}">
   <!-- ko foreach: $data-->
-  <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-mod-flag': modified()}">
+  <div class="panel panel-primary">
     <div class="panel-heading collapsed" data-toggle="collapse" data-bind="attr: { 'data-target': '#heat' + id(), 'href': '#heat' + id(), 'data-parent': '#accordian-heat' + $parents[1].id()}">
-      <h3 class="panel-title carrot">
+      <h3 class="panel-title carrot relative has-logo">
         <!-- ko if: product() -->
-        <span data-bind="text: product().name"></span>
+          <img class="manufacturor-logo" data-bind="attr: {src: 'static/icons/' + product().manufacturor + '.svg'}" alt="">
+        <span class="hidden-xs" data-bind="html: product().name"></span>
+        <span class="visible-xs-inline" data-bind="html: product().short_name + product().effect"></span>
         <!-- /ko -->
         <!-- ko if: modified -->
-        <b>Ikke lagret</b>
+        <span class="icon-mod-flag" aria-hidden="true"></span>
         <!-- /ko -->
       </h3>
     </div>
@@ -141,8 +143,8 @@ attr: {'id': 'heat' + id()}
             <li>
               <a data-bind="
               click: get_form_and_open">
-              <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
-              Forhåndsvisning</a>
+                <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+                Forhåndsvisning</a>
             </li>
             <li>
               <a class="c-danger" data-bind="
