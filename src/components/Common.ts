@@ -1,6 +1,4 @@
 import { TSAppViewModel } from './AppViewModel'
-var diff = require('recursive-diff');
-import bootbox = require("bootbox")
 export interface StrIndex<TValue> {
   [key: string]: TValue
 }

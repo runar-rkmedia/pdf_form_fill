@@ -5,12 +5,6 @@ import {
   ProductInterface,
   ProductFilter,
 } from "./ProductModel"
-let moment = require('moment')
-import 'moment/locale/nb';
-moment.locale('nb')
-// import BootstrapV3DatetimePicker = require("eonasdan-bootstrap-datetimepicker")
-require("eonasdan-bootstrap-datetimepicker")
-// import * as datepicker from 'bootstrap-datepicker'
 
 
 ko.bindingHandlers.dateTimePicker = {
@@ -19,6 +13,7 @@ ko.bindingHandlers.dateTimePicker = {
     var options = allBindingsAccessor!().dateTimePickerOptions || {};
 
     let default_options = {
+      locale: 'nb',
       format: "L",
       useCurrent: false,
       calendarWeeks: true,

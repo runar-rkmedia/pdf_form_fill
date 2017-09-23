@@ -1,8 +1,7 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { StrIndex } from "./Common"
 import { HeatingCable } from "./HeatingCable"
-import { Room } from "./Rooms"
-import ko = require("knockout");
+import { Room } from "./Room"
 
 export interface ProductInterface {
   effect: number;

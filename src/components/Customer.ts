@@ -2,7 +2,7 @@ import { TSAppViewModel } from "./AppViewModel"
 import { RoomInterface, Room } from "./Room"
 import { RoomList } from "./RoomList"
 import { StrIndex, AddressFullInterface, HTTPVerbs, Post, AddressInterface } from "./Common"
-import ko = require("knockout");
+// This will be removed once `addresses` have been updated.
 let titleCase = require('title-case')
 
 

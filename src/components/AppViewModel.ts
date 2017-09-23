@@ -1,22 +1,18 @@
 import { TSProductModel } from './ProductModel'
-import nb_NO = require('./../../node_modules/knockout.validation/localization/nb-NO.js')
-import kv = require("knockout.validation");
 import { AddressInterface } from "./Common"
 import { CustomerInterface, Customer } from "./Customer"
 import { CustomerList } from "./CustomerList"
 import { RoomInterface } from "./Room"
 import { RoomList } from "./RoomList"
 import { Company, ControlPanel } from "./ControlPanel"
-import ko = require("knockout");
-import $ = require("jquery");
 
 
 require("knockout.typeahead");
 require("knockout-template-loader?name=suggestion-template!html-loader?-minimize!./suggestion.html");
 
 // Switch locale for knockout.validation
-kv.defineLocale('no-NO', nb_NO);
-kv.locale('nb-NO')
+// ko.validation.defineLocale('no-NO', nb_NO);
+ko.validation.locale('nb-NO')
 
 interface FileDownloadInterface {
   address_id: number
@@ -94,7 +90,7 @@ export class TSAppViewModel {
         }
       },
     });
-    kv.init({
+    ko.validation.init({
       decorateInputElement: true,
       errorElementClass: 'has-error has-feedback',
       // successElementClass: 'has-feedback has-success',
@@ -109,11 +105,11 @@ export class TSAppViewModel {
     let init = ko.bindingHandlers['validationCore'].init!;
     ko.bindingHandlers['validationCore'].init = (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) => {
       init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-      let config = kv.utils.getConfigOptions(element);
+      let config = ko.validation.utils.getConfigOptions(element);
       // if requested, add binding to decorate element
-      if (config.decorateInputElement && kv.utils.isValidatable(valueAccessor())) {
+      if (config.decorateInputElement && ko.validation.utils.isValidatable(valueAccessor())) {
         let parent = $(element).parent();
-        if (parent.length) {
+        if (parent.length && !parent.is('.no-error')) {
           ko.applyBindingsToNode(parent[0], {
             validationElement: valueAccessor()
           });
