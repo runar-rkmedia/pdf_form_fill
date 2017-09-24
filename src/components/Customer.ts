@@ -71,6 +71,20 @@ export class Customer extends Post {
     }
     return false
   })
+  can_fill_form = ko.computed(() => {
+    if (this.modified() || this.sub_modified()) {
+      return false
+    }
+    if (this.rooms().list().length == 0) {
+      return false
+    }
+    for (let room of this.rooms().list()) {
+      if (room.heating_cables().list().length > 0) {
+        return true
+      }
+    }
+    return false
+  })
 
 
   set(result: CustomerInterface) {

@@ -137,9 +137,9 @@ attr: {'id': 'heat' + id()}
                 <span class="sr-only">Vis dropdown-meny</span>
               </button>
               <ul class="dropdown-menu dropdown-primary">
-                <li>
+                <li data-bind="css:{disabled: modified()}" >
                   <a data-bind="
-    click: get_form_and_open">
+    click: modified()? undefined: get_form_and_open, css: modified">
                     <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
                     Forhåndsvisning</a>
                 </li>
