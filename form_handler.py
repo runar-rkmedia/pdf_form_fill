@@ -39,9 +39,18 @@ class MultiForms(object):
         elif isinstance(entity, Customer):
             for room in entity.rooms:
                 self.retrieve_by_room(room)
-        combined = combine_pdfs(
-            self.files,
-            os.path.join(self.path, 'out.pdf'))
+        if len(self.files) > 1:
+            combined = combine_pdfs(
+                self.files,
+                os.path.join(self.path, 'out.pdf'))
+        elif len(self.files) == 1:
+            combined = self.files[0]
+        else:
+            raise my_exceptions.MyBaseException(
+            message='Ingen skjemaer å fylle ut. Du må legge til minst en varmekabel/matte.',
+            defcon_level=my_exceptions.DefconLevel.warning,
+            status_code=403
+        )
         self.file = os.path.relpath(combined)
 
     def create_path(self, path):
