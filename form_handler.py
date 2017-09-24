@@ -4,8 +4,9 @@ import os
 
 import my_exceptions
 from dateutil.parser import parse
-from models_credentials import Customer, Room, RoomItem
+from models_credentials import ContactType, Customer, Room, RoomItem
 from models_product import ProductCatagory
+from pdf_filler.helpers import NumberFormatter
 from pdf_filler.schema import get_template_schema
 from pdffields.fields import combine_pdfs
 from setup_app import user_file_path
@@ -26,7 +27,7 @@ def flatten_dict(d):
 class MultiForms(object):
     """Create multiple pdf-forms recursively, depending on input."""
 
-    def __init__(self, entity, user, stamp=True, out='out.pdf'):
+    def __init__(self, entity, user, stamp=None, out='out.pdf'):
         self.path = user_file_path(create_random_dir=True)
         self.files = []
         self.user = user
@@ -106,14 +107,31 @@ class FormHandler(object):
 
     def push_from_company(self):
         """Push data from company."""
-        self.dictionary.update({
+        company_data = {
             'company.name': self.company.name,
             'company.orgnumber': self.company.orgnumber,
+            'company.orgnumber_f': NumberFormatter.org(self.company.orgnumber),
             'company.address.address1': self.company.address.address1,
             'company.address.address2': self.company.address.address2,
             'company.address.post_code': self.company.address.post_code,
             'company.address.post_area': self.company.address.post_area,
-        })
+        }
+        for contact in self.company.contacts:
+            if contact.contact.type == ContactType.email:
+                company_data['company.contact.email'] = contact.contact.value
+            if contact.contact.type == ContactType.phone:
+                company_data['company.contact.phone'] = contact.contact.value
+                company_data['company.contact.phone_f'] = NumberFormatter.phone(
+                    contact.contact.value)
+            if contact.contact.type == ContactType.mobile:
+                company_data['company.contact.mobile'] = contact.contact.value
+                company_data['company.contact.mobile_f'] = NumberFormatter.mobile(
+                    contact.contact.value)
+            if contact.contact.description:
+                company_data[
+                    'company.contact.person'] = contact.contact.description
+        print(company_data)
+        self.dictionary.update(company_data)
 
     def push_from_customer(self):
         """Push data from customer."""
@@ -180,7 +198,7 @@ class FormHandler(object):
                     'cc',
                     'installation_depth',
                     'curcuit_breaker_size'
-                ]:
+            ]:
                 if key in specs:
                     variable = specs[key]['v']
                     if variable and len(variable) > 0:

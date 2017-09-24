@@ -32,6 +32,41 @@ def delete_empty_value(dictionary):
     """Remove all keys from a dictionary where values are empty."""
     return {k: v for k, v in dictionary.items() if v != None and v != ''}  # noqa
 
+class NumberFormatter(object):
+    """Formats numbers in different formats."""
+
+    @staticmethod
+    def group_number_format(n, grouping_list, sep=' '):
+        """
+        General grouping of numbers.
+
+        grouping_list should be a list of numbers.
+
+        example: [3,2,3] will group by 3, then 2, then 3.
+
+        """
+        group = []
+        i = 0
+        for c in grouping_list:
+            group.append(n[i:i + c])
+            i += c
+        return sep.join(group)
+
+    @classmethod
+    def phone(cls, n):
+        """Return a formatted phone-numer."""
+        return cls.group_number_format(str(n), [2, 2, 2, 2])
+
+    @classmethod
+    def mobile(cls, n):
+        """Return a formatted mobile-number."""
+        return cls.group_number_format(str(n), [3, 2, 3])
+
+
+    @classmethod
+    def org(cls, n):
+        """Return a formatted organizaion-number."""
+        return cls.group_number_format(str(n), [3, 3, 3])
 
 def group_number(n, grouping=3, seperator=' '):
     """Returns a pretty, grouped number."""

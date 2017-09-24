@@ -40,8 +40,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       {% block body %}{% endblock %}
     </div>
     <div class="row">{% include 'includes/footer.html' %}</div>
-    <script async src="https://cdn.jsdelivr.net/combine/npm/webfontloader@1.6.28,npm/jquery@3.2.1,npm/knockout@3.4.2/build/output/knockout-latest.min.js,npm/knockout.validation@2.0.3,npm/knockout.validation@2.0.3/localization/nb-NO.min.js,npm/bootbox@4.4.0,npm/moment@2.18.1,npm/eonasdan-bootstrap-datetimepicker@4.17.47,npm/moment@2.18.1/locale/nb.min.js"></script>
-    <script async src="{{ webbassets.js }}"></script>
+    <script  src="https://cdn.jsdelivr.net/combine/npm/webfontloader@1.6.28,npm/jquery@3.2.1,npm/knockout@3.4.2/build/output/knockout-latest.min.js,npm/knockout.validation@2.0.3,npm/knockout.validation@2.0.3/localization/nb-NO.min.js,npm/bootbox@4.4.0,npm/moment@2.18.1,npm/eonasdan-bootstrap-datetimepicker@4.17.47,npm/moment@2.18.1/locale/nb.min.js"></script>
+    <script src="{{ webbassets.js }}"></script>
     {% if form %}
       <script type="text/javascript">
         $.ajaxSetup({

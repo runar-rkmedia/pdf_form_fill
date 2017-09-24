@@ -25,13 +25,16 @@ class Oegleand(StampablePdfForm):
                 d.s('customer.address.address2') + '\n' +
                 d.s('customer.address.post_code') + ' ' +
                 d.s('customer.address.post_area'),
-            'company.orgnumber': group_number(d.g('company.orgnumber')),
             'product.resistance_min': '{0:.1f}'.format(
                 d.g('product.resistance_min')
                 )
         })
 
         date = d.g('date')
+        self.dict_update({
+            'company.phone': d.g('company.contact.phone_f', d.g('company.contact.mobile_f')),
+        })
+
         if date:
             self.dict_update({
                 'dato-År': date.year,
@@ -158,7 +161,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Jord',
             'type': bool
         },
-        'company.contact_person': {
+        'company.contact.person': {
             'text': 'TextInPDF',
             'field': 'Kontaktperson',
             'type': 'Kontaktperson'
@@ -183,7 +186,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Mont',
             'type': bool
         },
-        'company.orgnumber': {
+        'company.orgnumber_f': {
             'text': 'TextInPDF',
             'field': 'Organisasjonsnr',
             'type': str
