@@ -435,6 +435,12 @@ class Customer(MyBaseModel, db.Model):
         db.session.commit()
         return customer
 
+
+    @property
+    def is_archived(self):
+        """Alias for arhcived."""
+        return self.archived
+
     @property
     def serialize(self):
         """Serialize."""
@@ -504,6 +510,11 @@ class Room(MyBaseModel, db.Model):
     def owns(self, user):
         """Check that user has rights to this room."""
         return self.customer.owns(user)
+
+    @property
+    def is_archived(self):
+        """Check if this or its parents are archived."""
+        return self.archived or self.customer.is_archived
 
     @property
     def serialize(self, user=None):
@@ -576,6 +587,11 @@ class RoomItem(MyBaseModel, db.Model):
         """Return the latest modification made to this item, by date"""
         if self.modifications:
             return self.modifications[0]
+
+    @property
+    def is_archived(self):
+        """Check if this or its parents are archived."""
+        return self.archived or self.room.is_archived
 
     @property
     def modification_date(self):
@@ -662,6 +678,11 @@ class RoomItemModifications(MyBaseModel, db.Model):
     def product(self):
         """Return product from stored on this object."""
         return Product.by_id(self.product_id)
+
+    @property
+    def is_archived(self):
+        """Check if this or its parents are archived."""
+        return self.archived or self.room_item.is_archived
 
     @property
     def serialize(self):

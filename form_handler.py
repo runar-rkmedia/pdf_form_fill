@@ -1,6 +1,7 @@
 """Create forms from database-objects."""
 
 import os
+import string
 
 import my_exceptions
 from dateutil.parser import parse
@@ -13,7 +14,9 @@ from setup_app import user_file_path
 
 
 def flatten_dict(d):
+    """Flattens a dictionary."""
     def items():
+        """Helper-function for flattening."""
         for key, value in d.items():
             if isinstance(value, dict):
                 for subkey, subvalue in flatten_dict(value).items():
@@ -27,60 +30,77 @@ def flatten_dict(d):
 class MultiForms(object):
     """Create multiple pdf-forms recursively, depending on input."""
 
-    def __init__(self, entity, user, stamp=None, out='out.pdf'):
+    def __init__(self, entity, user, stamp=None, out=None, create_if_archived=False):
         self.path = user_file_path(create_random_dir=True)
+        self.create_if_archived = create_if_archived
         self.files = []
         self.user = user
         self.stamp = stamp
         if isinstance(entity, RoomItem):
-            self.retrieve_by_room_item(entity)
+            self.retrieve_by_room_item(entity, out)
         elif isinstance(entity, Room):
             self.retrieve_by_room(entity)
         elif isinstance(entity, Customer):
+            if out is None:
+                out = entity.address.address1
             for room in entity.rooms:
                 self.retrieve_by_room(room)
         if len(self.files) > 1:
             combined = combine_pdfs(
                 self.files,
-                os.path.join(self.path, 'out.pdf'))
+                os.path.join(self.path, self.create_unique_path(out)))
         elif len(self.files) == 1:
             combined = self.files[0]
         else:
             raise my_exceptions.MyBaseException(
-            message='Ingen skjemaer å fylle ut. Du må legge til minst en varmekabel/matte.',
-            defcon_level=my_exceptions.DefconLevel.warning,
-            status_code=403
-        )
+                message='Ingen skjemaer å fylle ut. Du må legge til minst en varmekabel/matte.',
+                defcon_level=my_exceptions.DefconLevel.warning,
+                status_code=403
+            )
         self.file = os.path.relpath(combined)
 
-    def create_path(self, path):
-        """Create a path for form."""
-
-    def create_form(self, room_item_modification):
-        """Create forms, and return a json-object with the url."""
-        filename = " ".join([
-            room_item_modification.room_item.room.customer.address.address1,
-            room_item_modification.product.name
-        ])
-        import string
+    def create_unique_path(self, filename, extension='pdf'):
+        """Create a path for form, make sure file does not already exist."""
+        if filename is None:
+            filename = 'noname'
         remove_punctuation_map = dict((ord(char), '-')
                                       for char in string.punctuation)
         slugged = filename.translate(remove_punctuation_map)
         slugged = slugged[:60] if len(slugged) > 60 else slugged
+        path = os.path.join(self.path, '{}.{}'.format(slugged, extension))
+        i = 2
+        while os.path.isfile(path):
+            path = os.path.join(self.path, '{}({}).{}'.format(slugged, i, extension))
+            i += 1
+        return path
+
+    def create_form(self, room_item_modification, filename=None):
+        """Create forms, and return a json-object with the url."""
+        if not filename:
+            filename = " ".join([
+                room_item_modification.room_item.room.name,
+                room_item_modification.product.name
+            ])
+        path = self.create_unique_path(filename)
 
         form_handler = FormHandler(
-            room_item_modification,
-            self.user, os.path.join(self.path, slugged + '.pdf'))
+            room_item_modification=room_item_modification,
+            current_user=self.user,
+            path=path,
+            create_if_archived=self.create_if_archived)
         form_handler.create(self.stamp)
         return form_handler.path
 
-    def retrieve_by_room_item(self, room_item):
+    def retrieve_by_room_item(self, room_item, filename=None):
         """Retrieve pdf-form by room_item."""
         if not room_item:
             raise my_exceptions.NotARoomItem()
-        if not room_item.latest:
+        room_item_modification = room_item.latest
+        if not room_item_modification:
             raise my_exceptions.NotARoomItemModification()
-        self.files.append(self.create_form(room_item.latest))
+        if self.create_if_archived or not room_item_modification.is_archived:
+            f = self.create_form(room_item_modification, filename)
+            self.files.append(f)
 
     def retrieve_by_room(self, room):
         """Return pdf-forms by room, recursively."""
@@ -93,7 +113,12 @@ class MultiForms(object):
 class FormHandler(object):
     """Push data from model to form-creator."""
 
-    def __init__(self, room_item_modification, current_user, path):
+    def __init__(self, room_item_modification, current_user, path, create_if_archived=False):
+        if not create_if_archived and room_item_modification.is_archived:
+            raise ValueError((
+                'Got an arhcived item. If you want to create this pdf anyway, '
+                'set the "create_if_archived" to True"'
+            ))
         self.room_item_modification = room_item_modification
         self.current_user = current_user
         self.dictionary = {}
@@ -139,7 +164,6 @@ class FormHandler(object):
             if contact.contact.description:
                 company_data[
                     'company.contact.person'] = contact.contact.description
-        print(company_data)
         self.dictionary.update(company_data)
 
     def push_from_customer(self):
@@ -210,18 +234,20 @@ class FormHandler(object):
             ]:
                 if key in specs:
                     variable = specs[key]['v']
-                    if variable and len(variable) > 0:
+                    if variable:
                         self.dictionary.update({
                             key: variable,
                         })
             if 'measurements' in specs:
                 m = specs['measurements'].copy()
-                for key, value in m.items():  # noqa
-                    if isinstance(m[key], dict):
-                        date = m[key].get('date')
+                n = {}
+                for key, value in m.items():
+                    if isinstance(value, dict):
+                        date = value.get('date')
                         if date:
                             m[key]['date'] = parse(date)
-                self.dictionary.update(flatten_dict(m))
+                            n[key] = m[key]
+                self.dictionary.update(flatten_dict(n))
 
     def stamp_with_user(self, user, form):
         """Description."""
