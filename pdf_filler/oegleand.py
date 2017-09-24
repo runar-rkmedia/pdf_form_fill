@@ -141,17 +141,17 @@ class Oegleand(StampablePdfForm):
             'field': 'Inn Be',
             'type': bool
         },
-        'mohm_a': {
+        'install.mohm': {
             'text': 'TextInPDF',
             'field': 'Isolasjonstest MΩ inst',
             'type': str
         },
-        'mohm_b': {
+        'pour.mohm': {
             'text': 'TextInPDF',
             'field': 'Isolasjonstest MΩ støp',
             'type': str
         },
-        'mohm_c': {
+        'connect.mohm': {
             'text': 'TextInPDF',
             'field': 'Isolasjonstest MΩ tilk',
             'type': str
@@ -191,7 +191,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Organisasjonsnr',
             'type': str
         },
-        'Overdekning_mm': {
+        'installation_depth': {
             'text': 'TextInPDF',
             'field': 'Overdekning',
             'type': NumberTypes
@@ -206,17 +206,17 @@ class Oegleand(StampablePdfForm):
             'field': 'Rør ut',
             'type': bool
         },
-        'ohm_a': {
+        'install.ohm': {
             'text': 'TextInPDF',
             'field': 'Resistans Ω inst',
             'type': NumberTypes
         },
-        'ohm_b': {
+        'pour.ohm': {
             'text': 'TextInPDF',
             'field': 'Resistans Ω støp',
             'type': NumberTypes
         },
-        'ohm_c': {
+        'connect.ohm': {
             'text': 'TextInPDF',
             'field': 'Resistans Ω tilk',
             'type': NumberTypes
@@ -282,7 +282,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Ut Bet',
             'type': bool
         },
-        'watt_per_square_meter': {
+        'area_output': {
             'text': 'TextInPDF',
             'field': 'W/m2',
             'type': NumberTypes
