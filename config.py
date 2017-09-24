@@ -26,6 +26,7 @@ class BaseConfig(object):
         'SECRET_KEY', 'dev')
     USE_SESSION_FOR_NEXT = True
     MINIFY_PAGE = True
+    SHOULD_STAMP_PDFS = True
 
 
 class DevelopmentConfig(BaseConfig):

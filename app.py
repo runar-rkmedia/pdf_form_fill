@@ -214,7 +214,7 @@ def retrieve_pdf_form(customer_id, room_id=None, room_item_id=None):
         entity = Room.by_id(room_id, current_user)
     elif customer_id:
         entity = Customer.by_id(customer_id, current_user)
-    multi_forms = MultiForms(entity, current_user)
+    multi_forms = MultiForms(entity, current_user, stamp=app.config.get('SHOULD_STAMP_PDFS', True))
     pdf_file = multi_forms.file
     if not pdf_file:
         raise my_exceptions.MyBaseException(
