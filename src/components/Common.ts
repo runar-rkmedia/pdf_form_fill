@@ -113,8 +113,6 @@ export abstract class Post extends Base {
       setTimeout(() => {
         btn.text('Endre')
       }, 20)
-    }).fail((result, a, c) => {
-      console.log(result.responseJSON.errors)
     }).always(function(result) {
       btn.button('reset')
     })

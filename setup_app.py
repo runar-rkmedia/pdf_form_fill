@@ -3,11 +3,11 @@
 """ Bare app settings and functionality. """
 import json
 import os
-from config import configure_app
+from config import configure_app  # noqa
 from functools import wraps
 
-from flask import (Flask, flash, redirect, render_template, request,  # NOQA
-                   send_from_directory, session, url_for)
+from flask import (Flask, flash, redirect, render_template, request, session,
+                   url_for)
 from flask.json import jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -24,12 +24,10 @@ from flask_login import (LoginManager, current_user, login_required,  # NOQA
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_wtf.csrf import CSRFError, CSRFProtect
-# import schemas
 from models import MyJSONEncoder, db
-from models_credentials import (Address, Company, Customer, Invite,  # NOQA
-                                InviteType, OAuth, Room, RoomItem,
-                                RoomTypeInfo, User, UserRole)
+from models_credentials import OAuth, User, UserRole
 from pdf_filler.helpers import id_generator
+import collections
 
 wtforms_json.init()
 
@@ -68,21 +66,32 @@ login_manager.init_app(app)
 blueprint.backend = SQLAlchemyBackend(OAuth, db.session, user=current_user)
 csrf = CSRFProtect(app)
 
+def parse_assets(d, u):
+    """Return new dictionary with the correct url for all assets."""
+    for k, v in u.items():
+        if isinstance(v, collections.Mapping):
+            r = parse_assets(d.get(k, {}), v)
+            d[k] = r
+        else:
+            d[k] = u[k][7:]
+    return d
 
 def read_webassets():
     """Read web-assets from file."""
     with open('webpack-assets.json') as json_file:
-        return json.load(json_file)
+        wp_json = json.load(json_file)
+        return parse_assets({}, wp_json)
 
 webpack_assets = read_webassets()
 
 
 @app.context_processor
-def inject_web_assets():
-    """Inject web-assets into all templates Refreshes from disk on debug."""
-    if app.config['DEBUG']:
-        webpack_assets = read_webassets() # noqa
-    return dict(webbassets=webpack_assets['main'])
+def utility_processor():
+    def asset(key, group='main'):
+        if app.config['DEBUG']:
+            webpack_assets = read_webassets()
+        return url_for('static', filename=webpack_assets[group].get(key))
+    return dict(asset=asset)
 
 
 @app.context_processor
