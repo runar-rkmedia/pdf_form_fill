@@ -22,11 +22,13 @@
     {% if field.type != 'BooleanField' %}
       {{ field(class_=class_, **kwargs)|safe }}
     {% endif %}
-
+    {% if field.description %}
+          <p class="help-block">{{field.description}}</p>
+    {% endif %}
     {% if field.errors %}
-      <ul class="errors">
+      <ul class="errors list-unstyled">
         {% for error in field.errors %}
-          <li>{{ error }}</li>
+          <li class="text-danger">{{ error }}</li>
         {% endfor %}
       </ul>
     {% endif %}

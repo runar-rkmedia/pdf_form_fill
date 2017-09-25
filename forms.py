@@ -6,9 +6,9 @@ from flask_wtf import FlaskForm
 from wtforms import IntegerField as baseIntegerField  # RadioField,
 from wtforms import BooleanField, FormField, HiddenField, StringField
 from wtforms.fields.html5 import (DateField, DecimalField, EmailField,
-                                  IntegerField)
+                                  IntegerField, TelField)
 from wtforms.validators import (DataRequired, Length, NumberRange,  # Email,
-                                ValidationError)
+                                ValidationError, Regexp)
 from wtforms.widgets import HiddenInput
 from wtforms_html5 import AutoAttrMeta
 
@@ -262,11 +262,21 @@ class CreateCompany(FlaskForm):
     org_nr = IntegerField(
         'Organisasjonsnummer',
         validators=[
+            DataRequired('Feltet er påkrevd'),
             NumberRange(
                 min=100000000,
                 max=999999999,
                 message='Organisasjonsnummer skal ha totalt 9 siffer.')
         ])
+    phone = TelField(
+        'Telefon',
+        description = '8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message='Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.')
+        ]
+    )
     contact_name = StringField(
         'Kontaktperson',
         validators=[

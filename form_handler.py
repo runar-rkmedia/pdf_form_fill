@@ -149,21 +149,10 @@ class FormHandler(object):
             'company.address.address2': self.company.address.address2,
             'company.address.post_code': self.company.address.post_code,
             'company.address.post_area': self.company.address.post_area,
+            'company.contact_name': self.company.contact_name,
+            'company.contact_phone': self.company.contact_phone,
+            'company.contact_email': self.company.contact_email,
         }
-        for contact in self.company.contacts:
-            if contact.contact.type == ContactType.email:
-                company_data['company.contact.email'] = contact.contact.value
-            if contact.contact.type == ContactType.phone:
-                company_data['company.contact.phone'] = contact.contact.value
-                company_data['company.contact.phone_f'] = NumberFormatter.phone(
-                    contact.contact.value)
-            if contact.contact.type == ContactType.mobile:
-                company_data['company.contact.mobile'] = contact.contact.value
-                company_data['company.contact.mobile_f'] = NumberFormatter.mobile(
-                    contact.contact.value)
-            if contact.contact.description:
-                company_data[
-                    'company.contact.person'] = contact.contact.description
         self.dictionary.update(company_data)
 
     def push_from_customer(self):

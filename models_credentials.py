@@ -124,21 +124,9 @@ class Company(MyBaseModel, db.Model):
         primaryjoin='Company.address_id==Address.id')
     lat = db.Column(db.Numeric(8, 6))
     lng = db.Column(db.Numeric(9, 6))
-
-    def add_contact(self, c_type, value, description):
-        """Add contact to this company."""
-        contact = Contact(
-            type=c_type,
-            value=value,
-            description=description
-        )
-        company_contact = CompanyContact(
-            contact=contact,
-            company=self
-        )
-        db.session.add(contact)
-        db.session.add(company_contact)
-        return contact
+    contact_name = db.Column(db.String(200), nullable=False)
+    contact_email = db.Column(db.String(100), nullable=False)
+    contact_phone = db.Column(db.String(20), nullable=False)
 
     def owns(self, model):
         """Check if company has rights to access this."""
@@ -158,10 +146,9 @@ class Company(MyBaseModel, db.Model):
                 )
             )\
 
-
     @classmethod
     def update_or_create(
-            cls, company_id, name, description, orgnumber, address, lat, lng):
+            cls, company_id, name, description, orgnumber, address, lat, lng, contact_name, contact_phone, contact_email):
         """Update if exists, else create Company."""
         if not isinstance(address, Address):
             raise ValueError(
@@ -178,6 +165,9 @@ class Company(MyBaseModel, db.Model):
         company.address = address
         company.lat = lat
         company.lng = lng
+        company.contact_name=contact_name
+        company.contact_phone=contact_phone
+        company.contact_email=contact_email
         try:
             db.session.add(company)
             db.session.commit()
@@ -215,30 +205,12 @@ class Company(MyBaseModel, db.Model):
             orgnumber=form.org_nr.data,
             address=address,
             lat=form.lat.data,
-            lng=form.lng.data
+            lng=form.lng.data,
+            contact_name=form.contact_name.data,
+            contact_phone=form.phone.data,
+            contact_email=form.email.data,
         )
-        if company.contacts:
-            company.contacts[0].contact.value = form.email.data
-            company.contacts[0].contact.description = form.contact_name.data
-            db.session.add(company.contacts[0])
-        else:
-            company.add_contact(
-                c_type=ContactType.email,
-                value=form.email.data,
-                description=form.contact_name.data
-            )
         return company
-
-
-class CompanyContact(ByID, db.Model):
-    """Associations-table for company and contacts."""
-    contact_id = db.Column(db.Integer, db.ForeignKey(Contact.id))
-    contact = db.relationship(
-        Contact, primaryjoin='CompanyContact.contact_id==Contact.id')
-    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
-    company = db.relationship(
-        Company, primaryjoin='CompanyContact.company_id==Company.id',
-        backref='contacts')
 
 
 class User(ByID, UserMixin, db.Model):
@@ -434,7 +406,6 @@ class Customer(MyBaseModel, db.Model):
         user.last_modified_customer = customer
         db.session.commit()
         return customer
-
 
     @property
     def is_archived(self):

@@ -7,21 +7,20 @@ import os
 import re
 import sys
 
-from flask import (Flask, flash, redirect, render_template, request,  # NOQA
-                   send_from_directory, session, url_for)
+from flask import (flash, redirect, render_template, request,
+                   send_from_directory, url_for)
 from flask.json import jsonify
 
 import forms
 import my_exceptions
 from addresses.address_pymongo import get_address_from_street_name
-from flask_login import (LoginManager, current_user, login_required,  # NOQA
-                         login_user, logout_user)
+from flask_login import current_user, login_required
 # import schemas
 from form_handler import MultiForms
 from models import db
-from models_credentials import (Address, Company, Customer, Invite,  # NOQA
-                                InviteType, OAuth, Room, RoomItem,
-                                RoomTypeInfo, User, UserRole, user_settings)
+from models_credentials import (Company, Customer, Invite,
+                                InviteType, Room, RoomItem, RoomTypeInfo, User,
+                                user_settings)
 from models_product import Manufacturor, Product
 from setup_app import app, company_required, json_ok, limiter, manager
 
@@ -101,7 +100,7 @@ def set_company(invite=None):
             if invite:
                 invite.invitee = current_user
                 db.session.add(invite)
-                db.session.commit()
+
             return redirect(url_for('control_panel_company'))
         return render_template(
             'create_company.html', invite=invite, form=form, mode='edit')
@@ -110,15 +109,16 @@ def set_company(invite=None):
         form.org_nr.data = current_user.company.orgnumber
         form.description.data = current_user.company.description
         # TODO: contact needs fix
-        form.contact_name.data = current_user.company.contacts[
-            0].contact.description
-        form.email.data = current_user.company.contacts[0].contact.value
         form.address.address1.data = current_user.company.address.address1
         form.address.address2.data = current_user.company.address.address2
         form.address.post_area.data = current_user.company.address.post_area
         form.address.post_code.data = current_user.company.address.post_code
         form.lat.data = current_user.company.lat
         form.lng.data = current_user.company.lng
+        form.phone.data = current_user.company.contact_phone
+        form.contact_name.data = current_user.company.contact_name
+        form.email.data = current_user.company.contact_email
+
 
     return render_template('create_company.html', invite=invite, form=form)
 
@@ -214,7 +214,8 @@ def retrieve_pdf_form(customer_id, room_id=None, room_item_id=None):
         entity = Room.by_id(room_id, current_user)
     elif customer_id:
         entity = Customer.by_id(customer_id, current_user)
-    multi_forms = MultiForms(entity, current_user, stamp=app.config.get('SHOULD_STAMP_PDFS', True))
+    multi_forms = MultiForms(entity, current_user,
+                             stamp=app.config.get('SHOULD_STAMP_PDFS', True))
     pdf_file = multi_forms.file
     if not pdf_file:
         raise my_exceptions.MyBaseException(

@@ -49,18 +49,6 @@ class ContactSchema(ModelSchema):
 #         model = cred.ContactType
 
 
-class CompanyContactSchema(ModelSchema):
-
-    contact = fields.Nested(ContactSchema, only=(
-        'description',
-        'type',
-        'value'
-    ))
-
-    class Meta:
-        model = cred.CompanyContact
-
-
 class UserSchema(ModelSchema):
 
     address = fields.Nested(AddressSchema, only=(
@@ -80,11 +68,6 @@ class CompanyScheme(ModelSchema):
 
     address = fields.Nested(AddressSchema, only=(
         'address1', 'address2', 'post_code', 'post_code', 'post_area'))
-    contacts = fields.Nested(
-        CompanyContactSchema,
-        many=True,
-        only='contact')
-
     class Meta:
         model = cred.Company
 

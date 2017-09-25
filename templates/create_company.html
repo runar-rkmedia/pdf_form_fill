@@ -70,6 +70,7 @@
       {{ render_field(form.description, **{'placeholder':   'Vi kobler stort og smått'}) }}
       {{ render_field(form.contact_name, **{'placeholder':   'Finn Feilen'}) }}
       {{ render_field(form.email, **{'placeholder':   'finn@strømmen.no'}) }}
+      {{ render_field(form.phone, **{'placeholder':   '12345678, 00471234567890', 'pattern': '\d{8}|00[\d]{3,20}'})}}
     </div>
     </div>
           <div class="panel panel-info">

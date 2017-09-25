@@ -161,7 +161,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Jord',
             'type': bool
         },
-        'company.contact.person': {
+        'company.contact_name': {
             'text': 'TextInPDF',
             'field': 'Kontaktperson',
             'type': 'Kontaktperson'
@@ -257,7 +257,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Styr',
             'type': bool
         },
-        'company.phone': {
+        'company.contact_phone': {
             'text': 'TextInPDF',
             'field': 'Telefon',
             'type': str
