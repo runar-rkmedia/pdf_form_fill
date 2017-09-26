@@ -10,37 +10,51 @@
       {% include "critical.css" %}
     </style>
     <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-M45WZD3');</script>
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer'
+            ? '&l=' + l
+            : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-M45WZD3');
+    </script>
     <!-- End Google Tag Manager -->
     <link rel="stylesheet" href="{{asset('css')}}" media="none" onload="if(media!='all')media='all'">
     <noscript><link rel="stylesheet" href="{{asset('css')}}"></noscript>
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
 
-
   </head>
 
   <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M45WZD3"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-    <!-- ko foreach: errors -->
-    <div class="float-message alert alert-dismissable" data-bind="css: 'alert-' + defcon_level">
-      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-      <strong data-bind="text: message"></strong>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M45WZD3" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div id="wrapper" class="preload">
+    {% include 'includes/sidebar.html' %}
+      <div id="page-content-wrapper">
+        <div class="container-fluid">
+          <!-- ko foreach: errors -->
+          <div class="float-message alert alert-dismissable" data-bind="css: 'alert-' + defcon_level">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong data-bind="text: message"></strong>
+          </div>
+          <!-- /ko -->
+          {% include 'includes/messages.html' %}
+          {% block body %}{% endblock %}
+          <div class="row">{% include 'includes/footer.html' %}</div>
+        </div>
+      </div>
     </div>
-    <!-- /ko -->
-    <div class="container">
-      {% include 'includes/messages.html' %}
-      {% include 'includes/header.html' %}
-      {% block body %}{% endblock %}
-    </div>
-    <div class="row">{% include 'includes/footer.html' %}</div>
-    <script  src="https://cdn.jsdelivr.net/combine/npm/webfontloader@1.6.28,npm/jquery@3.2.1,npm/knockout@3.4.2/build/output/knockout-latest.min.js,npm/knockout.validation@2.0.3,npm/knockout.validation@2.0.3/localization/nb-NO.min.js,npm/bootbox@4.4.0,npm/moment@2.18.1,npm/eonasdan-bootstrap-datetimepicker@4.17.47,npm/moment@2.18.1/locale/nb.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/combine/npm/webfontloader@1.6.28,npm/jquery@3.2.1,npm/knockout@3.4.2/build/output/knockout-latest.min.js,npm/knockout.validation@2.0.3,npm/knockout.validation@2.0.3/localization/nb-NO.min.js,npm/bootbox@4.4.0,npm/moment@2.18.1,npm/eonasdan-bootstrap-datetimepicker@4.17.47,npm/moment@2.18.1/locale/nb.min.js"></script>
     <script src="{{ asset('js') }}"></script>
     {% if form %}
       <script type="text/javascript">

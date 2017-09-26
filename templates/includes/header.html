@@ -1,27 +1,16 @@
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+
+      <a href="#menu-toggle" class="btn btn-secondary pull-left visible-xs-inline navbar-toggle" id="menu-toggle">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+      </a>
       <a class="navbar-brand" href="{{url_for('landing_page')}}">VarmeDok</a>
+
     </div>
     <div class="collapse navbar-collapse" id="navbar">
-      {% if current_user.is_authenticated %}
-      <ul class="nav navbar-nav">
-        <li{% if pane == 0 %} class="active"{%endif%}>
-          <a {% if not is_app  %} href="{{url_for('view_form')}}" {% endif %} {% if is_app %} href="#customer-pane" aria-controls="customer-pane" role="tab" data-toggle="tab"{% endif %}>Skjemautfylling
-          </a>
-        </li>
-        <li{% if pane == 1 %} class="active"{%endif%}>
-          <a {% if not is_app  %} href="{{url_for('view_form', pane='1')}}" {% endif %} {% if is_app %} href="#customer-list-pane" aria-controls="customer-list-pane" role="tab" data-toggle="tab"{% endif %}>Kundeskjemaer
-          </a>
-        </li>
-      </ul>
-      {% endif %}
       <ul class="nav navbar-nav navbar-right">
         {% if not current_user.is_authenticated %}
           <li>

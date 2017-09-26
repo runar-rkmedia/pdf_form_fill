@@ -39,7 +39,6 @@ def control_panel():
 
 
 @app.route("/cp/company/")
-@login_required
 @company_required
 def control_panel_company():
     """Control-Panel for viewing users company."""
@@ -79,7 +78,6 @@ def get_invite(invite_id):
 
 @app.route('/company/edit', methods=['GET', 'POST'])
 @login_required
-# @company_required
 def set_company(invite=None):
     """Description."""
     form = forms.CreateCompany()
@@ -147,7 +145,6 @@ def save_image():
 
 
 @app.route('/user_files/<path:filename>', methods=['GET'])
-@login_required
 @company_required
 def download(filename):
     """Serve a file for downloading."""
@@ -157,7 +154,6 @@ def download(filename):
 
 @limiter.limit("5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
-@login_required
 @company_required
 @app.route('/invite.json', methods=['GET', 'POST'])
 def json_invite():
@@ -181,7 +177,6 @@ def json_invite():
     "5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
 @company_required
-@login_required
 def json_static_data():
     """Return a json-object of all products and room-type-info."""
     return jsonify(static_data())
@@ -205,7 +200,6 @@ def static_data():
 @limiter.limit(
     "5/10seconds", error_message='Fem per ti sekunder')
 @company_required
-@login_required
 def retrieve_pdf_form(customer_id, room_id=None, room_item_id=None):
     """Create and retrieve all pdf-forms recursively."""
     if room_item_id:
@@ -233,7 +227,6 @@ def retrieve_pdf_form(customer_id, room_id=None, room_item_id=None):
 @limiter.limit(
     "5/10seconds", error_message='Fem per ti sekunder')
 @limiter.limit("200/hour", error_message='200 per hour')
-@login_required
 @company_required
 def json_user_forms():
     """Return a json-object of all the users forms."""
@@ -260,7 +253,6 @@ def json_user_forms():
 
 
 @app.route('/json/v1/heat/', methods=['POST', 'PUT', 'DELETE'])
-@login_required
 @company_required
 def json_heating_cable():
     """Handle a heatining-cable-form."""
@@ -303,7 +295,6 @@ def json_heating_cable():
 
 
 @app.route('/json/v1/room/', methods=['POST', 'PUT', 'DELETE'])
-@login_required
 @company_required
 def json_room():
     """Handle a room-object"""
@@ -359,7 +350,6 @@ def json_room():
 
 
 @app.route('/json/v1/list/customers/')
-@login_required
 @company_required
 def json_customer_list():
     """Retrieve a list of all customers relevant to a user."""
@@ -387,7 +377,6 @@ def json_customer_list():
 
 
 @app.route('/json/v1/customer/', methods=['GET', 'POST', 'PUT', 'DELETE'])
-@login_required
 @company_required
 def json_customer():
     """Handle a customer-object"""
@@ -434,7 +423,6 @@ def user_setting(setting, equal_to):
 
 @app.route('/app')
 @company_required
-@login_required
 def view_form(pane=0):
     """View for home."""
     # WARNING: NEVER PUT THIS IN PRODUCTION!

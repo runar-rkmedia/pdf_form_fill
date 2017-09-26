@@ -2,11 +2,13 @@ import { ByID, } from "./Common"
 import { Room, RoomInterface } from "./Room"
 import { Customer } from "./Customer"
 import { TSAppViewModel } from "./AppViewModel"
+import { getCookie, setCookie } from "./helpers/cookie"
 
 export class RoomList extends ByID {
   // list: KnockoutObservableArray<Room>
   parent: Customer
   root: TSAppViewModel
+  selected: KnockoutObservable<number> = ko.observable()
 
   constructor(root: TSAppViewModel, parent: Customer, list_of_rooms: RoomInterface[] = []) {
     super([])
@@ -17,26 +19,25 @@ export class RoomList extends ByID {
         return new Room(this.root, this, x)
       })
       this.list(list_of_rooms_obects)
+      if (this.list().length > 0) {
+        this.selected(Number(getCookie('selected_room')) || this.list().length - 1)
+      }
+    }
+  }
+  select = (index: number) => {
+    if (index >= 0 && index < this.list().length) {
+      this.selected(index)
+      setCookie('selected_room', index)
 
     }
-
-
   }
   add = () => {
     let new_room = this.by_id(-1)
     if (!new_room) {
       this.list.push(new Room(this.root, this))
     }
-    let accordian = $('#accordion-room')
-    let panel = accordian.find('#room-1')
-    let room_form = panel.find('#room-form-1')
-    let first_input = panel.find('input').first()
-    room_form.addClass('in')
-    panel.collapse('show')
-    // Focus does not work becaus of an issue with using typeahead.Workaround
-    // with using a setTimeOut doesnt seemt to work inside animated stuff, so
-    // for now, I will leave it not working.
-    first_input.focus()
+    this.selected(this.list().length - 1)
+
     return new_room
   }
 }

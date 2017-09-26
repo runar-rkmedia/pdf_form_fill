@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<div class="panel-group" id="accordion-room" role="tablist" aria-multiselectable="true">
-  <!-- ko foreach: $data -->
+<div class="panel-group" id="accordion-room">
+  <!-- ko with: $data -->
   <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-mod-flag': modified()}">
-    <div class="panel-heading collapsed" data-parent="#accordion-room" data-toggle="collapse" data-bind="attr: { 'data-target': '#room' + id(), 'href': '#room' + id()}">
+    <div class="panel-heading collapsed" data-toggle="collapse" aria-expanded="false" href="#room-form" aria-controls="#room-form">
       <h3 class="panel-title carrot">
 
         <span>
@@ -31,15 +31,15 @@
         </span>
       </h3>
     </div>
-    <div class="panel panel-collapse collapse in scrollto " data-bind="
-    attr: {'id': 'room' + id()}
-    " role="tabpanel">
-      <div class="panel-body pt-0">
-        <div class="row well well-sm">
-            <div class="collapse" data-bind="attr: { 'id': 'room-form' + id()}">
+    <div class="panel" role="tabpanel">
+      <div class="panel-body">
+        <div class="collapse" id="room-form">
+          <div class="well well-sm">
+            <div class="row">
               <div class="col-xs-12">
-                <!-- sdfds -->
-                <button type="button" class="close close-dark pull-right" aria-label="Close" data-bind="click: function(d,e){console.log($(e.target).closest('.collapse').collapse('toggle'))}" ><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close close-dark pull-right" aria-label="Close" data-bind="click: function(d,e){$(e.target).closest('.collapse').collapse('toggle')}">
+                  <span aria-hidden="true">&times;</span>
+                </button>
                 <!-- ko template: { name: 'room_form_template', data: $data} -->
                 <!-- /ko -->
                 <!-- ko if: bestFitEffect() -->
@@ -47,36 +47,33 @@
                 <!-- /ko -->
               </div>
             </div>
-            <div class="btn-group btn-group-justified btn-xs hidden-button">
-              <!--Justified button group 2 -->
-              <a class="btn btn-xs btn-info" role="button" data-toggle="collapse" aria-expanded="false" data-bind="attr: { 'href': '#room-form' + id(), 'aria-controls': '#room-form' + id()}">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                Endre rom</a>
-            </div>
+          </div>
         </div>
         <!-- ko if: id() >= 0 -->
-        <div class="row">
-          <div class="col-xs-12">
-            <h2 class="justified">Varmekabler
-              <button type="button" class="btn btn-sm btn-primary" data-bind="click: function (d, e){heating_cables().add(e)}">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                Legg til varmekabel</button>
-            </h2>
+        <div class="well well-sm">
+          <div class="row">
+            <div class="col-xs-12">
+              <h2 class="justified">Varmekabler
+                <button type="button" class="btn btn-sm btn-primary" data-bind="click: function (d, e){heating_cables().add(e)}">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  <span class="hidden-xs">Legg til varmekabel</span></button>
+              </h2>
+            </div>
           </div>
-        </div>
-        <div class="select_products" data-bind="if: id() >= 0">
-          <!-- ko with: heating_cables().list() -->
-          {% include 'includes/schema/heating_cable.html' %}
-          <!-- /ko -->
+          <div class="select_products" data-bind="if: id() >= 0">
+            <!-- ko with: heating_cables().list() -->
+            {% include 'includes/schema/heating_cable.html' %}
+            <!-- /ko -->
 
-          <!-- ko ifnot: heating_cables().list().length -->
-          <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.
+            <!-- ko ifnot: heating_cables().list().length -->
+            <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.
+            </div>
+            <!-- /ko -->
           </div>
-          <!-- /ko -->
         </div>
         <hr>
         <h2>Sjekkliste</h2>
-        <div class="well well-sm">
+        <div class="bs-callout bs-callout-info">
           <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
           <p>Kun de påkrevde feltene vises.</p>
         </div>
@@ -90,7 +87,8 @@
           </div>
           <div class="col-xs-6">
             <div class="form-group">
-              <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm<br class="visible-xs-inline"> jordfeil</label>
+              <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm<br class="visible-xs-inline">
+                jordfeil</label>
               <input type="number" min="0" data-bind="textInput:ground_fault_protection" class="form-control">
             </div>
           </div>

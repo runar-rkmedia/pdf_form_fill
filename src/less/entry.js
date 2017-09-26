@@ -16,3 +16,12 @@ $('div').on('shown.bs.collapse', function(e) {
     }, 200);
   }
 });
+$("#menu-toggle").click(function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  $("#wrapper").toggleClass("toggled");
+});
+
+$('body,html').click(function(e){
+   $('#wrapper').removeClass('toggled');
+});

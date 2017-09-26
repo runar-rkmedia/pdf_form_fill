@@ -1,0 +1,71 @@
+{% include 'includes/header.html' %}
+<!-- Sidebar -->
+<div id="sidebar-wrapper">
+  <ul class="sidebar-nav">
+    {% if is_app %}
+      <!-- ko with: customer -->
+      <li class="sidebar-brand">
+        <a href="#" data-bind="click: function(){$('a[href=&quot;#customer-pane&quot;]').tab('show');$('#customer_form_collapse').collapse('toggle')}">
+          <span data-bind="text: address1() ? address1 : 'Kunde'"></span>
+          <div>
+            <small class="text-muted">
+              <!-- ko if: address2 -->
+              <br>
+              <span data-bind="text: address2"></span><br>
+              <!-- /ko -->
+              <span data-bind="text: post_code"></span>
+              <span data-bind="text: post_area"></span>
+            </small>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#" data-bind="click: confirm_create_new">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+          Ny kunde</a>
+      </li>
+      <li>
+        <!-- <h4>Rom</h4> -->
+        <ul>
+          <!-- ko foreach: rooms().list -->
+          <li data-bind="css: {active: $parent.rooms().selected() == $index()}">
+            <a href="#" data-bind="click: function(){$parent.rooms().select($index());$('a[href=&quot;#customer-pane&quot;]').tab('show')}">
+              <span data-bind="text: name() ? name() : 'Nytt rom/sted'"></span>
+              <!-- ko if: area -->
+              <small class="pull-right pr-4" data-bind="text: area() + '&thinsp;m²'"></small>
+              <!-- /ko -->
+            </a>
+          </li>
+          <!-- /ko -->
+          <li data-bind="if: id() >= 0" >
+            <a href="#" data-bind="click: function(){$('a[href=&quot;#customer-pane&quot;]').tab('show');rooms().add();$('#room-form').collapse('show')}">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              Legg til rom</a>
+          </li>
+          <hr>
+        </ul>
+        <!-- /ko -->
+      </li>
+    {% endif %}
+    <li{% if pane == 0 %} class="active" {%endif%}>
+      <a {% if not is_app  %} href="{{url_for('view_form')}}" {% endif %} {% if is_app %} href="#customer-pane" aria-controls="customer-pane" role="tab" data-toggle="tab" {% endif %}>Skjemautfylling
+      </a>
+    </li>
+    <li{% if pane == 1 %} class="active" {%endif%}>
+      <a {% if not is_app  %} href="{{url_for('view_form', pane='1')}}" {% endif %} {% if is_app %} href="#customer-list-pane" aria-controls="customer-list-pane" role="tab" data-toggle="tab" {% endif %}>Kundeskjemaer
+      </a>
+    </li>
+
+    <li></li>
+    <li>
+      <a href="{{ url_for('control_panel') }}">Innstillinger</a>
+    </li>
+    <li>
+      <a href="{{ url_for('control_panel_company') }}">{{ current_user.company.name }}</a>
+    </li>
+    <li role="separator" class="divider"></li>
+    <li>
+      <a href="{{ url_for('logout') }}">Logg ut</a>
+    </li>
+  </ul>
+</div>

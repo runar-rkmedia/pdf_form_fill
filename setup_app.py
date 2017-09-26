@@ -131,6 +131,7 @@ def login():
 def logged_in(blueprint_, token):
     """User logged in."""
     next_redirect = session.get('next')
+    session['next'] = None
     return redirect(next_redirect or url_for('main'))
 
 
@@ -175,10 +176,10 @@ def logout():
     flash("Du er nå logget ut")
     return redirect(url_for("main"))
 
-
 def company_required(f):
     """Decorator for view where a user needs to have a company."""
     @wraps(f)
+    @login_required
     def decorated_function(*args, **kwargs):
         """The view we are decorating."""
         if not (

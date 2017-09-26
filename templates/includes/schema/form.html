@@ -3,7 +3,7 @@
 <!-- Customer -->
 
 <!-- ko with: customer -->
-<div class="row">
+<div class="row ">
   <div class="col-xs-12">
     <h2 class="justified">
       <span class="pointer" data-bind="text: address1() ? address1 : 'Kunde', click: function(){$('#customer_form_collapse').collapse('toggle')}"></span>
@@ -90,12 +90,11 @@
       </div>
     </div>
   </div>
-  <hr>
   <!-- Room -->
   <div class="row">
     <div class="col-xs-12">
       <!-- ko if: rooms -->
-      <h3 class="justified">
+      <h3 class="justified hidden">
         Rom/stedsinformasjon
         <!-- ko if: id() >= 0 -->
         <button type="button" class="btn btn-sm btn-primary pull-right" data-bind="click: rooms().add">
@@ -111,8 +110,13 @@
       <!-- /ko -->
       <!-- /ko -->
       <div class="col-xs 12">
-        <!-- ko with: rooms().list() -->
+        <!-- ko with: rooms -->
+        <!-- ko if: selected() === null -->
+        <p class="help-block">Velg et rom i listen <span class="visible-xs-inline">fra menyen.</span><span class="hidden-xs">til venstre</span></p>
+        <!-- /ko -->
+        <!-- ko with: list()[selected()] -->
         {% include 'includes/schema/room_accordian.html' %}
+        <!-- /ko -->
         <!-- /ko -->
       </div>
       <!-- /ko -->
