@@ -105,6 +105,21 @@ def make_session_permanent():
     """Keep sessions alive after closing browser."""
     session.permanent = True  # Default 31 days
 
+@app.before_request
+def debug_session_before():
+    print('before')
+    print('new', db.session.new)
+    print('dirty', db.session.dirty)
+    print('deleted', db.session.deleted)
+
+@app.after_request
+def debug_session_after(stuff):
+    print('after')
+    print('new', db.session.new)
+    print('dirty', db.session.dirty)
+    print('deleted', db.session.deleted)
+    return stuff
+
 
 @login_manager.user_loader
 def load_user(user_id):
