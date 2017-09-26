@@ -37,8 +37,11 @@
       <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M45WZD3" height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <div id="wrapper" class="preload">
-    {% include 'includes/sidebar.html' %}
+    <div id="wrapper" {% if current_user.is_authenticated %} class="has-sidebar" {% endif %}>
+      {% include 'includes/header.html' %}
+      {% if current_user.is_authenticated %}
+        {% include 'includes/sidebar.html' %}
+      {% endif %}
       <div id="page-content-wrapper">
         <div class="container-fluid">
           <!-- ko foreach: errors -->

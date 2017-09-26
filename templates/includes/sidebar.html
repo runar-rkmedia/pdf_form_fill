@@ -1,4 +1,3 @@
-{% include 'includes/header.html' %}
 <!-- Sidebar -->
 <div id="sidebar-wrapper">
   <ul class="sidebar-nav">
@@ -47,6 +46,7 @@
         <!-- /ko -->
       </li>
     {% endif %}
+    {% if current_user.is_authenticated %}
     <li{% if pane == 0 %} class="active" {%endif%}>
       <a {% if not is_app  %} href="{{url_for('view_form')}}" {% endif %} {% if is_app %} href="#customer-pane" aria-controls="customer-pane" role="tab" data-toggle="tab" {% endif %}>Skjemautfylling
       </a>
@@ -55,17 +55,19 @@
       <a {% if not is_app  %} href="{{url_for('view_form', pane='1')}}" {% endif %} {% if is_app %} href="#customer-list-pane" aria-controls="customer-list-pane" role="tab" data-toggle="tab" {% endif %}>Kundeskjemaer
       </a>
     </li>
-
     <li></li>
     <li>
       <a href="{{ url_for('control_panel') }}">Innstillinger</a>
     </li>
+    {% if current_user.company %}
     <li>
       <a href="{{ url_for('control_panel_company') }}">{{ current_user.company.name }}</a>
     </li>
+    {% endif %}
     <li role="separator" class="divider"></li>
     <li>
       <a href="{{ url_for('logout') }}">Logg ut</a>
     </li>
+    {% endif %}
   </ul>
 </div>
