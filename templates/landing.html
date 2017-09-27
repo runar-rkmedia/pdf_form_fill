@@ -12,10 +12,16 @@
       <p>
         {% if create_company_invite %}
           <a class="btn btn-primary btn-lg" href="{{ url_for('get_invite', invite_id=create_company_invite.id) }}" role="button">Registrer firma &raquo;</a>
+          {% with login_text = True %}
+          {% include 'includes/login_buttons.html' %}
+          {% endwith %}
+
           <a class="help-block" data-toggle="collapse" href="#firma-registrert" aria-expanded="false" aria-controls="firma-registrert">Er firmaet ditt allerede registrert hos oss?</a>
+          <div class="row">
           <div class="collapse" id="firma-registrert">
             <div class="well">
-              <p>Spør en kollega etter en invitasjonslenke. Invitasjoner kan enkelt lages fra kontrollpanelet.</p>
+                  <p>Spør en kollega etter en invitasjonslenke. Invitasjoner kan enkelt lages fra kontrollpanelet.</p>
+                </div>
             </div>
           </div>
         {% elif current_user and current_user.is_authenticated and current_user.company %}
@@ -41,7 +47,7 @@
     <div class="row">
       <div class="col-md-6">
         <h2>Smarte produkt-forslag</h2>
-          <img class="img-thumbnail" src="{{url_for('static', filename='images/Room.png')}}" alt="Beregner beste produkt for rom">
+        <img class="img-thumbnail" src="{{url_for('static', filename='images/Room.png')}}" alt="Beregner beste produkt for rom">
         <p>Fortell oss størrelse på rommet, og hvilken type rom, og du får opp en sortert liste over de kablene som passer best her.
         </p>
       </div>

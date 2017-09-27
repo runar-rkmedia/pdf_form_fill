@@ -155,7 +155,7 @@ canvas {
   &:extend(.zero-pad);
 }
 
-.csscolumn {
+.csscolumn-345 {
   -webkit-column-count: 3;
   -moz-column-count: 3;
   column-count: 3;
@@ -168,6 +168,22 @@ canvas {
     -webkit-column-count: 5;
     -moz-column-count: 5;
     column-count: 5;
+  }
+}
+
+.csscolumn-234 {
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+  @include media-min(sm) {
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+  }
+  @include media-min(md) {
+    -webkit-column-count: 4;
+    -moz-column-count: 4;
+    column-count: 4;
   }
 }
 
@@ -278,7 +294,17 @@ canvas {
   justify-content: space-between;
 }
 
-.justified > * {}
+.justified-xs-column-3 {
+  @media only screen and (max-width : @screen-xs-max) {
+    display: flex;
+    justify-content: space-between;
+  }
+  @media only screen and (min-width : @screen-xs-min) {
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+  }
+}
 
 .noheight {
   height: 0 !important;
@@ -305,10 +331,16 @@ body {
   // float: left;
 }
 
+.navbar-text {
+  @media only screen and (max-width : 318px) {
+    font-size: 13px;
+  }
+}
+
 .fixed-icon {
   &:extend(.fixed-size);
   position: absolute;
-  top: 3px;
+  top: 8px;
   left: 0;
   // padding: 40px;
 }
@@ -450,4 +482,8 @@ body {
 input,
 select:focus {
   font-size: 16px!important;
+}
+
+.visible-block {
+  display: block!important;
 }

@@ -269,34 +269,36 @@ def json_multi_save():
         if not room_item and new_room_item:
             return_data = new_room_item.serialize
     for room in form.rooms.data:
-        room_entity = Room.by_id(room['id'], current_user)
-        if not room:
-            raise my_exceptions.NotARoom
-        customer = Customer.by_id(room['customer_id'], current_user)
-        if not customer:
-            raise my_exceptions.NotACustomer
-        room_entity.update_entity({
-            'area': float(room['area']),
-            'control_system_designation': room['check_control_system']['designation'],  # noqa
-            'control_system_floor_sensor': room['check_control_system']['floor_sensor'],  # noqa
-            'control_system_other': room['check_control_system']['other'],
-            'control_system_room_sensor': room['check_control_system']['room_sensor'],  # noqa
-            'curcuit_breaker_size': room['curcuit_breaker_size'],
-            'customer': customer,
-            'earthed_cable_screen': room['check_earthed']['cable_screen'],
-            'earthed_chicken_wire': room['check_earthed']['chicken_wire'],
-            'earthed_other': room['check_earthed']['other'],
-            'ground_fault_protection': room['ground_fault_protection'],
-            'heated_area': float(room['heated_area']),
-            'installation_depth': room['installation_depth'],
-            'max_temp_installation': room['check_max_temp']['installation'],
-            'max_temp_other': room['check_max_temp']['other'],
-            'max_temp_planning': room['check_max_temp']['planning'],
-            'maxEffect': float(room['maxEffect']),
-            'name': room['room_name'],
-            'normalEffect': float(room['normalEffect']),
-            'outside': room['outside'],
-        })
+        room['inside_specs']['concrete'] = room['concrete']
+        room['outside_specs']['concrete'] = room['concrete']
+        Room.update_or_create(
+            room_id=room['id'],
+            user=current_user,
+            customer_id=room['customer_id'],
+            name=room['room_name'],
+            outside=room['outside'],
+            area=room['area'],
+            heated_area=room['heated_area'],
+            maxEffect=room['maxEffect'],
+            normalEffect=room['normalEffect'],
+            curcuit_breaker_size=room['curcuit_breaker_size'],
+            installation_depth=room['installation_depth'],
+            ground_fault_protection=room['ground_fault_protection'],
+            earthed_cable_screen=room['check_earthed']['cable_screen'],
+            earthed_chicken_wire=room['check_earthed']['chicken_wire'],
+            handed_to_owner=room['handed_to_owner'],
+            owner_informed=room['owner_informed'],
+            earthed_other=room['check_earthed']['other'],
+            max_temp_planning=room['check_max_temp']['planning'],
+            max_temp_installation=room['check_max_temp']['installation'],
+            max_temp_other=room['check_max_temp']['other'],
+            control_system_floor_sensor=room['check_control_system']['floor_sensor'],
+            control_system_room_sensor=room['check_control_system']['room_sensor'],
+            control_system_designation=room['check_control_system']['designation'],
+            control_system_other=room['check_control_system']['other'],
+            inside_specs=room['inside_specs'],
+            outside_specs=room['outside_specs'],
+        )
 
     db.session.commit()
     return jsonify(return_data) if return_data else json_ok()
@@ -311,7 +313,7 @@ def json_heating_cable():
     if room_item_id:
         room_item = RoomItem.by_id(room_item_id, current_user)
     if not room_item:
-        raise my_exceptions.NotARoom
+        raise my_exceptions.NotARoomItem
 
     room_item.put_in_archive(current_user)
     return json_ok()

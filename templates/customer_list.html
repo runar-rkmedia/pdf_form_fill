@@ -33,7 +33,7 @@
           <h4 class="list-group-item-heading justified">
             <span class="text-default" data-bind="text: name? name : address.address1"></span>
             <!-- ko if: $data.rooms -->
-            <small class="badge badge-default" data-bind="text: rooms.join(', ').replace(/,(?=[^,]+$)/, ' og')"></small>
+            <small class="badge badge-default" data-bind="text: rooms.length < 3? rooms.join(', ').replace(/,(?=[^,]+$)/, ' og'): rooms.length + ' rom'"></small>
             <!-- /ko -->
           </h4>
           <p class="list-group-item-text">

@@ -146,6 +146,7 @@ class Company(MyBaseModel, db.Model):
                 )
             )\
 
+
     @classmethod
     def update_or_create(
             cls, company_id, name, description, orgnumber, address, lat, lng, contact_name, contact_phone, contact_email):
@@ -165,9 +166,9 @@ class Company(MyBaseModel, db.Model):
         company.address = address
         company.lat = lat
         company.lng = lng
-        company.contact_name=contact_name
-        company.contact_phone=contact_phone
-        company.contact_email=contact_email
+        company.contact_name = contact_name
+        company.contact_phone = contact_phone
+        company.contact_email = contact_email
         try:
             db.session.add(company)
             db.session.commit()
@@ -423,6 +424,17 @@ class Customer(MyBaseModel, db.Model):
         }
 
     @property
+    def last_modified(self):
+        """Return the lastmodification to it, or its rooms."""
+        latest = self.date
+        # TODO: This should be an SQL-query instead.
+        for room in self.rooms:
+            for room_item in room.items:
+                if room_item.modification_date:
+                    latest = room_item.modification_date
+        return latest
+
+    @property
     def serialize_short(self):
         """Serialize for lists of customer."""
         dictionary = {
@@ -435,16 +447,74 @@ class Customer(MyBaseModel, db.Model):
                 'date': self.date
             },
         }
-        if (self.date - self.modified_on_date).seconds:
+        if (self.last_modified - self.date).seconds > 60:
             dictionary['modified'] = {
                 'given_name': self.created_by_user.given_name,
                 'family_name': self.created_by_user.family_name,
-                'date': self.date
+                'date': self.last_modified
             }
         if self.rooms:
             dictionary['rooms'] = [
                 i.name for i in self.rooms if i.archived != True]
         return dictionary
+
+
+class OutsideSpecs(db.Model):
+    """Table for outsidespecs for a room."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    asphalt = db.Column(db.Boolean, default=False)
+    paving_stones = db.Column(db.Boolean, default=False)
+    vessel = db.Column(db.Boolean, default=False)
+    frost_protection = db.Column(db.Boolean, default=False)
+    frost_protection_pipe = db.Column(db.Boolean, default=False)
+    concrete = db.Column(db.Boolean, default=False)
+
+    def update_entity(self, dictionary):
+        """Update an entity from a dictionary."""
+        for key, val, in dictionary.items():
+            setattr(self, key, val)
+        return self
+
+    @property
+    def serialize(self):
+        return {
+        'asphalt': self.asphalt,
+        'paving_stones': self.paving_stones,
+        'vessel': self.vessel,
+        'frost_protection_pipe': self.frost_protection_pipe,
+        'frost_protection': self.frost_protection,
+        'concrete': self.concrete,
+    }
+
+
+
+class InsideSpecs(db.Model):
+    """Table for outsidespecs for a room."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    LamiFlex = db.Column(db.Boolean, default=False)
+    low_profile = db.Column(db.Boolean, default=False)
+    fireproof = db.Column(db.Boolean, default=False)
+    frost_protection_pipe = db.Column(db.Boolean, default=False)
+    concrete = db.Column(db.Boolean, default=False)
+    other = db.Column(db.String(100))
+
+    @property
+    def serialize(self):
+        return {
+        'LamiFlex': self.LamiFlex,
+        'low_profile': self.low_profile,
+        'fireproof': self.fireproof,
+        'frost_protection_pipe': self.frost_protection_pipe,
+        'concrete': self.concrete,
+        'other': self.other,
+    }
+
+    def update_entity(self, dictionary):
+        """Update an entity from a dictionary."""
+        for key, val, in dictionary.items():
+            setattr(self, key, val)
+        return self
+
 
 
 class Room(MyBaseModel, db.Model):
@@ -462,6 +532,8 @@ class Room(MyBaseModel, db.Model):
     ground_fault_protection = db.Column(db.Numeric(8, 3), default=30.0)
     earthed_cable_screen = db.Column(db.Boolean, default=False)
     earthed_chicken_wire = db.Column(db.Boolean, default=False)
+    handed_to_owner = db.Column(db.Boolean, default=False)
+    owner_informed = db.Column(db.Boolean, default=False)
     earthed_other = db.Column(db.String(200))
     max_temp_planning = db.Column(db.Boolean, default=False)
     max_temp_installation = db.Column(db.Boolean, default=False)
@@ -478,6 +550,18 @@ class Room(MyBaseModel, db.Model):
         primaryjoin='Room.customer_id==Customer.id',
         backref='rooms')
 
+    outside_id = db.Column(
+        db.Integer, db.ForeignKey(OutsideSpecs.id), nullable=True)
+    outside_specs = db.relationship(
+        OutsideSpecs,
+        primaryjoin='Room.outside_id==OutsideSpecs.id')
+
+    inside_id = db.Column(
+        db.Integer, db.ForeignKey(InsideSpecs.id), nullable=True)
+    inside_specs = db.relationship(
+        InsideSpecs,
+        primaryjoin='Room.inside_id==InsideSpecs.id')
+
     def owns(self, user):
         """Check that user has rights to this room."""
         return self.customer.owns(user)
@@ -486,6 +570,77 @@ class Room(MyBaseModel, db.Model):
     def is_archived(self):
         """Check if this or its parents are archived."""
         return self.archived or self.customer.is_archived
+
+    @classmethod
+    def update_or_create(
+            cls,
+            room_id,
+            user,
+            customer_id,
+            name,
+            outside,
+            area,
+            heated_area,
+            maxEffect,
+            normalEffect,
+            curcuit_breaker_size,
+            installation_depth,
+            ground_fault_protection,
+            earthed_cable_screen,
+            earthed_chicken_wire,
+            handed_to_owner,
+            owner_informed,
+            earthed_other,
+            max_temp_planning,
+            max_temp_installation,
+            max_temp_other,
+            control_system_floor_sensor,
+            control_system_room_sensor,
+            control_system_designation,
+            control_system_other,
+            inside_specs = None,
+            outside_specs = None
+            ):
+        room = Room.by_id(room_id, user)
+        customer = Customer.by_id(customer_id, user)
+        if not customer:
+            raise my_exceptions.NotACustomer
+        if not room:
+            room = Room()
+
+        for n in [area, heated_area, maxEffect, normalEffect]:
+            n = float(n)
+        if inside_specs:
+            if not room.inside_specs:
+                room.inside_specs = InsideSpecs()
+            room.inside_specs.update_entity(inside_specs)
+        if outside_specs:
+            if not room.outside_specs:
+                room.outside_specs = OutsideSpecs()
+            room.outside_specs.update_entity(outside_specs)
+        room.customer = customer
+        room.name = name
+        room.outside = outside
+        room.area = area
+        room.heated_area = heated_area
+        room.maxEffect = maxEffect
+        room.normalEffect = normalEffect
+        room.curcuit_breaker_size = curcuit_breaker_size
+        room.installation_depth = installation_depth
+        room.ground_fault_protection = ground_fault_protection
+        room.earthed_cable_screen = earthed_cable_screen
+        room.earthed_chicken_wire = earthed_chicken_wire
+        room.handed_to_owner = handed_to_owner
+        room.owner_informed = owner_informed
+        room.earthed_other = earthed_other
+        room.max_temp_planning = max_temp_planning
+        room.max_temp_installation = max_temp_installation
+        room.max_temp_other = max_temp_other
+        room.control_system_floor_sensor = control_system_floor_sensor
+        room.control_system_room_sensor = control_system_room_sensor
+        room.control_system_designation = control_system_designation
+        room.control_system_other = control_system_other
+        pass
 
     @property
     def serialize(self, user=None):
@@ -521,9 +676,13 @@ class Room(MyBaseModel, db.Model):
             'ground_fault_protection': self.ground_fault_protection,
             'installation_depth': self.installation_depth,
             'curcuit_breaker_size': self.curcuit_breaker_size,
-
-
+            'owner_informed': self.owner_informed,
+            'handed_to_owner': self.handed_to_owner,
         }
+        if self.inside_specs:
+            dictionary['inside_specs'] = self.inside_specs.serialize
+        if self.outside_specs:
+            dictionary['outside_specs'] = self.outside_specs.serialize
         return dictionary
 
 

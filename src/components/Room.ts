@@ -58,6 +58,20 @@ export class Room extends Post {
   id: KnockoutObservable<number> = ko.observable()
   name = <ObsMod<string>>this.obs_mod();
   outside = <ObsMod<boolean>>this.obs_mod();
+
+  concrete = <ObsMod<boolean>>this.obs_mod();
+  outside_asphalt = <ObsMod<boolean>>this.obs_mod();
+  outside_paving_stones = <ObsMod<boolean>>this.obs_mod();
+  outside_vessel = <ObsMod<boolean>>this.obs_mod();
+  outside_frost_protection = <ObsMod<boolean>>this.obs_mod();
+  outside_frost_protection_pipe = <ObsMod<boolean>>this.obs_mod();
+
+  inside_LamiFlex = <ObsMod<boolean>>this.obs_mod();
+  inside_low_profile = <ObsMod<boolean>>this.obs_mod();
+  inside_fireproof = <ObsMod<boolean>>this.obs_mod();
+  inside_frost_protection_pipe = <ObsMod<boolean>>this.obs_mod();
+  inside_other = <ObsMod<string>>this.obs_mod();
+
   maxEffect = <ObsMod<number>>this.obs_mod();
   normalEffect = <ObsMod<number>>this.obs_mod();
   area = <ObsMod<number>>this.obs_mod();
@@ -69,7 +83,11 @@ export class Room extends Post {
   max_temp_limited_by_installation = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   max_temp_limited_by_other = <ObsMod<string>>this.obs_mod();
   control_system_floor_sensor = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
+  control_system_limit_sensor = <ObsMod<boolean>>this.obs_mod(undefined, undefined, false);
+  max_temp_safeguards = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   control_system_room_sensor = <ObsMod<boolean>>this.obs_mod();
+  handed_to_owner = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
+  owner_informed = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   control_system_designation = <ObsMod<string>>this.obs_mod();
   curcuit_breaker_size = <ObsMod<number>>this.obs_mod(undefined, undefined, 16);
   installation_depth = <ObsMod<number>>this.obs_mod(undefined, undefined, 30);
@@ -179,10 +197,11 @@ export class Room extends Post {
       return super.post(h, event, data, '/json/v1/multi_save').done((result: any, successTextStatus, jqXHR: any) => {
         let method = jqXHR.originalRequestOptions.type
         for (let heating_cable of this.heating_cables().list()) {
-          if (method == HTTPVerbs.post) {
+          if (heating_cable.id() == -1) {
             heating_cable.set(result)
-          } else if (method == HTTPVerbs.put) {
+          } else {
             heating_cable.save()
+
           }
         }
       })

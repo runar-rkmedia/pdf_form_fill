@@ -20,7 +20,7 @@ export class RoomList extends ByID {
       })
       this.list(list_of_rooms_obects)
       if (this.list().length > 0) {
-        this.selected(Number(getCookie('selected_room')) || this.list().length - 1)
+        this.selected(Math.min(Number(getCookie('selected_room')), this.list().length - 1))
       }
     }
   }
