@@ -2,6 +2,7 @@ import {
   ByID,
   Post,
   ObsMod,
+  HTTPVerbs
 } from "./Common"
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomTypesInfoFlat } from "./ProductModel"
@@ -45,6 +46,11 @@ export interface RoomInterface {
   check_earthed?: CheckEarthed
   check_max_temp?: CheckMaxTemp
   check_control_system?: CheckControlSystem
+}
+
+interface MultiSave {
+  rooms: RoomInterface[]
+  heating_cables: HeatingCableInterface[]
 }
 
 export class Room extends Post {
@@ -155,6 +161,33 @@ export class Room extends Post {
         this))
     this.validationModel.errors.showAllMessages(false)
 
+  }
+  post_all(h: any, event: Event) {
+    let data: MultiSave = {
+      rooms: [],
+      heating_cables: []
+    }
+    if (this.modified()) {
+      data.rooms.push(this.serialize())
+    }
+    for (let heating_cable of this.heating_cables().list()) {
+      if (heating_cable.modified()) {
+        data.heating_cables.push(heating_cable.serialize())
+      }
+    }
+    if (data.rooms.length > 0 || data.heating_cables.length > 0) {
+      return super.post(h, event, data, '/json/v1/multi_save').done((result: any, successTextStatus, jqXHR: any) => {
+        let method = jqXHR.originalRequestOptions.type
+        for (let heating_cable of this.heating_cables().list()) {
+          if (method == HTTPVerbs.post) {
+            heating_cable.set(result)
+          } else if (method == HTTPVerbs.put) {
+            heating_cable.save()
+          }
+        }
+      })
+
+    }
   }
   sub_modified = ko.computed(() => {
     if (this.heating_cables()) {

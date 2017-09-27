@@ -572,10 +572,15 @@ class RoomItem(MyBaseModel, db.Model):
 
     @classmethod
     def update_or_create(
-            cls, user, room, product_id, id=None,
-            room_item=None, specs={}, pdf_specs={}):
+            cls, user, room_id, room_item, product_id, id=None, specs={}, pdf_specs={}):
         """Update or create a RoomItemModifications.."""
-        if not room_item:
+        product = Product.by_id(product_id)
+        room = Room.by_id(room_id, user)
+        if not product:
+            raise my_exceptions.NotAProduct
+        if not room:
+            raise my_exceptions.NotARoom
+        if not room_item and id:
             room_item = RoomItem.by_id(id, user)
         if not room_item:
             room_item = RoomItem(

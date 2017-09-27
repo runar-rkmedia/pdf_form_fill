@@ -4,7 +4,7 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import IntegerField as baseIntegerField  # RadioField,
-from wtforms import BooleanField, FormField, HiddenField, StringField
+from wtforms import FieldList, BooleanField, FormField, HiddenField, StringField
 from wtforms.fields.html5 import (DateField, DecimalField, EmailField,
                                   IntegerField, TelField)
 from wtforms.validators import (DataRequired, Length, NumberRange,  # Email,
@@ -237,8 +237,8 @@ class SpecsForm(SubForm):
 
 class HeatingCableForm(FlaskForm):
     """Form for filling in info about a heating-cable."""
-    room_item_id = HiddenField()
-    id = HiddenField()
+    # room_item_id = HiddenField()
+    id = HiddenField(validators=[DataRequired()])
     product_id = HiddenField(
         validators=[DataRequired('Vennligst velg en varmekabel.')])
     room_id = HiddenField(validators=[
@@ -246,6 +246,10 @@ class HeatingCableForm(FlaskForm):
             'Mottok ikke et id for rom. Dette er sansynligvis en feil.')
     ])
     specs = FormField(SpecsForm)
+
+class MultiSave(FlaskForm):
+    heating_cables = FieldList(FormField(HeatingCableForm))
+    rooms = FieldList(FormField(RoomForm))
 
 
 class CreateCompany(FlaskForm):

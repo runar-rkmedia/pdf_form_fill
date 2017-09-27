@@ -22,6 +22,9 @@ $("#menu-toggle").click(function(e) {
   $("#wrapper").toggleClass("toggled");
 });
 
-$('body,html').click(function(e){
-   $('#wrapper').removeClass('toggled');
+$('body,html').click(function(e) {
+  $('#wrapper').removeClass('toggled');
+});
+$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+  jqXHR.originalRequestOptions = originalOptions;
 });

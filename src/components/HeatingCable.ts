@@ -409,6 +409,9 @@ export class HeatingCable extends Post {
     })
     this.set(heating_cable)
   }
+  post(h: any, event: Event) {
+    return this.parent.parent.post_all(h, event)
+  }
   bindDatePicker() {
     // $('.datepicker').datepicker({
     // useCurrent: false

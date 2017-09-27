@@ -20,12 +20,14 @@ class MyBaseException(Exception):
                  message=None,
                  status_code=None,
                  defcon_level=None,
-                 payload=None):
+                 payload=None,
+                 validation_errors=None):
         Exception.__init__(self)
         if message is not None:
             self.message = message
         if status_code is not None:
             self.status_code = status_code
+        self.validation_errors = validation_errors
         self.payload = payload
 
     def to_dict(self):
@@ -34,6 +36,8 @@ class MyBaseException(Exception):
             'message': self.message,
             'defcon_level': self.defcon_level.value
         }]
+        if self.validation_errors:
+            rv['errors'][0]['validation_errors'] = self.validation_errors
         return rv
 
 
@@ -67,29 +71,35 @@ class DuplicateCompany(MyBaseException):
 
 class NotACustomer(MyBaseException):
     message='Fant ingen kunde.'
-    defcon_level=DefconLevel.default
+    defcon_level=DefconLevel.warning
     status_code=403
 
 
 class NotARoom(MyBaseException):
     message='Fant ikke dette rommet i databasen.'
-    defcon_level=DefconLevel.default
+    defcon_level=DefconLevel.warning
     status_code=403
 
 
 class NotAProduct(MyBaseException):
     message='Fant ikke dette produktet i databasen.'
-    defcon_level=DefconLevel.default
+    defcon_level=DefconLevel.warning
     status_code=403
 
 
 class NotARoomItem(MyBaseException):
     message='Fant ikke denne varmekabelen.'
-    defcon_level=DefconLevel.default
+    defcon_level=DefconLevel.warning
     status_code=403
 
 
 class NotARoomItemModification(MyBaseException):
     message='Fant ikke denne varmekabelen (ingen endring).'
-    defcon_level=DefconLevel.default
+    defcon_level=DefconLevel.warning
+    status_code=403
+
+
+class ValidationErrors(MyBaseException):
+    message='Skjema ikke korrekt utfylt'
+    defcon_level=DefconLevel.warning
     status_code=403
