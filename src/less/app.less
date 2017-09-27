@@ -331,7 +331,6 @@ ul.list-group.list-group-striped a {
   }
 }
 
-
 .jumbotron {
   // padding: 0.5em 0.6em;
   @media only screen and (max-width : 1250px) {
@@ -432,7 +431,8 @@ body {
   color: @text-color;
 }
 @manufacturor-logo-width: 38px;
-.panel-title .manufacturor-logo{
+
+.panel-title .manufacturor-logo {
   height: 30px;
   width: @manufacturor-logo-width;
   position: absolute;
@@ -441,6 +441,13 @@ body {
   margin-left: -@manufacturor-logo-width - 3px;
   margin-top: -7px;
 }
-.panel-title.has-logo{
+
+.panel-title.has-logo {
   margin-left: @manufacturor-logo-width - 7px;
+}
+
+.form-control,
+input,
+select:focus {
+  font-size: 16px!important;
 }
