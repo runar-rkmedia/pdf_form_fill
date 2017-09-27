@@ -23,9 +23,11 @@ class MyBaseException(Exception):
                  payload=None,
                  validation_errors=None):
         Exception.__init__(self)
-        if message is not None:
+        if message:
             self.message = message
-        if status_code is not None:
+        if defcon_level:
+            self.defcon_level = defcon_level
+        if status_code:
             self.status_code = status_code
         self.validation_errors = validation_errors
         self.payload = payload

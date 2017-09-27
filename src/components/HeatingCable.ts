@@ -344,7 +344,7 @@ export class HeatingCable extends Post {
     }, this.other_observer))
 
     ko.computed(() => {
-      this.ground_fault_protection().override(Boolean(this.curcuit_breaker_size().override))
+      this.ground_fault_protection().override(Boolean(this.curcuit_breaker_size().override()))
     })
 
     this.installation_depth = ko.observable(new InputReadOnlyToggle(() => {

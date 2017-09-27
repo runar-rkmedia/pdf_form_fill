@@ -33,6 +33,7 @@ body {
   &.has-sidebar {
     @media(min-width:768px) {
       padding-left: 250px;
+
       #sidebar-wrapper {
         width: 250px;
       }
@@ -48,8 +49,8 @@ body {
   z-index: 1000;
   position: fixed;
   left: 250px;
-  top:@top-padding;
-  bottom:0;
+  top: @top-padding;
+  bottom: 0;
   width: 0;
   // height: auto;
   // bottom: 0;
@@ -71,6 +72,13 @@ body {
   margin: 0;
   padding: 20px 0 0;
   list-style: none;
+
+  hr {
+    margin: 0 auto 20px;
+    // text-align: center;
+    width: 80%;
+    color: @gray-light
+  }
 
   .sidebar-brand {
     a > {
@@ -104,7 +112,7 @@ body {
 
     &.active {
       font-weight: bold;
-      background: rbga(255,255,255,0.8)!important;
+      opacity: 0.6;
 
       a:before {
         content: "\00BB ";

@@ -410,6 +410,10 @@ def json_customer():
     if request.method == "GET":
         if not customer_id:
             customer = current_user.last_edit
+            if not customer:
+                raise my_exceptions.NotACustomer(
+                    status_code=200,
+                    defcon_level=my_exceptions.DefconLevel.default)
         if not customer:
             raise my_exceptions.NotACustomer()
         current_user.last_modified_customer = customer
@@ -428,7 +432,7 @@ def json_customer():
     customer = Customer.update_or_create(customer, form, current_user)
     if customer:
         return jsonify({'id': customer.id})
-    raise my_exceptions.NotACustomer
+    raise my_exceptions.NotACustomer()
 
 
 def user_setting(setting, equal_to):

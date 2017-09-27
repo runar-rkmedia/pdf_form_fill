@@ -23,6 +23,7 @@
           <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
           Ny kunde</a>
       </li>
+      <hr>
       <li>
         <!-- <h4>Rom</h4> -->
         <ul>
@@ -41,12 +42,12 @@
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
               Legg til rom</a>
           </li>
-          <hr>
         </ul>
         <!-- /ko -->
       </li>
     {% endif %}
     {% if current_user.is_authenticated %}
+    <hr>
     <li{% if pane == 0 %} class="active" {%endif%}>
       <a {% if not is_app  %} href="{{url_for('view_form')}}" {% endif %} {% if is_app %} href="#customer-pane" aria-controls="customer-pane" role="tab" data-toggle="tab" {% endif %}>Skjemautfylling
       </a>
@@ -55,18 +56,18 @@
       <a {% if not is_app  %} href="{{url_for('view_form', pane='1')}}" {% endif %} {% if is_app %} href="#customer-list-pane" aria-controls="customer-list-pane" role="tab" data-toggle="tab" {% endif %}>Kundeskjemaer
       </a>
     </li>
-    <li></li>
+    <hr>
     <li>
-      <a href="{{ url_for('control_panel') }}">Innstillinger</a>
+      <a href="{{ url_for('control_panel') }}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Innstillinger</a>
     </li>
     {% if current_user.company %}
     <li>
-      <a href="{{ url_for('control_panel_company') }}">{{ current_user.company.name }}</a>
+      <a href="{{ url_for('control_panel_company') }}"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span> {{ current_user.company.name }}</a>
     </li>
     {% endif %}
     <li role="separator" class="divider"></li>
     <li>
-      <a href="{{ url_for('logout') }}">Logg ut</a>
+      <a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logg ut</a>
     </li>
     {% endif %}
   </ul>
