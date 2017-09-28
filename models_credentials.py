@@ -146,6 +146,7 @@ class Company(MyBaseModel, db.Model):
                 )
             )\
 
+
     @classmethod
     def update_or_create(
             cls, company_id, name, description, orgnumber, address, lat, lng, contact_name, contact_phone, contact_email):
@@ -165,9 +166,9 @@ class Company(MyBaseModel, db.Model):
         company.address = address
         company.lat = lat
         company.lng = lng
-        company.contact_name=contact_name
-        company.contact_phone=contact_phone
-        company.contact_email=contact_email
+        company.contact_name = contact_name
+        company.contact_phone = contact_phone
+        company.contact_email = contact_email
         try:
             db.session.add(company)
             db.session.commit()
@@ -423,6 +424,17 @@ class Customer(MyBaseModel, db.Model):
         }
 
     @property
+    def last_modified(self):
+        """Return the lastmodification to it, or its rooms."""
+        latest = self.date
+        # TODO: This should be an SQL-query instead.
+        for room in self.rooms:
+            for room_item in room.items:
+                if room_item.modification_date:
+                    latest = room_item.modification_date
+        return latest
+
+    @property
     def serialize_short(self):
         """Serialize for lists of customer."""
         dictionary = {
@@ -435,11 +447,11 @@ class Customer(MyBaseModel, db.Model):
                 'date': self.date
             },
         }
-        if (self.date - self.modified_on_date).seconds:
+        if (self.last_modified - self.date).seconds > 60:
             dictionary['modified'] = {
                 'given_name': self.created_by_user.given_name,
                 'family_name': self.created_by_user.family_name,
-                'date': self.date
+                'date': self.last_modified
             }
         if self.rooms:
             dictionary['rooms'] = [
