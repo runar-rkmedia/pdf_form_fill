@@ -4,11 +4,12 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import IntegerField as baseIntegerField  # RadioField,
-from wtforms import FieldList, BooleanField, FormField, HiddenField, StringField
+from wtforms import (BooleanField, FieldList, FormField, HiddenField,
+                     StringField)
 from wtforms.fields.html5 import (DateField, DecimalField, EmailField,
                                   IntegerField, TelField)
 from wtforms.validators import (DataRequired, Length, NumberRange,  # Email,
-                                ValidationError, Regexp)
+                                Regexp, ValidationError)
 from wtforms.widgets import HiddenInput
 from wtforms_html5 import AutoAttrMeta
 
@@ -87,6 +88,9 @@ class CheckMaxTemp(SubForm):
     installation = BooleanField(
         'Utførelse av montasje (Installasjonsveiledningen er fulgt)'  # noqa
     )
+    safeguards = BooleanField(
+        'Bruk av styring/regulering'  # noqa
+    )
     other = StringField(
         'Eventuell bruk av beskyttelsesutstyr',  # noqa
         validators=[Length(max=100)])
@@ -99,16 +103,34 @@ class CheckEarthed(SubForm):
 
 
 class CheckControlSystem(SubForm):
-    floor_sensor = BooleanField('Gulvføler'  # noqa
-                               )
-    room_sensor = BooleanField('Romføler'  # noqa
-                              )
+    floor_sensor = BooleanField('Gulv')
+    room_sensor = BooleanField('Rom')
+    limit_sensor = BooleanField('Begrensning')
     designation = StringField(
         'Typebetegnelse',  # noqa
         validators=[Length(max=50)])
     other = StringField(
         'Annet',  # noqa
         validators=[Length(max=100)])
+
+
+frost_protection_pipe = BooleanField('Frostsikring rør')
+
+
+class HeatingInside(SubForm):
+    LamiFlex = BooleanField('ØS Lamiflex')
+    low_profile = BooleanField('Lavtbyggende gulv')
+    fireproof = BooleanField('Brennbart underlag')
+    frost_protection_pipe = frost_protection_pipe
+    other = StringField('Annet', validators=[Length(max=100)])
+
+
+class HeatingOutside(SubForm):
+    asphalt = BooleanField('Asfalt')
+    paving_stones = BooleanField('Belegningsstein')
+    vessel = BooleanField('Fartøy')
+    frost_protection = BooleanField('Frostsikring tak/takrenner')
+    frost_protection_pipe = frost_protection_pipe
 
 
 class RoomForm(FlaskForm):
@@ -145,9 +167,14 @@ class RoomForm(FlaskForm):
     check_earthed = FormField(CheckEarthed)
     check_max_temp = FormField(CheckMaxTemp)
     check_control_system = FormField(CheckControlSystem)
-    curcuit_breaker_size = BetterDecimalField()
-    ground_fault_protection = BetterDecimalField()
-    installation_depth = BetterDecimalField()
+    curcuit_breaker_size = BetterDecimalField('Sikringsstørrelse')
+    ground_fault_protection = BetterDecimalField('Utløserstrøm jordfeil')
+    installation_depth = BetterDecimalField('Montasjedybde')
+    handed_to_owner = BooleanField('Dokumentasjonen er overlevert')
+    owner_informed = BooleanField('Eier og/eller bruker er informert')
+    inside_specs = FormField(HeatingInside)
+    outside_specs = FormField(HeatingOutside)
+    concrete = BooleanField('Betong')
 
 
 class AddressForm(SubForm):
@@ -206,17 +233,20 @@ class MeasurementsForms(SubForm):
 
 
 class AreaOutput(SubForm):
-    v = BetterDecimalField('Flateeffekt <br class="visible-xs-inline" /><span class="text-nowrap">( W/m<sup>2</sup> )</span>')
+    v = BetterDecimalField(
+        'Flateeffekt <br class="visible-xs-inline" /><span class="text-nowrap">( W/m<sup>2</sup> )</span>')
     m = BooleanField()
 
 
 class Cc(SubForm):
-    v = BetterDecimalField('C/C-avstand <br class="visible-xs-inline" /><span class="text-nowrap">( cm )</span>')
+    v = BetterDecimalField(
+        'C/C-avstand <br class="visible-xs-inline" /><span class="text-nowrap">( cm )</span>')
     m = BooleanField()
 
 
 class InstallationDepth(SubForm):
-    v = BetterDecimalField('Montasjedybde <span class="text-nowrap">( mm )</span>')
+    v = BetterDecimalField(
+        'Montasjedybde <span class="text-nowrap">( mm )</span>')
     m = BooleanField()
 
 
@@ -247,6 +277,7 @@ class HeatingCableForm(FlaskForm):
     ])
     specs = FormField(SpecsForm)
 
+
 class MultiSave(FlaskForm):
     heating_cables = FieldList(FormField(HeatingCableForm))
     rooms = FieldList(FormField(RoomForm))
@@ -274,7 +305,7 @@ class CreateCompany(FlaskForm):
         ])
     phone = TelField(
         'Telefon',
-        description = '8 siffer. For internasjonale nummer, bruk 00 foran.',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
         validators=[
             Regexp(
                 '\d{8}|00[-\w]{3,20}',

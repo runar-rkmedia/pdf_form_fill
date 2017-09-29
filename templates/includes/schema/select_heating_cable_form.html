@@ -8,10 +8,15 @@
           <!-- ko with: product_filter -->
           <label>Varmekabel</label>
           <p class="help-block">
-              <!-- ko if: manufacturor() || vk_type() || mainSpec -->
               Viser bare:
               <!-- ko if: manufacturor() -->
               <span class="badge" data-bind="text: manufacturor()"></span>
+              <!-- /ko -->
+              <!-- ko if: room.outside() -->
+              <span class="badge">produkter for utebruk</span>
+              <!-- /ko -->
+              <!-- ko ifnot: room.outside() -->
+              <span class="badge">produkter for innebruk</span>
               <!-- /ko -->
               <!-- ko if: mainSpec() -->
               <span class="badge">
@@ -32,9 +37,8 @@
                 <!-- /ko -->
               </span>
               <!-- /ko -->
-              <!-- /ko -->
               <!-- ko if: effect() || $parents[1].suggested_effect() >= 100 -->
-              Sortert etter
+              <br>Sortert etter
               <span class="badge">effekt nær
                 <span data-bind="text: effect() || $parents[1].suggested_effect()"></span>&thinsp;W</span>
               <span data-bind="if: !effect() && $parents[1].suggested_effect()">, som er anbefalt effekt på dette rommet.</span>
@@ -109,7 +113,7 @@
             <legend>Watt per
               <span data-bind="visible: product_filter().vk_type() == 'mat'">kvadrat</span>
               <span data-bind="visible: !product_filter().vk_type()">(kvadrat)</span>meter</legend>
-            <div class="csscolumn">
+            <div class="csscolumn-345">
               <!-- ko foreach: product_filter().spec_groups().sort(function (a,b) {
                                       return a.mainSpec-b.mainSpec
                                   }) -->

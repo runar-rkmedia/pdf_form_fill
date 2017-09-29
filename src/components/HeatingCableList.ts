@@ -21,6 +21,20 @@ export class HeatingCableList extends ByID {
     }
     this.list(heating_cables_objects)
   }
+  has_key = (key: string, value: any): boolean => {
+    for (let heating_cable of this.list()) {
+      if (heating_cable.product()) {
+        if ((<any>heating_cable.product()!)[key] == value) {
+          return true
+
+        }
+      }
+    }
+    return false
+  }
+  has_manufacturor = (manufacturor: string): boolean => {
+    return this.has_key('manufacturor', manufacturor)
+  }
   add = (event: Event) => {
     let new_heating_cable = this.by_id(-1)
     if (!new_heating_cable) {

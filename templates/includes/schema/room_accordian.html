@@ -53,10 +53,11 @@
         <div class="well well-sm">
           <div class="row">
             <div class="col-xs-12">
-              <h2 class="justified">Varmekabler
+              <h2 class="justified">Varmeprodukter
                 <button type="button" class="btn btn-sm btn-primary" data-bind="click: function (d, e){heating_cables().add(e)}">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                  <span class="hidden-xs">Legg til varmekabel</span></button>
+                  <span class="hidden-xs">Legg til varmeprodukt</span>
+                </button>
               </h2>
             </div>
           </div>
@@ -66,78 +67,14 @@
             <!-- /ko -->
 
             <!-- ko ifnot: heating_cables().list().length -->
-            <div class="well well-sm ">Ingen varmekabler lagt til enda. Du kan legge til en ved å trykke på knappen ovenfor.
+            <div class="bs-callout bs-callout-info">
+              <h3>Ingen varmeprodukter lagt til enda</h3>
+              <p class="help-block">Du kan legge til en ved å trykke på knappen ovenfor.</p>
             </div>
             <!-- /ko -->
           </div>
         </div>
-        <hr>
-        <h2>Sjekkliste</h2>
-        <div class="bs-callout bs-callout-info">
-          <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
-          <p>Kun de påkrevde feltene vises.</p>
-        </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <label data-bind="css: { 'label-mod-flag': curcuit_breaker_size.modified() }"><br class="visible-xs-inline">Sikringsstørrelse</label>
-            <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
-                            optionsText: 'text',
-                            optionsValue: 'id',
-                            value: curcuit_breaker_size"></select>
-          </div>
-          <div class="col-xs-6">
-            <div class="form-group">
-              <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm<br class="visible-xs-inline">
-                jordfeil</label>
-              <input type="number" min="0" data-bind="textInput:ground_fault_protection" class="form-control">
-            </div>
-          </div>
-        </div>
-        <hr>
-        <div class="row">
-          <div class="col-xs-12">
-            <div class="form-group">
-              <label data-bind="css: { 'label-mod-flag': installation_depth.modified() }">Montasjedybde (mm)</label>
-              <input type="number" min="0" data-bind="textInput: installation_depth" class="form-control">
-            </div>
-          </div>
-        </div>
-        <fieldset>
-          <legend>Jording</legend>
-          {{render_field( roomForm.check_earthed.cable_screen, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_cable_screen"}) }}
-          {{render_field( roomForm.check_earthed.chicken_wire, class_='checkbox', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: earthed_chicken_wire"}) }}
-          {{render_field( roomForm.check_earthed.other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
-        </fieldset>
-        <fieldset>
-          <legend>Max temperatur</legend>
-          <p >Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
-
-          {{render_field( roomForm.check_max_temp.planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
-          {{render_field( roomForm.check_max_temp.installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
-          {{render_field( roomForm.check_max_temp.other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
-        </fieldset>
-        <fieldset>
-          <legend>Styresystem</legend>
-
-          {{render_field( roomForm.check_control_system.designation, formgroup='form-group', **{'data-bind':"textInput: control_system_designation"}) }}
-          {{render_field( roomForm.check_control_system.floor_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_floor_sensor"}) }}
-          {{render_field( roomForm.check_control_system.room_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_room_sensor"}) }}
-          {{render_field( roomForm.check_control_system.other, formgroup='form-group', **{'data-bind':"textInput: control_system_other"}) }}
-        </fieldset>
-
-        <div class="row">
-          <div class="col-xs-12">
-            <div class="text-right">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bind=" click: post_all, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
-                data-loading-text="
-                <span class='glyphicon glyphicon-refresh spinning'></span>"></button>
-
-            </div>
-          </div>
-        </div>
+        {% include 'includes/schema/room_checklist.html' %}
         <!-- /ko -->
       </div>
     </div>

@@ -72,7 +72,7 @@ class DuplicateCompany(MyBaseException):
 
 
 class NotACustomer(MyBaseException):
-    message='Fant ingen kunde.'
+    message='Fant ikke denne kunden.'
     defcon_level=DefconLevel.warning
     status_code=403
 

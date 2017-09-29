@@ -47,13 +47,19 @@ class ByID(object):
     id = db.Column(db.Integer, primary_key=True, unique=True)
 
     @classmethod
-    def by_id(cls, this_id):
+    def by_id(cls, this_id, return_archived=False):
         """Return a entity by its id."""
         try:
             this_id = int(this_id)
         except (ValueError, TypeError):
             return None
-        entity = cls.query.filter(cls.id == this_id).first()
+        if not return_archived and hasattr(cls, 'archived'):
+            entity = cls.query.filter(
+                ((cls.id == this_id) &
+                (cls.archived != True))
+                ).first()
+        else:
+            entity = cls.query.filter(cls.id == this_id).first()
         if not entity:
             return None
         return entity
@@ -75,7 +81,6 @@ class MyBaseModel(ByID):
 
     def put_in_archive(self, user):
         """Mark this object as archived."""
-        print('owns: ', self.owns(user))
         if self.owns(user):
             self.archived = True
             db.session.add(self)
