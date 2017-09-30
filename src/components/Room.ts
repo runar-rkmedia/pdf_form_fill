@@ -23,8 +23,26 @@ interface CheckMaxTemp {
   other: string
 }
 
+interface InsideSpecs {
+  LamiFlex: boolean
+  low_profile: boolean
+  fireproof: boolean
+  frost_protection_pipe: boolean
+  other: string
+  concrete: boolean
+}
+interface OutsideSpecs {
+  asphalt: boolean
+  paving_stones: boolean
+  vessel: boolean
+  frost_protection_pipe: boolean
+  frost_protection: boolean
+  concrete: boolean
+}
+
 interface CheckControlSystem {
   floor_sensor: boolean
+  limit_sensor: boolean
   room_sensor: boolean
   designation: string
   other: string
@@ -46,6 +64,10 @@ export interface RoomInterface {
   check_earthed?: CheckEarthed
   check_max_temp?: CheckMaxTemp
   check_control_system?: CheckControlSystem
+  inside_specs?: InsideSpecs
+  outside_specs?: OutsideSpecs
+  handed_to_owner: boolean
+  owner_informed: boolean
 }
 
 interface MultiSave {
@@ -57,15 +79,16 @@ export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
   name = <ObsMod<string>>this.obs_mod();
-  outside = <ObsMod<boolean>>this.obs_mod();
+  outside = <ObsMod<boolean>>this.obs_mod(undefined, undefined, false);
 
-  concrete = <ObsMod<boolean>>this.obs_mod();
+  outside_concrete = <ObsMod<boolean>>this.obs_mod();
   outside_asphalt = <ObsMod<boolean>>this.obs_mod();
   outside_paving_stones = <ObsMod<boolean>>this.obs_mod();
   outside_vessel = <ObsMod<boolean>>this.obs_mod();
   outside_frost_protection = <ObsMod<boolean>>this.obs_mod();
   outside_frost_protection_pipe = <ObsMod<boolean>>this.obs_mod();
 
+  inside_concrete = <ObsMod<boolean>>this.obs_mod();
   inside_LamiFlex = <ObsMod<boolean>>this.obs_mod();
   inside_low_profile = <ObsMod<boolean>>this.obs_mod();
   inside_fireproof = <ObsMod<boolean>>this.obs_mod();
@@ -84,7 +107,6 @@ export class Room extends Post {
   max_temp_limited_by_other = <ObsMod<string>>this.obs_mod();
   control_system_floor_sensor = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   control_system_limit_sensor = <ObsMod<boolean>>this.obs_mod(undefined, undefined, false);
-  max_temp_safeguards = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   control_system_room_sensor = <ObsMod<boolean>>this.obs_mod();
   handed_to_owner = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
   owner_informed = <ObsMod<boolean>>this.obs_mod(undefined, undefined, true);
@@ -118,32 +140,8 @@ export class Room extends Post {
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
 
-    this.modification_tracking_list([
-      this.name,
-      this.outside,
-      this.maxEffect,
-      this.normalEffect,
-      this.area,
-      this.heated_area,
-      this.earthed_cable_screen,
-      this.earthed_chicken_wire,
-      this.earthed_other,
-      this.max_temp_limited_by_planning,
-      this.max_temp_limited_by_installation,
-      this.max_temp_limited_by_other,
-      this.control_system_floor_sensor,
-      this.curcuit_breaker_size,
-      this.installation_depth,
-      this.ground_fault_protection,
-      this.control_system_room_sensor,
-      this.control_system_designation,
-      this.control_system_other,
-      // this.heating_cables,
-      // this.room_suggestion,
-    ]);
-
     this.serialize = ko.computed((): RoomInterface => {
-      return {
+      let data: RoomInterface = {
         room_name: this.name(),
         id: this.id(),
         area: this.area(),
@@ -168,10 +166,34 @@ export class Room extends Post {
         check_control_system: {
           room_sensor: this.control_system_room_sensor(),
           floor_sensor: this.control_system_floor_sensor(),
+          limit_sensor: this.control_system_limit_sensor(),
           designation: this.control_system_designation(),
           other: this.control_system_other(),
         },
+        handed_to_owner: this.handed_to_owner(),
+        owner_informed: this.owner_informed(),
       }
+      if (this.use_inside_checklist()) {
+        data.inside_specs = {
+          LamiFlex: this.inside_LamiFlex(),
+          low_profile: this.inside_low_profile(),
+          fireproof: this.inside_fireproof(),
+          frost_protection_pipe: this.inside_frost_protection_pipe(),
+          other: this.inside_other(),
+          concrete: this.inside_concrete(),
+        }
+      }
+      if (this.use_outside_checklist()) {
+        data.outside_specs = {
+          asphalt: this.outside_asphalt(),
+          paving_stones: this.outside_paving_stones(),
+          vessel: this.outside_vessel(),
+          frost_protection_pipe: this.outside_frost_protection_pipe(),
+          frost_protection: this.outside_frost_protection(),
+          concrete: this.outside_concrete(),
+        }
+      }
+      return data
     })
     this.set(room)
     this.room_suggestion = ko.observable(
@@ -180,6 +202,26 @@ export class Room extends Post {
     this.validationModel.errors.showAllMessages(false)
 
   }
+  use_inside_checklist = ko.computed((): boolean => {
+    if (this.heating_cables()) {
+      if (!this.outside()) {
+        if (this.heating_cables().has_manufacturor('Øglænd')) {
+          return true
+        }
+      }
+    }
+    return false
+  })
+  use_outside_checklist = ko.computed((): boolean => {
+    if (this.heating_cables()) {
+      if (this.outside()) {
+        if (this.heating_cables().has_manufacturor('Øglænd')) {
+          return true
+        }
+      }
+    }
+    return false
+  })
   post_all(h: any, event: Event) {
     let data: MultiSave = {
       rooms: [],
@@ -267,7 +309,25 @@ export class Room extends Post {
     maxEffect: 0,
     installation_depth: 30,
     curcuit_breaker_size: 16,
-    ground_fault_protection: 30
+    ground_fault_protection: 30,
+    handed_to_owner: true,
+    owner_informed: true,
+    inside_specs: {
+      LamiFlex: false,
+      low_profile: false,
+      fireproof: false,
+      frost_protection_pipe: false,
+      other: '',
+      concrete: false,
+    },
+    outside_specs: {
+      asphalt: false,
+      paving_stones: false,
+      vessel: false,
+      frost_protection_pipe: false,
+      frost_protection: false,
+      concrete: false,
+    }
   }) {
     this.name(room.room_name)
     this.id(room.id)
@@ -275,6 +335,8 @@ export class Room extends Post {
     this.heated_area(room.heated_area)
     this.outside(room.outside)
     this.maxEffect(room.maxEffect || 0)
+    this.handed_to_owner(room.handed_to_owner)
+    this.owner_informed(room.owner_informed)
     this.installation_depth(Number(room.installation_depth) || 30)
     this.ground_fault_protection(Number(room.ground_fault_protection) || 30)
     this.curcuit_breaker_size(Number(room.curcuit_breaker_size) || 16)
@@ -292,10 +354,28 @@ export class Room extends Post {
     }
     if (room.check_control_system) {
       this.control_system_floor_sensor(room.check_control_system.floor_sensor)
+      this.control_system_limit_sensor(room.check_control_system.limit_sensor)
       this.control_system_room_sensor(room.check_control_system.room_sensor)
       this.control_system_designation(room.check_control_system.designation)
       this.control_system_other(room.check_control_system.other)
     }
+    if (room.inside_specs) {
+      this.inside_LamiFlex(room.inside_specs.LamiFlex)
+      this.inside_low_profile(room.inside_specs.low_profile)
+      this.inside_fireproof(room.inside_specs.fireproof)
+      this.inside_frost_protection_pipe(room.inside_specs.frost_protection_pipe)
+      this.inside_other(room.inside_specs.other)
+      this.inside_concrete(Boolean(room.inside_specs.concrete))
+    }
+    if (room.outside_specs) {
+      this.outside_asphalt(room.outside_specs.asphalt)
+      this.outside_paving_stones(room.outside_specs.paving_stones)
+      this.outside_vessel(room.outside_specs.vessel)
+      this.outside_frost_protection_pipe(room.outside_specs.frost_protection_pipe)
+      this.outside_frost_protection(room.outside_specs.frost_protection)
+      this.outside_concrete(Boolean(room.outside_specs.concrete))
+    }
+
     this.save()
   }
 }

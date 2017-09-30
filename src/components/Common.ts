@@ -105,11 +105,11 @@ export abstract class Post extends Base {
       type: method,
       data: JSON.stringify(data),
     }).done((result: any) => {
-if (method == HTTPVerbs.post) {
-  this.set(result)
-} else if (method == HTTPVerbs.put) {
-  this.save()
-}
+      if (method == HTTPVerbs.post) {
+        this.set(result)
+      } else if (method == HTTPVerbs.put) {
+        this.save()
+      }
       setTimeout(() => {
         btn.text('Endre')
       }, 20)

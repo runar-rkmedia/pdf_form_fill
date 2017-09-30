@@ -269,8 +269,6 @@ def json_multi_save():
         if not room_item and new_room_item:
             return_data = new_room_item.serialize
     for room in form.rooms.data:
-        room['inside_specs']['concrete'] = room['concrete']
-        room['outside_specs']['concrete'] = room['concrete']
         Room.update_or_create(
             room_id=room['id'],
             user=current_user,
@@ -293,6 +291,7 @@ def json_multi_save():
             max_temp_installation=room['check_max_temp']['installation'],
             max_temp_other=room['check_max_temp']['other'],
             control_system_floor_sensor=room['check_control_system']['floor_sensor'],
+            control_system_limit_sensor=room['check_control_system']['limit_sensor'],
             control_system_room_sensor=room['check_control_system']['room_sensor'],
             control_system_designation=room['check_control_system']['designation'],
             control_system_other=room['check_control_system']['other'],
@@ -323,7 +322,6 @@ def json_heating_cable():
 @company_required
 def json_room():
     """Handle a room-object"""
-    print('\n\n\n\nLALALALAL')
     form = forms.RoomForm.from_json(request.json)
     customer_id = (form.customer_id.data)
     room_id = form.id.data or request.args.get('id')

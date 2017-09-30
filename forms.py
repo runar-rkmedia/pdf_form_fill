@@ -88,9 +88,6 @@ class CheckMaxTemp(SubForm):
     installation = BooleanField(
         'Utførelse av montasje (Installasjonsveiledningen er fulgt)'  # noqa
     )
-    safeguards = BooleanField(
-        'Bruk av styring/regulering'  # noqa
-    )
     other = StringField(
         'Eventuell bruk av beskyttelsesutstyr',  # noqa
         validators=[Length(max=100)])
@@ -123,6 +120,7 @@ class HeatingInside(SubForm):
     fireproof = BooleanField('Brennbart underlag')
     frost_protection_pipe = frost_protection_pipe
     other = StringField('Annet', validators=[Length(max=100)])
+    concrete = BooleanField('Betong')
 
 
 class HeatingOutside(SubForm):
@@ -131,6 +129,7 @@ class HeatingOutside(SubForm):
     vessel = BooleanField('Fartøy')
     frost_protection = BooleanField('Frostsikring tak/takrenner')
     frost_protection_pipe = frost_protection_pipe
+    concrete = BooleanField('Betong')
 
 
 class RoomForm(FlaskForm):
@@ -174,7 +173,6 @@ class RoomForm(FlaskForm):
     owner_informed = BooleanField('Eier og/eller bruker er informert')
     inside_specs = FormField(HeatingInside)
     outside_specs = FormField(HeatingOutside)
-    concrete = BooleanField('Betong')
 
 
 class AddressForm(SubForm):
@@ -262,7 +260,6 @@ class SpecsForm(SubForm):
     cc = FormField(Cc)
     curcuit_breaker_size = FormField(CurcuitBreakerSize)
     installation_depth = FormField(InstallationDepth)
-    ground_fault_protection = BetterDecimalField('Utløserstrøm jordfeil')
 
 
 class HeatingCableForm(FlaskForm):

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """Data for øglænd-dictionary."""
-from .helpers import NumberTypes, month_name, group_number, DictionaryHelper
+from .helpers import DictionaryHelper, NumberTypes, group_number, month_name
 from .stamp import StampablePdfForm, signatere_location_size
+
+TRUE = 'Ja'
+FALSE = 'Nei'
 
 
 class Oegleand(StampablePdfForm):
@@ -20,6 +23,7 @@ class Oegleand(StampablePdfForm):
 
         d = DictionaryHelper(self.dictionary)
         self.dict_update({
+            'control_system_other_check': d.s_bool('control_system_other'),
             'anleggs_adresse':
                 d.s('customer.address.address1') + ' ' +
                 d.s('customer.address.address2') + '\n' +
@@ -27,13 +31,25 @@ class Oegleand(StampablePdfForm):
                 d.s('customer.address.post_area'),
             'product.resistance_min': '{0:.1f}'.format(
                 d.g('product.resistance_min')
-                )
+            )
         })
+        self.dictionary['control_system_other_check'] = TRUE
+        date = self.dictionary.get('last_date')
 
-        date = d.g('date')
+        if (
+            d.s_bool('control_system_room_sensor') or
+            d.s_bool('control_system_floor_sensor') or
+            d.s_bool('control_system_limit_sensor') or
+            d.s_bool('control_system_other')
+            ):
+            self.dictionary['control_system_check_any'] = TRUE
         self.dict_update({
             'company.phone': d.g('company.contact.phone_f', d.g('company.contact.mobile_f')),
         })
+        self.dictionary['inside_specs.not_fireproof'] = FALSE if self.dictionary.get('inside_specs.fireproof') else TRUE
+        self.dictionary['inside_specs.other_check'] = TRUE if self.dictionary.get('inside_specs.other') else FALSE
+        if  1 <= self.dictionary.get('ground_fault_protection', -1) <= 30:
+            self.dictionary['check-jordfeilbryter-30mA'] = TRUE
 
         if date:
             self.dict_update({
@@ -43,7 +59,7 @@ class Oegleand(StampablePdfForm):
             })
 
     FILL_PDF_FILENAME = 'Samsvarserklæring_01_17_skjemautfylling.pdf'
-    CHECKBOX_VALUE = ['Ja', 'Nei']
+    CHECKBOX_VALUE = [TRUE, FALSE]
 
     FIELDS_DICT = {
         'dato-År': {
@@ -61,7 +77,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Adresse installasjonssted',
             'type': str
         },
-        'innendoers_innstallasjon_annet': {
+        'inside_specs.other_check': {
             'text': 'TextInPDF',
             'field': 'Annet',
             'type': bool
@@ -71,12 +87,12 @@ class Oegleand(StampablePdfForm):
             'field': 'Areal m2',
             'type': NumberTypes
         },
-        'Asf': {
+        'outside_specs.asphalt': {
             'text': 'TextInPDF',
             'field': 'Asf',
             'type': bool
         },
-        'Bren': {
+        'inside_specs.fireproof': {
             'text': 'TextInPDF',
             'field': 'Bren',
             'type': bool
@@ -86,7 +102,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Dag',
             'type': str
         },
-        'check-Dokumentasjon-overlevert': {
+        'handed_to_owner': {
             'text': 'TextInPDF',
             'field': 'Doku',
             'type': bool
@@ -96,7 +112,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Effekt W',
             'type': str
         },
-        'check-Eier-informert': {
+        'owner_informed': {
             'text': 'TextInPDF',
             'field': 'Eier',
             'type': bool
@@ -106,7 +122,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Eks bad, gang',
             'type': str
         },
-        'Fart': {
+        'outside_specs.vessel': {
             'text': 'TextInPDF',
             'field': 'Fart',
             'type': bool
@@ -116,7 +132,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Firmanavn',
             'type': str
         },
-        'Frost': {
+        'outside_specs.frost_protection': {
             'text': 'TextInPDF',
             'field': 'Frost',
             'type': bool
@@ -131,12 +147,12 @@ class Oegleand(StampablePdfForm):
             'field': 'Hovedgruppe',
             'type': str
         },
-        'Infor': {
+        'max_temp_planning': { # hva er dette?
             'text': 'TextInPDF',
             'field': 'Infor',
             'type': bool
         },
-        'Inn Be': {
+        'inside_specs.concrete': {
             'text': 'TextInPDF',
             'field': 'Inn Be',
             'type': bool
@@ -166,12 +182,12 @@ class Oegleand(StampablePdfForm):
             'field': 'Kontaktperson',
             'type': 'Kontaktperson'
         },
-        'check-innendørs-lamiflex': {
+        'inside_specs.LamiFlex': {
             'text': 'TextInPDF',
             'field': 'Lam',
             'type': bool
         },
-        'check-innendørs-lavtbygggende-gult': {
+        'inside_specs.low_profile': {
             'text': 'TextInPDF',
             'field': 'Lavt',
             'type': bool
@@ -181,7 +197,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Mnd',
             'type': str
         },
-        'check-beskyttelses-tiltak-monteringsanvisning-fulgt': {
+        'max_temp_installation': {
             'text': 'TextInPDF',
             'field': 'Mont',
             'type': bool
@@ -196,12 +212,12 @@ class Oegleand(StampablePdfForm):
             'field': 'Overdekning',
             'type': NumberTypes
         },
-        'check-utendørs-frostsikring-rør–innendig': {
+        'inside_specs.frost_protection_pipe': {
             'text': 'TextInPDF',
             'field': 'Rør in',
             'type': bool
         },
-        'check-utendørs-frostsikring-rør–utvendig': {
+        'outside_specs.frost_protection_pipe': {
             'text': 'TextInPDF',
             'field': 'Rør ut',
             'type': bool
@@ -241,18 +257,18 @@ class Oegleand(StampablePdfForm):
             'field': 'Spenning V',
             'type': NumberTypes
         },
-        'innendørs_annet_spesifiser': {
+        'inside_specs.other': {
             'text': 'TextInPDF',
 
             'field': 'Spesifiser',
             'type': str
         },
-        'check-utendørs_belegningsstein-heller': {
+        'outside_specs.paving_stones': {
             'text': 'TextInPDF',
             'field': 'Stei',
             'type': bool
         },
-        'check-beskyttelses-tiltak-bruk-av-styring': {
+        'control_system_other_check': { # Why U no work?
             'text': 'TextInPDF',
             'field': 'Styr',
             'type': bool
@@ -267,7 +283,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Type kabel/matte',
             'type': str
         },
-        'check-innendørs-varmematte_ubrennbart_underlag': {
+        'inside_specs.not_fireproof': {
             'text': 'TextInPDF',
             'field': 'Ubre',
             'type': bool
@@ -277,7 +293,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Underskrift',
             'type': str
         },
-        'check-utendørs-betong': {
+        'outside_specs.concrete': {
             'text': 'TextInPDF',
             'field': 'Ut Bet',
             'type': bool
@@ -287,12 +303,12 @@ class Oegleand(StampablePdfForm):
             'field': 'W/m2',
             'type': NumberTypes
         },
-        'check-følertype-annet': {
+        'constrol_system_other_check': {
             'text': 'TextInPDF',
             'field': 'annet',
             'type': bool
         },
-        'check-følertype-begrensningsføler': {
+        'control_system_limit_sensor': {
             'text': 'TextInPDF',
             'field': 'begr',
             'type': bool
@@ -302,12 +318,12 @@ class Oegleand(StampablePdfForm):
             'field': 'c/c',
             'type': NumberTypes
         },
-        'check-følertype-gulv': {
+        'control_system_floor_sensor': {
             'text': 'TextInPDF',
             'field': 'gulv',
             'type': bool
         },
-        'check-følertype-rom': {
+        'control_system_room_sensor': {
             'text': 'TextInPDF',
             'field': 'rom',
             'type': bool

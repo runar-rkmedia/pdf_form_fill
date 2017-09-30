@@ -475,15 +475,14 @@ class OutsideSpecs(db.Model):
             setattr(self, key, val)
         return self
 
-    @property
-    def serialize(self):
+    def serialize(self, prefix=''):
         return {
-        'asphalt': self.asphalt,
-        'paving_stones': self.paving_stones,
-        'vessel': self.vessel,
-        'frost_protection_pipe': self.frost_protection_pipe,
-        'frost_protection': self.frost_protection,
-        'concrete': self.concrete,
+        prefix + 'asphalt': self.asphalt,
+        prefix + 'paving_stones': self.paving_stones,
+        prefix + 'vessel': self.vessel,
+        prefix + 'frost_protection_pipe': self.frost_protection_pipe,
+        prefix + 'frost_protection': self.frost_protection,
+        prefix + 'concrete': self.concrete,
     }
 
 
@@ -498,15 +497,14 @@ class InsideSpecs(db.Model):
     concrete = db.Column(db.Boolean, default=False)
     other = db.Column(db.String(100))
 
-    @property
-    def serialize(self):
+    def serialize(self, prefix=''):
         return {
-        'LamiFlex': self.LamiFlex,
-        'low_profile': self.low_profile,
-        'fireproof': self.fireproof,
-        'frost_protection_pipe': self.frost_protection_pipe,
-        'concrete': self.concrete,
-        'other': self.other,
+        prefix + 'LamiFlex': self.LamiFlex,
+        prefix + 'low_profile': self.low_profile,
+        prefix + 'fireproof': self.fireproof,
+        prefix + 'frost_protection_pipe': self.frost_protection_pipe,
+        prefix + 'other': self.other,
+        prefix + 'concrete': self.concrete,
     }
 
     def update_entity(self, dictionary):
@@ -532,14 +530,15 @@ class Room(MyBaseModel, db.Model):
     ground_fault_protection = db.Column(db.Numeric(8, 3), default=30.0)
     earthed_cable_screen = db.Column(db.Boolean, default=False)
     earthed_chicken_wire = db.Column(db.Boolean, default=False)
-    handed_to_owner = db.Column(db.Boolean, default=False)
-    owner_informed = db.Column(db.Boolean, default=False)
+    handed_to_owner = db.Column(db.Boolean, default=True)
+    owner_informed = db.Column(db.Boolean, default=True)
     earthed_other = db.Column(db.String(200))
     max_temp_planning = db.Column(db.Boolean, default=False)
     max_temp_installation = db.Column(db.Boolean, default=False)
     max_temp_other = db.Column(db.String(200))
     control_system_floor_sensor = db.Column(db.Boolean, default=False)
     control_system_room_sensor = db.Column(db.Boolean, default=False)
+    control_system_limit_sensor = db.Column(db.Boolean, default=False)
     control_system_designation = db.Column(db.String(200))
     control_system_other = db.Column(db.String(200))
 
@@ -595,6 +594,7 @@ class Room(MyBaseModel, db.Model):
             max_temp_installation,
             max_temp_other,
             control_system_floor_sensor,
+            control_system_limit_sensor,
             control_system_room_sensor,
             control_system_designation,
             control_system_other,
@@ -637,6 +637,7 @@ class Room(MyBaseModel, db.Model):
         room.max_temp_installation = max_temp_installation
         room.max_temp_other = max_temp_other
         room.control_system_floor_sensor = control_system_floor_sensor
+        room.control_system_limit_sensor = control_system_limit_sensor
         room.control_system_room_sensor = control_system_room_sensor
         room.control_system_designation = control_system_designation
         room.control_system_other = control_system_other
@@ -669,6 +670,7 @@ class Room(MyBaseModel, db.Model):
             },
             'check_control_system': {
                 'floor_sensor': self.control_system_floor_sensor,
+                'limit_sensor': self.control_system_limit_sensor,
                 'room_sensor': self.control_system_room_sensor,
                 'designation': self.control_system_designation,
                 'other': self.control_system_other,
@@ -680,9 +682,9 @@ class Room(MyBaseModel, db.Model):
             'handed_to_owner': self.handed_to_owner,
         }
         if self.inside_specs:
-            dictionary['inside_specs'] = self.inside_specs.serialize
+            dictionary['inside_specs'] = self.inside_specs.serialize()
         if self.outside_specs:
-            dictionary['outside_specs'] = self.outside_specs.serialize
+            dictionary['outside_specs'] = self.outside_specs.serialize()
         return dictionary
 
 
