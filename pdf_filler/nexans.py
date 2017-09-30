@@ -57,19 +57,9 @@ class Nexans(StampablePdfForm):
             'max_temp_other_check': d.s_bool('max_temp_other'),
             'earthed_other_check': d.s_bool('earthed_other'),
             'control_system_other_check': d.s_bool('control_system_other'),
-            'check-montert_i_henhold_til_installasjonsveiledning': self.TRUE
+            'check-montert_i_henhold_til_installasjonsveiledning': d.s_bool('max_temp_installation')
         })
-        pour_date = d.g('pour.date')
-        install_date = d.g('install.date')
-        connect_date = d.g('connect.date')
-        last_date = None
-        for date in [pour_date, install_date, connect_date]:
-            if date and isinstance(date, datetime.date) and (not last_date or date > last_date):
-                last_date = date
-        if pour_date:
-            self.dict_update({
-                'pour.date.formatted': date_format(pour_date)
-            })
+        last_date = d.g('last_date')
         if last_date:
             last_date_formatted = date_format(last_date)
             self.dict_update({

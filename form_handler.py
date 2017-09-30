@@ -203,12 +203,19 @@ class FormHandler(object):
             'max_temp_other': self.room.max_temp_other,
             'control_system_floor_sensor': self.room.control_system_floor_sensor,
             'control_system_room_sensor': self.room.control_system_room_sensor,
+            'control_system_limit_sensor': self.room.control_system_limit_sensor,
             'control_system_designation': self.room.control_system_designation,
             'control_system_other': self.room.control_system_other,
             'installation_depth': self.room.installation_depth,
             'ground_fault_protection': self.room.ground_fault_protection,
             'curcuit_breaker_size': self.room.curcuit_breaker_size,
+            'handed_to_owner': self.room.handed_to_owner,
+            'owner_informed': self.room.owner_informed,
         })
+        if not self.room.outside and self.room.inside_specs:
+            self.dictionary.update(self.room.inside_specs.serialize('inside_specs.'))
+        if self.room.outside and self.room.outside_specs:
+            self.dictionary.update(self.room.outside_specs.serialize('outside_specs.'))
 
     def push_from_room_item_modification(self):
         """Push data from room_item_modification."""
@@ -230,12 +237,19 @@ class FormHandler(object):
             if 'measurements' in specs:
                 m = specs['measurements'].copy()
                 n = {}
+                last_date = None
                 for key, value in m.items():
                     if isinstance(value, dict):
                         date = value.get('date')
                         if date:
-                            m[key]['date'] = parse(date)
+                            parsed = parse(date)
+                            if not last_date or parsed > last_date:
+                                last_date = parsed
+                            m[key]['date'] = parsed
                             n[key] = m[key]
+                if last_date:
+                    n['last_date'] = last_date
+
                 self.dictionary.update(flatten_dict(n))
 
     def stamp_with_user(self, user, form):
