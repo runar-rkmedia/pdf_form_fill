@@ -41,6 +41,7 @@ export class HeatingCableList extends ByID {
       new_heating_cable = new HeatingCable(this.root.Products(), this)
       this.list.push(new_heating_cable)
     }
+    new_heating_cable.product_filter().effect(new_heating_cable.suggested_effect())
     this.root.editing_heating_cable_id(-1)
     setTimeout(() => {    // Expand the panel
       let btn = $(event.target)

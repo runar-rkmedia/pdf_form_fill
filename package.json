@@ -28,6 +28,7 @@
     "@types/knockout.validation": "0.0.33",
     "@types/webfontloader": "^1.6.29",
     "bootstrap": "^3.3.7",
+    "bootstrap-slider": "^9.9.0",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "file-loader": "^0.11.2",
     "googlemaps": "^1.12.0",

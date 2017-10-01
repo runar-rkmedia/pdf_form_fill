@@ -1,5 +1,6 @@
 import { Post, ObsMod } from "./Common"
 import { HeatingCableList } from "./HeatingCableList"
+import { Pagination, sortDist } from "./Pagination"
 import {
   TSProductModel,
   ProductInterface,
@@ -262,7 +263,15 @@ export class HeatingCable extends Post {
 
   product_model: TSProductModel
   product_filter: KnockoutObservable<ProductFilter>
-  suggested_effect: KnockoutComputed<number>;
+  product_pagination: Pagination = new Pagination([], 10)
+  suggested_effect: KnockoutComputed<number>
+  _slider_ticks_default = [0, 1650, 3300]
+  slider_ticks: KnockoutObservableArray<number> = ko.observableArray(this._slider_ticks_default)
+  slider_ticks_labels: KnockoutComputed<string[]> = ko.computed(() => {
+    return this.slider_ticks().map((x: number) => {
+      return `{x}&thinsp;W`
+    })
+  })
 
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
@@ -405,9 +414,23 @@ export class HeatingCable extends Post {
       if (this.product()) {
         this_effect = this.product()!.effect
       }
-      return this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
+      let suggested_effect = this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
+
+      // this.slider_ticks(this._slider_ticks_default)
+      if (this.slider_ticks.indexOf(suggested_effect) == -1) {
+        let ticks = this._slider_ticks_default.slice()
+        ticks.push(suggested_effect)
+        this.slider_ticks(ticks)
+      }
+      return suggested_effect
     })
+    // if (this.suggested_effect() && this.product_filter) {
+    //   this.product_filter().effect(this.suggested_effect())
+    // }
     this.set(heating_cable)
+    ko.computed(() => {
+      this.product_pagination.list(sortDist(this.product_filter().filtered_products(), this.product_filter().effect()))
+    })
   }
   post(h: any, event: Event) {
     return this.parent.parent.post_all(h, event)
@@ -419,12 +442,16 @@ export class HeatingCable extends Post {
   }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
-      return this.product_model.by_id(this.product_id())
-
+      let product = this.product_model.by_id(this.product_id())
+      if (product && this.product_filter().effect() === undefined) {
+        this.product_filter().effect(product.effect)
+      }
+      return product
     }
   })
-
-
+  select_product = (product: ProductInterface, event: Event) => {
+    this.product_id(product.id)
+  }
   set(heating_cable: HeatingCableInterface) {
     this.id(heating_cable.id)
     this.product_id(Number(heating_cable.product_id))

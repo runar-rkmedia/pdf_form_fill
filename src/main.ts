@@ -1,6 +1,7 @@
 import { TSAppViewModel } from "./components/AppViewModel"
 import './bootstrap/bootstrap'
 import './less/entry'
+import './components/bootstrap-slider-knockout-binding/bootstrap-slider-knockout-binding.js';
 export var myApp: TSAppViewModel;
 
 let pad = (n: string, width: number, z: string = "0") => {
