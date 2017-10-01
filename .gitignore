@@ -286,3 +286,4 @@ static/js/main.js
 src/data.json
 static/gen/
 webpack-assets.json
+src/components/bootstrap-slider-knockout-binding/

@@ -2,6 +2,7 @@ import { TSAppViewModel } from "./AppViewModel"
 import { StrIndex } from "./Common"
 import { HeatingCable } from "./HeatingCable"
 import { Room } from "./Room"
+import { Pagination, sortDist } from "./Pagination"
 import * as data from '../data.json';
 
 const static_data: StaticData = data;
@@ -105,6 +106,7 @@ export class ProductFilter {
   filtered_products_no_mainSpec: KnockoutComputed<ProductInterface[]>
   filtered_products: KnockoutComputed<ProductInterface[]>
   spec_groups: KnockoutComputed<ProductInterface[]>
+  pagination: Pagination
 
   constructor(target: HeatingCable, room: Room, product_model: TSProductModel) {
     this.target = target
@@ -161,31 +163,6 @@ export class ProductFilter {
         flags[entry.mainSpec] = true;
         return true;
       })
-    });
-  }
-  // Sort any list of object by its distance to a setpoint to a certain key.
-  // For instance, sort all towns with distance closest to 800m:
-  // kings road: 760m
-  // queens road: 850m
-  // princes road: 750m
-  sortDist = (list: any[], setPoint: number, keyA = 'effect', keyB = 'name') => {
-    return list.sort((a, b) => {
-      let diff = 0;
-      if (setPoint) {
-        let diffA = Math.abs(setPoint - a[keyA])
-        let diffB = Math.abs(setPoint - b[keyA])
-        diff = diffA - diffB
-      } else {
-        diff = (a[keyA]) - (b[keyA]);
-      }
-      if (diff == 0) {
-        if (a[keyB] < b[keyB]) {
-          return -1
-        }
-        return 1
-      }
-      return diff
-
     });
   }
 

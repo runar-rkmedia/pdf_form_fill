@@ -1,4 +1,5 @@
 @import '../bootstrap/bootstrap.less';
+@import '~bootstrap-slider/dist/css/bootstrap-slider.min.css';
 @import 'components/fancy_checkbox.less';
 @import 'sidebar.less';
 @import 'marg-pad.less';
@@ -278,6 +279,7 @@ canvas {
     height: 42px;
   }
 
+
   .buttonText {
     display: inline-block;
     vertical-align: middle;
@@ -292,6 +294,12 @@ canvas {
 .justified {
   display: flex;
   justify-content: space-between;
+  &.justified-text-center span:not(:first-child):not(:last-child){
+    text-align: center;
+  }
+  &.justified-text-center span:last-child{
+    text-align: right;
+  }
 }
 
 .justified-xs-column-3 {
@@ -345,13 +353,13 @@ body {
   // padding: 40px;
 }
 
-ul.list-group.list-group-striped a {
+ul.list-group.list-group-striped a:not(.active) {
   &:nth-of-type(even) {
-    background: @table-bg-accent;
+    background: darken(@table-bg-accent, 5%);
   }
 
   &:hover {
-    background: darken(@table-bg-hover, 10%);
+    background: darken(@table-bg-hover, 20%);
 
     > .list-group-item-heading {
       color: @primary-color;
@@ -441,6 +449,10 @@ body {
     display: none !important;
   }
 }
+.vbottom{
+  display: inline-block;
+  vertical-align: bottom;
+}
 
 .btn-group.nowrap {
   white-space: nowrap;
@@ -463,15 +475,37 @@ body {
   color: @text-color;
 }
 @manufacturor-logo-width: 38px;
+@manufacturor-logo-height: 30px;
 
-.panel-title .manufacturor-logo {
-  height: 30px;
+.manufacturor-logo {
+  height: @manufacturor-logo-height;
   width: @manufacturor-logo-width;
+}
+
+.list-group-item-heading .manufacturor-logo {
   position: absolute;
   left: 0;
   top: 0;
   margin-left: -@manufacturor-logo-width - 3px;
   margin-top: -7px;
+}
+
+.panel-title .manufacturor-logo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-left: -@manufacturor-logo-width - 3px;
+  margin-top: -7px;
+}
+
+.list-group-item-heading.has-logo {
+  margin-left: @manufacturor-logo-width;
+}
+.visible-active{
+  display: none;
+}
+.active > .visible-active{
+  display: block!important;
 }
 
 .panel-title.has-logo {
@@ -486,4 +520,30 @@ select:focus {
 
 .visible-block {
   display: block!important;
+}
+.slider {
+    width: 100% !important;
+    .slider-track-low{
+
+    }
+    .slider-tick-label-container{
+      width: 50%!important;
+      // margin-left: -80px!important;
+      // margin-right: -120px!important;
+
+    }
+    .slider-selection{
+      background-color: @primary-color;
+    }
+    .slider-track-high{
+      background-color: @dropdown-border;
+    }
+    .slider-tick{
+
+    }
+}
+.min2lines{
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
 }
