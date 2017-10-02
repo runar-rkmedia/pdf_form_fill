@@ -7,7 +7,7 @@
       <div class="formgroup col-xs-12">
         <div class="form-group">
           <label for="room_handle">Rom/stednavn</label>
-          <input type="text" class="form-control" data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(), displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect, value: name">
+          <input type="text" class="form-control" data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(),  templateName: 'room-suggestion-template', displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect, value: name">
         </div>
       </div>
       {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: area"}) }}

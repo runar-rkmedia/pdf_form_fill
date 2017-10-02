@@ -374,8 +374,6 @@ export class HeatingCable extends Post {
               return parseFloat(value.toFixed(1))
             }
           }
-        } else {
-          console.log(this.cc().user_input())
         }
       }
       // Set an initial value, to keep the modified-flag from raising

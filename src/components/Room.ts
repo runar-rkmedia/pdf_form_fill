@@ -11,6 +11,8 @@ import { HeatingCable, HeatingCableInterface } from './HeatingCable'
 import { HeatingCableList } from './HeatingCableList'
 import { RoomList } from './RoomList'
 
+require("knockout-template-loader?name=room-suggestion-template!html-loader?-minimize!./room-suggestion.html");
+
 interface CheckEarthed {
   cable_screen: boolean
   chicken_wire: boolean
@@ -196,6 +198,19 @@ export class Room extends Post {
       return data
     })
     this.set(room)
+    ko.computed(() => {
+      if (this.name() && this.room_suggestion) {
+        let match = ko.utils.arrayFirst(this.room_suggestion().list(), (item) => {
+          return this.name().toLowerCase() === item.name.toLowerCase();
+        });
+        if (match) {
+          this.normalEffect(match.normalEffect)
+          this.maxEffect(match.maxEffect)
+          this.outside(match.outside)
+          this.name(match.name)
+        }
+      }
+    })
     this.room_suggestion = ko.observable(
       new RoomSuggestion(this.root.Products().flat_room_type_info(),
         this))

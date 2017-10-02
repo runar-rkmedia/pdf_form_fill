@@ -43,7 +43,10 @@
                 <!-- ko template: { name: 'room_form_template', data: $data} -->
                 <!-- /ko -->
                 <!-- ko if: bestFitEffect() -->
-                <div data-bind="text: 'Ideell effekt: ' + bestFitEffect().toFixed(0) + 'W'"></div>
+                <div data-bind="text: 'Anbefalt effekt: ' + bestFitEffect().toFixed(0) + 'W'"></div>
+                <!-- /ko -->
+                <!-- ko ifnot: bestFitEffect() -->
+                <div class="help-block">Tips: Du får effektanbefaling, og dermed også produktanbefalinger om du velger et rom fra listen mens du skriver.</div>
                 <!-- /ko -->
               </div>
             </div>
