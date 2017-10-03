@@ -106,7 +106,6 @@ export class ProductFilter {
   filtered_products_no_mainSpec: KnockoutComputed<ProductInterface[]>
   filtered_products: KnockoutComputed<ProductInterface[]>
   spec_groups: KnockoutComputed<ProductInterface[]>
-  pagination: Pagination
 
   constructor(target: HeatingCable, room: Room, product_model: TSProductModel) {
     this.target = target

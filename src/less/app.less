@@ -211,8 +211,10 @@ canvas {
 }
 
 .panel-body {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
+  @media only screen and (max-width : @screen-xs-max) {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
 }
 
 .panel-heading {
@@ -279,7 +281,6 @@ canvas {
     height: 42px;
   }
 
-
   .buttonText {
     display: inline-block;
     vertical-align: middle;
@@ -294,10 +295,12 @@ canvas {
 .justified {
   display: flex;
   justify-content: space-between;
-  &.justified-text-center span:not(:first-child):not(:last-child){
+
+  &.justified-text-center span:not(:first-child):not(:last-child) {
     text-align: center;
   }
-  &.justified-text-center span:last-child{
+
+  &.justified-text-center span:last-child {
     text-align: right;
   }
 }
@@ -449,7 +452,8 @@ body {
     display: none !important;
   }
 }
-.vbottom{
+
+.vbottom {
   display: inline-block;
   vertical-align: bottom;
 }
@@ -501,10 +505,12 @@ body {
 .list-group-item-heading.has-logo {
   margin-left: @manufacturor-logo-width;
 }
-.visible-active{
+
+.visible-active {
   display: none;
 }
-.active > .visible-active{
+
+.active > .visible-active {
   display: block!important;
 }
 
@@ -521,29 +527,50 @@ select:focus {
 .visible-block {
   display: block!important;
 }
+
 .slider {
-    width: 100% !important;
-    .slider-track-low{
+  width: 100% !important;
 
-    }
-    .slider-tick-label-container{
-      width: 50%!important;
-      // margin-left: -80px!important;
-      // margin-right: -120px!important;
+  .slider-track-low {}
 
-    }
-    .slider-selection{
-      background-color: @primary-color;
-    }
-    .slider-track-high{
-      background-color: @dropdown-border;
-    }
-    .slider-tick{
+  .slider-tick-label-container {
+    width: 50%!important;
+    // margin-left: -80px!important;
+    // margin-right: -120px!important;
+  }
 
-    }
+  .slider-selection {
+    background-color: @primary-color;
+  }
+
+  .slider-track-high {
+    background-color: @dropdown-border;
+  }
+
+  .slider-tick {}
 }
-.min2lines{
+
+.min2lines {
   height: 64px;
   min-height: 64px;
   max-height: 64px;
+}
+
+.link-unstyled {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.link-unstyled {
+  &:active,
+  &:focus,
+  &:hover,
+  &:link {
+    .link-unstyled
+  }
+}
+
+a[data-action="today"] span:after {
+  content: ' Gå til i dag';
+  font-family: @font-family-sans-serif;
 }

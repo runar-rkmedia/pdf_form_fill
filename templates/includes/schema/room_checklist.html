@@ -1,5 +1,4 @@
 <!-- ko if: heating_cables().list().length > 0 -->
-<div class="row">
   <hr>
   <h2>Sjekkliste</h2>
   <div class="bs-callout bs-callout-info">
@@ -110,7 +109,7 @@
 
     {{render_field( roomForm.handed_to_owner, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: handed_to_owner"}) }}
   </div>
-  <div class="col-xs-12">
+  <div>
     <div class="text-right">
       <button
         type="button"
@@ -121,5 +120,4 @@
 
     </div>
   </div>
-</div>
 <!-- /ko -->

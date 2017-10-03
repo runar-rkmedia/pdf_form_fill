@@ -14,6 +14,7 @@ ko.bindingHandlers.dateTimePicker = {
     var options = allBindingsAccessor!().dateTimePickerOptions || {};
 
     let default_options = {
+      inline: true,
       locale: 'nb',
       format: "L",
       useCurrent: false,
@@ -183,7 +184,7 @@ class Measurement {
     }
     let date = measurement.date
     if (typeof date === 'string' || date instanceof String) {
-      date = new Date(date) // TS-linter complaints this is not a string. It is.
+      date = new Date((<string>date))
     }
     this.ohm(measurement.ohm)
     this.mohm(measurement.mohm)
@@ -265,13 +266,6 @@ export class HeatingCable extends Post {
   product_filter: KnockoutObservable<ProductFilter>
   product_pagination: Pagination = new Pagination([], 10)
   suggested_effect: KnockoutComputed<number>
-  _slider_ticks_default = [0, 1650, 3300]
-  slider_ticks: KnockoutObservableArray<number> = ko.observableArray(this._slider_ticks_default)
-  slider_ticks_labels: KnockoutComputed<string[]> = ko.computed(() => {
-    return this.slider_ticks().map((x: number) => {
-      return `{x}&thinsp;W`
-    })
-  })
 
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
@@ -415,12 +409,6 @@ export class HeatingCable extends Post {
       }
       let suggested_effect = this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
 
-      // this.slider_ticks(this._slider_ticks_default)
-      if (this.slider_ticks.indexOf(suggested_effect) == -1) {
-        let ticks = this._slider_ticks_default.slice()
-        ticks.push(suggested_effect)
-        this.slider_ticks(ticks)
-      }
       return suggested_effect
     })
     // if (this.suggested_effect() && this.product_filter) {
@@ -429,6 +417,9 @@ export class HeatingCable extends Post {
     this.set(heating_cable)
     ko.computed(() => {
       this.product_pagination.list(sortDist(this.product_filter().filtered_products(), this.product_filter().effect()))
+    })
+    this.product_filter().effect.subscribe(() => {
+      this.product_pagination.current_page(0)
     })
   }
   post(h: any, event: Event) {

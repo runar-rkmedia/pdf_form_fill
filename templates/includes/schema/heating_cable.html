@@ -17,7 +17,7 @@
     <div class="panel panel-collapse collapse " data-bind="
 attr: {'id': 'heat' + id()}
 ">
-      <div class="panel-body small-pad">
+      <div class="panel-body px-0">
         <div class="panel-group" id="heating-accordian" data-bind="attr: {
                             'id': 'heating-accordian' + id(),
                           }">
@@ -39,7 +39,7 @@ attr: {'id': 'heat' + id()}
               </h4>
             </div>
             <div
-              class="panel-collapse collapse accordian-toggle collapsed"
+              class="panel-collapse collapse scrollto accordian-toggle collapsed"
               role="tabpanel"
               data-bind="attr: {
                     'id': 'panel_select_cable' + id(),
@@ -47,12 +47,8 @@ attr: {'id': 'heat' + id()}
                     'data-parent': '#heating-accordian' + id()
                   }">
               <div class="panel-body">
-                <div class="row">
-                  <div class="col-xs-12">
                     <!-- ko template: { name: 'select_product_template', data: $data} -->
                     <!-- /ko -->
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -74,17 +70,13 @@ attr: {'id': 'heat' + id()}
                 <!-- /ko -->
               </h4>
             </div>
-            <div class="panel-collapse collapse" data-bind="attr: {
+            <div class="panel-collapse scrollto collapse" data-bind="attr: {
                     'id': 'panel_measurements' + id(),
                     'aria-labelledby': 'heading_measurements' + id(),
                   }">
               <div class="panel-body">
-                <div class="row">
-                  <div class="col-xs-12">
                     <!-- ko template: { name: 'measurements_template', data: $data, afterRender: bindDatePicker} -->
                     <!-- /ko -->
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -105,17 +97,13 @@ attr: {'id': 'heat' + id()}
                 <!-- /ko -->
               </h4>
             </div>
-            <div class="panel-collapse collapse " data-bind="attr: {
+            <div class="panel-collapse scrollto collapse " data-bind="attr: {
                     'id': 'panel_others' + id(),
                     'aria-labelledby': 'heading_others' + id(),
                   }">
               <div class="panel-body">
-                <div class="row">
-                  <div class="col-xs-12">
                     <!-- ko template: { name: 'calculations_template', data: $data} -->
                     <!-- /ko -->
-                  </div>
-                </div>
               </div>
             </div>
           </div>
