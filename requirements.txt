@@ -14,7 +14,7 @@ fdfgen==0.16.0
 Flask==0.12.2
 Flask-Compress==1.4.0
 Flask-Dance==0.11.1
-Flask-HTMLmin==1.2.1
+-e git+https://github.com/runartrollet/Flask-HTMLmin.git@e9784039ed74fd806b6e992b2e3533512fef44b8#egg=Flask_HTMLmin
 Flask-Limiter==0.9.5.1
 Flask-Login==0.4.0
 Flask-Migrate==2.1.1
@@ -23,7 +23,7 @@ Flask-Scss==0.5
 Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
 html5lib==0.999999999
-htmlmin==0.1.10
+htmlmin==0.1.11
 idna==2.6
 infinity==1.4
 intervals==0.8.0

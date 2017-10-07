@@ -16,6 +16,52 @@ Might integrate with DropBox, to simply store the company's files there.
 
 For that reason, I don't see a problem in storing the pdf's on herokus [Ephemeral filesystem](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem) for the 5-minute-window a user might need to download his pdf.
 
+## Get started:
+
+### Virtial environment
+
+Make sure you have python installed. Create the virtual ennvironment by running `python3 -m venv venv ` then activate it with `. venv/bin/activate `.
+
+Install all pip-requirements with `pip install -r requirements.txt`
+
+
+
+
+
+The `mongodb`- and `postgres`-databases needs to be initialized before we can run the app. Otherwise, there will only be a timeout when attempting to start the applications.
+
+### mongodb
+
+Make sure `mongodb` is running, either with a `brew services start mongodb`, or running `mongod`.
+
+to set the initial data, run
+```
+cd addresses
+python populate_db_pymongo.py --setup
+```
+
+### postgres
+
+Make sure `postgres` is running, with `brew services start postgres`. You then need to create two databases, one for the list of products, and one for user-content and app-related. By default, these are called `varmekabler` and `vk_products`, but can be overridden by environment-variables 'DATABASE_URL' and 'PRODUCT_DATABASE_URL'.
+
+To create the database-tables and intital content run
+```
+python vk_data_extract/setup.py create products rooms
+```
+
+### npm
+
+run `npm run start` while in dev, `npm run build` when in production. Also, there is `npm run penthouse` to create the critical css.
+
+### Running locally
+
+The application uses OAuth to authenticate users. This only works on https, so to run it on a local computer, set the environment-variable 'OAUTHLIB_INSECURE_TRANSPORT' to 'True'.
+
+Note that you should not do this in production.
+
+It is easiest to set environment-variables locally by using the file `instance/config.cfg`, or you could use `export OAUTHLIB_INSECURE_TRANSPORT=!`.
+
+
 ## To do:
 
  - [X] Øglænd
