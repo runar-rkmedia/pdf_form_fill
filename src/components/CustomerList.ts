@@ -32,19 +32,11 @@ export class CustomerList {
   root: TSAppViewModel
   constructor(root: TSAppViewModel) {
     root = root
-    $("a[href='#customer-list-pane']").on('show.bs.tab', (e) => {
-      if (this.list().length == 0) {
-        this.get_list()
-      }
-    })
   }
   get_list = (page = 1) => {
     page = Math.min(
       Math.max(page, 1),
       this.pages() || 1)
-    if (page == this.page() || isNaN(page)) {
-      return null
-    }
     this.page(page)
     this.loading(true)
     $.get('/json/v1/list/customers', {

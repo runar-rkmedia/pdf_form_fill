@@ -46,8 +46,12 @@ Make sure `postgres` is running, with `brew services start postgres`. You then n
 
 To create the database-tables and intital content run
 ```
-python vk_data_extract/setup.py create products rooms
+cd vk_data_extract
+python setup.py create products rooms
 ```
+
+also, to create a static json-file with the data, run
+`python app.py static`
 
 ### npm
 

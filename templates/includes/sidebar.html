@@ -53,7 +53,7 @@
       </a>
     </li>
     <li{% if pane == 1 %} class="active" {%endif%}>
-      <a {% if not is_app  %} href="{{url_for('view_form', pane='1')}}" {% endif %} {% if is_app %} href="#customer-list-pane" aria-controls="customer-list-pane" role="tab" data-toggle="tab" {% endif %}>Kundeskjemaer
+      <a {% if not is_app  %} href="{{url_for('view_form', pane='1')}}" {% endif %} {% if is_app %} data-bind="click: function(d,e){$(e.target).tab('show');customerList().get_list()}" href="#customer-list-pane" aria-controls="customer-list-pane" role="tab" data-toggle="tab" {% endif %}>Kundeskjemaer
       </a>
     </li>
     <hr>

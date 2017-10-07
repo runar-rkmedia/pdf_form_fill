@@ -39,9 +39,7 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 db.init_app(app)
-HTMLMIN(app, options={
-    'remove_comments': False,
-})
+HTMLMIN(app, remove_comments=False )
 
 
 limiter = Limiter(
