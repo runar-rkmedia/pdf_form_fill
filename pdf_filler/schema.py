@@ -1,9 +1,11 @@
 from .oegleand import Oegleand
 from .nexans import Nexans
+from .thermofloor_cable import ThermoFloorCable
 
 manufacturors = {
     'Nexans': Nexans,
-    'Øglænd': Oegleand
+    'Øglænd': Oegleand,
+    'Thermofloor': ThermoFloorCable,
 }
 
 

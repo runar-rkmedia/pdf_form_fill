@@ -182,8 +182,7 @@ def json_static_data():
 
 def static_data():
     """Return all static-data. (products, room-type)"""
-    manufacturors = Manufacturor.query.filter(
-        Manufacturor.name != 'Thermofloor').all()
+    manufacturors = Manufacturor.query.all()
     room_types = RoomTypeInfo.query.all()
     return {
         'products': [i.serialize for i in manufacturors],

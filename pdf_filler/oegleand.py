@@ -273,7 +273,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Styr',
             'type': bool
         },
-        'company.contact_phone': {
+        'company.contact_phone_f': {
             'text': 'TextInPDF',
             'field': 'Telefon',
             'type': str
