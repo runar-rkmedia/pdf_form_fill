@@ -76,7 +76,9 @@
   <div class="col-xs-12 well well-sm">
     <h3>Styresystem</h3>
 
+    <!-- ko if: heating_cables().has_manufacturor(['Øglænd', 'Nexans'])  -->
     {{render_field( roomForm.check_control_system.designation, formgroup='form-group', **{'data-bind':"textInput: control_system_designation"}) }}
+    <!-- /ko -->
     <label>Følertype</label>
     <div class="justified-xs-column-3">
       <div>
@@ -90,7 +92,9 @@
 
       </div>
     </div>
+    <!-- ko if: heating_cables().has_manufacturor(['Øglænd', 'Nexans'])  -->
     {{render_field( roomForm.check_control_system.other, formgroup='form-group', **{'data-bind':"textInput: control_system_other"}) }}
+    <!-- /ko -->
   </div>
   <div class="col-xs-12 well well-sm">
     <h3>Beskyttelsestiltak</h3>

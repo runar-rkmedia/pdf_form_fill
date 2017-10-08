@@ -434,6 +434,9 @@ export class HeatingCable extends Post {
     if (this.product_id() >= 0 && this.product_model) {
       let product = this.product_model.by_id(this.product_id())
       if (product) {
+        if (product.manufacturor == 'Thermofloor') {
+          this.fill_measurement_smartly(true)
+        }
         if (product && this.product_filter().effect() === undefined) {
           this.product_filter().effect(product.effect)
         }
