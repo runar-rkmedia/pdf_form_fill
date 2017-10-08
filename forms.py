@@ -4,12 +4,28 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import IntegerField as baseIntegerField  # RadioField,
-from wtforms import (BooleanField, FieldList, FormField, HiddenField,
-                     StringField)
-from wtforms.fields.html5 import (DateField, DecimalField, EmailField,
-                                  IntegerField, TelField)
-from wtforms.validators import (DataRequired, Length, NumberRange,  # Email,
-                                Regexp, ValidationError)
+from wtforms import (
+    BooleanField,
+    FieldList,
+    FormField,
+    HiddenField,
+    StringField
+)
+from wtforms.fields.html5 import (
+    DateField,
+    DecimalField,
+    EmailField,
+    IntegerField,
+    TelField
+)
+from wtforms.validators import NumberRange  # Email,
+from wtforms.validators import (
+    DataRequired,
+    Length,
+    Optional,
+    Regexp,
+    ValidationError
+)
 from wtforms.widgets import HiddenInput
 from wtforms_html5 import AutoAttrMeta
 
@@ -40,6 +56,8 @@ class SubForm(FlaskForm):
 
 class HiddenInteger(baseIntegerField):
     widget = HiddenInput()
+
+
 # https://stackoverflow.com/a/35359450/3493586
 
 
@@ -206,15 +224,138 @@ class AddressForm(SubForm):
                     Length(min=2, max=180)])
 
 
+class AddressOptional(SubForm):
+    """Optional address."""
+    address1 = StringField(
+        'Adresse',
+        validators=[
+            Optional(),
+            Length(
+                min=2,
+                max=180,
+                message="Adressen bør være mellom %(min)d og %(max)d tegn.")
+        ])
+    address2 = StringField(
+        'Adresse 2',
+        validators=[
+            Optional(),
+            Length(
+                max=180, message="Adresse-linje 2 er for lang (maks 180 tegn).")
+        ])
+    post_code = IntegerField(
+        'Postnummer',
+        validators=[
+            Optional(),
+            NumberRange(
+                min=0, max=9999, message="Postnummeret skal ha 4 siffer.")
+        ])
+    post_area = StringField(
+        'Poststed', validators=[Optional(), Length(min=2, max=180)])
+
+
 class Invite(FlaskForm):
     pass
 
 
 class CustomerForm(FlaskForm):
     address = FormField(AddressForm)
-    customer_name = StringField('Kundenavn', validators=[Length(max=100)])
-    id = HiddenField()
+    address2 = FormField(AddressOptional)
 
+    customer_name = StringField(
+        'Navn', validators=[Length(max=100)])
+    customer_name2 = StringField(
+        'Navn', validators=[Length(max=100)])
+    org_nr = IntegerField(
+        'Organisasjonsnummer',
+        validators=[
+            Optional(),
+            NumberRange(
+                min=100000000,
+                max=999999999,
+                message='Organisasjonsnummer skal ha totalt 9 siffer.')
+        ])
+    phone = TelField(
+        'Telefon',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    mobile = TelField(
+        'Telefon',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    contact_name = StringField(
+        'Kontaktperson',
+        validators=[
+            DataRequired('Feltet er påkrevd'),
+            Length(min=2, message="Minst %(min)d tegn her."),
+            Length(max=180, message="Maksimalt %(max)d tegn her.")
+        ])
+    phone = TelField(
+        'Telefon',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    mobile = TelField(
+        'Mobil',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    contact_name = StringField(
+        'Kontaktperson',
+        validators=[
+            DataRequired('Feltet er påkrevd'),
+            Length(min=2, message="Minst %(min)d tegn her."),
+            Length(max=180, message="Maksimalt %(max)d tegn her.")
+        ])
+    phone2 = TelField(
+        'Telefon',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    mobile2 = TelField(
+        'Telefon',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    contact_name2 = StringField(
+        'Kontaktperson',
+        validators=[
+            DataRequired('Feltet er påkrevd'),
+            Length(min=2, message="Minst %(min)d tegn her."),
+            Length(max=180, message="Maksimalt %(max)d tegn her.")
+        ])
+    id = HiddenField()
 
 class Measurement(SubForm):
     """Form for measurements for a HeatingCable."""
@@ -232,13 +373,15 @@ class MeasurementsForms(SubForm):
 
 class AreaOutput(SubForm):
     v = BetterDecimalField(
-        'Flateeffekt <br class="visible-xs-inline" /><span class="text-nowrap">( W/m<sup>2</sup> )</span>')
+        'Flateeffekt <br class="visible-xs-inline" /><span class="text-nowrap">( W/m<sup>2</sup> )</span>'
+    )
     m = BooleanField()
 
 
 class Cc(SubForm):
     v = BetterDecimalField(
-        'C/C-avstand <br class="visible-xs-inline" /><span class="text-nowrap">( cm )</span>')
+        'C/C-avstand <br class="visible-xs-inline" /><span class="text-nowrap">( cm )</span>'
+    )
     m = BooleanField()
 
 
@@ -306,11 +449,29 @@ class CreateCompany(FlaskForm):
         validators=[
             Regexp(
                 '\d{8}|00[-\w]{3,20}',
-                message='Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.')
-        ]
-    )
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
+    mobile = TelField(
+        'Telefon',
+        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
+        validators=[
+            Regexp(
+                '\d{8}|00[-\w]{3,20}',
+                message=
+                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
+            )
+        ])
     contact_name = StringField(
         'Kontaktperson',
+        validators=[
+            DataRequired('Feltet er påkrevd'),
+            Length(min=2, message="Minst %(min)d tegn her."),
+            Length(max=180, message="Maksimalt %(max)d tegn her.")
+        ])
+    installer_name = StringField(
+        'Innstallatør',
         validators=[
             DataRequired('Feltet er påkrevd'),
             Length(min=2, message="Minst %(min)d tegn her."),

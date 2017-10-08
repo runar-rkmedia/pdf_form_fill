@@ -1,6 +1,7 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomInterface, Room } from "./Room"
 import { RoomList } from "./RoomList"
+import { Company } from "./ControlPanel"
 import { StrIndex, AddressFullInterface, HTTPVerbs, Post, AddressInterface } from "./Common"
 // This will be removed once `addresses` have been updated.
 let titleCase = require('title-case')
@@ -20,6 +21,9 @@ export class Customer extends Post {
   address2: KnockoutObservable<string> = this.obs_mod()
   post_code: KnockoutObservable<number> = this.obs_mod()
   post_area: KnockoutObservable<string> = this.obs_mod()
+  corporate_customer: KnockoutObservable<boolean> = ko.observable(false)
+  extra_info: KnockoutObservable<boolean> = ko.observable(true)
+  exstra_address: KnockoutObservable<boolean> = ko.observable(false)
   root: TSAppViewModel
   loading: KnockoutObservable<boolean> = ko.observable(false)
   rooms: KnockoutObservable<RoomList> = ko.observable(new RoomList(this.root, this))
@@ -30,6 +34,8 @@ export class Customer extends Post {
     post_code: this.post_code,
     post_area: this.post_area,
   })
+  company = new Company()
+  orgnumber: KnockoutObservable<number> = ko.observable()
   id: KnockoutObservable<number> = ko.observable()
   serialize: KnockoutObservable<CustomerInterface>
   constructor(parent: TSAppViewModel, id: number = -1000, root: TSAppViewModel = parent) {
@@ -59,7 +65,16 @@ export class Customer extends Post {
       }
       return t
     })
-
+    ko.computed(() => {
+      if (this.corporate_customer()) {
+        this.name(this.company.name())
+        this.address1(this.company.address1())
+        this.address2(this.company.address2())
+        this.post_area(this.company.post_area())
+        this.post_code(this.company.post_code())
+        this.validationModel.errors.showAllMessages(false)
+      }
+    })
   }
   sub_modified = ko.computed(() => {
     if (this.rooms()) {

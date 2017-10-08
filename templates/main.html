@@ -11,7 +11,7 @@
   <!-- ko if: Products().products().length > 0 && customer -->
   <div class="tab-content hidden" data-bind="css: {hidden: !customer || customer().loading()}" >
     <div role="tabpanel" class="tab-pane {% if pane == 0 %}active{%endif%}" id="customer-pane">
-      {% include 'includes/schema/form.html' %}
+      {% include 'includes/schema/customer_form.html' %}
     </div>
     <div role="tabpanel" class="tab-pane {% if pane == 1 %}active{%endif%}" id="customer-list-pane">
       {% if pane == 1 %}<div data-bind="text: customerList().list().length == 0?customerList().get_list() : ''" ></div>{%endif%}
