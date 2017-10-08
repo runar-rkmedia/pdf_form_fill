@@ -1,14 +1,14 @@
 """User-tables for pdf_form_fill."""
 
 from datetime import datetime, timedelta
-
 from enum import Enum
+
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
+from flask_login import UserMixin
 from sqlalchemy import desc, exc, or_
 from sqlalchemy.dialects import postgresql
 
 import my_exceptions
-from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
-from flask_login import UserMixin
 from models import ByID, MyBaseModel, NoAccess, db
 from models_product import Product
 from pdf_filler.helpers import id_generator
@@ -55,9 +55,7 @@ class RoomTypeInfo(ByID, db.Model):
         return d
 
 
-user_settings = [
-    'disable-tips-signature'
-]
+user_settings = ['disable-tips-signature']
 
 
 class Address(MyBaseModel, db.Model):
@@ -68,12 +66,10 @@ class Address(MyBaseModel, db.Model):
     post_area = db.Column(db.String(200), nullable=False)
 
     @classmethod
-    def update_or_create(
-            cls, address_id, address1, address2, post_area, post_code):
+    def update_or_create(cls, address_id, address1, address2, post_area,
+                         post_code):
         """Update if exists, else create Address."""
-        address = Address.query.filter_by(
-            id=address_id
-        ).first()
+        address = Address.query.filter_by(id=address_id).first()
 
         if not address:
             address = Address()
@@ -108,25 +104,20 @@ class Contact(ByID, db.Model):
 class Company(MyBaseModel, db.Model):
     """Company-table for users."""
 
-    name = db.Column(db.String(50),
-                     unique=True,
-                     nullable=False)
+    name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.String(500))
-    orgnumber = db.Column(db.Integer,
-                          unique=True,
-                          nullable=False)
+    orgnumber = db.Column(db.Integer, unique=True, nullable=False)
     address_id = db.Column(
-        db.Integer,
-        db.ForeignKey(Address.id),
-        nullable=False)
+        db.Integer, db.ForeignKey(Address.id), nullable=False)
     address = db.relationship(
-        Address,
-        primaryjoin='Company.address_id==Address.id')
+        Address, primaryjoin='Company.address_id==Address.id')
     lat = db.Column(db.Numeric(8, 6))
     lng = db.Column(db.Numeric(9, 6))
     contact_name = db.Column(db.String(200), nullable=False)
+    installer_name = db.Column(db.String(200), nullable=False, default='')
     contact_email = db.Column(db.String(100), nullable=False)
     contact_phone = db.Column(db.String(20), nullable=False)
+    contact_mobile = db.Column(db.String(20), nullable=True)
 
     def owns(self, model):
         """Check if company has rights to access this."""
@@ -146,17 +137,14 @@ class Company(MyBaseModel, db.Model):
                 )
             )\
 
-
     @classmethod
-    def update_or_create(
-            cls, company_id, name, description, orgnumber, address, lat, lng, contact_name, contact_phone, contact_email):
+    def update_or_create(cls, company_id, name, description, orgnumber, address,
+                         lat, lng, contact_name, contact_phone, contact_email):
         """Update if exists, else create Company."""
         if not isinstance(address, Address):
             raise ValueError(
                 "Did not recieve an Address-type, got '{}'".format(address))
-        company = Company.query.filter_by(
-            id=company_id
-        ).first()
+        company = Company.query.filter_by(id=company_id).first()
 
         if not company:
             company = Company()
@@ -196,8 +184,7 @@ class Company(MyBaseModel, db.Model):
             address1=form.address.address1.data,
             address2=form.address.address2.data,
             post_area=form.address.post_area.data,
-            post_code=form.address.post_code.data,
-        )
+            post_code=form.address.post_code.data,)
 
         company = Company.update_or_create(
             company_id=company_id,
@@ -209,8 +196,7 @@ class Company(MyBaseModel, db.Model):
             lng=form.lng.data,
             contact_name=form.contact_name.data,
             contact_phone=form.phone.data,
-            contact_email=form.email.data,
-        )
+            contact_email=form.email.data,)
         return company
 
 
@@ -226,10 +212,12 @@ class User(ByID, UserMixin, db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='User.company_id==Company.id')
-    last_modified_customer_id = db.Column(
-        db.Integer, db.ForeignKey('customer.id'))
+    last_modified_customer_id = db.Column(db.Integer,
+                                          db.ForeignKey('customer.id'))
     last_modified_customer = db.relationship(
-        'Customer', primaryjoin='User.last_modified_customer_id==Customer.id', post_update=True)
+        'Customer',
+        primaryjoin='User.last_modified_customer_id==Customer.id',
+        post_update=True)
     settings = (db.Column(db.JSON()))
 
     @property
@@ -237,8 +225,7 @@ class User(ByID, UserMixin, db.Model):
         """Return the last edit the user made to a customer."""
         if not self.last_modified_customer:
             return None
-        if (
-                self.last_modified_customer.owns(self) and
+        if (self.last_modified_customer.owns(self) and
                 not self.last_modified_customer.archived):
             return self.last_modified_customer
 
@@ -251,15 +238,8 @@ class User(ByID, UserMixin, db.Model):
 
     def add_contact(self, c_type, value, description):
         """Add contact to this user."""
-        contact = Contact(
-            type=c_type,
-            value=value,
-            description=description
-        )
-        company_contact = UserContact(
-            contact=contact,
-            user=self
-        )
+        contact = Contact(type=c_type, value=value, description=description)
+        company_contact = UserContact(contact=contact, user=self)
         db.session.add(contact)
         db.session.add(company_contact)
         return contact
@@ -270,17 +250,13 @@ class Invite(db.Model):
 
     id = db.Column(db.String, unique=True, primary_key=True)
     type = db.Column(db.Enum(InviteType), default='company')
-    company_id = db.Column(
-        db.Integer,
-        db.ForeignKey(Company.id)
-    )
+    company_id = db.Column(db.Integer, db.ForeignKey(Company.id))
     company = db.relationship(
         Company, primaryjoin='Invite.company_id==Company.id')
     inviter_user_id = db.Column(
         db.Integer, db.ForeignKey(User.id), nullable=False)
     inviter = db.relationship(
-        User,
-        primaryjoin='Invite.inviter_user_id==User.id')
+        User, primaryjoin='Invite.inviter_user_id==User.id')
     invitee_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     invitee = db.relationship(
         User, primaryjoin='Invite.invitee_user_id==User.id')
@@ -298,10 +274,9 @@ class Invite(db.Model):
     @classmethod
     def get_invites_from_user(cls, inviter):
         """Return all invites from user which are still valid for signup."""
-        return Invite.query.filter(
-            Invite.type == 'company',
-            Invite.inviter_user_id == inviter.id,
-            Invite.invitee_user_id == None)  # noqa
+        return Invite.query.filter(Invite.type == 'company',
+                                   Invite.inviter_user_id == inviter.id,
+                                   Invite.invitee_user_id == None)  # noqa
 
     @classmethod
     def get_invite_from_id(cls, invite_id):
@@ -318,12 +293,13 @@ class Invite(db.Model):
             invite = Invite(
                 id=cls.get_random_unique_invite_id(),
                 company=inviter.company,
-                inviter=inviter,
-            )
+                inviter=inviter,)
             return invite
 
         else:
-            raise ValueError("Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker.")  # noqa
+            raise ValueError(
+                "Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker."
+            )  # noqa
 
     @property
     def serialize(self):
@@ -349,22 +325,32 @@ class UserContact(ByID, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     contact = db.relationship(
         Contact, primaryjoin='UserContact.contact_id==Contact.id')
-    user = db.relationship(
-        User, primaryjoin='UserContact.user_id==User.id')
+    user = db.relationship(User, primaryjoin='UserContact.user_id==User.id')
 
 
 class Customer(MyBaseModel, db.Model):
     """Customer-table."""
     name = db.Column(db.String(100))
-    address_id = db.Column(db.Integer,
-                           db.ForeignKey(Address.id),
-                           nullable=False)
+    name2 = db.Column(db.String(100))
+    address_id = db.Column(
+        db.Integer, db.ForeignKey(Address.id), nullable=False)
+    address2_id = db.Column(
+        db.Integer, db.ForeignKey(Address.id), nullable=True)
     address = db.relationship(
         Address, primaryjoin='Customer.address_id==Address.id')
+    address2 = db.relationship(
+        Address, primaryjoin='Customer.address2_id==Address.id')
     company_id = db.Column(
         db.Integer, db.ForeignKey(Company.id), nullable=False)
     company = db.relationship(
-        Company, primaryjoin='Customer.company_id==Company.id', backref='customers')
+        Company,
+        primaryjoin='Customer.company_id==Company.id',
+        backref='customers')
+    orgnumber = db.Column(db.Integer, nullable=True)
+    construction_nek400 = db.Column(db.Boolean)
+    construction_new = db.Column(db.Boolean)
+    construction_change = db.Column(db.Boolean)
+    construction_voltage = db.Column(db.Integer, default=230)
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     created_by_user = db.relationship(
         User, primaryjoin='Customer.created_by_user_id==User.id')
@@ -455,7 +441,8 @@ class Customer(MyBaseModel, db.Model):
             }
         if self.rooms:
             dictionary['rooms'] = [
-                i.name for i in self.rooms if i.archived != True]
+                i.name for i in self.rooms if i.archived != True
+            ]
         return dictionary
 
 
@@ -477,14 +464,13 @@ class OutsideSpecs(db.Model):
 
     def serialize(self, prefix=''):
         return {
-        prefix + 'asphalt': self.asphalt,
-        prefix + 'paving_stones': self.paving_stones,
-        prefix + 'vessel': self.vessel,
-        prefix + 'frost_protection_pipe': self.frost_protection_pipe,
-        prefix + 'frost_protection': self.frost_protection,
-        prefix + 'concrete': self.concrete,
-    }
-
+            prefix + 'asphalt': self.asphalt,
+            prefix + 'paving_stones': self.paving_stones,
+            prefix + 'vessel': self.vessel,
+            prefix + 'frost_protection_pipe': self.frost_protection_pipe,
+            prefix + 'frost_protection': self.frost_protection,
+            prefix + 'concrete': self.concrete,
+        }
 
 
 class InsideSpecs(db.Model):
@@ -499,20 +485,19 @@ class InsideSpecs(db.Model):
 
     def serialize(self, prefix=''):
         return {
-        prefix + 'LamiFlex': self.LamiFlex,
-        prefix + 'low_profile': self.low_profile,
-        prefix + 'fireproof': self.fireproof,
-        prefix + 'frost_protection_pipe': self.frost_protection_pipe,
-        prefix + 'other': self.other,
-        prefix + 'concrete': self.concrete,
-    }
+            prefix + 'LamiFlex': self.LamiFlex,
+            prefix + 'low_profile': self.low_profile,
+            prefix + 'fireproof': self.fireproof,
+            prefix + 'frost_protection_pipe': self.frost_protection_pipe,
+            prefix + 'other': self.other,
+            prefix + 'concrete': self.concrete,
+        }
 
     def update_entity(self, dictionary):
         """Update an entity from a dictionary."""
         for key, val, in dictionary.items():
             setattr(self, key, val)
         return self
-
 
 
 class Room(MyBaseModel, db.Model):
@@ -545,21 +530,17 @@ class Room(MyBaseModel, db.Model):
     customer_id = db.Column(
         db.Integer, db.ForeignKey(Customer.id), nullable=False)
     customer = db.relationship(
-        Customer,
-        primaryjoin='Room.customer_id==Customer.id',
-        backref='rooms')
+        Customer, primaryjoin='Room.customer_id==Customer.id', backref='rooms')
 
     outside_id = db.Column(
         db.Integer, db.ForeignKey(OutsideSpecs.id), nullable=True)
     outside_specs = db.relationship(
-        OutsideSpecs,
-        primaryjoin='Room.outside_id==OutsideSpecs.id')
+        OutsideSpecs, primaryjoin='Room.outside_id==OutsideSpecs.id')
 
     inside_id = db.Column(
         db.Integer, db.ForeignKey(InsideSpecs.id), nullable=True)
     inside_specs = db.relationship(
-        InsideSpecs,
-        primaryjoin='Room.inside_id==InsideSpecs.id')
+        InsideSpecs, primaryjoin='Room.inside_id==InsideSpecs.id')
 
     def owns(self, user):
         """Check that user has rights to this room."""
@@ -571,36 +552,34 @@ class Room(MyBaseModel, db.Model):
         return self.archived or self.customer.is_archived
 
     @classmethod
-    def update_or_create(
-            cls,
-            room_id,
-            user,
-            customer_id,
-            name,
-            outside,
-            area,
-            heated_area,
-            maxEffect,
-            normalEffect,
-            curcuit_breaker_size,
-            installation_depth,
-            ground_fault_protection,
-            earthed_cable_screen,
-            earthed_chicken_wire,
-            handed_to_owner,
-            owner_informed,
-            earthed_other,
-            max_temp_planning,
-            max_temp_installation,
-            max_temp_other,
-            control_system_floor_sensor,
-            control_system_limit_sensor,
-            control_system_room_sensor,
-            control_system_designation,
-            control_system_other,
-            inside_specs = None,
-            outside_specs = None
-            ):
+    def update_or_create(cls,
+                         room_id,
+                         user,
+                         customer_id,
+                         name,
+                         outside,
+                         area,
+                         heated_area,
+                         maxEffect,
+                         normalEffect,
+                         curcuit_breaker_size,
+                         installation_depth,
+                         ground_fault_protection,
+                         earthed_cable_screen,
+                         earthed_chicken_wire,
+                         handed_to_owner,
+                         owner_informed,
+                         earthed_other,
+                         max_temp_planning,
+                         max_temp_installation,
+                         max_temp_other,
+                         control_system_floor_sensor,
+                         control_system_limit_sensor,
+                         control_system_room_sensor,
+                         control_system_designation,
+                         control_system_other,
+                         inside_specs=None,
+                         outside_specs=None):
         room = Room.by_id(room_id, user)
         customer = Customer.by_id(customer_id, user)
         if not customer:
@@ -648,16 +627,23 @@ class Room(MyBaseModel, db.Model):
         """Return object data in easily serializeable format"""
 
         dictionary = {
-            'id': self.id,
-            'room_name': self.name,
+            'id':
+                self.id,
+            'room_name':
+                self.name,
             'heating_cables': [
                 i.serialize for i in self.items if not i.archived
             ],
-            'outside': self.outside,
-            'area': float(self.area or 0),
-            'heated_area': float(self.heated_area or 0),
-            'maxEffect': float(self.maxEffect or 0),
-            'normalEffect': float(self.normalEffect or 0),
+            'outside':
+                self.outside,
+            'area':
+                float(self.area or 0),
+            'heated_area':
+                float(self.heated_area or 0),
+            'maxEffect':
+                float(self.maxEffect or 0),
+            'normalEffect':
+                float(self.normalEffect or 0),
             'check_earthed': {
                 'cable_screen': self.earthed_cable_screen,
                 'chicken_wire': self.earthed_chicken_wire,
@@ -675,11 +661,16 @@ class Room(MyBaseModel, db.Model):
                 'designation': self.control_system_designation,
                 'other': self.control_system_other,
             },
-            'ground_fault_protection': self.ground_fault_protection,
-            'installation_depth': self.installation_depth,
-            'curcuit_breaker_size': self.curcuit_breaker_size,
-            'owner_informed': self.owner_informed,
-            'handed_to_owner': self.handed_to_owner,
+            'ground_fault_protection':
+                self.ground_fault_protection,
+            'installation_depth':
+                self.installation_depth,
+            'curcuit_breaker_size':
+                self.curcuit_breaker_size,
+            'owner_informed':
+                self.owner_informed,
+            'handed_to_owner':
+                self.handed_to_owner,
         }
         if self.inside_specs:
             dictionary['inside_specs'] = self.inside_specs.serialize()
@@ -690,12 +681,9 @@ class Room(MyBaseModel, db.Model):
 
 class RoomItem(MyBaseModel, db.Model):
     """Holder for modifications to items."""
-    room_id = db.Column(
-        db.Integer, db.ForeignKey(Room.id), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey(Room.id), nullable=False)
     room = db.relationship(
-        Room,
-        primaryjoin='RoomItem.room_id==Room.id',
-        backref='items')  # noqa
+        Room, primaryjoin='RoomItem.room_id==Room.id', backref='items')  # noqa
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def owns(self, user):
@@ -732,8 +720,14 @@ class RoomItem(MyBaseModel, db.Model):
             return self.latest.date
 
     @classmethod
-    def update_or_create(
-            cls, user, room_id, room_item, product_id, id=None, specs={}, pdf_specs={}):
+    def update_or_create(cls,
+                         user,
+                         room_id,
+                         room_item,
+                         product_id,
+                         id=None,
+                         specs={},
+                         pdf_specs={}):
         """Update or create a RoomItemModifications.."""
         product = Product.by_id(product_id)
         room = Room.by_id(room_id, user)
@@ -744,17 +738,14 @@ class RoomItem(MyBaseModel, db.Model):
         if not room_item and id:
             room_item = RoomItem.by_id(id, user)
         if not room_item:
-            room_item = RoomItem(
-                room=room
-            )
+            room_item = RoomItem(room=room)
         db.session.add(room_item)
         RoomItemModifications.update_or_create(
             user=user,
             product_id=product_id,
             room_item=room_item,
             specs=specs,
-            pdf_specs=pdf_specs
-        )
+            pdf_specs=pdf_specs)
         return room_item
 
 
@@ -778,9 +769,7 @@ class RoomItemModifications(MyBaseModel, db.Model):
     # All data actually used to fill the pdf.
     pdf_specs = db.Column(db.JSON, nullable=True)
 
-    __mapper_args__ = {
-        "order_by": date.desc()
-    }
+    __mapper_args__ = {"order_by": date.desc()}
 
     @classmethod
     def update_or_create(cls, user, room_item, specs, product_id, pdf_specs):
@@ -794,18 +783,14 @@ class RoomItemModifications(MyBaseModel, db.Model):
         last_modified = None
         if user.id:
             last_modified = RoomItemModifications.query.filter(
-                RoomItemModifications.room_item == room_item).order_by(
-                    desc(RoomItemModifications.date)).filter(
-                        or_(
-                            RoomItemModifications.user != user,
-                            RoomItemModifications.date >= (
-                                datetime.utcnow() - timedelta(seconds=60 * 5))
-                        )).first()
+                RoomItemModifications.room_item == room_item
+            ).order_by(desc(RoomItemModifications.date)).filter(
+                or_(RoomItemModifications.user != user,
+                    RoomItemModifications.date >=
+                    (datetime.utcnow() - timedelta(seconds=60 * 5)))).first()
         if not last_modified:
             last_modified = RoomItemModifications(
-                user=user,
-                room_item=room_item
-            )
+                user=user, room_item=room_item)
         last_modified.specs = specs
         last_modified.product_id = product_id
         db.session.add(last_modified)
