@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Create forms from database-objects."""
 
 import os
@@ -8,7 +9,7 @@ from dateutil.parser import parse
 import my_exceptions
 from models_credentials import Customer, Room, RoomItem
 from models_product import ProductCatagory
-from pdf_filler.helpers import NumberFormatter
+from pdf_filler.helpers import NumberFormatter, OhmsLaw
 from pdf_filler.schema import get_template_schema
 from pdffields.fields import combine_pdfs
 from setup_app import user_file_path
@@ -248,8 +249,10 @@ class FormHandler(object):
                 customer.construction.orgnumber,
             'customer.orgnumber_f':
                 NumberFormatter.org(customer.construction.orgnumber),
-            'customer.construction_new': customer.construction_new,
-            'customer.construction_voltage': customer.construction_voltage,
+            'customer.construction_new':
+                customer.construction_new,
+            'customer.construction_voltage':
+                customer.construction_voltage,
         })
         if customer.owner:
             self.dictionary.update({
@@ -281,19 +284,18 @@ class FormHandler(object):
 
     def push_from_product(self, product):
         """Push data from product."""
-        voltage = product.product_type.secondarySpec
-        resistance = product.resistance_nominal
-        try:
-            current = voltage / resistance
-        except ZeroDivisionError:
-            current = ''
+        calc = OhmsLaw(
+            voltage=product.product_type.secondarySpec,
+            resistance=product.resistance_nominal)
         self.dictionary.update({
             'product.effect' + self.subfix:
                 product.effect,
             'product.watt_per_(square)_meter' + self.subfix:
                 product.product_type.mainSpec,
-            'product.voltage' + self.subfix: voltage,
-            'product.current' + self.subfix: current,
+            'product.voltage' + self.subfix:
+                calc.voltage,
+            'product.current' + self.subfix:
+                calc.current,
             'product.product_type.name' + self.subfix:
                 product.product_type.name,
             'product.name' + self.subfix:
@@ -302,7 +304,8 @@ class FormHandler(object):
                 product.resistance_max,
             'product.resistance_min' + self.subfix:
                 product.resistance_min,
-            'product.resistance_nominal' + self.subfix: resistance,
+            'product.resistance_nominal' + self.subfix:
+                calc.resistance,
             'product.twowires' + self.subfix: (
                 True if product.product_type.catagory not in [
                     ProductCatagory.single_inside,
@@ -388,24 +391,20 @@ class FormHandler(object):
                 pass
             return value
 
-        def total_ohm(a, b):
-            """Calculate the total resistance."""
-            return 1 / (1 / a + 1 / b)
-
         subfix = self.unique_subfix
         ohm = retrieve_key('ohm')
         mohm = retrieve_key('mohm')
         if ohm > 0:
-            new_ohm = ohm
             key = 'install{}.ohm'.format(subfix)
             I_key = 'install{}.I'.format(subfix)
             old_ohm = float(self.dictionary.get(key, 0))
-            if old_ohm > 0:
-                new_ohm = total_ohm(ohm, old_ohm)
-            self.dictionary.update({key: new_ohm})
-            voltage = room_item_modification.product.product_type.secondarySpec
+            calc = OhmsLaw(
+                voltage=room_item_modification.product.product_type.
+                secondarySpec,
+                resistance=[ohm, old_ohm])
+            self.dictionary.update({key: calc.resistance})
             try:
-                self.dictionary.update({I_key: float(voltage) / float(new_ohm)})
+                self.dictionary.update({I_key: calc.current})
             except ValueError:
                 pass
         if mohm > 0:
@@ -424,7 +423,7 @@ class FormHandler(object):
                                room_item_modification.user.family_name)
         })
 
-        if specs:
+        if specs: # noqa
             for key in [
                     'area_output', 'cc', 'installation_depth',
                     'curcuit_breaker_size'
@@ -449,11 +448,11 @@ class FormHandler(object):
                             m[key]['date'] = parsed
                             ohm = m[key].get('ohm')
                             if ohm and room_item_modification.product:
-                                voltage = room_item_modification.product.product_type.secondarySpec
-                                try:
-                                    m[key]['I'] = float(voltage) / float(ohm)
-                                except ValueError:
-                                    pass
+                                calc = OhmsLaw(
+                                    resistance=ohm,
+                                    voltage=room_item_modification.product.
+                                    product_type.secondarySpec)
+                                m[key]['I'] = calc.current
                             n[key + self.subfix] = m[key]
                 if last_date:
                     n['last_date' + self.subfix] = last_date

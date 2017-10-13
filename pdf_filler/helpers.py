@@ -108,10 +108,10 @@ def month_name(month_number, short=False):
         'november',
         'desember',
     ]
-    month_name = months[month_number - 1]
+    m_name = months[month_number - 1]
     if short:
-        return month_name[:3]
-    return month_name
+        return m_name[:3]
+    return m_name
 
 
 def date_format(date, format_='{d}. {M} {y}'):
@@ -167,12 +167,102 @@ class DictionaryHelper(object):
 
     def s_if(self, key, pre='', sub='', default=''):
         """Output value if key, with pre and/or subfix."""
-        string = self.s(key, default)
-        if len(string) > 0:
-            return '{}{}{}'.format(pre, string, sub)
+        s = self.s(key, default)
+        if len(s) > 0:
+            return '{}{}{}'.format(pre, s, sub)
         return default
 
     def s_bool(self, key):
         """Output the boolean if field exists"""
-        string = self.s(key)
-        return len(string) > 0
+        return len(self.s(key)) > 0
+
+
+class OhmsLaw(object):
+    """Various functions for calculating electricity."""
+
+    def __init__(self, voltage=0, power=0, resistance=0, current=0):
+        self._P = float(power)
+        self._U = float(voltage)
+        self._I = float(current)
+        self._R = float(0)
+        self.resistance = resistance
+
+    @property
+    def voltage(self):
+        if self._R and self._I:
+            return self._I * self._R
+        if self._P and self._I:
+            return self._P / self._I
+        if self._P and self._R:
+            return (self._P * self._R)**0.5
+        return self._U
+
+    @property
+    def current(self):
+        if self._R and self._U:
+            return self._U / self._R
+        if self._P and self._U:
+            return self._P / self._U
+        if self._P and self._R:
+            return (self._P / self._R)**.5
+        return self._I
+
+    @property
+    def resistance(self):
+        if self._I and self._U:
+            return self._U / self._I
+        if self._P and self._U:
+            return self._U**2 / self._P
+        if self._P and self._I:
+            return self._P / self._I**2
+        return self._R
+
+    @property
+    def power(self):
+        if self._I and self._U:
+            return self._U * self._I
+        if self._R and self._U:
+            return self._U**2 / self._R
+        if self._R and self._I:
+            return self._I**2 * self._R
+        return self._P
+
+    @voltage.setter
+    def voltage(self, value):
+        self._U = float(value)
+
+    @power.setter
+    def power(self, value):
+        self._P = float(value)
+
+    @current.setter
+    def current(self, value):
+        self._I = float(value)
+
+    @resistance.setter
+    def resistance(self, values):
+        """
+        Set resistance.
+
+        If value is a list of floats, it will set the resistance to total
+        resistance by treating the list of floats as a list of resistors in
+        parallell.
+
+        For serial-calculations, just sum them together.
+        """
+        if isinstance(values, list):
+            values = self.total_resistance_paralell(values)
+        self._R = float(values)
+
+    @staticmethod
+    def total_resistance_paralell(list_of_values):
+        """Return total resistance from a list of resistor-values."""
+        R = 0
+        for value in list_of_values:
+            if value > 0:
+                R += 1.0/value
+        return 1/R
+
+    def __repr__(self):
+        return '{:4.2f} V, {:4.2f} W, {:4.2f} Ω, {:4.2f} A'.format(
+            self.voltage, self.power, self.resistance, self.current)
