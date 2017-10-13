@@ -3,10 +3,11 @@
 <!-- Customer -->
 
 <!-- ko with: customer -->
+
 <div class="row ">
   <div class="col-xs-12">
     <h2 class="justified">
-      <span class="pointer" data-bind="text: address1() ? address1 : 'Kunde', click: function(){$('#customer_form_collapse').collapse('toggle')}"></span>
+      <span class="pointer" data-bind="text: construction.name()? construction.name : construction.address1() ? construction.address1 : 'Kunde', click: function(){$('#customer_form_collapse').collapse('toggle')}"></span>
     </h2>
   </div>
 </div>
@@ -21,77 +22,48 @@
 </div>
 
 <div data-bind="if: id() >= -1">
-  <div id="customer_form_collapse" class="col-xs-12 collapse">
+  <div id="customer_form_collapse" class="col-xs-12 collapse fakewell">
     <div class="row">
-      <div class="well col-xs-12">
-        <button type="button" class="close close-dark pull-right" aria-label="Close" data-bind="click: function(d,e){$(e.target).closest('.collapse').collapse('hide')}">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <div class="[ form-group ]">
-          <input type="checkbox" name="corporate_customer_check" id="corporate_customer_check" autocomplete="off"/>
-          <div class="[ form-group ]">
-            <input type="checkbox" id="corporate_customer_check_" autocomplete="off" data-bind="checked: corporate_customer"/>
-            <div class="[ btn-group ]">
-              <label class="[ btn btn-default active ]" for="corporate_customer_check_">
-                Bedriftskunde
-              </label>
-              <label class="[ btn btn-info ]" for="corporate_customer_check_">
-                <span class="[ glyphicon glyphicon-ok ]"></span>
-                <span></span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <!-- ko if: corporate_customer -->
-        <!-- ko with: company -->
-        <div class="form-group">
-          <label for="#company-search">
-            Søk etter et firma her, for å få raske opplysninger.
-          </label>
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="f.eks. Petter Strømmen AS"
-              data-bind=" value: search, typeahead: autocompleteBRreg, templateName: 'brregsuggestion-template', displayKey: 'adresse', onSelectFunction: suggestionOnSelect, remoteFilter:
-          brreg_remote_filter, typeaheadOpts:{minLength:2}">
-            <span class="input-group-addon glyphicon glyphicon-search" aria-hidden="true"></span>
-          </div>
-        </div>
-        <!-- /ko -->
-        <!-- /ko -->
+      <button type="button" class="close close-dark pull-right pr-2 pt-2" aria-label="Close" data-bind="click: function(d,e){$(e.target).closest('.collapse').collapse('hide')}">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+          <a href="#construction" aria-controls="construction" role="tab" data-toggle="tab">Anleggsadresse</a>
+        </li>
+        <li role="presentation">
+          <a href="#owner" aria-controls="owner" role="tab" data-toggle="tab">Eier av anlegg</a>
 
-        <!-- <legend>Kundeinformasjon</legend> -->
-        <div class="fieldset">
-          <!-- ko if: extra_info -->
-          {{ render_field(customerForm.customer_name, **{'placeholder':   'Ola Nordmann', 'data-bind': 'textInput: name' }) }}
-          <!-- /ko -->
-          {{ render_field(customerForm.address.address1, 'form-group', **{'data-bind':" value: address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect "}) }}
-          {{ render_field(customerForm.address.address2,
-      'form-group', no_label=True, **{'data-bind':" textInput: address2 "}) }}
-          {{ render_field(customerForm.address.post_code, 'form-group col-xs-4 col-sm-2 zero-pad-r', **{'data-bind':" textInput: post_code"}) }}
-          {{ render_field(customerForm.address.post_area,'form-group
-        col-xs-8 col-sm-10 zero-pad-l' , **{'data-bind': "textInput: post_area", 'readonly':'readonly'}) }}
-          <!-- ko if: corporate_customer -->
-          {{ render_field(customerForm.org_nr, **{'data-bind':" valueWithInit: company.orgnumber", 'placeholder': '123456789'}) }}
-          <!-- /ko -->
-          <!-- ko if: extra_info -->
-          {{ render_field(customerForm.contact_name, **{'placeholder':   'Ola Nordmann'}) }}
-          {{ render_field(customerForm.phone, **{'placeholder':   '12345678, 00471234567890', 'pattern': '\d{8}|00[\d]{3,20}'})}}
-          {{ render_field(customerForm.mobile, **{'placeholder':   '12345678, 00471234567890', 'pattern': '\d{8}|00[\d]{3,20}'})}}
-          <!-- /ko -->
+        </li>
+      </ul>
+      <!-- Tab panes -->
+      <div class="col-xs-12 fakewell-content">
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="construction">
+            <h3>Anleggsadresse</h3>
+            <div data-bind="template: { name: 'customer-input-template', data: construction }"></div>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="owner">
+            <h3>Eier av anlegg</h3>
+            <p class="help-block">
+              Hvis anleggsadressen ikke er den samme som eieradressen, kan du legge den til her.
+            </p>
 
+            <div data-bind="template: { name: 'customer-input-template', data: owner }"></div>
+          </div>
         </div>
 
         <div class="text-right">
           <div class="btn-group nowra">
+            <!-- For some reason, modificaton wont bind correctly -->
             <button
               type="button"
               class="btn btn-primary"
               data-bind="
-        click: function(x,e){post(x,e).done(function(){$(e.target).closest('.collapse').collapse('hide')})},
-        css: {opaque: !validationModel.isValid() || !modified()},
-        enable: modified() && validationModel.isValid(),
+        click: function(x,e){post(x,e).done(function(){$(e.target).closest('.XXXXXcollapse').collapse('hide')})},
+        css: {disabledBtn: !modified() || !isValid()},
+
         text: id() >= 0 ? 'Endre' : 'Lagre'"
               data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>"></button>
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

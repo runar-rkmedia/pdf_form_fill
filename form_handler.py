@@ -50,7 +50,7 @@ class MultiForms(object):
             self.retrieve_by_room(entity)
         elif isinstance(entity, Customer):
             if out is None:
-                out = entity.address.address1
+                out = entity.construction.address.address1
             for room in entity.rooms:
                 self.retrieve_by_room(room)
         for form_handler in self.multi_handlers.values():
@@ -224,22 +224,76 @@ class FormHandler(object):
     def push_from_customer(self, customer):
         """Push data from customer."""
         self.dictionary.update({
-            'kunde_navn': customer.name,
-            'customer.address.address1': customer.address.address1,
-            'customer.address.address2': customer.address.address2,
-            'customer.address.post_area': customer.address.post_area,
-            'customer.address.post_code': customer.address.post_code
+            'customer.customer_name':
+                customer.construction.customer_name,
+            'customer.address.address1':
+                customer.construction.address.address1,
+            'customer.address.address2':
+                customer.construction.address.address2,
+            'customer.address.post_area':
+                customer.construction.address.post_area,
+            'customer.address.post_code':
+                customer.construction.address.post_code,
+            'customer.contact_name':
+                customer.construction.contact_name,
+            'customer.phone':
+                customer.construction.phone,
+            'customer.mobile':
+                customer.construction.mobile,
+            'customer.phone_f':
+                NumberFormatter.phone(customer.construction.phone),
+            'customer.mobile_f':
+                NumberFormatter.mobile(customer.construction.mobile),
+            'customer.orgnumber':
+                customer.construction.orgnumber,
+            'customer.orgnumber_f':
+                NumberFormatter.org(customer.construction.orgnumber),
+            'customer.construction_new': customer.construction_new,
+            'customer.construction_voltage': customer.construction_voltage,
         })
+        if customer.owner:
+            self.dictionary.update({
+                'customer.owner.customer_name':
+                    customer.owner.customer_name,
+                'customer.owner.address.address1':
+                    customer.owner.address.address1,
+                'customer.owner.address.address2':
+                    customer.owner.address.address2,
+                'customer.owner.address.post_area':
+                    customer.owner.address.post_area,
+                'customer.owner.address.post_code':
+                    customer.owner.address.post_code,
+                'customer.owner.contact_name':
+                    customer.owner.contact_name,
+                'customer.owner.phone':
+                    customer.owner.phone,
+                'customer.owner.phone_f':
+                    NumberFormatter.phone(customer.owner.phone),
+                'customer.owner.mobile_f':
+                    NumberFormatter.mobile(customer.owner.mobile),
+                'customer.owner.mobile':
+                    customer.owner.mobile,
+                'customer.owner.orgnumber':
+                    customer.owner.orgnumber,
+                'customer.owner.orgnumber_f':
+                    NumberFormatter.org(customer.owner.orgnumber),
+            })
 
     def push_from_product(self, product):
         """Push data from product."""
+        voltage = product.product_type.secondarySpec
+        resistance = product.resistance_nominal
+        try:
+            current = voltage / resistance
+        except ZeroDivisionError:
+            current = ''
         self.dictionary.update({
             'product.effect' + self.subfix:
                 product.effect,
             'product.watt_per_(square)_meter' + self.subfix:
                 product.product_type.mainSpec,
-            'product.voltage' + self.subfix:
-                product.product_type.secondarySpec,
+            'product.voltage' + self.subfix: voltage,
+            'product.current' + self.subfix: current,
             'product.product_type.name' + self.subfix:
                 product.product_type.name,
             'product.name' + self.subfix:
@@ -248,8 +302,7 @@ class FormHandler(object):
                 product.resistance_max,
             'product.resistance_min' + self.subfix:
                 product.resistance_min,
-            'product.resistance_nominal' + self.subfix:
-                product.resistance_nominal,
+            'product.resistance_nominal' + self.subfix: resistance,
             'product.twowires' + self.subfix: (
                 True if product.product_type.catagory not in [
                     ProductCatagory.single_inside,
@@ -324,12 +377,13 @@ class FormHandler(object):
 
     def calculate_room_totals(self, room_item_modification):
         """For multiple room_items on same pdf, calculate totals."""
+
         def retrieve_key(key):
             """Retrieve a key from measurements on a room_item_modification."""
             value = 0
             try:
-                value = float(
-                    room_item_modification.specs['measurements']['install'][key])
+                value = float(room_item_modification.specs['measurements'][
+                    'install'][key])
             except (AttributeError, KeyError, ValueError, TypeError):  #
                 pass
             return value
@@ -359,7 +413,6 @@ class FormHandler(object):
             key = 'install{}.mohm'.format(subfix)
             old_mohm = self.dictionary.get(key, 999999)
             self.dictionary.update({key: min(old_mohm, new_mohm)})
-
 
     def push_from_room_item_modification(self, room_item_modification):
         """Push data from room_item_modification."""

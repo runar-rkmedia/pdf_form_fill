@@ -4,10 +4,14 @@
     {% if is_app %}
       <!-- ko with: customer -->
       <li class="sidebar-brand">
+        <!-- ko with: owner -->
         <a href="#" data-bind="click: function(){$('a[href=&quot;#customer-pane&quot;]').tab('show');$('#customer_form_collapse').collapse('toggle')}">
-          <span data-bind="text: address1() ? address1 : 'Kunde'"></span>
+          <span data-bind="text: name()? name : address1() ? address1 : 'Kunde'"></span>
           <div>
             <small class="text-muted">
+              <!-- ko if: name -->
+              <span data-bind="text: address1"></span><br>
+              <!-- /ko -->
               <!-- ko if: address2 -->
               <br>
               <span data-bind="text: address2"></span><br>
@@ -17,6 +21,7 @@
             </small>
           </div>
         </a>
+        <!-- /ko -->
       </li>
       <li>
         <a href="#" data-bind="click: confirm_create_new">

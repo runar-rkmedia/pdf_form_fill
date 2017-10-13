@@ -35,7 +35,7 @@ export class ByID {
 export abstract class Base {
   abstract serialize: KnockoutObservable<{}>
   modification_tracking_list: KnockoutObservableArray<ObsMod<any>> = ko.observableArray()
-  save(): void {
+  public save(): void {
     for (let observable of this.modification_tracking_list()) {
       if (observable) {
         observable.save()
@@ -61,7 +61,6 @@ export abstract class Base {
     return this.modification_check(this.modification_tracking_list())
   })
 }
-
 export interface FileDownloadInterface {
   file_download: string
 }
@@ -87,7 +86,7 @@ export abstract class Post extends Base {
       }
     })
   }
-  public post(h: any, event: Event, data_object?: any, url?: string) {
+  public post(h: any, event: Event, data_object?: any, url?: string): any {
     // Abstract class for posting data. Will use PUT if id > 0
     // Also handles buttons
     let method: HTTPVerbs
@@ -198,6 +197,15 @@ export interface ObsMod<T> extends KnockoutObservable<T> {
 ko.extenders.modification = (target: any, option: KnockoutObservableArray<any>[]) => {
   target.last_data = ko.observable()
   target.modified = ko.computed(() => {
+    if (target() == null) {
+      return false
+    }
+    if (target.last_data() == null) {
+      return true
+    }
+    if (typeof target().getMonth === 'function') {
+      return target().getTime() != target.last_data().getTime()
+    }
     if (target() != target.last_data()) {
       let div = target() / target.last_data()
       // for calculated values that are almost the same.

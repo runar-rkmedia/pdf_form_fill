@@ -1,5 +1,6 @@
 require("knockout-template-loader?name=brregsuggestion-template!html-loader?-minimize!./brregsuggestion.html");
 import { } from '@types/googlemaps';
+import { Base } from './Common';
 
 
 // https://confluence.brreg.no/display/DBNPUB/Informasjonsmodell+for+Enhetsregisteret+og+Foretaksregisteret
@@ -44,15 +45,15 @@ ko.bindingHandlers.valueWithInit = {
   }
 };
 
-export class Company {
+export class Company extends Base {
   search: KnockoutObservable<string> = ko.observable()
   addresses: KnockoutObservableArray<Brreg_addresse> = ko.observableArray()
   selected_result: KnockoutObservable<Brreg> = ko.observable()
   name: KnockoutObservable<string> = ko.observable()
-  address1: KnockoutObservable<string> = ko.observable()
-  address2: KnockoutObservable<string> = ko.observable()
-  post_code: KnockoutObservable<number> = ko.observable()
-  post_area: KnockoutObservable<string> = ko.observable()
+  address1: KnockoutObservable<string> = this.obs_mod()
+  address2: KnockoutObservable<string> = this.obs_mod()
+  post_code: KnockoutObservable<number> = this.obs_mod()
+  post_area: KnockoutObservable<string> = this.obs_mod()
   lat: KnockoutObservable<number> = ko.observable()
   lng: KnockoutObservable<number> = ko.observable()
   geocoder: google.maps.Geocoder
@@ -74,9 +75,17 @@ export class Company {
     }
     return -1
   })
-
   links: KnockoutObservableArray<Brreg_links> = ko.observableArray([])
-  orgnumber: KnockoutObservable<number> = ko.observable()
+  orgnumber: KnockoutObservable<number> = this.obs_mod()
+  serialize = ko.computed(() => {
+    return {
+      address1: this.address1(),
+      address2: this.address2(),
+      post_code: this.post_code(),
+      post_area: this.post_area(),
+      orgnumber: this.orgnumber(),
+    }
+  })
   suggestionOnSelect = (
     value: KnockoutObservable<{}>,
     data: Brreg,

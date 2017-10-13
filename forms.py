@@ -9,6 +9,7 @@ from wtforms import (
     FieldList,
     FormField,
     HiddenField,
+    SelectField,
     StringField
 )
 from wtforms.fields.html5 import (
@@ -257,27 +258,25 @@ class Invite(FlaskForm):
     pass
 
 
-class CustomerForm(FlaskForm):
-    address = FormField(AddressForm)
-    address2 = FormField(AddressOptional)
+class CustomerData(SubForm):
 
-    customer_name = StringField(
-        'Navn', validators=[Length(max=100)])
-    customer_name2 = StringField(
-        'Navn', validators=[Length(max=100)])
-    org_nr = IntegerField(
+
+    address = FormField(AddressForm)
+    customer_name = StringField('Navn', validators=[Length(max=100)])
+    orgnumber = IntegerField(
         'Organisasjonsnummer',
         validators=[
-            Optional(),
             NumberRange(
                 min=100000000,
                 max=999999999,
-                message='Organisasjonsnummer skal ha totalt 9 siffer.')
+                message='Organisasjonsnummer skal ha totalt 9 siffer.'),
+                Optional()
         ])
     phone = TelField(
         'Telefon',
         description='8 siffer. For internasjonale nummer, bruk 00 foran.',
         validators=[
+            Optional(),
             Regexp(
                 '\d{8}|00[-\w]{3,20}',
                 message=
@@ -288,6 +287,7 @@ class CustomerForm(FlaskForm):
         'Telefon',
         description='8 siffer. For internasjonale nummer, bruk 00 foran.',
         validators=[
+            Optional(),
             Regexp(
                 '\d{8}|00[-\w]{3,20}',
                 message=
@@ -297,65 +297,22 @@ class CustomerForm(FlaskForm):
     contact_name = StringField(
         'Kontaktperson',
         validators=[
-            DataRequired('Feltet er påkrevd'),
+            Optional(),
             Length(min=2, message="Minst %(min)d tegn her."),
             Length(max=180, message="Maksimalt %(max)d tegn her.")
         ])
-    phone = TelField(
-        'Telefon',
-        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
-        validators=[
-            Regexp(
-                '\d{8}|00[-\w]{3,20}',
-                message=
-                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
-            )
-        ])
-    mobile = TelField(
-        'Mobil',
-        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
-        validators=[
-            Regexp(
-                '\d{8}|00[-\w]{3,20}',
-                message=
-                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
-            )
-        ])
-    contact_name = StringField(
-        'Kontaktperson',
-        validators=[
-            DataRequired('Feltet er påkrevd'),
-            Length(min=2, message="Minst %(min)d tegn her."),
-            Length(max=180, message="Maksimalt %(max)d tegn her.")
-        ])
-    phone2 = TelField(
-        'Telefon',
-        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
-        validators=[
-            Regexp(
-                '\d{8}|00[-\w]{3,20}',
-                message=
-                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
-            )
-        ])
-    mobile2 = TelField(
-        'Telefon',
-        description='8 siffer. For internasjonale nummer, bruk 00 foran.',
-        validators=[
-            Regexp(
-                '\d{8}|00[-\w]{3,20}',
-                message=
-                'Telefonnummeret må ha 8 siffer. For internasjonale nummer, bruk 00 foran.'
-            )
-        ])
-    contact_name2 = StringField(
-        'Kontaktperson',
-        validators=[
-            DataRequired('Feltet er påkrevd'),
-            Length(min=2, message="Minst %(min)d tegn her."),
-            Length(max=180, message="Maksimalt %(max)d tegn her.")
-        ])
+    data_type = SelectField(
+        validators=[DataRequired()], choices=[('owner','owner'), ('construction','construction')])
+
+
+class CustomerForm(FlaskForm):
     id = HiddenField()
+    data = FieldList(FormField(CustomerData))
+    construction_new = BooleanField()
+    construction_voltage = IntegerField(
+        validators=[NumberRange(min=0, max=400)]
+    )
+
 
 class Measurement(SubForm):
     """Form for measurements for a HeatingCable."""

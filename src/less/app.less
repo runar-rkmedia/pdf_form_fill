@@ -574,3 +574,76 @@ a[data-action="today"] span:after {
   content: ' Gå til i dag';
   font-family: @font-family-sans-serif;
 }
+@tab-border: 1px solid @gray-light;
+
+.nav-tabs {
+  background-color: darken(@well-bg, 5%);
+  border-bottom: @tab-border;
+
+  > li {
+    border-left: @tab-border;
+    border-right: @tab-border;
+    border-top: @tab-border;
+    // border-bottom: none;
+    border-radius: 4px;
+    margin-bottom: -1px;
+
+    :not(.active) {
+      border-bottom: @tab-border;
+    }
+
+    > a {
+      margin-left: 1px;
+      margin-right: 1px;
+      color: @text-color;
+      background-color: darken(@well-bg, 10%);
+
+      &:focus,
+      &:hover {
+        border: @tab-border;
+        background-color: darken(@well-bg, 15%);
+      }
+    }
+
+    &.active {
+      margin-bottom: -10px;
+      border-bottom: none !important;
+
+       > a:focus,
+       > a:hover,
+      > a:active,
+      a {
+        background-color: @well-bg;
+      }
+    }
+  }
+}
+
+.fakewell {
+  background-color: @well-bg;
+  margin-bottom: 20px;
+}
+
+.fakewell-content {
+  padding: 0 4px 10px;
+  border-left: @tab-border;
+  border-right: @tab-border;
+  border-bottom: @tab-border;
+}
+
+fieldset {
+  div:first-of-type{
+    margin-top: 0px;
+  }
+  legend {
+    font-size: 15px;
+    margin-bottom: 5px;
+    line-height: 1.42857143;
+    font-weight: bold;
+  }
+}
+
+.disabledBtn{
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}

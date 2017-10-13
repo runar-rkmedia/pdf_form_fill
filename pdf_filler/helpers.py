@@ -36,7 +36,7 @@ class NumberFormatter(object):
     """Formats numbers in different formats."""
 
     @staticmethod
-    def group_number_format(n, grouping_list, sep=' '):
+    def group_number_format(n, grouping_list, sep=' ', default=''):
         """
         General grouping of numbers.
 
@@ -45,6 +45,9 @@ class NumberFormatter(object):
         example: [3,2,3] will group by 3, then 2, then 3.
 
         """
+        if not n:
+            return default
+        n = str(n)
         group = []
         i = 0
         for c in grouping_list:
@@ -55,18 +58,18 @@ class NumberFormatter(object):
     @classmethod
     def phone(cls, n):
         """Return a formatted phone-numer."""
-        return cls.group_number_format(str(n), [2, 2, 2, 2])
+        return cls.group_number_format(n, [2, 2, 2, 2])
 
     @classmethod
     def mobile(cls, n):
         """Return a formatted mobile-number."""
-        return cls.group_number_format(str(n), [3, 2, 3])
+        return cls.group_number_format(n, [3, 2, 3])
 
 
     @classmethod
     def org(cls, n):
         """Return a formatted organizaion-number."""
-        return cls.group_number_format(str(n), [3, 3, 3])
+        return cls.group_number_format(n, [3, 3, 3])
 
 def group_number(n, grouping=3, seperator=' '):
     """Returns a pretty, grouped number."""

@@ -59,6 +59,7 @@ class Nexans(StampablePdfForm):
             'control_system_other_check': d.s_bool('control_system_other'),
             'check-montert_i_henhold_til_installasjonsveiledning': d.s_bool('max_temp_installation')
         })
+        
         last_date = d.g('last_date')
         if last_date:
             last_date_formatted = date_format(last_date)

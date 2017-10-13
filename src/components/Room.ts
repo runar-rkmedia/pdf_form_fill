@@ -251,7 +251,7 @@ export class Room extends Post {
       }
     }
     if (data.rooms.length > 0 || data.heating_cables.length > 0) {
-      return super.post(h, event, data, '/json/v1/multi_save').done((result: any, successTextStatus, jqXHR: any) => {
+      return super.post(h, event, data, '/json/v1/multi_save').done((result: any, successTextStatus: any, jqXHR: any) => {
         let method = jqXHR.originalRequestOptions.type
         for (let heating_cable of this.heating_cables().list()) {
           if (heating_cable.id() == -1) {

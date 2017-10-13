@@ -25,7 +25,6 @@ export class HeatingCableList extends ByID {
     for (let heating_cable of this.list()) {
       if (heating_cable.product()) {
         if (value.includes((<any>heating_cable.product()!)[key])) {
-          console.log(value, (<any>heating_cable.product()!)[key]))
           return true
 
         }

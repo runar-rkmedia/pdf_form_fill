@@ -1,81 +1,58 @@
 import { TSAppViewModel } from "./AppViewModel"
 import { RoomInterface, Room } from "./Room"
 import { RoomList } from "./RoomList"
-import { Company } from "./ControlPanel"
-import { StrIndex, AddressFullInterface, HTTPVerbs, Post, AddressInterface } from "./Common"
-// This will be removed once `addresses` have been updated.
-let titleCase = require('title-case')
+import { CustomerData, CustomerDataInterface } from "./CustomerData"
+
+import { StrIndex, AddressFullInterface, Base, Post, AddressInterface, ObsMod } from "./Common"
 
 
 export interface CustomerInterface {
   id: number;
-  name: string;
-  address: AddressFullInterface;
+  data: CustomerDataInterface[]
   rooms?: RoomInterface[];
+  construction_voltage: number
+  construction_new: boolean
 }
+
 
 export class Customer extends Post {
   url = '/json/v1/customer/'
-  name: KnockoutObservable<string> = this.obs_mod()
-  address1: KnockoutObservable<string> = this.obs_mod()
-  address2: KnockoutObservable<string> = this.obs_mod()
-  post_code: KnockoutObservable<number> = this.obs_mod()
-  post_area: KnockoutObservable<string> = this.obs_mod()
-  corporate_customer: KnockoutObservable<boolean> = ko.observable(false)
-  extra_info: KnockoutObservable<boolean> = ko.observable(true)
-  exstra_address: KnockoutObservable<boolean> = ko.observable(false)
+  construction = new CustomerData('construction', true)
+  owner = new CustomerData('owner', false)
   root: TSAppViewModel
+  construction_voltage: KnockoutObservable<number> = this.obs_mod(undefined, undefined, 230)
+  construction_new: KnockoutObservable<boolean> = this.obs_mod(undefined, undefined, false)
   loading: KnockoutObservable<boolean> = ko.observable(false)
   rooms: KnockoutObservable<RoomList> = ko.observable(new RoomList(this.root, this))
-  validationModel = ko.validatedObservable({
-    name: this.name,
-    address1: this.address1,
-    address2: this.address2,
-    post_code: this.post_code,
-    post_area: this.post_area,
-  })
-  company = new Company()
-  orgnumber: KnockoutObservable<number> = ko.observable()
   id: KnockoutObservable<number> = ko.observable()
   serialize: KnockoutObservable<CustomerInterface>
   constructor(parent: TSAppViewModel, id: number = -1000, root: TSAppViewModel = parent) {
     super(parent)
     this.root = parent
     this.id(id)
-    this.name.extend(
-      { required: false, minLength: 3, maxLength: 100 });
-    this.address1.extend(
-      { required: true, minLength: 2, maxLength: 200 });
-    this.address2.extend(
-      { required: false, maxLength: 200 });
-    this.post_area.extend(
-      { required: true, minLength: 2, maxLength: 100 });
-    this.post_code.extend(
-      { required: true, number: true, min: 0, max: 9999 });
+
     this.serialize = ko.computed((): CustomerInterface => {
-      let t = {
-        name: this.name(),
+      let t: CustomerInterface = {
         id: this.id(),
-        address: {
-          address1: this.address1(),
-          address2: this.address2(),
-          post_code: this.post_code(),
-          post_area: this.post_area(),
-        }
+        data: [this.construction.serialize()],
+        construction_new: this.construction_new(),
+        construction_voltage: this.construction_voltage()
+      }
+      if (this.owner.address1()) {
+        t.data.push(this.owner.serialize())
       }
       return t
     })
-    ko.computed(() => {
-      if (this.corporate_customer()) {
-        this.name(this.company.name())
-        this.address1(this.company.address1())
-        this.address2(this.company.address2())
-        this.post_area(this.company.post_area())
-        this.post_code(this.company.post_code())
-        this.validationModel.errors.showAllMessages(false)
-      }
-    })
   }
+  isValid = ko.computed(() => {
+    return this.owner.validationModel.isValid() && this.construction.validationModel.isValid()
+  })
+  modified = ko.computed(() => {
+    if (this.construction.modified() || this.owner.modified()) {
+      return true
+    }
+    return this.modification_check(this.modification_tracking_list())
+  })
   sub_modified = ko.computed(() => {
     if (this.rooms()) {
       for (let room of this.rooms().list()) {
@@ -100,21 +77,34 @@ export class Customer extends Post {
     }
     return false
   })
-
+  save() {
+    this.owner.save()
+    this.construction.save()
+    super.save()
+  }
+  post(h: any, event: Event) {
+    if (!this.modified() || !this.isValid()) {
+      return $.Deferred()
+    }
+    return super.post(h, event)
+  }
 
   set(result: CustomerInterface) {
+    console.log(result)
     if (result.id) {
       this.id(result.id)
     }
-    if (result.name) {
-      this.name(result.name)
+    if (result.data) {
+      for (let data of result.data) {
+        if (data.data_type == 'construction') {
+          this.construction.set(data)
+        } else if (data.data_type == 'owner') {
+          this.owner.set(data)
+        }
+      }
     }
-    if (result.address) {
-      this.address1(result.address.address1)
-      this.address2(result.address.address2)
-      this.post_code(result.address.post_code)
-      this.post_area(result.address.post_area)
-    }
+    this.construction_new(result.construction_new)
+    this.construction_voltage(result.construction_voltage)
     if (result.rooms) {
       this.rooms(new RoomList(this.root, this, result.rooms))
     }
@@ -133,16 +123,42 @@ export class Customer extends Post {
   create_new = () => {
     this.set({
       id: -1,
-      name: '',
-      address: {
-        address1: '',
-        address2: '',
-        post_code: null,
-        post_area: ''
-      },
+      construction_new: false,
+      construction_voltage: 230,
+      data:
+      [
+        {
+          orgnumber: null,
+          phone: null,
+          mobile: null,
+          contact_name: '',
+          data_type: 'owner',
+          customer_name: '',
+          address: {
+            address1: '',
+            address2: '',
+            post_code: null,
+            post_area: ''
+          }
+        },
+        {
+          orgnumber: null,
+          phone: null,
+          mobile: null,
+          contact_name: '',
+          data_type: 'construction',
+          customer_name: '',
+          address: {
+            address1: '',
+            address2: '',
+            post_code: null,
+            post_area: ''
+          }
+        }
+      ],
       rooms: []
     })
-    this.validationModel.errors.showAllMessages(false)
+    this.owner.validationModel.errors.showAllMessages(false)
     $('#customer_form_collapse').collapse('show')
   }
   get = (id?: number) => {
@@ -155,25 +171,4 @@ export class Customer extends Post {
         this.loading(false)
       })
   }
-  suggestionOnSelect = (
-    value: KnockoutObservable<{}>,
-    address: AddressInterface,
-    event: Event,
-    element: any) => {
-    value(titleCase(address.street_name))
-    this.post_code((address.post_code))
-    this.post_area(address.post_area.toUpperCase())
-    setTimeout(() => {
-      $(event.target).focus()
-    }, 50)
-  }
-  autocompleteAddress = ko.computed(() => {
-    let url: string = '/address/?q=%QUERY'
-    if (this.address1()) {
-      url += '&p=' + this.address1()
-    }
-    return url
-    // We need a rateLimiter here so that the url doesn't change too early
-    // when a user clicks a selection.
-  }).extend({ rateLimit: 50 })
 }

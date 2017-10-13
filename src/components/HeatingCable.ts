@@ -422,7 +422,11 @@ export class HeatingCable extends Post {
       this.product_pagination.current_page(0)
     })
   }
+  isValid = ko.computed(() => {
+    return this.validationModel.isValid()
+  })
   post(h: any, event: Event) {
+
     return this.parent.parent.post_all(h, event)
   }
   bindDatePicker() {

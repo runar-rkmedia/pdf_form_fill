@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Data for nexans-dictionary."""
-import datetime
-
-from .helpers import DictionaryHelper, NumberTypes, date_format
+from .helpers import DictionaryHelper, NumberTypes
 from .stamp import StampablePdfForm
-
+TRUE = 'On'
+FALSE = 'Off'
 
 class ThermoFloorCable(StampablePdfForm):
 
@@ -40,38 +39,26 @@ class ThermoFloorCable(StampablePdfForm):
 
         d = DictionaryHelper(self.dictionary)
         self.dict_update({
-            'anleggs_adresse2':
-                d.s_if('customer.address.address2', sub=', ') +
-                d.s_if('customer.address.post_code', sub=' ') +
-                d.s('customer.address.post_area'),
-            'type_og_effekt':
-                ', '.join([
-                    d.s('product.product_type.name'),
-                    d.s_if('product.effect', sub='W'),
-                ]),
-            'product.resistance_nominal': '{0:.1f}'.format(
-                    d.g('product.resistance_nominal')
-                ),
-            'check-toleder': not d.s_bool('product.twowires'),
-            'check-enleder': d.s_bool('product.twowires'),
-            'max_temp_other_check': d.s_bool('max_temp_other'),
-            'earthed_other_check': d.s_bool('earthed_other'),
-            'control_system_other_check': d.s_bool('control_system_other'),
-            'check-montert_i_henhold_til_installasjonsveiledning': d.s_bool('max_temp_installation')
+            'Norminativt tillegg 753A': TRUE,
+            'customer.construction_nek400': TRUE,
+            'check-montert_i_henhold_til_installasjonsveiledning2': TRUE,
+            'customer.construction_voltage_230':
+            TRUE if d.g('customer.construction_voltage') == 230 else FALSE,
+            'customer.construction_voltage_400': TRUE if d.g('customer.construction_voltage') == 400 else FALSE,
+            'customer.construction_change':
+            FALSE if d.g('customer.construction_new') else TRUE,
         })
-        last_date = d.g('last_date')
-        if last_date:
-            last_date_formatted = date_format(last_date)
-            self.dict_update({
-                'ohm_dato_og_underskrift': last_date_formatted,
-                'mohm_dato_og_underskrift': last_date_formatted,
-                'dato_spesielle_forhold': last_date_formatted,
+        if (
+            d.s_bool('control_system_room_sensor') or
+            d.s_bool('control_system_floor_sensor') or
+            d.s_bool('control_system_limit_sensor') or
+            d.s_bool('control_system_other')
+            ):
+            self.dictionary['control_system_check_any'] = TRUE
 
-            })
 
     FILL_PDF_FILENAME = 'Dokumentasjonssider_varmekabel_Ver2016-A.pdf'
-    TRUE = 'Yes'
-    FALSE = 'No'
+
     CHECKBOX_VALUE = [TRUE, FALSE]
 
     FIELDS_DICT = {
@@ -260,12 +247,12 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Firma',
             'type':  str
         },
-        'install.I': {
+        'product.current': {
             'text': 'TextInPDF',
             'field': 'IRow1',
             'type':  str
         },
-        'install10.I': {
+        'product.current10': {
             'text': 'TextInPDF',
             'field': 'IRow10',
             'type':  str
@@ -280,7 +267,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow1_2',
             'type':  str
         },
-        'install2.I': {
+        'product.current2': {
             'text': 'TextInPDF',
             'field': 'IRow2',
             'type':  str
@@ -290,7 +277,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow2_2',
             'type':  str
         },
-        'install3.I': {
+        'product.current3': {
             'text': 'TextInPDF',
             'field': 'IRow3',
             'type':  str
@@ -300,7 +287,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow3_2',
             'type':  str
         },
-        'install4.I': {
+        'product.current4': {
             'text': 'TextInPDF',
             'field': 'IRow4',
             'type':  str
@@ -310,7 +297,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow4_2',
             'type':  str
         },
-        'install5.I': {
+        'product.current5': {
             'text': 'TextInPDF',
             'field': 'IRow5',
             'type':  str
@@ -320,7 +307,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow5_2',
             'type':  str
         },
-        'install6.I': {
+        'product.current6': {
             'text': 'TextInPDF',
             'field': 'IRow6',
             'type':  str
@@ -330,7 +317,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow6_2',
             'type':  str
         },
-        'install7.I': {
+        'product.current7': {
             'text': 'TextInPDF',
             'field': 'IRow7',
             'type':  str
@@ -340,7 +327,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow7_2',
             'type':  str
         },
-        'install8.I': {
+        'product.current8': {
             'text': 'TextInPDF',
             'field': 'IRow8',
             'type':  str
@@ -350,7 +337,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'IRow8_2',
             'type':  str
         },
-        'install9.I': {
+        'product.current9': {
             'text': 'TextInPDF',
             'field': 'IRow9',
             'type':  str
@@ -425,22 +412,22 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Kontaktperson',
             'type':  str
         },
-        'customer.contact_name2': {
+        'customer.owner.contact_name': {
             'text': 'TextInPDF',
             'field': 'Kontaktperson_2',
             'type':  str
         },
-        'customer.mobile': {
+        'customer.mobile_f': {
             'text': 'TextInPDF',
             'field': 'Mobil',
             'type':  str
         },
-        'customer.mobile@': {
+        'customer.owner.mobile_f': {
             'text': 'TextInPDF',
             'field': 'Mobil_2',
             'type':  str
         },
-        'company.mobile': {
+        'company.mobile_f': {
             'text': 'TextInPDF',
             'field': 'Mobil_3',
             'type':  str
@@ -448,19 +435,19 @@ class ThermoFloorCable(StampablePdfForm):
         'max_temp_installation': {
             'text': 'TextInPDF',
             'field': 'Montasjen av oppvarmingssystemet',
-            'type':  str
+            'type':  bool
         },
-        'customer.name': {
+        'customer.customer_name': {
             'text': 'TextInPDF',
             'field': 'Navn',
             'type':  str
         },
-        'customer.name2': {
+        'customer.owner.customer_name': {
             'text': 'TextInPDF',
             'field': 'Navn_2',
             'type':  str
         },
-        'variableNominativt tillegg 753A': {
+        'Norminativt tillegg 753A': {
             'text': 'TextInPDF',
             'field': 'Nominativt tillegg 753A',
             'type':  str
@@ -470,7 +457,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Org nr',
             'type':  str
         },
-        'customer.orgnumber2_f': {
+        'customer.owner.orgnumber_f': {
             'text': 'TextInPDF',
             'field': 'Org nr_2',
             'type':  str
@@ -490,7 +477,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Postnummer',
             'type':  str
         },
-        'customer.address2.post_code': {
+        'customer.owner.address.post_code': {
             'text': 'TextInPDF',
             'field': 'Postnummer_2',
             'type':  str
@@ -505,7 +492,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Poststed',
             'type':  str
         },
-        'customer.address2.post_area': {
+        'customer.owner.address.post_area': {
             'text': 'TextInPDF',
             'field': 'Poststed_2',
             'type':  str
@@ -620,12 +607,12 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Saksbehandler',
             'type':  str
         },
-        'customer.phone': {
+        'customer.phone_f': {
             'text': 'TextInPDF',
             'field': 'Telefon',
             'type':  str
         },
-        'customer.phone2': {
+        'customer.owner.phone_f': {
             'text': 'TextInPDF',
             'field': 'Telefon2',
             'type':  str
@@ -840,7 +827,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Utført i hht krav i installasjonsveiledningen',
             'type':  bool
         },
-        'fuck': {
+        'customer.construction_change': {
             'text': 'TextInPDF',
             'field': 'Utvidelseendring av eksisterende anlegg',
             'type':  bool
@@ -865,7 +852,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_102_2',
             'type':  str
         },
-        'install9.ohm': {
+        'product.resistance_nominal9': {
             'text': 'TextInPDF',
             'field': 'fill_103',
             'type':  str
@@ -880,7 +867,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_109_2',
             'type':  str
         },
-        'install11.ohm0': {
+        'product.resistance_nominal110': {
             'text': 'TextInPDF',
             'field': 'fill_110',
             'type':  str
@@ -930,7 +917,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_137',
             'type':  str
         },
-        'install10.ohm_2': {
+        'product.resistance_nominal10_2': {
             'text': 'TextInPDF',
             'field': 'fill_140',
             'type':  str
@@ -945,7 +932,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_46_2',
             'type':  str
         },
-        'install.ohm': {
+        'product.resistance_nominal': {
             'text': 'TextInPDF',
             'field': 'fill_47',
             'type':  str
@@ -960,7 +947,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_53_2',
             'type':  str
         },
-        'install2.ohm': {
+        'product.resistance_nominal2': {
             'text': 'TextInPDF',
             'field': 'fill_54',
             'type':  str
@@ -975,7 +962,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_60_2',
             'type':  str
         },
-        'install3.ohm': {
+        'product.resistance_nominal3': {
             'text': 'TextInPDF',
             'field': 'fill_61',
             'type':  str
@@ -990,7 +977,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_67_2',
             'type':  str
         },
-        'install4.ohm': {
+        'product.resistance_nominal4': {
             'text': 'TextInPDF',
             'field': 'fill_68',
             'type':  str
@@ -1005,7 +992,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_74_2',
             'type':  str
         },
-        'install5.ohm': {
+        'product.resistance_nominal5': {
             'text': 'TextInPDF',
             'field': 'fill_75',
             'type':  str
@@ -1020,7 +1007,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_81_2',
             'type':  str
         },
-        'install6.ohm': {
+        'product.resistance_nominal6': {
             'text': 'TextInPDF',
             'field': 'fill_82',
             'type':  str
@@ -1035,7 +1022,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_88_2',
             'type':  str
         },
-        'install7.ohm': {
+        'product.resistance_nominal7': {
             'text': 'TextInPDF',
             'field': 'fill_89',
             'type':  str
@@ -1050,7 +1037,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'fill_95_2',
             'type':  str
         },
-        'install8.ohm': {
+        'product.resistance_nominal8': {
             'text': 'TextInPDF',
             'field': 'fill_96',
             'type':  str
@@ -1060,40 +1047,41 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'stk',
             'type':  str
         },
-        'variableundefined': {
+        'check-plassering_av_koblingsbokser': {
             'text': 'TextInPDF',
             'field': 'undefined',
-            'type':  str
+            'type':  bool
         },
-        'variableundefined_10': {
+        'customer.construction_voltage_400': {
             'text': 'TextInPDF',
             'field': 'undefined_10',
-            'type':  str
+            'type':  bool
         },
-        'variableundefined_11': {
+        'customer.construction_voltage_230': {
             'text': 'TextInPDF',
             'field': 'undefined_11',
-            'type':  str
+            'type':  bool
         },
-        'variableundefined_2': {
+        'check_område_for_inventar_utstyr': {
             'text': 'TextInPDF',
             'field': 'undefined_2',
-            'type':  str
+            'type':  bool
         },
-        'variableundefined_3': {
+        # Begrensninger for plassering/festing av utstyr, Se egen beskrivelse
+        'check_limitations_for_placement': {
             'text': 'TextInPDF',
             'field': 'undefined_3',
-            'type':  str
+            'type':  bool
         },
-        'variableundefined_8': {
+        'customer.construction_nek400': {
             'text': 'TextInPDF',
             'field': 'undefined_8',
-            'type':  str
+            'type':  bool
         },
-        'variableundefined_9': {
+        'customer.construction_new': {
             'text': 'TextInPDF',
             'field': 'undefined_9',
-            'type':  str
+            'type':  bool
         }
 
     }

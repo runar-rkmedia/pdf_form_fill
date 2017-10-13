@@ -1,0 +1,139 @@
+<div class="[ form-group ]">
+  <div class="[ form-group ]">
+    <input type="checkbox" autocomplete="off" data-bind="checked: corporate_customer, attr: {'id': data_type + '_corporate_customer_check_'}"/>
+    <div class="[ btn-group ]">
+      <label class="[ btn btn-default active ]" data-bind="attr:{
+          'for': data_type + '_corporate_customer_check_'
+        }">
+        Bedriftskunde
+      </label>
+      <label class="[ btn btn-info ]" f data-bind="attr:{
+          'for': data_type + '_corporate_customer_check_'
+        }">
+        <span class="[ glyphicon glyphicon-ok ]"></span>
+        <span></span>
+      </label>
+    </div>
+  </div>
+</div>
+<!-- ko if: corporate_customer -->
+<!-- ko with: company -->
+<div class="form-group">
+  <label for="#company-search">
+    Søk etter et firma her, for å få raske opplysninger.
+  </label>
+  <div class="input-group">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="f.eks. Petter Strømmen AS"
+      data-bind=" value: search, typeahead: autocompleteBRreg, templateName: 'brregsuggestion-template', displayKey: 'adresse', onSelectFunction: suggestionOnSelect, remoteFilter:
+                brreg_remote_filter, typeaheadOpts:{minLength:2}">
+    <span class="input-group-addon glyphicon glyphicon-search" aria-hidden="true"></span>
+  </div>
+</div>
+<!-- /ko -->
+<!-- /ko -->
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="form-group">
+      <label data-bind="attr: {for: data_type + 'address-address1'}">Adresse</label>
+      <input class="form-control" type="text" data-bind="attr: {id: data_type + 'address-address1'}, value: address1, typeahead: autocompleteAddress, templateName: 'suggestion-template', displayKey: 'street_name', onSelectFunction: suggestionOnSelect">
+    </div>
+    <div class="form-group">
+      <input class="form-control" data-bind="attr: {id: data_type + 'address-address2'}, textInput: address2 " type="text">
+      <span class="bg-danger" style="display: none;"></span>
+    </div>
+    <div class="form-group col-xs-4 col-sm-2 zero-pad-r">
+      <label data-bind="attr: {for: data_type + 'address-post_code'}">Postnummer</label>
+      <input class="form-control" data-bind="attr: {id: data_type + 'address-post_code'}, textInput:  post_code" step="1" type="number">
+      <span class="bg-danger" style="display: none;"></span>
+    </div>
+    <div class="form-group col-xs-8 col-sm-10 zero-pad-l">
+      <label data-bind="attr: {for: data_type + 'address-post_area'}">Poststed</label>
+      <input class="form-control" data-bind="attr: {id: data_type + 'address-post_area'}, textInput: post_area" readonly="readonly" type="text">
+      <span class="bg-danger" style="display: none;"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ko if: address1 -->
+<div class="panel panel-info">
+  <div class="panel-heading" role="tab" data-bind="attr: {id: data_type + 'headingOne'}">
+    <h4 class="panel-title">
+      <a class="collapsed" role="button" data-toggle="collapse" aria-expanded="true" data-bind="attr: {href: '#' + data_type + 'collapseOne', 'aria-controls': data_type + 'collapseOne'}">
+        Ekstra info
+        <small>(Thermofloor)</small>
+      </a>
+    </h4>
+  </div>
+  <div data-bind="attr: {id: data_type + 'collapseOne', 'aria-labelledby': data_type + 'headingOne'}" class="panel-collapse collapse" role="tabpanel">
+    <div class="panel-body">
+      <div class="col-xs-12">
+        <!-- ko if: data_type == 'construction' -->
+        <!-- ko with: $parent -->
+        <div class="col-xs-12 col-sm-6">
+          <fieldset>
+            <!-- <legend>Systemspenning</legend> -->
+            <div class="radio-inline">
+              <label data-bind="css: { 'label-mod-flag': construction_voltage.modified() }">
+                <input type="radio" id="voltage1" data-bind="checked: construction_voltage, checkedValue: 230">
+                230&thinsp;V
+              </label>
+            </div>
+            <div class="radio-inline">
+              <label>
+                <input type="radio" id="voltage2" data-bind="checked: construction_voltage, checkedValue: 400">
+                400&thinsp;V
+              </label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <fieldset>
+            <!-- <legend>Ny-anlegg</legend> -->
+            <div class="radio-inline">
+              <label data-bind="css: { 'label-mod-flag': construction_new.modified() }">
+                <input type="radio" id="construction_new1" data-bind="checked: construction_new, checkedValue: true">
+                Ny-anlegg
+              </label>
+            </div>
+            <div class="radio-inline">
+              <label>
+                <input type="radio" id="construction_new2" data-bind="checked: construction_new, checkedValue: false">
+                Utvidelse/endring
+              </label>
+            </div>
+          </fieldset>
+        </div>
+        <!-- /ko  -->
+        <!-- /ko  -->
+        <!-- ko if: corporate_customer -->
+        <div class="form-group">
+          <label data-bind="attr: {for: data_type + 'orgnumber'}">Organisasjonsnummer</label>
+          <input class="form-control" data-bind="attr: {id: data_type + 'orgnumber'}, value: company.orgnumber" placeholder="123456789" step="1" type="number" value="">
+        </div>
+        <!-- /ko -->
+        <div class="form-group">
+          <label data-bind="attr: {for: data_type + 'customer_name'}">Navn</label>
+          <input class="form-control" data-bind="attr: {id: data_type + 'customer_name'}, textInput: name" placeholder="Ola Nordmann" type="text" value="" title="">
+          <span class="bg-danger" style="display: none;"></span>
+        </div>
+        <div class="form-group">
+          <label data-bind="attr: {for: data_type + 'contact_name'}">Kontaktperson</label>
+          <input class="form-control" placeholder="Ola Nordmann" type="text" data-bind="attr: {id: data_type + 'contact_name'}, textInput: contact_name">
+        </div>
+        <div class="form-group">
+          <label data-bind="attr: {for: data_type + 'mobile'}">Mobil</label>
+          <input class="form-control" placeholder="12345678" type="tel" data-bind="attr: {id: data_type + 'mobile'}, textInput: mobile">
+        </div>
+        <div class="form-group">
+          <label data-bind="attr: {for: data_type + 'phone'}">Telefon</label>
+          <input class="form-control" placeholder="98012345" type="tel" data-bind="attr: {id: data_type + 'phone'}, value: phone">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /ko -->
