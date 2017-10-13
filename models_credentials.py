@@ -20,6 +20,11 @@ class ContactType(Enum):
     email = 2,
     mobile = 3
 
+class CustomerDataType(Enum):
+    """Enumeration for types of customer_data."""
+    owner = 1,
+    construction = 2,
+
 
 class InviteType(Enum):
     """Enumeration for types of invites."""
@@ -298,8 +303,7 @@ class Invite(db.Model):
 
         else:
             raise ValueError(
-                "Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker."
-            )  # noqa
+                "Du har nådd din maksgrense for invitasjoner. Når noen har aktivert en av dine invitasjons-lenker og registrert seg, kan du lage nye invitasjons-lenker." )  # noqa
 
     @property
     def serialize(self):
@@ -327,29 +331,60 @@ class UserContact(ByID, db.Model):
         Contact, primaryjoin='UserContact.contact_id==Contact.id')
     user = db.relationship(User, primaryjoin='UserContact.user_id==User.id')
 
+class CustomerData(db.Model):
+    """Customer-data."""
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    address_id = db.Column(
+        db.Integer, db.ForeignKey(Address.id), nullable=False)
+    address = db.relationship(
+        Address, primaryjoin='CustomerData.address_id==Address.id')
+    orgnumber = db.Column(db.Integer, nullable=True)
+    customer_name = db.Column(db.String(200), nullable=True)
+    contact_name = db.Column(db.String(200), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    mobile = db.Column(db.String(20), nullable=True)
+
+    def update(self, dictionary):
+        """Update this from a dictionary."""
+        for key, val, in dictionary.items():
+            if key == 'address':
+                if not self.address:
+                    self.address = Address()
+                Address.update_entity(self.address, val)
+            else:
+                setattr(self, key, val)
+        return self
+
+    @property
+    def serialize(self):
+        """serialize."""
+        return {
+            'customer_name': self.customer_name,
+            'address': self.address.serialize,
+            'orgnumber': self.orgnumber,
+            'contact_name': self.contact_name,
+            'phone': self.phone,
+            'mobile': self.mobile,
+        }
+
 
 class Customer(MyBaseModel, db.Model):
     """Customer-table."""
-    name = db.Column(db.String(100))
-    name2 = db.Column(db.String(100))
-    address_id = db.Column(
-        db.Integer, db.ForeignKey(Address.id), nullable=False)
-    address2_id = db.Column(
-        db.Integer, db.ForeignKey(Address.id), nullable=True)
-    address = db.relationship(
-        Address, primaryjoin='Customer.address_id==Address.id')
-    address2 = db.relationship(
-        Address, primaryjoin='Customer.address2_id==Address.id')
+    owner_id = db.Column(
+        db.Integer, db.ForeignKey(CustomerData.id), nullable=True)
+    owner = db.relationship(
+        CustomerData, primaryjoin='Customer.owner_id==CustomerData.id')
+    construction_id = db.Column(
+        db.Integer, db.ForeignKey(CustomerData.id), nullable=False)
+    construction = db.relationship(
+        CustomerData, primaryjoin='Customer.construction_id==CustomerData.id')
     company_id = db.Column(
         db.Integer, db.ForeignKey(Company.id), nullable=False)
     company = db.relationship(
         Company,
         primaryjoin='Customer.company_id==Company.id',
         backref='customers')
-    orgnumber = db.Column(db.Integer, nullable=True)
-    construction_nek400 = db.Column(db.Boolean)
     construction_new = db.Column(db.Boolean)
-    construction_change = db.Column(db.Boolean)
     construction_voltage = db.Column(db.Integer, default=230)
     created_by_user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     created_by_user = db.relationship(
@@ -371,23 +406,41 @@ class Customer(MyBaseModel, db.Model):
         """Create a new customer, or update if exists."""
         if customer:
             customer.owns(user)
+        owner_data = None
+        construction_data = None
+        for customer_data in customer_form.data.data:
+            data_type = customer_data.get('data_type')
+            if data_type == CustomerDataType.owner.name:
+                owner_data = customer_data
+            elif data_type == CustomerDataType.construction.name:
+                construction_data = customer_data
+        if not construction_data:
+            raise my_exceptions.MyBaseException(
+                message='Data er ikke gyldig',
+                defcon_level=my_exceptions.DefconLevel.danger,
+                status_code=403
+            )
         if not customer:
             address = Address()
+            construction = CustomerData()
+            construction.address = address
             customer = Customer()
-            customer.address = address
+            customer.construction = construction
             customer.company = user.company
             customer.created_by_user = user
             db.session.add(address)
             db.session.add(customer)
         if not customer:
             raise my_exceptions.NotACustomer
-        customer.address.update_entity({
-            'address1': customer_form.address.address1.data,
-            'address2': customer_form.address.address2.data,
-            'post_code': customer_form.address.post_code.data,
-            'post_area': customer_form.address.post_area.data,
-        })
-        customer.name = customer_form.customer_name.data
+        customer.construction.update(construction_data)
+        if owner_data:
+            if not customer.owner:
+                customer.owner = CustomerData()
+            customer.owner.update(owner_data)
+        else:
+            customer.owner = None
+        customer.construction_new = customer_form.construction_new.data
+        customer.construction_voltage = customer_form.construction_voltage.data
         customer.modified_by_user = user
         customer.modified_on_date = datetime.utcnow()
         user.last_modified_customer = customer
@@ -402,12 +455,20 @@ class Customer(MyBaseModel, db.Model):
     @property
     def serialize(self):
         """Serialize."""
-        return {
-            'name': self.name,
-            'address': self.address.serialize,
+        t = {
+            'id': self.id,
+            'construction_new': self.construction_new,
+            'construction_voltage': self.construction_voltage,
             'rooms': [i.serialize for i in self.rooms if not i.archived],
-            'id': self.id
         }
+        owner = self.owner.serialize if self.owner else None
+        construction = self.construction.serialize
+        construction['data_type'] = CustomerDataType.construction.name
+        t['data'] = [construction]
+        if owner:
+            owner['data_type'] = CustomerDataType.owner.name
+            t['data'].append(owner)
+        return t
 
     @property
     def last_modified(self):
@@ -424,8 +485,8 @@ class Customer(MyBaseModel, db.Model):
     def serialize_short(self):
         """Serialize for lists of customer."""
         dictionary = {
-            'name': self.name,
-            'address': self.address.serialize,
+            'customer_name': self.construction.customer_name,
+            'address': self.construction.address.serialize,
             'id': self.id,
             'created': {
                 'given_name': self.created_by_user.given_name,
@@ -446,6 +507,7 @@ class Customer(MyBaseModel, db.Model):
         return dictionary
 
 
+
 class OutsideSpecs(db.Model):
     """Table for outsidespecs for a room."""
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -463,6 +525,7 @@ class OutsideSpecs(db.Model):
         return self
 
     def serialize(self, prefix=''):
+        """serialize."""
         return {
             prefix + 'asphalt': self.asphalt,
             prefix + 'paving_stones': self.paving_stones,
@@ -484,6 +547,7 @@ class InsideSpecs(db.Model):
     other = db.Column(db.String(100))
 
     def serialize(self, prefix=''):
+        """serialize."""
         return {
             prefix + 'LamiFlex': self.LamiFlex,
             prefix + 'low_profile': self.low_profile,
@@ -580,6 +644,7 @@ class Room(MyBaseModel, db.Model):
                          control_system_other,
                          inside_specs=None,
                          outside_specs=None):
+        """serialize."""
         room = Room.by_id(room_id, user)
         customer = Customer.by_id(customer_id, user)
         if not customer:
@@ -620,7 +685,6 @@ class Room(MyBaseModel, db.Model):
         room.control_system_room_sensor = control_system_room_sensor
         room.control_system_designation = control_system_designation
         room.control_system_other = control_system_other
-        pass
 
     @property
     def serialize(self, user=None):
@@ -725,10 +789,14 @@ class RoomItem(MyBaseModel, db.Model):
                          room_id,
                          room_item,
                          product_id,
-                         id=None,
-                         specs={},
-                         pdf_specs={}):
+                         id=None, # noqa
+                         specs=None,
+                         pdf_specs=None):
         """Update or create a RoomItemModifications.."""
+        if not specs:
+            specs = {}
+        if not pdf_specs:
+            pdf_specs = {}
         product = Product.by_id(product_id)
         room = Room.by_id(room_id, user)
         if not product:
