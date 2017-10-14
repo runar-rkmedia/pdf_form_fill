@@ -16,14 +16,19 @@
         {% if current_user.is_authenticated %}
           <!-- ko with: customer -->
           <li>
+            <!-- ko if: can_fill_form -->
             <a class="btn " data-bind="
                   click: get_form_and_open, visible: id() > 0, css: {disabled: !can_fill_form()}" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
               <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
               Lag skjema</a>
+            <!-- /ko -->
+            <!-- ko ifnot: can_fill_form -->
             <a class="btn " data-bind="
-                  click: confirm_create_new, visible: !(id() > 0)" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-              Ny kunde</a>
+                              click: post_all, css: {disabled: !isValid() || !sub_isValid()}" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
+              <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span>
+              Lagre</a>
+            <!-- /ko -->
+
           </li>
           <!-- /ko -->
           <li class="dropdown hidden-xs">

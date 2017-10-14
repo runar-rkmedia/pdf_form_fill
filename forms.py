@@ -306,11 +306,19 @@ class CustomerData(SubForm):
 
 
 class CustomerForm(FlaskForm):
-    id = HiddenField()
-    data = FieldList(FormField(CustomerData))
+    customer_id = IntegerField()
+    datas = FieldList(FormField(CustomerData))
     construction_new = BooleanField()
     construction_voltage = IntegerField(
         validators=[NumberRange(min=0, max=400)]
+    )
+
+class CustomerFormOptional(SubForm):
+    customer_id = IntegerField()
+    datas = FieldList(FormField(CustomerData))
+    construction_new = BooleanField()
+    construction_voltage = IntegerField(
+        validators=[Optional(), NumberRange(min=0, max=400)]
     )
 
 
@@ -376,6 +384,7 @@ class HeatingCableForm(FlaskForm):
 
 
 class MultiSave(FlaskForm):
+    customer = FormField(CustomerFormOptional)
     heating_cables = FieldList(FormField(HeatingCableForm))
     rooms = FieldList(FormField(RoomForm))
 

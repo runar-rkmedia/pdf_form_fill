@@ -7,7 +7,7 @@ import { Base } from './Common';
 
 interface Brreg_addresse {
   adresse: string
-  postnummer: number
+  postnummer: string | null
   poststed: string
   kommunenummer: number
   kommune: string
@@ -52,7 +52,7 @@ export class Company extends Base {
   name: KnockoutObservable<string> = ko.observable()
   address1: KnockoutObservable<string> = this.obs_mod()
   address2: KnockoutObservable<string> = this.obs_mod()
-  post_code: KnockoutObservable<number> = this.obs_mod()
+  post_code: KnockoutObservable<string | null> = this.obs_mod()
   post_area: KnockoutObservable<string> = this.obs_mod()
   lat: KnockoutObservable<number> = ko.observable()
   lng: KnockoutObservable<number> = ko.observable()

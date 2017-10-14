@@ -2,18 +2,30 @@ import { TSAppViewModel } from "./AppViewModel"
 import { RoomInterface, Room } from "./Room"
 import { RoomList } from "./RoomList"
 import { CustomerData, CustomerDataInterface } from "./CustomerData"
+import { HeatingCableInterface } from "./HeatingCable"
 
 import { StrIndex, AddressFullInterface, Base, Post, AddressInterface, ObsMod } from "./Common"
 
 
 export interface CustomerInterface {
-  id: number;
-  data: CustomerDataInterface[]
+  customer_id: number;
+  datas: CustomerDataInterface[]
   rooms?: RoomInterface[];
   construction_voltage: number
   construction_new: boolean
 }
 
+interface MultiSave {
+  rooms: RoomInterface[]
+  heating_cables: HeatingCableInterface[]
+  customer?: CustomerInterface
+}
+
+interface MultiSaveID {
+  room?: RoomInterface
+  heating_cable?: HeatingCableInterface
+  customer?: CustomerInterface
+}
 
 export class Customer extends Post {
   url = '/json/v1/customer/'
@@ -33,13 +45,13 @@ export class Customer extends Post {
 
     this.serialize = ko.computed((): CustomerInterface => {
       let t: CustomerInterface = {
-        id: this.id(),
-        data: [this.construction.serialize()],
+        customer_id: this.id(),
+        datas: [this.construction.serialize()],
         construction_new: this.construction_new(),
         construction_voltage: this.construction_voltage()
       }
       if (this.owner.address1()) {
-        t.data.push(this.owner.serialize())
+        t.datas.push(this.owner.serialize())
       }
       return t
     })
@@ -47,6 +59,21 @@ export class Customer extends Post {
   isValid = ko.computed(() => {
     return this.owner.validationModel.isValid() && this.construction.validationModel.isValid()
   })
+
+  sub_isValid = ko.computed(() => {
+    for (let room of this.rooms().list()) {
+      if (!room.validationModel.isValid()) {
+        return false
+      }
+      for (let heating_cable of room.heating_cables().list()) {
+        if (!heating_cable.validationModel.isValid()) {
+          return false
+        }
+      }
+    }
+    return true
+  })
+
   modified = ko.computed(() => {
     if (this.construction.modified() || this.owner.modified()) {
       return true
@@ -81,6 +108,7 @@ export class Customer extends Post {
     this.owner.save()
     this.construction.save()
     super.save()
+    $('#customer_form_collapse').collapse('hide')
   }
   post(h: any, event: Event) {
     if (!this.modified() || !this.isValid()) {
@@ -88,14 +116,61 @@ export class Customer extends Post {
     }
     return super.post(h, event)
   }
+  post_all(h: any, event: Event) {
+    let data = this.serialize_all()
+    if (
+      data.rooms.length > 0 ||
+      data.heating_cables.length > 0 ||
+      data.customer
+    ) {
+      return super.post(h, event, data, '/json/v1/multi_save').done(this.save_all)
+
+    }
+  }
+  serialize_all(): MultiSave {
+    let data: MultiSave = {
+      customer: this.modified() ? this.serialize() : undefined,
+      rooms: [],
+      heating_cables: []
+    }
+    for (let room of this.rooms().list()) {
+      if (room.modified()) {
+        data.rooms.push(room.serialize())
+      }
+      for (let heating_cable of room.heating_cables().list()) {
+        if (heating_cable.modified()) {
+          data.heating_cables.push(heating_cable.serialize())
+        }
+      }
+    }
+    return data
+  }
+  save_all = (result: MultiSaveID) => {
+    if (result.customer) {
+      this.set(result.customer)
+    }
+    for (let room of this.rooms().list()) {
+      if (room.id() == -1 && result.room) {
+        room.set(result.room)
+      } else {
+        room.save()
+        for (let heating_cable of room.heating_cables().list()) {
+          if (heating_cable.id() == -1 && result.heating_cable) {
+            heating_cable.set(result.heating_cable)
+          } else {
+            heating_cable.save()
+          }
+        }
+      }
+    }
+  }
 
   set(result: CustomerInterface) {
-    console.log(result)
-    if (result.id) {
-      this.id(result.id)
+    if (result.customer_id) {
+      this.id(result.customer_id)
     }
-    if (result.data) {
-      for (let data of result.data) {
+    if (result.datas) {
+      for (let data of result.datas) {
         if (data.data_type == 'construction') {
           this.construction.set(data)
         } else if (data.data_type == 'owner') {
@@ -103,8 +178,12 @@ export class Customer extends Post {
         }
       }
     }
-    this.construction_new(result.construction_new)
-    this.construction_voltage(result.construction_voltage)
+    if (result.construction_new) {
+      this.construction_new(result.construction_new)
+    }
+    if (result.construction_voltage) {
+      this.construction_voltage(result.construction_voltage)
+    }
     if (result.rooms) {
       this.rooms(new RoomList(this.root, this, result.rooms))
     }
@@ -122,10 +201,10 @@ export class Customer extends Post {
   }
   create_new = () => {
     this.set({
-      id: -1,
+      customer_id: -1,
       construction_new: false,
       construction_voltage: 230,
-      data:
+      datas:
       [
         {
           orgnumber: null,
@@ -158,7 +237,7 @@ export class Customer extends Post {
       ],
       rooms: []
     })
-    this.owner.validationModel.errors.showAllMessages(false)
+    this.construction.validationModel.errors.showAllMessages(false)
     $('#customer_form_collapse').collapse('show')
   }
   get = (id?: number) => {
@@ -170,5 +249,8 @@ export class Customer extends Post {
       .always(() => {
         this.loading(false)
       })
+  }
+  public delete = (data = { customer_id: this.id() }) => {
+    return this._delete(data)
   }
 }

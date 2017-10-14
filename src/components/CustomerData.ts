@@ -59,14 +59,18 @@ ko.validation.rules['post_code'] = {
   message: '4 siffer'
 };
 
-
+let pad = (n: string, width: number, z: string = "0") => {
+  // Pad a string(n), to a certain (width), and pad with (z)
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
 ko.validation.registerExtenders();
 export class CustomerData extends Base {
   data_type: string
   name: KnockoutObservable<string> = this.obs_mod()
   address1: KnockoutObservable<string> = this.obs_mod()
   address2: KnockoutObservable<string> = this.obs_mod()
-  post_code: KnockoutObservable<number> = this.obs_mod()
+  post_code: KnockoutObservable<string | null> = this.obs_mod()
   post_area: KnockoutObservable<string> = this.obs_mod()
   contact_name: KnockoutObservable<string> = this.obs_mod()
   phone: KnockoutObservable<number> = this.obs_mod()
@@ -148,7 +152,7 @@ export class CustomerData extends Base {
     this.corporate_customer(Boolean(result.orgnumber))
     this.address1(result.address.address1)
     this.address2(result.address.address2)
-    this.post_code(result.address.post_code)
+    this.post_code(pad(result.address.post_code || '0', 4))
     this.post_area(result.address.post_area)
     this.phone(result.phone)
     this.mobile(result.mobile)

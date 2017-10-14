@@ -20,7 +20,7 @@ from form_handler import MultiForms
 from models import db
 from models_credentials import (Company, Customer, Invite, InviteType, Room,
                                 RoomItem, RoomTypeInfo, User, user_settings)
-from models_product import Manufacturor, Product
+from models_product import Manufacturor
 from setup_app import app, company_required, json_ok, limiter, manager
 
 
@@ -105,7 +105,6 @@ def set_company(invite=None):
         form.name.data = current_user.company.name
         form.org_nr.data = current_user.company.orgnumber
         form.description.data = current_user.company.description
-        # TODO: contact needs fix
         form.address.address1.data = current_user.company.address.address1
         form.address.address2.data = current_user.company.address.address2
         form.address.post_area.data = current_user.company.address.post_area
@@ -252,11 +251,24 @@ def json_user_forms():
 @app.route('/json/v1/multi_save', methods=['POST', 'PUT'])
 @company_required
 def json_multi_save():
-    return_data = None
+    """Save multiple items at once."""
+    return_data = {}
     form = forms.MultiSave.from_json(
         request.json, skip_unknown_keys=False)
     if not form.validate_on_submit():
+        print(form.errors)
         raise my_exceptions.ValidationErrors(validation_errors=form.errors)
+    if form.customer.customer_id.data:
+        customer_id = form.customer.customer_id.data
+        customer = None
+        if customer_id >= 0:
+            customer = Customer.by_id(customer_id, current_user)
+            if not customer:
+                raise my_exceptions.NotACustomer
+        customer = Customer.update_or_create(customer, form.customer, current_user)
+        if customer:
+            return_data['customer'] = {'customer_id': customer.id}
+        print(return_data)
     for heating_cable in form.heating_cables.data:
         room_item = RoomItem.by_id(heating_cable['id'], current_user)
         new_room_item = RoomItem.update_or_create(
@@ -266,7 +278,7 @@ def json_multi_save():
             room_id=heating_cable['room_id'],
             specs=heating_cable['specs'],)
         if not room_item and new_room_item:
-            return_data = new_room_item.serialize
+            return_data['heating_cable'] = new_room_item.serialize
     for room in form.rooms.data:
         Room.update_or_create(
             room_id=room['id'],
@@ -317,66 +329,30 @@ def json_heating_cable():
     return json_ok()
 
 
-@app.route('/json/v1/room/', methods=['POST', 'PUT', 'DELETE'])
+@app.route('/json/v1/room/', methods=['DELETE'])
 @company_required
 def json_room():
     """Handle a room-object"""
     form = forms.RoomForm.from_json(request.json)
-    customer_id = (form.customer_id.data)
     room_id = form.id.data or request.args.get('id')
-    customer = None
     room = None
     if room_id:
         room = Room.by_id(room_id, current_user)
-    if not room and request.method != 'POST':
+    if not room:
         raise my_exceptions.NotARoom
     if request.method == 'DELETE':
         room.put_in_archive(current_user)
         return json_ok()
-    if customer_id:
-        customer = Customer.by_id(customer_id, current_user)
-    if not customer:
-        raise my_exceptions.NotACustomer()
-    if not form.validate_on_submit():
-        print(form.errors)
-        raise my_exceptions.ValidationErrors(validation_errors=form.errors)
-    if request.method == 'POST':
-        room = Room()
-        db.session.add(room)
-    room.update_entity({
-        'area': float(form.area.data),
-        'control_system_designation': form.check_control_system.designation.data,  # noqa
-        'control_system_floor_sensor': form.check_control_system.floor_sensor.data,  # noqa
-        'control_system_other': form.check_control_system.other.data,
-        'control_system_room_sensor': form.check_control_system.room_sensor.data,  # noqa
-        'curcuit_breaker_size': form.curcuit_breaker_size.data,
-        'customer': customer,
-        'earthed_cable_screen': form.check_earthed.cable_screen.data,
-        'earthed_chicken_wire': form.check_earthed.chicken_wire.data,
-        'earthed_other': form.check_earthed.other.data,
-        'ground_fault_protection': form.ground_fault_protection.data,
-        'heated_area': float(form.heated_area.data),
-        'installation_depth': form.installation_depth.data,
-        'max_temp_installation': form.check_max_temp.installation.data,
-        'max_temp_other': form.check_max_temp.other.data,
-        'max_temp_planning': form.check_max_temp.planning.data,
-        'maxEffect': float(form.maxEffect.data),
-        'name': form.room_name.data,
-        'normalEffect': float(form.normalEffect.data),
-        'outside': form.outside.data,
-    })
-    db.session.commit()
-    return jsonify(room.serialize)
 
 
 @app.route('/json/v1/list/customers/')
 @company_required
 def json_customer_list():
     """Retrieve a list of all customers relevant to a user."""
-    data = request.json or request.args or {}
+    datas = request.json or request.args or {}
     try:
-        page = int(data.get('page', 1))
-        per_page = int(data.get('per_page', 10))
+        page = int(datas.get('page', 1))
+        per_page = int(datas.get('per_page', 10))
     except ValueError:
         raise my_exceptions.MyBaseException(
             message='Mottok feil side-data. Forventet tall, men fikk {},{}'
@@ -396,12 +372,12 @@ def json_customer_list():
     })
 
 
-@app.route('/json/v1/customer/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/json/v1/customer/', methods=['GET', 'DELETE'])
 @company_required
 def json_customer():
     """Handle a customer-object"""
     form = forms.CustomerForm.from_json(request.json)
-    customer_id = form.id.data or request.args.get('id')
+    customer_id = form.customer_id.data or request.args.get('id')
     customer = None
     if customer_id:
         customer = Customer.by_id(customer_id, current_user)
@@ -419,19 +395,11 @@ def json_customer():
         db.session.commit()
         return jsonify(customer.serialize)
 
-    if not customer and request.method != 'POST':
+    if not customer:
         raise my_exceptions.NotACustomer()
     if request.method == 'DELETE':
         customer.put_in_archive(current_user)
         return json_ok()
-
-    if not form.validate_on_submit():
-        print(form.errors)
-        raise my_exceptions.ValidationErrors(validation_errors=form.errors)
-    customer = Customer.update_or_create(customer, form, current_user)
-    if customer:
-        return jsonify({'id': customer.id})
-    raise my_exceptions.NotACustomer()
 
 
 def user_setting(setting, equal_to):
@@ -517,7 +485,7 @@ def landing_page():
         create_company_invite = Invite.query\
             .filter(
                 (Invite.type == 'create_company') &
-                (Invite.invitee_user_id == None)
+                (Invite.invitee_user_id == None) # noqa
             ).first()
     return render_template("landing.html", create_company_invite=create_company_invite)
 
@@ -567,7 +535,7 @@ if __name__ == "__main__":
         with app.app_context():
             data = static_data()
             import json
-            from models import MyJSONEncoder
+            from models import MyJSONEncoder # noqa
             json.JSONEncoder = MyJSONEncoder
 
             with open('src/data.json', 'w') as fp:

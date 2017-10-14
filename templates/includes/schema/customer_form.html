@@ -6,8 +6,11 @@
 
 <div class="row ">
   <div class="col-xs-12">
-    <h2 class="justified">
+    <h2>
       <span class="pointer" data-bind="text: construction.name()? construction.name : construction.address1() ? construction.address1 : 'Kunde', click: function(){$('#customer_form_collapse').collapse('toggle')}"></span>
+      <!-- ko if: construction.name() -->
+        <small class="text-primary text-nowrap" data-bind="text: construction.address1"></small>
+      <!-- /ko -->
     </h2>
   </div>
 </div>
@@ -17,10 +20,13 @@
     <h4>Ingen Kunde valgt.</h4>
     <p class="help-block">Bruk menyen
       <span class="visible-xs-inline">( øverst til venstre )</span>
-      for å velge kunder opprettet i ditt firma, eller lag en ny kunde ved å bruke knappen øverst til høyrse.</p>
+      for å velge kunder opprettet i ditt firma, eller lag en ny kunde.</p>
+    <a class="btn btn-info" role="button" data-bind="
+      click: confirm_create_new, visible: !(id() > 0)" data-loading-text="<span class='glyphicon glyphicon-refresh spinning'></span>">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      Ny kunde</a>
   </div>
 </div>
-
 <div data-bind="if: id() >= -1">
   <div id="customer_form_collapse" class="col-xs-12 collapse fakewell">
     <div class="row">
@@ -61,7 +67,7 @@
               type="button"
               class="btn btn-primary"
               data-bind="
-        click: function(x,e){post(x,e).done(function(){$(e.target).closest('.XXXXXcollapse').collapse('hide')})},
+        click: function(x,e){post_all(x,e).done(function(){$(e.target).closest('.XXXXXcollapse').collapse('hide')})},
         css: {disabledBtn: !modified() || !isValid()},
 
         text: id() >= 0 ? 'Endre' : 'Lagre'"
@@ -89,17 +95,17 @@
       <!-- ko if: rooms -->
       <h3 class="justified hidden">
         Rom/stedsinformasjon
-        <!-- ko if: id() >= 0 -->
-        <button type="button" class="btn btn-sm btn-primary pull-right" data-bind="click: rooms().add">
-          <span class="glyphicon glyphicon-plus"></span>
-          Legg til rom</button>
-        <!-- /ko -->
       </h3>
+      <!-- ko if: id() >= 0 -->
       <!-- ko if: rooms().list().length == 0  -->
       <div class=" bs-callout bs-callout-info">
         <h3>Ingen rom lagt til</h3>
         <span class="help-block">Du kan legge til et rom fra menyen ovenfor ( knappen helt øverst til venstre )</span>
+        <a href="#" class="btn btn-info" role="button" data-bind="click: function(){$('a[href=&quot;#customer-pane&quot;]').tab('show');rooms().add();$('#room-form').collapse('show')}">
+          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+          Legg til rom</a>
       </div>
+      <!-- /ko -->
       <!-- /ko -->
       <!-- /ko -->
       <div class="col-xs 12">

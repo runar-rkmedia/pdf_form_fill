@@ -123,7 +123,10 @@ export class Room extends Post {
     name: this.name,
     outside: this.outside,
     area: this.area,
-    heated_area: this.heated_area
+    heated_area: this.heated_area,
+    ground_fault_protection: this.ground_fault_protection,
+    installation_depth: this.installation_depth,
+
   })
   root: TSAppViewModel
   serialize: KnockoutComputed<RoomInterface>
@@ -139,6 +142,10 @@ export class Room extends Post {
       { required: true, number: true, min: 0.1, max: 1000 });
     this.heated_area.extend(
       { required: true, number: true, min: 0.1, max: 1000 });
+    this.ground_fault_protection.extend(
+      { required: true, number: true, min: 0, max: 1000 });
+    this.installation_depth.extend(
+      { required: true, number: true, min: 0, max: 100000 });
     this.name.extend(
       { required: true, minLength: 2, maxLength: 50 });
 
@@ -237,34 +244,6 @@ export class Room extends Post {
     }
     return false
   })
-  post_all(h: any, event: Event) {
-    let data: MultiSave = {
-      rooms: [],
-      heating_cables: []
-    }
-    if (this.modified()) {
-      data.rooms.push(this.serialize())
-    }
-    for (let heating_cable of this.heating_cables().list()) {
-      if (heating_cable.modified()) {
-        data.heating_cables.push(heating_cable.serialize())
-      }
-    }
-    if (data.rooms.length > 0 || data.heating_cables.length > 0) {
-      return super.post(h, event, data, '/json/v1/multi_save').done((result: any, successTextStatus: any, jqXHR: any) => {
-        let method = jqXHR.originalRequestOptions.type
-        for (let heating_cable of this.heating_cables().list()) {
-          if (heating_cable.id() == -1) {
-            heating_cable.set(result)
-          } else {
-            heating_cable.save()
-
-          }
-        }
-      })
-
-    }
-  }
   sub_modified = ko.computed(() => {
     if (this.heating_cables()) {
       for (let heating_cable of this.heating_cables().list()) {
@@ -308,8 +287,8 @@ export class Room extends Post {
   })
 
   // Add some additonal functionality when posting.
-  post(h: any, event: Event, data_object?: any, url?: string) {
-    return super.post(h, event, data_object, url).done(() => {
+  post(h: any, event: Event) {
+    return this.parent.parent.post_all(h, event).done(() => {
       $(event.target).closest('.collapse').collapse('hide')
     }
     )
@@ -392,6 +371,10 @@ export class Room extends Post {
     }
 
     this.save()
+  }
+  save() {
+    super.save()
+    $('#room-form').collapse('hide')
   }
 }
 

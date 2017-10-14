@@ -4,11 +4,7 @@ import './less/entry'
 import './components/bootstrap-slider-knockout-binding/bootstrap-slider-knockout-binding.js';
 export var myApp: TSAppViewModel;
 
-let pad = (n: string, width: number, z: string = "0") => {
-  // Pad a string(n), to a certain (width), and pad with (z)
-  n = n + '';
-  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-}
+
 
 WebFont.load({
   google: {

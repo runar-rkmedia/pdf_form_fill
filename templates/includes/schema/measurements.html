@@ -5,96 +5,99 @@
   </h4>
   <!-- ko if: product() -->
   <!-- ko if: product().manufacturor != 'Thermofloor' -->
+  <div class="[ form-group ]">
+    <input type="checkbox" name="fancy-checkbox-info" id="fancy-checkbox-info" autocomplete="off"/>
     <div class="[ form-group ]">
-      <input type="checkbox" name="fancy-checkbox-info" id="fancy-checkbox-info" autocomplete="off"/>
-      <div class="[ form-group ]">
-        <input type="checkbox" id="fancy-checkbox-default" autocomplete="off" data-bind="checked: fill_measurement_smartly, attr: {id: 'fill_check_' + id()}"/>
-        <div class="[ btn-group ]">
-          <label class="[ btn btn-default active ]" data-bind="attr: {for: 'fill_check_' + id()}">
-            Smart utfylling av målinger
-          </label>
-          <label for="fancy-checkbox-default" class="[ btn btn-info ]" data-bind="attr: {for: 'fill_check_' + id()}">
-            <span class="[ glyphicon glyphicon-ok ]"></span>
-            <span></span>
-          </label>
-        </div>
+      <input type="checkbox" id="fancy-checkbox-default" autocomplete="off" data-bind="checked: fill_measurement_smartly, attr: {id: 'fill_check_' + id()}"/>
+      <div class="[ btn-group ]">
+        <label class="[ btn btn-default active ]" data-bind="attr: {for: 'fill_check_' + id()}">
+          Smart utfylling av målinger
+        </label>
+        <label for="fancy-checkbox-default" class="[ btn btn-info ]" data-bind="attr: {for: 'fill_check_' + id()}">
+          <span class="[ glyphicon glyphicon-ok ]"></span>
+          <span></span>
+        </label>
       </div>
     </div>
+  </div>
+  <!-- /ko -->
+  <!-- /ko -->
+  <hr>
+  <div class="row"></div>
+  <!-- ko if: product()-->
+  <small class="col-xs-12 well well-lg">
+    Ledermotstanden bør ligge mellom:
+    <span data-bind="text: product().restrictions.min.toFixed(2)"></span>&nbsp;Ω og
+    <span data-bind="text: product().restrictions.max.toFixed(2)"></span>&nbsp;Ω for denne varmekabelen.
+  </small>
+  <!-- /ko -->
+
+  <!-- ko ifnot: fill_measurement_smartly -->
+<div class="col-xs-12">
+  <h3>Ledermotstand<span class="visible-xs-inline">
+      ( Ω )</span>
+  </h3>
+</div>
+  <!-- /ko -->
+
+  <div data-bind="css: {'col-xs-6': fill_measurement_smartly(), 'col-xs-4': !fill_measurement_smartly()}">
+    <!-- ko template: { name: 'ohm_field', data: {data: measurement_install, title: 'Før <br class="visible-xs">installasjon'} } -->
     <!-- /ko -->
+    <!-- sdfs -->
+  </div>
+  <!-- ko ifnot: fill_measurement_smartly -->
+  <div class="col-xs-4">
+    <!-- ko template: { name: 'ohm_field', data: {data: measurement_pour, title: 'Før <br class="visible-xs">innstøping'} } -->
     <!-- /ko -->
+  </div>
+  <div class="col-xs-4">
+    <!-- ko template: { name: 'ohm_field', data: {data: measurement_connect, title: 'Før <br class="visible-xs">tilkobling'} } -->
+    <!-- /ko -->
+  </div>
+  <!-- /ko -->
+
+  <!-- ko ifnot: fill_measurement_smartly -->
+  <div class="col-xs-12">
     <hr>
-    <div class="row"></div>
-    <!-- ko if: product()-->
-    <small class="col-xs-12 well well-lg">
-      Ledermotstanden bør ligge mellom:
-      <span data-bind="text: product().restrictions.min.toFixed(2)"></span>&nbsp;Ω og
-      <span data-bind="text: product().restrictions.max.toFixed(2)"></span>&nbsp;Ω for denne varmekabelen.
-    </small>
-    <!-- /ko -->
-
-    <!-- ko ifnot: fill_measurement_smartly -->
-    <h3>Ledermotstand<span class="visible-xs-inline">
-        ( Ω )</span>
-    </h3>
-    <!-- /ko -->
-
-    <div data-bind="css: {'col-xs-6': fill_measurement_smartly(), 'col-xs-4': !fill_measurement_smartly()}">
-      <!-- ko template: { name: 'ohm_field', data: {data: measurement_install, title: 'Før <br class="visible-xs">installasjon'} } -->
-      <!-- /ko -->
-      <!-- sdfs -->
-    </div>
-    <!-- ko ifnot: fill_measurement_smartly -->
-    <div class="col-xs-4">
-      <!-- ko template: { name: 'ohm_field', data: {data: measurement_pour, title: 'Før <br class="visible-xs">innstøping'} } -->
-      <!-- /ko -->
-    </div>
-    <div class="col-xs-4">
-      <!-- ko template: { name: 'ohm_field', data: {data: measurement_connect, title: 'Før <br class="visible-xs">tilkobling'} } -->
-      <!-- /ko -->
-    </div>
-    <!-- /ko -->
-
-    <!-- ko ifnot: fill_measurement_smartly -->
-    <h3>Isolasjonsmotstand<span class="visible-xs-inline">
+    <h3 class="mt-4">Isolasjonsmotstand<span class="visible-xs-inline">
         ( MΩ )</span>
     </h3>
+  </div>
+  <!-- /ko -->
+
+  <div class="form-group" data-bind="css: {'col-xs-6': fill_measurement_smartly(), 'col-xs-4': !fill_measurement_smartly()}">
+    <!-- ko template: { name: 'mohm_field', data: {data: measurement_install, title: 'Før <br class="visible-xs">installasjon'} } -->
     <!-- /ko -->
-
-    <div class="form-group" data-bind="css: {'col-xs-6': fill_measurement_smartly(), 'col-xs-4': !fill_measurement_smartly()}">
-      <!-- ko template: { name: 'mohm_field', data: {data: measurement_install, title: 'Før <br class="visible-xs">installasjon'} } -->
-      <!-- /ko -->
-      <!-- sdfs -->
-    </div>
-    <!-- ko ifnot: fill_measurement_smartly -->
-    <div class="col-xs-4 form-group">
-      <!-- ko template: { name: 'mohm_field', data: {data: measurement_pour, title: 'Før <br class="visible-xs">innstøping'} } -->
-      <!-- /ko -->
-    </div>
-    <div class="col-xs-4 form-group">
-      <!-- ko template: { name: 'mohm_field', data: {data: measurement_connect, title: 'Før <br class="visible-xs">tilkobling'} } -->
-      <!-- /ko -->
-    </div>
+    <!-- sdfs -->
+  </div>
+  <!-- ko ifnot: fill_measurement_smartly -->
+  <div class="col-xs-4 form-group">
+    <!-- ko template: { name: 'mohm_field', data: {data: measurement_pour, title: 'Før <br class="visible-xs">innstøping'} } -->
     <!-- /ko -->
+  </div>
+  <div class="col-xs-4 form-group">
+    <!-- ko template: { name: 'mohm_field', data: {data: measurement_connect, title: 'Før <br class="visible-xs">tilkobling'} } -->
+    <!-- /ko -->
+  </div>
+  <!-- /ko -->
 
-    <!-- Dato -->
+  <!-- Dato -->
+  <div class="col-xs-12"><hr></div>
 
-        <div class="col-xs-12 col-md-4 form-group">
-          <label for="input-date_a" data-bind="css: { 'label-mod-flag': measurement_install().date.modified() }">Dato installasjon</label>
-          <div class="date" data-bind="dateTimePicker: measurement_install().date">
-          </div>
-        </div>
-        <!-- ko if: product() -->
-        <!-- ko if: product().manufacturor != 'Thermofloor' -->
-        <div class="col-xs-12 col-md-4 form-group">
-          <label for="input-date_b" data-bind="css: { 'label-mod-flag': measurement_pour().date.modified() }">Dato støp</label>
-          <div class="date" data-bind="dateTimePicker:  measurement_pour().date, minDate: measurement_install().date">
-          </div>
-        </div>
-        <div class="col-xs-12 col-md-4 form-group">
-          <label for="input-date_c" data-bind="css: { 'label-mod-flag': measurement_connect().date.modified() }">Dato montering</label>
-          <div class="date" data-bind="dateTimePicker:  measurement_connect().date, minDate: measurement_pour().date">
-          </div>
-        </div>
-        <!-- /ko -->
-        <!-- /ko -->
-  </script>
+  <div class="col-xs-12 col-md-4 form-group">
+    <label for="input-date_a" data-bind="css: { 'label-mod-flag': measurement_install().date.modified() }">Dato installasjon</label>
+    <div class="date" data-bind="dateTimePicker: measurement_install().date"></div>
+  </div>
+  <!-- ko if: product() -->
+  <!-- ko if: product().manufacturor != 'Thermofloor' -->
+  <div class="col-xs-12 col-md-4 form-group">
+    <label for="input-date_b" data-bind="css: { 'label-mod-flag': measurement_pour().date.modified() }">Dato støp</label>
+    <div class="date" data-bind="dateTimePicker:  measurement_pour().date, minDate: measurement_install().date"></div>
+  </div>
+  <div class="col-xs-12 col-md-4 form-group">
+    <label for="input-date_c" data-bind="css: { 'label-mod-flag': measurement_connect().date.modified() }">Dato montering</label>
+    <div class="date" data-bind="dateTimePicker:  measurement_connect().date, minDate: measurement_pour().date"></div>
+  </div>
+  <!-- /ko -->
+  <!-- /ko -->
+</script>

@@ -28,16 +28,18 @@
         <!-- ko foreach: list -->
         <a href="#" class="list-group-item hover" data-bind="click: function() {
           $('a[href=&quot;#customer-pane&quot;]').tab('show')
-         $root.customer().get(id)
+         $root.customer().get(customer_id)
       }">
-          <h4 class="list-group-item-heading justified">
+          <h4 class="list-group-item-heading">
+            <!-- ko if: $data.rooms -->
+            <small class="badge badge-default pull-right" data-bind="text: rooms.length < 3? rooms.join(', ').replace(/,(?=[^,]+$)/, ' og'): rooms.length + ' rom'"></small>
+            <!-- /ko -->
             <span>
               <span class="text-default" data-bind="text: address.address1"></span>
-              <small class="text-info" data-bind="text: customer_name"></small>
+<div>
+  <small class="text-info" data-bind="text: customer_name"></small>
+</div>
             </span>
-            <!-- ko if: $data.rooms -->
-            <small class="badge badge-default" data-bind="text: rooms.length < 3? rooms.join(', ').replace(/,(?=[^,]+$)/, ' og'): rooms.length + ' rom'"></small>
-            <!-- /ko -->
           </h4>
           <p class="list-group-item-text">
             <div class="text-muted">

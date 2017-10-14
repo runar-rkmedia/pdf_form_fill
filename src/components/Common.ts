@@ -4,7 +4,7 @@ export interface StrIndex<TValue> {
 }
 export interface AddressInterface {
   post_area: string;
-  post_code: number | null;
+  post_code: string | null;
   street_name?: string;
 }
 
@@ -75,17 +75,18 @@ export abstract class Post extends Base {
   remove_instance() {
     this.parent.list.remove(this)
   }
-  delete = () => {
+  delete = (data: any = { id: this.id() }) => {
     return $.ajax({
       url: this.url,
       type: HTTPVerbs.delete,
-      data: JSON.stringify({ id: this.id() })
+      data: JSON.stringify(data)
     }).done((result: any) => {
       if (result.status == 'OK') {
         this.remove_instance()
       }
     })
   }
+  public _delete = this.delete
   public post(h: any, event: Event, data_object?: any, url?: string): any {
     // Abstract class for posting data. Will use PUT if id > 0
     // Also handles buttons

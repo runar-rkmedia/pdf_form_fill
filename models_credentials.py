@@ -408,7 +408,8 @@ class Customer(MyBaseModel, db.Model):
             customer.owns(user)
         owner_data = None
         construction_data = None
-        for customer_data in customer_form.data.data:
+        print(customer_form.data)
+        for customer_data in customer_form.datas.data: # noqa
             data_type = customer_data.get('data_type')
             if data_type == CustomerDataType.owner.name:
                 owner_data = customer_data
@@ -456,7 +457,7 @@ class Customer(MyBaseModel, db.Model):
     def serialize(self):
         """Serialize."""
         t = {
-            'id': self.id,
+            'customer_id': self.id,
             'construction_new': self.construction_new,
             'construction_voltage': self.construction_voltage,
             'rooms': [i.serialize for i in self.rooms if not i.archived],
@@ -464,10 +465,10 @@ class Customer(MyBaseModel, db.Model):
         owner = self.owner.serialize if self.owner else None
         construction = self.construction.serialize
         construction['data_type'] = CustomerDataType.construction.name
-        t['data'] = [construction]
+        t['datas'] = [construction]
         if owner:
             owner['data_type'] = CustomerDataType.owner.name
-            t['data'].append(owner)
+            t['datas'].append(owner)
         return t
 
     @property
@@ -487,7 +488,7 @@ class Customer(MyBaseModel, db.Model):
         dictionary = {
             'customer_name': self.construction.customer_name,
             'address': self.construction.address.serialize,
-            'id': self.id,
+            'customer_id': self.id,
             'created': {
                 'given_name': self.created_by_user.given_name,
                 'family_name': self.created_by_user.family_name,

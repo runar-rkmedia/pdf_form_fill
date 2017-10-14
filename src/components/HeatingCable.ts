@@ -426,13 +426,7 @@ export class HeatingCable extends Post {
     return this.validationModel.isValid()
   })
   post(h: any, event: Event) {
-
-    return this.parent.parent.post_all(h, event)
-  }
-  bindDatePicker() {
-    // $('.datepicker').datepicker({
-    // useCurrent: false
-    // })
+    return this.parent.parent.post(h, event)
   }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
