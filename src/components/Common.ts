@@ -1,4 +1,9 @@
 import { TSAppViewModel } from './AppViewModel'
+
+var GetFormTemplate = require('./get_form.html');
+
+
+
 export interface StrIndex<TValue> {
   [key: string]: TValue
 }
@@ -69,6 +74,7 @@ export abstract class Post extends Base {
   abstract serialize: KnockoutObservable<{}>
   abstract set(result: any): void
   abstract url: string
+  abstract count_cables(): number
   form_url = '/form/'
   parent: any
   file_download: KnockoutObservable<string> = ko.observable()
@@ -166,7 +172,8 @@ export abstract class Post extends Base {
   }
   get_form_and_open(target: string = 'VarmeDokPDF') {
     let importantStuff = window.open('', target);
-    importantStuff.document.write('Henter skjema...');
+    // importantStuff.location.href = 'www.gogo.com';
+    importantStuff.document.write(GetFormTemplate.replace('${count}', this.count_cables()));
     return this.get_form().done((result: FileDownloadInterface) => {
       importantStuff.location.href = result.file_download;
     })

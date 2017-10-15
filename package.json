@@ -41,6 +41,7 @@
     "postcss-loader": "^2.0.6",
     "purify-css": "^1.2.5",
     "purifycss-webpack": "^0.7.0",
+    "raw-loader": "^0.5.1",
     "title-case": "^2.1.1",
     "typeahead": "^0.2.2",
     "typescript": "^2.6.0-dev.20170902",

@@ -240,6 +240,13 @@ export class Customer extends Post {
     this.construction.validationModel.errors.showAllMessages(false)
     $('#customer_form_collapse').collapse('show')
   }
+  count_cables() {
+    let count = 0
+    for (let room of this.rooms().list()) {
+      count += room.heating_cables().list().length
+    }
+    return count
+  }
   get = (id?: number) => {
     this.loading(true)
     $.get("/json/v1/customer/", { id })
