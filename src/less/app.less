@@ -303,6 +303,9 @@ canvas {
   &.justified-text-center span:last-child {
     text-align: right;
   }
+  &.wrap {
+    flex-wrap: wrap;
+  }
 }
 
 .justified-xs-column-3 {
@@ -484,6 +487,12 @@ body {
 .manufacturor-logo {
   height: @manufacturor-logo-height;
   width: @manufacturor-logo-width;
+}
+.checkbox .manufacturor-logo{
+  height: 2em;
+  width: 2em;
+  // margin-left: -4px;
+  // margin-right: -2px;
 }
 
 .list-group-item-heading .manufacturor-logo {

@@ -5,6 +5,7 @@ import { CustomerList } from "./CustomerList"
 import { RoomInterface } from "./Room"
 import { RoomList } from "./RoomList"
 import { Company, ControlPanel } from "./ControlPanel"
+import { getCookie } from './helpers/cookie'
 
 
 require("knockout.typeahead");
@@ -47,6 +48,7 @@ interface Select {
 export class TSAppViewModel {
   errors: KnockoutObservableArray<ErrorString> = ko.observableArray();
   error_message: KnockoutObservable<string> = ko.observable();
+  selected_manufacturors: KnockoutObservableArray<string> = ko.observableArray();
   file_download: KnockoutObservable<string> = ko.observable();
   last_sent_args: KnockoutObservable<string> = ko.observable();
   form_args: KnockoutObservable<string> = ko.observable($('#form').serialize());
@@ -117,7 +119,14 @@ export class TSAppViewModel {
       }
     };
     this.Products(new TSProductModel(this));
-
+    let cookie = getCookie('manufacturors')
+    let manufacturors: string[] = []
+    if (cookie) {
+      manufacturors = cookie.split(',')
+      if (manufacturors.length > 0) {
+        this.selected_manufacturors(manufacturors)
+      }
+    }
   }
   reportError(error: Error) {
     console.log(error)

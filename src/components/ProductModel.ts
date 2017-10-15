@@ -3,6 +3,7 @@ import { StrIndex } from "./Common"
 import { HeatingCable } from "./HeatingCable"
 import { Room } from "./Room"
 import { Pagination, sortDist } from "./Pagination"
+import { setCookie } from './helpers/cookie'
 import * as data from '../data.json';
 
 const static_data: StaticData = data;
@@ -80,17 +81,32 @@ export interface RoomTypesInfoFlat extends RoomTypeInfo {
 
 interface ArrayFylterInterface {
   value: any,
-  mustEqual: any
+  mustEqual?: any
+  inList?: any
 }
-
+let compare_arrays = (a1: any[], a2: any[]) => {
+  return a1.length == a2.length && a1.every((v: any, i: any) => a2.includes(v))
+}
 // Used to filter an arrayFilter.
 let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
   for (let current_filter of list_to_filter) {
-    let f = current_filter['value'];
-    let t = current_filter['mustEqual']();
-    if (t != undefined && f != t) {
-      return false;
+    let f = current_filter.value;
+    if (current_filter.mustEqual) {
+      let t = current_filter.mustEqual();
+      if (t != undefined && f != t) {
+        return false;
+      }
+    } else if (current_filter.inList) {
+      let t = current_filter.inList();
+      if (t.length == 0) {
+        return true
+      }
+      if (t.indexOf(f) == -1) {
+        return false;
+      }
+
     }
+
   }
   return true;
 };
@@ -101,25 +117,33 @@ export class ProductFilter {
   product_model: TSProductModel
   effect: KnockoutObservable<number> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
+  outside: KnockoutObservable<boolean> = ko.observable()
   manufacturor: KnockoutObservable<string> = ko.observable();
+  selected_manufacturors: KnockoutObservableArray<string> = ko.observableArray();
   vk_type: KnockoutObservable<string> = ko.observable();
   filtered_products_no_mainSpec: KnockoutComputed<ProductInterface[]>
   filtered_products: KnockoutComputed<ProductInterface[]>
   spec_groups: KnockoutComputed<ProductInterface[]>
+  show_save_selected_manufacturors_button: KnockoutComputed<boolean>
+  root: TSAppViewModel
 
   constructor(target: HeatingCable, room: Room, product_model: TSProductModel) {
     this.target = target
     this.room = room
+    this.outside(room.outside())
     this.product_model = product_model
+    this.root = room.parent.parent.parent
+    this.selected_manufacturors(this.root.selected_manufacturors().slice())
+
     this.filtered_products_no_mainSpec = ko.computed(() => {
-      if (!this.effect() && !this.manufacturor() && !this.mainSpec() && !this.vk_type() && !this.room.outside()) {
-        // return this.product_model.flat_products();
+      if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec() && !this.vk_type() && !this.outside()) {
+        return this.product_model.flat_products();
       }
       return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
         return myArrayFilter(
           [{
             value: prod.manufacturor,
-            mustEqual: this.manufacturor
+            inList: this.selected_manufacturors
           },
           {
             value: prod.type,
@@ -127,7 +151,7 @@ export class ProductFilter {
           },
           {
             value: prod.outside,
-            mustEqual: this.room.outside
+            mustEqual: this.outside
           }
 
           ]
@@ -163,6 +187,14 @@ export class ProductFilter {
         return true;
       })
     });
+    this.show_save_selected_manufacturors_button = ko.computed(() => {
+      if (this.selected_manufacturors().length == 0) {
+        return false
+      }
+      let a1 = this.root.selected_manufacturors()
+      let a2 = this.selected_manufacturors()
+      return !compare_arrays(a1, a2)
+    })
   }
 
 
@@ -172,6 +204,21 @@ export class ProductFilter {
       return myObj.id === Number(id)
     });
   }
+  save_selected_manufacturors() {
+    if (this.selected_manufacturors().length > 0) {
+      setCookie('manufacturors', String(this.selected_manufacturors()))
+      this.root.selected_manufacturors(this.selected_manufacturors().slice())
+    }
+  }
+  toggle_selected_manufacturor = (product: ProductInterface, event: Event) => {
+    let manufacturor = String(product.name)
+    if (this.selected_manufacturors.indexOf(manufacturor) >= 0) {
+      this.selected_manufacturors.remove(manufacturor)
+    } else {
+      this.selected_manufacturors.push(manufacturor)
+    }
+  }
+
 }
 
 export class TSProductModel {

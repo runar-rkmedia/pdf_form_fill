@@ -7,15 +7,17 @@
       <label>Varmekabel</label>
       <p class="help-block">
         Viser bare:
-        <!-- ko if: manufacturor() -->
-        <span class="badge" data-bind="text: manufacturor()"></span>
+        <!-- ko foreach: product_model.products -->
+        <a href="#" class="badge" data-bind="text: name, css: {opaque: $parent.selected_manufacturors().indexOf(name) == -1}, click: $parent.toggle_selected_manufacturor"></a>
         <!-- /ko -->
-        <!-- ko if: room.outside() -->
-        <span class="badge">produkter for utebruk</span>
+        <a href="#" class="badge" data-bind="click: function(){outside(!outside())}" >
+        <!-- ko if: outside() -->
+        produkter for utebruk
         <!-- /ko -->
-        <!-- ko ifnot: room.outside() -->
-        <span class="badge">produkter for innebruk</span>
+        <!-- ko ifnot: outside() -->
+          produkter for innebruk
         <!-- /ko -->
+      </a>
         <!-- ko if: mainSpec() -->
         <span class="badge">
           <!-- ko text: mainSpec() -->
@@ -36,8 +38,8 @@
         </span>
         <!-- /ko -->
       </p>
-      <div class="well">
-        <div class="form-group pt-4">
+      <div class="well pb-0">
+        <div class="form-group">
           <label>Hurtigsortering effekt (<span data-bind="text: effect"></span>&thinsp;W)</label>
           <div class="text-center">
             <input type="text" class="slider form-control" value="" data-bind="sliderValue:{value: effect, min: 0, max: 3300, step: 50, tooltip: 'show'}"/>
@@ -49,14 +51,28 @@
           </div>
           <div data-bind="if: $parent.product()">
             Valgt produkt:
-            <a href="#" data-bind="click: function(){effect($parent.product().effect);$parent.product_pagination.goto($parent.product())}">
-              <span data-bind="text: $parent.product().name"></span>
+            <a href="#" data-bind="click: $parent.go_to_selected_product">
+              <!-- ko with: $parent.product -->
+              <span data-bind="text: short_name + ' ' + effect + '&thinsp;W'"></span>
+              <!-- /ko -->
             </a>
           </div>
         </div>
+
+        <!-- /ko -->
+
+        <!-- /ko -->
       </div>
-      <p class="help-block">Støtte for ThermoFloor kommer.</p>
+
       <ul class="list-group list-group-striped ">
+        <!-- ko if: $parent.product_pagination.paginated ().length == 0 -->
+        <li class="bs-callout bs-callout-info">
+          <h3>Ingen produkter å vise.</h3>
+          <p class="help-block">
+            Sansynligvis skyldes dette filtreringen.
+          </p>
+        </li>
+        <!-- /ko -->
         <!-- ko foreach: $parent.product_pagination.paginated -->
         <a href="#" class="list-group-item" data-bind="click: $parents[1].select_product, css: {active: id == $parents[1].product_id()}">
           <h4 class="list-group-item-heading relative has-logo">

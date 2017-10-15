@@ -428,6 +428,19 @@ export class HeatingCable extends Post {
   post(h: any, event: Event) {
     return this.parent.parent.post(h, event)
   }
+  count_cables() {
+    return 1
+  }
+  go_to_selected_product = () => {
+    let product = this.product()
+    if (product) {
+      this.product_filter().effect(product.effect)
+      if (product.manufacturor && this.product_filter().selected_manufacturors.indexOf(String(product.manufacturor)) == -1) {
+        this.product_filter().selected_manufacturors.push(product.manufacturor)
+      }
+      this.product_pagination.current_page(0)
+    }
+  }
   product = ko.computed((): ProductInterface | undefined => {
     if (this.product_id() >= 0 && this.product_model) {
       let product = this.product_model.by_id(this.product_id())

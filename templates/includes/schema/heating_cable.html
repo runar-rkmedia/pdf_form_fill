@@ -7,7 +7,7 @@
         <!-- ko if: product() -->
         <img class="manufacturor-logo" data-bind="attr: {src: 'static/icons/' + product().manufacturor + '.svg'}" alt="">
         <span class="hidden-xs" data-bind="html: product().name"></span>
-        <span class="visible-xs-inline" data-bind="html: product().short_name + product().effect"></span>
+        <span class="visible-xs-inline" data-bind="html: product().short_name + ' ' +  (product().effect? product().effect + '&thinsp;W':'')"></span>
         <!-- /ko -->
         <!-- ko if: modified -->
         <span class="icon-mod-flag" aria-hidden="true"></span>
