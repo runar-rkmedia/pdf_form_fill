@@ -37,7 +37,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.html$/, loader: "raw-loader" },
+      { test: /\.tpl.html$/, loader: "raw-loader" },
       // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
       {
         test: /\.tsx?$/,

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .content {
+        position: absolute;
+        margin: auto;
+        top: 15%;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .content-description {
+        text-align: center;
+      }
+      h1 {
+        font-size: 38px;
+      }
+      p {
+        font-size: 18px;
+      }
+      body {
+        background-color: #344A5F;
+        color: #fff;
+        font-family: sans-serif;
+      }
+      #loader {
+        height: 30vh;
+        width: 30vh;
+        color: #071022;
+        border-radius: 50%;
+        border-top: 16px solid #18BC9C;
+        filter: blur(10px);
+        animation: spin 1s cubic-bezier(.83,.51,.37,.69) infinite;
+      }
+      @-webkit-keyframes spin {
+        0% {
+          -webkit-transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <title>Lager skjema...</title>
+  </head>
+  <body>
+
+    <div class="content" align="center">
+
+      <div id="loader"></div>
+      <div class="content-description">
+        <h1>Lager skjema</h1>
+        <p>Totalt
+          <span id="n"></span>
+          varmekabler som skal fylles ut.
+        </p>
+        <p>Dette burde ta omkring
+          <span id="t"></span>
+          sekunder.
+        </p>
+        <div id="t_"></div>
+      </div>
+    </div>
+
+  </body>
+  <script type="text/javascript">
+    var n = ${count};
+    var n_max = Math.ceil(n * 2.75 / 5) * 5;
+    document.getElementById("n").innerHTML = n;
+    document.getElementById("t").innerHTML = n_max;
+    var t_ = 0
+    setInterval(function () {
+      t_ += 1;
+      document.getElementById("t_").innerHTML = t_;
+    }, 1000)
+  </script>
+</html>

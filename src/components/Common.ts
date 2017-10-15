@@ -1,7 +1,6 @@
 import { TSAppViewModel } from './AppViewModel'
 
-var GetFormTemplate = require('./get_form.html');
-
+var GetFormTemplate = require('./get_form_.tpl.html');
 
 
 export interface StrIndex<TValue> {
