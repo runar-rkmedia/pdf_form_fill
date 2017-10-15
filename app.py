@@ -280,7 +280,7 @@ def json_multi_save():
         if not room_item and new_room_item:
             return_data['heating_cable'] = new_room_item.serialize
     for room in form.rooms.data:
-        Room.update_or_create(
+        room_entity = Room.update_or_create(
             room_id=room['id'],
             user=current_user,
             customer_id=room['customer_id'],
@@ -309,6 +309,8 @@ def json_multi_save():
             inside_specs=room['inside_specs'],
             outside_specs=room['outside_specs'],
         )
+        if int(room['id']) < 0:
+            return_data['room'] = room_entity.serialize
 
     db.session.commit()
     return jsonify(return_data) if return_data else json_ok()

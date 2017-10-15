@@ -72,11 +72,6 @@ export interface RoomInterface {
   owner_informed: boolean
 }
 
-interface MultiSave {
-  rooms: RoomInterface[]
-  heating_cables: HeatingCableInterface[]
-}
-
 export class Room extends Post {
   url = '/json/v1/room/'
   id: KnockoutObservable<number> = ko.observable()
@@ -223,6 +218,9 @@ export class Room extends Post {
         this))
     this.validationModel.errors.showAllMessages(false)
 
+  }
+  count_cables() {
+    return 0
   }
   use_inside_checklist = ko.computed((): boolean => {
     if (this.heating_cables()) {

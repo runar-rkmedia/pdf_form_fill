@@ -686,6 +686,7 @@ class Room(MyBaseModel, db.Model):
         room.control_system_room_sensor = control_system_room_sensor
         room.control_system_designation = control_system_designation
         room.control_system_other = control_system_other
+        return room
 
     @property
     def serialize(self, user=None):

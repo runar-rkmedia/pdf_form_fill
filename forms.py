@@ -181,7 +181,7 @@ class RoomForm(FlaskForm):
         DataRequired(
             'Mottok ikke et kunde-objekt. Dette er sansynligvis en feil.')
     ])
-    id = HiddenField()
+    id = IntegerField()
     check_earthed = FormField(CheckEarthed)
     check_max_temp = FormField(CheckMaxTemp)
     check_control_system = FormField(CheckControlSystem)
