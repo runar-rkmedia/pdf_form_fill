@@ -16,22 +16,11 @@ class ThermoFloorCable(StampablePdfForm):
             checkbox_value=self.CHECKBOX_VALUE,
             signature_location_sizes=[
                 {
-                    'x': 164,
-                    'y': 176,
-                    'w': 219,
-                    'h': 19
-                },
-                {
-                    'x': 174,
-                    'y': 432,
-                    'w': 114,
-                    'h': 16
-                },
-                {
-                    'x': 174,
-                    'y': 524,
-                    'w': 114,
-                    'h': 16
+                    'p': 2,
+                    'x': 300,
+                    'y': 50,
+                    'w': 400,
+                    'h': 40
                 }
             ])
 

@@ -19,7 +19,7 @@ class Stamp(object):
     def __init__(self, signature_location_sizes):
         self.signature_location_sizes = signature_location_sizes
 
-    def stamp_with_image(self, output_path, image, offsetx, offsety):
+    def stamp_with_image(self, output_path, image, offsetx, offsety, page=1):
         """Will put image on top of this pdf using java"""
         # TODO: should go back to imagemagick
         image_size = self.get_image_size(image)
@@ -45,6 +45,8 @@ class Stamp(object):
                     signature_location_size['x'],
                     signature_location_size['y']
                 ),
+                '-p',
+                str(signature_location_size.get('p', 1)),
                 '-e',
                 's',
                 output_path]
