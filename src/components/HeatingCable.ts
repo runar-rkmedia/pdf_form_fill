@@ -352,26 +352,24 @@ export class HeatingCable extends Post {
     }, this.other_observer))
 
     this.cc = ko.observable(new InputReadOnlyToggle(() => {
-      if (this.product()) {
-        if (this.product()!.type != 'mat') {
-          // For rooms with multiple cables, we need to do some guesswork to
-          // calculate the area that this cable is covering.
-          let room_effect = this.parent.parent.room_effect()
-          let this_effect = this.product()!.effect
-          if (room_effect && this_effect) {
-            let coverage_fraction = this_effect / room_effect
-            let heated_area = this.parent.parent.heated_area()
-            let heated_area_of_this_cable = heated_area * coverage_fraction
-            let length = this.product()!.specs!.Length
-            if (length && heated_area_of_this_cable) {
-              let value = heated_area_of_this_cable / length * 100
-              return parseFloat(value.toFixed(1))
-            }
-          }
+      let product = this.product()
+      let default_cc = Number(heating_cable!.specs.cc.v) || 0
+      if (!product || product.isMat || !product.specs) {
+        return default_cc
+      }
+      let room_effect = this.parent.parent.room_effect()
+      let this_effect = product.effect
+      if (room_effect && this_effect) {
+        let coverage_fraction = this_effect / room_effect
+        let heated_area = this.parent.parent.heated_area()
+        let heated_area_of_this_cable = heated_area * coverage_fraction
+        let length = product.specs.Length
+        if (length && heated_area_of_this_cable) {
+          let value = heated_area_of_this_cable / length * 100
+          return parseFloat(value.toFixed(1))
         }
       }
-      // Set an initial value, to keep the modified-flag from raising
-      return Number(heating_cable!.specs.cc.v) || 0
+      return default_cc
     }, this.other_observer))
 
     this.serialize = ko.computed((): HeatingCableInterface => {

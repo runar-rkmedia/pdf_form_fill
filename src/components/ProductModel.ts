@@ -15,6 +15,10 @@ export interface ProductInterface {
   manufacturor?: string;
   type?: string;
   outside?: boolean;
+  inside?: boolean;
+  isMat?: boolean;
+  per_meter?: boolean;
+  self_limiting?: boolean;
   name?: string;
   mainSpec: number;
   secondarySpec?: number;
@@ -22,7 +26,6 @@ export interface ProductInterface {
   specs?: ProductSpecs
   short_name?: string
 }
-
 
 interface ProductSpecs {
   Area?: number
@@ -45,7 +48,11 @@ interface ProductTypeInterface {
   mainSpec: number;
   secondarySpec: number
   type: string
-  inside: string
+  inside: boolean
+  outside: boolean
+  per_meter: boolean;
+  self_limiting: boolean;
+  isMat: boolean
   products: ProductInterface[]
   name: string
 }
@@ -92,14 +99,14 @@ let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
   for (let current_filter of list_to_filter) {
     let f = current_filter.value;
     if (current_filter.mustEqual) {
-      let t = current_filter.mustEqual();
+      let t = current_filter.mustEqual;
       if (t != undefined && f != t) {
         return false;
       }
     } else if (current_filter.inList) {
-      let t = current_filter.inList();
+      let t = current_filter.inList;
       if (t.length == 0) {
-        return true
+        break
       }
       if (t.indexOf(f) == -1) {
         return false;
@@ -111,6 +118,13 @@ let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
   return true;
 };
 
+interface VKTypes {
+  name: string
+  observer: KnockoutObservable<boolean>
+}
+
+
+
 export class ProductFilter {
   target: HeatingCable
   room: Room
@@ -119,8 +133,25 @@ export class ProductFilter {
   mainSpec: KnockoutObservable<number> = ko.observable();
   outside: KnockoutObservable<boolean> = ko.observable()
   manufacturor: KnockoutObservable<string> = ko.observable();
+  cable: KnockoutObservable<boolean> = ko.observable(true)
+  mat: KnockoutObservable<boolean> = ko.observable(false)
+  single_leader: KnockoutObservable<boolean> = ko.observable(false)
   selected_manufacturors: KnockoutObservableArray<string> = ko.observableArray();
-  vk_type: KnockoutObservable<string> = ko.observable();
+  vk_available_types: VKTypes[] = [
+    {
+      name: 'Kabel',
+      observer: this.cable
+    },
+    {
+      name: 'Matte',
+      observer: this.mat
+    },
+    {
+      name: 'Enleder',
+      observer: this.single_leader
+    },
+  ]
+  selected_vk_types: KnockoutObservableArray<string> = ko.observableArray();
   filtered_products_no_mainSpec: KnockoutComputed<ProductInterface[]>
   filtered_products: KnockoutComputed<ProductInterface[]>
   spec_groups: KnockoutComputed<ProductInterface[]>
@@ -136,40 +167,39 @@ export class ProductFilter {
     this.selected_manufacturors(this.root.selected_manufacturors().slice())
 
     this.filtered_products_no_mainSpec = ko.computed(() => {
-      if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec() && !this.vk_type() && !this.outside()) {
-        return this.product_model.flat_products();
-      }
       return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
-        return myArrayFilter(
-          [{
-            value: prod.manufacturor,
-            inList: this.selected_manufacturors
-          },
-          {
-            value: prod.type,
-            mustEqual: this.vk_type
-          },
-          {
-            value: prod.outside,
-            mustEqual: this.outside
-          }
 
-          ]
-        );
+        if (this.outside() != prod.outside) { return false }
+        if (this.mat() || this.cable() || this.single_leader()) {
+          let matches_vk_type = false
+          if (this.mat() && prod.isMat) { matches_vk_type = true }
+          if (this.cable() && !prod.isMat && !prod.per_meter) { matches_vk_type = true }
+          if (this.single_leader() && prod.per_meter) { matches_vk_type = true }
+
+          if (!matches_vk_type) { return false }
+        }
+
+        let arrayFilterData: ArrayFylterInterface[] = [{
+          value: prod.manufacturor,
+          inList: this.selected_manufacturors()
+        }
+        ]
+
+        return myArrayFilter(arrayFilterData);
 
       }).sort((a, b) => {
         return a.effect - b.effect;
       });
     });
     this.filtered_products = ko.computed(() => {
-      if (!this.effect() && !this.manufacturor() && !this.mainSpec() && !this.vk_type()) {
+      if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec() && this.selected_vk_types().length == 0) {
         return this.filtered_products_no_mainSpec()
       }
       return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
         return myArrayFilter(
           [{
             value: prod.mainSpec,
-            mustEqual: this.mainSpec
+            mustEqual: this.mainSpec()
           }
           ]
         );
@@ -214,11 +244,28 @@ export class ProductFilter {
     let manufacturor = String(product.name)
     if (this.selected_manufacturors.indexOf(manufacturor) >= 0) {
       this.selected_manufacturors.remove(manufacturor)
+      if (this.selected_manufacturors().length == 0)
+        this.selected_vk_types(['Nexans', 'Thermofloor', 'Øglænd'])
     } else {
       this.selected_manufacturors.push(manufacturor)
     }
   }
+  toggle_selected_vk_type = (vk_type: VKTypes, event: Event) => {
+    vk_type.observer(!vk_type.observer())
+    let all_false = true
+    for (let vk of this.vk_available_types) {
+      if (vk.observer()) {
+        all_false = false
+        break
+      }
+    }
+    if (all_false) {
+      for (let vk of this.vk_available_types) {
+        vk.observer(true)
+      }
+    }
 
+  }
 }
 
 export class TSProductModel {
@@ -241,17 +288,20 @@ export class TSProductModel {
           for (var k = 0; k < d.products.length; k++) {
             var p = d.products[k];
             p.manufacturor = m.name;
-            p.type = d.type;
-            p.outside = !d.inside;
+            p.isMat = d.isMat;
+            p.outside = d.outside;
+            p.inside = d.inside;
+            p.self_limiting = d.self_limiting;
             p.name = d.name;
             p.short_name = d.name;
+            p.per_meter = d.per_meter
             if (p.effect) {
               p.name += ` – ${p.effect}W`;
             }
             if (d.mainSpec) {
               p.name += ` – ${d.mainSpec}W/m`;
             }
-            if (d.type == 'mat') {
+            if (d.isMat) {
               p.name += "²";
             }
             if ('mainSpec' in d) {

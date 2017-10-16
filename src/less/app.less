@@ -303,6 +303,7 @@ canvas {
   &.justified-text-center span:last-child {
     text-align: right;
   }
+
   &.wrap {
     flex-wrap: wrap;
   }
@@ -488,7 +489,8 @@ body {
   height: @manufacturor-logo-height;
   width: @manufacturor-logo-width;
 }
-.checkbox .manufacturor-logo{
+
+.checkbox .manufacturor-logo {
   height: 2em;
   width: 2em;
   // margin-left: -4px;
@@ -641,9 +643,10 @@ a[data-action="today"] span:after {
 }
 
 fieldset {
-  div:first-of-type{
-    margin-top: 0px;
+  div:first-of-type {
+    margin-top: 0;
   }
+
   legend {
     font-size: 15px;
     margin-bottom: 5px;
@@ -652,7 +655,50 @@ fieldset {
   }
 }
 
-.disabledBtn{
+.disabledBtn {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
+}
+
+a.badge {
+  font-size: 1.45rem;
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  &.manufacturor {
+    background-color: darken(@brand-success, 10%);
+
+    &:hover {
+      background-color: darken(@brand-success, 20%);
+    }
+
+    &:not(.active) {
+      background-color: lighten(@brand-success, 0%);
+    }
+  }
+
+  &.vk_type {
+    background-color: darken(@brand-warning, 10%);
+
+    &:hover {
+      background-color: darken(@brand-warning, 20%);
+    }
+
+    &:not(.active) {
+      background-color: lighten(@brand-warning, 20%);
+    }
+  }
+
+  &:not(.active) {
+    color: @text-color;
+    opacity: 0.7;
+
+    > .glyphicon:before {
+       content: "\e014"!important;
+    }
+  }
+
+  &:hover {
+    background-color: darken(@brand-primary, 20%);
+  }
 }

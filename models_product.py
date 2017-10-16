@@ -2,30 +2,6 @@ from enum import Enum
 from models import db, ByID
 
 
-class ProductCatagory(Enum):
-    """Enumeration for catagories of products."""
-    cable_inside = 1,
-    cable_outside = 2,
-    mat_inside = 3
-    mat_outside = 4
-    single_inside = 5
-    single_outside = 6
-
-    @classmethod
-    def split(cls, enumObject):
-        """Split it."""
-        catagory_type = ''
-        if enumObject in [cls.cable_inside, cls.cable_outside]:
-            catagory_type = 'cable'
-        elif enumObject in [cls.mat_inside, cls.mat_outside]:
-            catagory_type = 'mat'
-        elif enumObject in [cls.single_inside, cls.single_outside]:
-            catagory_type = 'single'
-        return catagory_type, enumObject in [
-            cls.cable_outside, cls.mat_outside, cls.single_outside
-        ]
-
-
 class Manufacturor(db.Model):
     """Manufacturor-table."""
     __bind_key__ = 'products'
@@ -60,7 +36,11 @@ class ProductType(db.Model):
     # electrical effect per meter(squared)
     mainSpec = db.Column(db.SmallInteger)
     secondarySpec = db.Column(db.SmallInteger)
-    catagory = db.Column(db.Enum(ProductCatagory))
+    isMat = db.Column(db.Boolean, default=False)
+    self_limiting = db.Column(db.Boolean, default=False)
+    per_meter = db.Column(db.Boolean, default=False)
+    inside = db.Column(db.Boolean, default=False)
+    outside = db.Column(db.Boolean, default=False)
 
     @property
     def serialize(self):
@@ -74,10 +54,13 @@ class ProductType(db.Model):
             'name': self.name,
             'mainSpec': self.mainSpec,
             'secondarySpec': self.secondarySpec,
-            'products': products_dict
+            'products': products_dict,
+            'isMat': self.isMat,
+            'per_meter': self.per_meter,
+            'self_limiting': self.self_limiting,
+            'inside': self.inside,
+            'outside': self.outside,
         }
-        dictionary['type'], dictionary[
-            'inside'] = ProductCatagory.split(self.catagory)
         return dictionary
 
 

@@ -8,7 +8,6 @@ from dateutil.parser import parse
 
 import my_exceptions
 from models_credentials import Customer, Room, RoomItem
-from models_product import ProductCatagory
 from pdf_filler.helpers import NumberFormatter, OhmsLaw
 from pdf_filler.schema import get_template_schema
 from pdffields.fields import combine_pdfs
@@ -307,10 +306,8 @@ class FormHandler(object):
             'product.resistance_nominal' + self.subfix:
                 calc.resistance,
             'product.twowires' + self.subfix: (
-                True if product.product_type.catagory not in [
-                    ProductCatagory.single_inside,
-                    ProductCatagory.single_outside
-                ] else False)
+                True if product.effect != product.product_type.mainSpec
+                else False)
         })
 
     def push_from_room(self, room, unique=False):

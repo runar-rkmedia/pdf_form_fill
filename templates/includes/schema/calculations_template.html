@@ -5,7 +5,7 @@
 
   <!-- ko if: product()-->
   <div class="row">
-    <div class="col-xs-12" data-bind="css: {'col-xs-6': product().type !== 'mat'}" >
+    <div class="col-xs-12" data-bind="css: {'col-xs-6': !product().isMat}" >
       <!-- ko with: area_output() -->
       <div class="form-group">
         {{ heatingForm.specs.area_output.v.label(**{'data-bind': "css: { 'label-mod-flag': output.modified()} " })}}
@@ -19,7 +19,8 @@
       </div>
       <!-- /ko -->
     </div>
-    <!-- ko if: product().type != 'mat' -->
+
+    <!-- ko if: !product().isMat -->
     <!-- ko with: cc() -->
     <div class="col-xs-6">
       <div class="form-group">

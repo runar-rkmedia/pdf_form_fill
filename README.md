@@ -14,7 +14,6 @@ Currently, the pdfs are just stored on the server. This is okey, as the user wil
 
 Might integrate with DropBox, to simply store the company's files there.
 
-For that reason, I don't see a problem in storing the pdf's on herokus [Ephemeral filesystem](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem) for the 5-minute-window a user might need to download his pdf.
 
 ## Get started:
 
@@ -69,7 +68,7 @@ It is easiest to set environment-variables locally by using the file `instance/c
 ## To do:
 
  - [X] Øglænd
- - [ ] TermoFloor
+ - [X] TermoFloor
  - [X] Adresse-lookup
  - [X] Lagre skjema
  - [X] Lagre kunder
