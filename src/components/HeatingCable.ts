@@ -414,6 +414,12 @@ export class HeatingCable extends Post {
     // }
     this.set(heating_cable)
     ko.computed(() => {
+      if (!this.product_filter) {
+        return null
+      }
+      if (!this.product_filter().filtered_products) {
+        return null
+      }
       this.product_pagination.list(sortDist(this.product_filter().filtered_products(), this.product_filter().effect()))
     })
     this.product_filter().effect.subscribe(() => {
