@@ -49,6 +49,7 @@ export class TSAppViewModel {
   errors: KnockoutObservableArray<ErrorString> = ko.observableArray();
   error_message: KnockoutObservable<string> = ko.observable();
   selected_manufacturors: KnockoutObservableArray<string> = ko.observableArray();
+  selected_vk_types: KnockoutObservableArray<number> = ko.observableArray();
   file_download: KnockoutObservable<string> = ko.observable();
   last_sent_args: KnockoutObservable<string> = ko.observable();
   form_args: KnockoutObservable<string> = ko.observable($('#form').serialize());
@@ -119,12 +120,26 @@ export class TSAppViewModel {
       }
     };
     this.Products(new TSProductModel(this));
+    this.get_selected_manufacturors_cookie()
+    this.get_selected_vk_types_cookie()
+  }
+  get_selected_manufacturors_cookie = () => {
     let cookie = getCookie('manufacturors')
     let manufacturors: string[] = []
     if (cookie) {
       manufacturors = cookie.split(',')
       if (manufacturors.length > 0) {
         this.selected_manufacturors(manufacturors)
+      }
+    }
+  }
+  get_selected_vk_types_cookie = () => {
+    let cookie = getCookie('vk_types')
+    let vk_types: string[] = []
+    if (cookie) {
+      vk_types = cookie.split(',')
+      if (vk_types.length > 0) {
+        this.selected_vk_types(vk_types)
       }
     }
   }

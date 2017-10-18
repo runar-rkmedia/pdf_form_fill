@@ -419,6 +419,7 @@ export class HeatingCable extends Post {
     this.product_filter().effect.subscribe(() => {
       this.product_pagination.current_page(0)
     })
+    this.go_to_selected_product()
   }
   isValid = ko.computed(() => {
     return this.validationModel.isValid()
@@ -431,11 +432,16 @@ export class HeatingCable extends Post {
   }
   go_to_selected_product = () => {
     let product = this.product()
+    let pf = this.product_filter()
     if (product) {
-      this.product_filter().effect(product.effect)
-      if (product.manufacturor && this.product_filter().selected_manufacturors.indexOf(String(product.manufacturor)) == -1) {
-        this.product_filter().selected_manufacturors.push(product.manufacturor)
+      pf.effect(product.effect)
+      if (product.manufacturor && pf.selected_manufacturors.indexOf(String(product.manufacturor)) == -1) {
+        pf.selected_manufacturors.push(product.manufacturor)
       }
+      pf.mat(pf.mat() || Boolean(product.isMat))
+      pf.cable(pf.cable() || Boolean(!product.isMat && !product.per_meter))
+      pf.single_leader(pf.single_leader() || Boolean(product.per_meter))
+      pf.outside(Boolean(product.outside || !product.inside))
       this.product_pagination.current_page(0)
     }
   }

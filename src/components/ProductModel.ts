@@ -120,7 +120,14 @@ let myArrayFilter = (list_to_filter: ArrayFylterInterface[]) => {
 
 interface VKTypes {
   name: string
+  id: number
   observer: KnockoutObservable<boolean>
+}
+
+enum VKTypesID {
+  cable = 1,
+  mat,
+  single_leader
 }
 
 
@@ -131,27 +138,29 @@ export class ProductFilter {
   product_model: TSProductModel
   effect: KnockoutObservable<number> = ko.observable();
   mainSpec: KnockoutObservable<number> = ko.observable();
-  outside: KnockoutObservable<boolean> = ko.observable()
+  outside: KnockoutObservable<boolean> = ko.observable(false)
   manufacturor: KnockoutObservable<string> = ko.observable();
-  cable: KnockoutObservable<boolean> = ko.observable(true)
-  mat: KnockoutObservable<boolean> = ko.observable(false)
+  cable: KnockoutObservable<boolean> = ko.observable(false)
+  mat: KnockoutObservable<boolean> = ko.observable(true)
   single_leader: KnockoutObservable<boolean> = ko.observable(false)
   selected_manufacturors: KnockoutObservableArray<string> = ko.observableArray();
   vk_available_types: VKTypes[] = [
     {
       name: 'Kabel',
+      id: VKTypesID.cable,
       observer: this.cable
     },
     {
       name: 'Matte',
+      id: VKTypesID.mat,
       observer: this.mat
     },
     {
       name: 'Enleder',
+      id: VKTypesID.single_leader,
       observer: this.single_leader
     },
   ]
-  selected_vk_types: KnockoutObservableArray<string> = ko.observableArray();
   filtered_products_no_mainSpec: KnockoutComputed<ProductInterface[]>
   filtered_products: KnockoutComputed<ProductInterface[]>
   spec_groups: KnockoutComputed<ProductInterface[]>
@@ -165,90 +174,95 @@ export class ProductFilter {
     this.product_model = product_model
     this.root = room.parent.parent.parent
     this.selected_manufacturors(this.root.selected_manufacturors().slice())
-
-    this.filtered_products_no_mainSpec = ko.computed(() => {
-      return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
-
-        if (this.outside() != prod.outside) { return false }
-        if (this.mat() || this.cable() || this.single_leader()) {
-          let matches_vk_type = false
-          if (this.mat() && prod.isMat) { matches_vk_type = true }
-          if (this.cable() && !prod.isMat && !prod.per_meter) { matches_vk_type = true }
-          if (this.single_leader() && prod.per_meter) { matches_vk_type = true }
-
-          if (!matches_vk_type) { return false }
-        }
-
-        let arrayFilterData: ArrayFylterInterface[] = [{
-          value: prod.manufacturor,
-          inList: this.selected_manufacturors()
-        }
-        ]
-
-        return myArrayFilter(arrayFilterData);
-
-      }).sort((a, b) => {
-        return a.effect - b.effect;
-      });
-    });
-    this.filtered_products = ko.computed(() => {
-      if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec() && this.selected_vk_types().length == 0) {
-        return this.filtered_products_no_mainSpec()
+    let selected_vk_types = this.root.selected_vk_types().slice()
+    for (let vk_type_id of selected_vk_types) {
+      let vk_type = this.vk_available_types.find(myObj => {
+        return myObj.id === Number(vk_type_id)
+      })
+      if (vk_type) {
+        vk_type.observer(true)
       }
-      return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
-        return myArrayFilter(
-          [{
-            value: prod.mainSpec,
-            mustEqual: this.mainSpec()
+      this.filtered_products_no_mainSpec = ko.computed(() => {
+        return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
+
+          if (this.outside() != prod.outside) { return false }
+          if (this.mat() || this.cable() || this.single_leader()) {
+            let matches_vk_type = false
+            if (this.mat() && prod.isMat) { matches_vk_type = true }
+            if (this.cable() && !prod.isMat && !prod.per_meter) { matches_vk_type = true }
+            if (this.single_leader() && prod.per_meter) { matches_vk_type = true }
+
+            if (!matches_vk_type) { return false }
+          }
+
+          let arrayFilterData: ArrayFylterInterface[] = [{
+            value: prod.manufacturor,
+            inList: this.selected_manufacturors()
           }
           ]
-        );
 
-      })
-    });
-    this.spec_groups = ko.computed(() => {
-      let filtered = this.filtered_products_no_mainSpec();
-      let flags: StrIndex<boolean> = {};
-      return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface) => {
-        if (flags[entry.mainSpec]) {
-          return false;
+          return myArrayFilter(arrayFilterData);
+
+        }).sort((a, b) => {
+          return a.effect - b.effect;
+        });
+      });
+      this.filtered_products = ko.computed(() => {
+        if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec()) {
+          return this.filtered_products_no_mainSpec()
         }
-        flags[entry.mainSpec] = true;
-        return true;
-      })
-    });
-    this.show_save_selected_manufacturors_button = ko.computed(() => {
-      if (this.selected_manufacturors().length == 0) {
-        return false
-      }
-      let a1 = this.root.selected_manufacturors()
-      let a2 = this.selected_manufacturors()
-      return !compare_arrays(a1, a2)
-    })
+        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
+          return myArrayFilter(
+            [{
+              value: prod.mainSpec,
+              mustEqual: this.mainSpec()
+            }
+            ]
+          );
+
+        })
+      });
+      this.spec_groups = ko.computed(() => {
+        let filtered = this.filtered_products_no_mainSpec();
+        let flags: StrIndex<boolean> = {};
+        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface) => {
+          if (flags[entry.mainSpec]) {
+            return false;
+          }
+          flags[entry.mainSpec] = true;
+          return true;
+        })
+      });
+    }
   }
-
-
   by_id = (id: number) => {
     let f = this.product_model.flat_products();
     return f.find(myObj => {
       return myObj.id === Number(id)
     });
   }
-  save_selected_manufacturors() {
+  save_filter() {
     if (this.selected_manufacturors().length > 0) {
       setCookie('manufacturors', String(this.selected_manufacturors()))
       this.root.selected_manufacturors(this.selected_manufacturors().slice())
     }
+    let s = this.vk_available_types.filter((vk_type) => {
+      return vk_type.observer()
+    }).map((vk_type) => {
+      return vk_type.id
+    })
+    setCookie('vk_types', String(s))
   }
   toggle_selected_manufacturor = (product: ProductInterface, event: Event) => {
     let manufacturor = String(product.name)
     if (this.selected_manufacturors.indexOf(manufacturor) >= 0) {
       this.selected_manufacturors.remove(manufacturor)
       if (this.selected_manufacturors().length == 0)
-        this.selected_vk_types(['Nexans', 'Thermofloor', 'Øglænd'])
+        this.selected_manufacturors(['Nexans', 'Thermofloor', 'Øglænd'])
     } else {
       this.selected_manufacturors.push(manufacturor)
     }
+    this.save_filter()
   }
   toggle_selected_vk_type = (vk_type: VKTypes, event: Event) => {
     vk_type.observer(!vk_type.observer())
@@ -264,7 +278,7 @@ export class ProductFilter {
         vk.observer(true)
       }
     }
-
+    this.save_filter()
   }
 }
 

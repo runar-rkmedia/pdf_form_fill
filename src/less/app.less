@@ -360,20 +360,26 @@ body {
   // padding: 40px;
 }
 
-ul.list-group.list-group-striped a:not(.active) {
-  &:nth-of-type(even) {
-    background: darken(@table-bg-accent, 5%);
+ul.list-group.list-group-striped {
+  .visible-active input {
+    color: @text-color;
   }
 
-  &:hover {
-    background: darken(@table-bg-hover, 20%);
-
-    > .list-group-item-heading {
-      color: @primary-color;
+  a:not(.active) {
+    &:nth-of-type(even) {
+      background: darken(@table-bg-accent, 5%);
     }
 
-    > .text-muted {
-      color: @text-color;
+    &:hover {
+      background: darken(@table-bg-hover, 20%);
+
+      > .list-group-item-heading {
+        color: @primary-color;
+      }
+
+      > .text-muted {
+        color: @text-color;
+      }
     }
   }
 }
@@ -660,45 +666,33 @@ fieldset {
   cursor: not-allowed !important;
 }
 
-a.badge {
-  font-size: 1.45rem;
-  margin-top: 5px;
-  margin-bottom: 5px;
-
-  &.manufacturor {
-    background-color: darken(@brand-success, 10%);
-
-    &:hover {
-      background-color: darken(@brand-success, 20%);
-    }
-
-    &:not(.active) {
-      background-color: lighten(@brand-success, 0%);
-    }
+.btn-group-dropdowns {
+  +.well {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
 
-  &.vk_type {
-    background-color: darken(@brand-warning, 10%);
-
-    &:hover {
-      background-color: darken(@brand-warning, 20%);
+  .btn-group {
+    button {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
 
-    &:not(.active) {
-      background-color: lighten(@brand-warning, 20%);
+    &:not(:first-child) > button {
+      border-left: none !important;
     }
-  }
 
-  &:not(.active) {
-    color: @text-color;
-    opacity: 0.7;
+    a {
+      &.active > .glyphicon {
+        color: @brand-success;
+      }
 
-    > .glyphicon:before {
-       content: "\e014"!important;
+      &:not(.active) {
+        > .glyphicon:before {
+          color: @brand-danger;
+          content: "\e014"!important;
+        }
+      }
     }
-  }
-
-  &:hover {
-    background-color: darken(@brand-primary, 20%);
   }
 }

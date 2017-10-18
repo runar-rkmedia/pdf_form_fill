@@ -4,161 +4,139 @@
   <div class="row">
     <div class="col-xs-12">
       <!-- ko with: product_filter -->
-      <label>Varmekabel</label>
-      <p class="help-block">
-        <div>Viser bare:</div>
-        <!-- ko foreach: product_model.products -->
-        <a href="#" class="btn badge manufacturor" role="button" data-bind="css: {active: $parent.selected_manufacturors().indexOf(name) != -1}, click: $parent.toggle_selected_manufacturor">
-          <span data-bind="text: name"></span>
-          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-        </a>
-        <!-- /ko -->
-        <a href="#" class="btn badge outside active" class="button" data-bind="click: function(){outside(!outside())}">
-          <!-- ko if: outside() -->
-          produkter for utebruk
-          <!-- /ko -->
-          <!-- ko ifnot: outside() -->
-          produkter for innebruk
-          <!-- /ko -->
-        </span>
-        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-      </a>
-      <span class="text-nowrap">
-        <!-- ko foreach: vk_available_types -->
-        <a href="#" class="btn badge vk_type" role="button" data-bind="css: {active: observer()}, click: $parent.toggle_selected_vk_type">
-          <span data-bind="text: name"></span>
-          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-        </a>
-        <!-- /ko -->
-      </span>
-    </p>
-    <div class="well pb-0">
-      <div class="form-group">
-        <label>Hurtigsortering effekt (<span data-bind="text: effect"></span>&thinsp;W)</label>
-        <div class="text-center">
-          <input type="text" class="slider form-control" value="" data-bind="sliderValue:{value: effect, min: 0, max: 3300, step: 50, tooltip: 'show'}"/>
+      <div class="btn-group btn-group-justified btn-group-dropdowns">
+        <div class="btn-group">
+          <button class="btn btn-info btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Produsenter
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <!-- ko foreach: product_model.products -->
+              <a href="#" data-bind="css: {active: $parent.selected_manufacturors().indexOf(name) != -1}, click: $parent.toggle_selected_manufacturor">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                <span data-bind="text: name"></span>
+              </a>
+              <!-- /ko -->
+            </li>
+          </ul>
         </div>
-        <div data-bind="if: $parent.suggested_effect() > 0">
-          Anbefalt effekt:
-          <a href="#" data-bind="click: function(){effect($parent.suggested_effect());$parent.product_pagination.current_page(0)}">
-            <span data-bind="text: $parent.suggested_effect"></span>&thinsp;W</a>
+        <div class="btn-group">
+          <button class="btn btn-info btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Type
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <!-- ko foreach: vk_available_types -->
+              <a href="#" data-bind="css: {active: observer()}, click: $parent.toggle_selected_vk_type">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                <span data-bind="text: name"></span>
+              </a>
+              <!-- /ko -->
+            </li>
+          </ul>
         </div>
-        <div data-bind="if: $parent.product()">
-          Valgt produkt:
-          <a href="#" data-bind="click: $parent.go_to_selected_product">
-            <!-- ko with: $parent.product -->
-            <span data-bind="text: short_name + ' ' + effect + '&thinsp;W'"></span>
-            <!-- /ko -->
-          </a>
+        <div class="btn-group">
+          <button class="btn btn-info btn-xs" type="button" data-bind="click: function(){outside(!outside())}">
+            <span data-bind="text: outside()? 'Utebruk':'Innebruk'"></span>
+          </button>
         </div>
       </div>
+      <div class="well pb-0">
+        <div class="form-group">
+          <label>Hurtigsortering effekt (<span data-bind="text: effect"></span>&thinsp;W)</label>
+          <div class="text-center">
+            <input type="text" class="slider form-control" value="" data-bind="sliderValue:{value: effect, min: 0, max: 3300, step: 50, tooltip: 'show'}"/>
+          </div>
+          <div data-bind="if: $parent.suggested_effect() > 0">
+            Anbefalt effekt:
+            <a href="#" data-bind="click: function(){effect($parent.suggested_effect());$parent.product_pagination.current_page(0)}">
+              <span data-bind="text: $parent.suggested_effect"></span>&thinsp;W</a>
+          </div>
+          <div data-bind="if: $parent.product()">
+            Valgt produkt:
+            <a href="#" data-bind="click: $parent.go_to_selected_product">
+              <!-- ko with: $parent.product -->
+              <span data-bind="text: short_name + ' ' + effect + '&thinsp;W'"></span>
+              <!-- /ko -->
+            </a>
+          </div>
+        </div>
 
+        <!-- /ko -->
+
+        <!-- /ko -->
+      </div>
+
+      <ul class="list-group list-group-striped ">
+        <!-- ko if: $parent.product_pagination.paginated ().length == 0 -->
+        <li class="bs-callout bs-callout-info">
+          <h3>Ingen produkter å vise.</h3>
+          <p class="help-block">
+            Sansynligvis skyldes dette filtreringen.
+          </p>
+        </li>
+        <!-- /ko -->
+        <!-- ko foreach: $parent.product_pagination.paginated -->
+        <a href="#" class="list-group-item" data-bind="click: $parents[1].select_product, css: {active: id == $parents[1].product_id()}">
+          <h4 class="list-group-item-heading relative has-logo">
+            <img class="manufacturor-logo" data-bind="attr: {src: 'static/icons/' + manufacturor + '.svg'}" alt="">
+            <span data-bind="text: short_name"></span>
+          </h4>
+          <p class="list-group-item-text justified">
+            <span data-bind="text: effect? effect + '&thinsp;W':''"></span>
+            <!-- ko if: mainSpec -->
+            <span>
+              <!-- ko text: mainSpec -->
+              <!-- /ko -->&thinsp;W/m<!-- ko if: isMat -->²<!-- /ko --></span>
+            <!-- /ko -->
+            <span data-bind="text: (isMat? 'Matte' : per_meter? 'Enleder' : 'Kabel')"></span>
+            <div class="visible-active min2lines">
+              <hr>
+              <div class=" justified justified-text-center">
+                <span>El.nr.:
+                  <span class="text-nowrap" data-bind="text: id.toString().replace(/(\d{2})(\d{3})(\d{2})/g, '$1&thinsp;$2&thinsp;$3')"></span>
+                </span>
+                <!-- ko if: specs -->
+                <!-- ko if: specs.Length -->
+                <span data-bind="text: 'Lengde: ' + specs.Length"></span>
+                <!-- /ko -->
+                <!-- ko if: specs.Width -->
+                <span data-bind="text: 'Bredde: ' + specs.Width"></span>
+                <!-- /ko -->
+                <!-- ko if: specs.Area -->
+                <span data-bind="text: 'Areal: ' + specs.Area"></span>
+                <!-- /ko -->
+                <!-- /ko -->
+              </div>
+
+            </div>
+          </p>
+
+        </a>
+        <!-- /ko -->
+      </ul>
+      <!-- ko with: $parent.product_pagination-->
+      <nav aria-label="Sidenavigering for liste med varmekabler">
+        <ul class="pager">
+          <li class="previous" data-bind="css:{disabled: !has_previous()}">
+            <a href="#" data-bind="click: previous">
+              <span aria-hidden="true">&larr;</span>
+              Forrige</a>
+          </li>
+          <li class="next" data-bind="css: {disabled: !has_next()}">
+            <a href="#" data-bind="click: next">Neste
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
       <!-- /ko -->
-
       <!-- /ko -->
     </div>
 
-    <ul class="list-group list-group-striped ">
-      <!-- ko if: $parent.product_pagination.paginated ().length == 0 -->
-      <li class="bs-callout bs-callout-info">
-        <h3>Ingen produkter å vise.</h3>
-        <p class="help-block">
-          Sansynligvis skyldes dette filtreringen.
-        </p>
-      </li>
-      <!-- /ko -->
-      <!-- ko foreach: $parent.product_pagination.paginated -->
-      <a href="#" class="list-group-item" data-bind="click: $parents[1].select_product, css: {active: id == $parents[1].product_id()}">
-        <h4 class="list-group-item-heading relative has-logo">
-          <img class="manufacturor-logo" data-bind="attr: {src: 'static/icons/' + manufacturor + '.svg'}" alt="">
-          <span data-bind="text: short_name"></span>
-        </h4>
-        <p class="list-group-item-text justified">
-          <span data-bind="text: effect + '&thinsp;W'"></span>
-          <span>
-            <!-- ko text: mainSpec -->
-            <!-- /ko -->&thinsp;W/m<!-- ko if: isMat -->²<!-- /ko --></span>
-          <span data-bind="text: (isMat? 'Matte' : per_meter? 'Enleder' : 'Kabel')"></span>
-          <div class="visible-active min2lines">
-            <hr>
-            <div class=" justified justified-text-center">
-              <span>El.nr.:
-                <span class="text-nowrap" data-bind="text: id.toString().replace(/(\d{2})(\d{3})(\d{2})/g, '$1&thinsp;$2&thinsp;$3')"></span>
-              </span>
-              <!-- ko if: specs -->
-              <!-- ko if: specs.Length -->
-              <span data-bind="text: 'Lengde: ' + specs.Length"></span>
-              <!-- /ko -->
-              <!-- ko if: specs.Width -->
-              <span data-bind="text: 'Bredde: ' + specs.Width"></span>
-              <!-- /ko -->
-              <!-- ko if: specs.Area -->
-              <span data-bind="text: 'Areal: ' + specs.Area"></span>
-              <!-- /ko -->
-              <!-- /ko -->
-            </div>
-          </div>
-        </p>
-
-      </a>
-      <!-- /ko -->
-    </ul>
-    <!-- ko with: $parent.product_pagination-->
-    <nav aria-label="Sidenavigering for liste med varmekabler">
-      <ul class="pager">
-        <li class="previous" data-bind="css:{disabled: !has_previous()}">
-          <a href="#" data-bind="click: previous">
-            <span aria-hidden="true">&larr;</span>
-            Forrige</a>
-        </li>
-        <li class="next" data-bind="css: {disabled: !has_next()}">
-          <a href="#" data-bind="click: next">Neste
-            <span aria-hidden="true">&rarr;</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-    <!-- /ko -->
-    <!-- /ko -->
-    <p class="help-block">
-      Du kan tilpasset søket ved å
-      <a data-toggle="collapse" aria-expanded="false" data-bind="attr: {
-    'href': '#vk-filter-' + $parents[2].id() + '-' + id(),
-    'aria-controls': 'vk-filter-' + $parents[2].id() + '-' + id()
-  }">trykke her.</a>
-    </p>
   </div>
-
-</div>
-</div>
-<div class="collapse" data-bind="attr: {id: 'vk-filter-' + $parents[2].id() + '-' + id()}">
-<div class="col-xs-12 well">
-  <h3>Filtrering av varmeprodukt</h3>
-  <p>Hvis du ikke finner ditt varmeprodukt raskt, kan du filtrere listen videre, ved å bruke skjemaet nedenfor.</p>
-  <div class="form-group form-group-sm col-xs-6">
-    <fieldset>
-      <div>
-        <legend>Fabrikant</legend>
-      </div>
-      <!-- ko foreach: $root.Products().products -->
-      <div class="col-xs-12">
-        <label class="radio-inline">
-          <input type="radio" name="manufacturor" data-bind="checked: $parent.product_filter().manufacturor, value: name">
-          <!-- ko text: name  -->
-          <!-- /ko -->
-        </label>
-      </div>
-      <!-- /ko -->
-    </fieldset>
-  </div>
-  <div class="form-group form-group-sm col-xs-6">
-    <label for="input-effekt">Effekt
-      <small>(sorterer etter nærmeste effekt)</small>
-    </label>
-    <input class="form-control" type="number" min="0" name="effekt" id="input-effekt" data-bind="value: product_filter().effect">
-  </div>
-
-</div>
 </div>
 
 </script>
