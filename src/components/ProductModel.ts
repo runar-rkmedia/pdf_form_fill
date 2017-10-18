@@ -34,9 +34,9 @@ interface ProductSpecs {
 }
 
 interface ProductRestrictions {
-  R_max: number
-  R_min: number
-  R_nom: number
+  max: number
+  min: number
+  nom: number
 }
 export interface ProductResctrictionsCalculated {
   top: number
@@ -126,8 +126,8 @@ interface VKTypes {
 
 enum VKTypesID {
   cable = 1,
-  mat,
-  single_leader
+  mat = 2,
+  single_leader = 3
 }
 
 
@@ -175,65 +175,61 @@ export class ProductFilter {
     this.root = room.parent.parent.parent
     this.selected_manufacturors(this.root.selected_manufacturors().slice())
     let selected_vk_types = this.root.selected_vk_types().slice()
-    for (let vk_type_id of selected_vk_types) {
-      let vk_type = this.vk_available_types.find(myObj => {
-        return myObj.id === Number(vk_type_id)
-      })
-      if (vk_type) {
-        vk_type.observer(true)
+    for (let vk_type of this.vk_available_types) {
+      vk_type.observer(selected_vk_types.indexOf(vk_type.id) >= 0)
+    }
+    this.filtered_products_no_mainSpec = ko.computed(() => {
+      return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
+
+        if (this.outside() && !prod.outside || !this.outside() && !prod.inside) { return false }
+        if (this.mat() || this.cable() || this.single_leader()) {
+          let matches_vk_type = false
+          if (this.mat() && prod.isMat) { matches_vk_type = true }
+          if (this.cable() && !prod.isMat && !prod.per_meter) { matches_vk_type = true }
+          if (this.single_leader() && prod.per_meter) { matches_vk_type = true }
+
+          if (!matches_vk_type) { return false }
+        }
+
+        let arrayFilterData: ArrayFylterInterface[] = [{
+          value: prod.manufacturor,
+          inList: this.selected_manufacturors()
+        }
+        ]
+
+        return myArrayFilter(arrayFilterData);
+
+      }).sort((a, b) => {
+        return a.effect - b.effect;
+      });
+    });
+    this.filtered_products = ko.computed(() => {
+      if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec()) {
+        return this.filtered_products_no_mainSpec()
       }
-      this.filtered_products_no_mainSpec = ko.computed(() => {
-        return ko.utils.arrayFilter(this.product_model.flat_products(), (prod) => {
-
-          if (this.outside() != prod.outside) { return false }
-          if (this.mat() || this.cable() || this.single_leader()) {
-            let matches_vk_type = false
-            if (this.mat() && prod.isMat) { matches_vk_type = true }
-            if (this.cable() && !prod.isMat && !prod.per_meter) { matches_vk_type = true }
-            if (this.single_leader() && prod.per_meter) { matches_vk_type = true }
-
-            if (!matches_vk_type) { return false }
-          }
-
-          let arrayFilterData: ArrayFylterInterface[] = [{
-            value: prod.manufacturor,
-            inList: this.selected_manufacturors()
+      return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
+        return myArrayFilter(
+          [{
+            value: prod.mainSpec,
+            mustEqual: this.mainSpec()
           }
           ]
+        );
 
-          return myArrayFilter(arrayFilterData);
-
-        }).sort((a, b) => {
-          return a.effect - b.effect;
-        });
-      });
-      this.filtered_products = ko.computed(() => {
-        if (!this.effect() && this.selected_manufacturors().length == 0 && !this.mainSpec()) {
-          return this.filtered_products_no_mainSpec()
+      })
+    });
+    this.spec_groups = ko.computed(() => {
+      let filtered = this.filtered_products_no_mainSpec();
+      let flags: StrIndex<boolean> = {};
+      return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface) => {
+        if (flags[entry.mainSpec]) {
+          return false;
         }
-        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (prod) => {
-          return myArrayFilter(
-            [{
-              value: prod.mainSpec,
-              mustEqual: this.mainSpec()
-            }
-            ]
-          );
+        flags[entry.mainSpec] = true;
+        return true;
+      })
+    });
 
-        })
-      });
-      this.spec_groups = ko.computed(() => {
-        let filtered = this.filtered_products_no_mainSpec();
-        let flags: StrIndex<boolean> = {};
-        return ko.utils.arrayFilter(this.filtered_products_no_mainSpec(), (entry: ProductInterface) => {
-          if (flags[entry.mainSpec]) {
-            return false;
-          }
-          flags[entry.mainSpec] = true;
-          return true;
-        })
-      });
-    }
   }
   by_id = (id: number) => {
     let f = this.product_model.flat_products();

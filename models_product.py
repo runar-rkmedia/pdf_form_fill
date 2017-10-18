@@ -110,6 +110,8 @@ class Product(db.Model, ByID):
 
     @property
     def resistance_nominal(self):
+        l = (self.restrictions.get('R_nom') or
+                self.calculate_nominal_resistance())
         return (self.restrictions.get('R_nom') or
                 self.calculate_nominal_resistance())
 

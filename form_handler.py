@@ -286,11 +286,20 @@ class FormHandler(object):
         calc = OhmsLaw(
             voltage=product.product_type.secondarySpec,
             resistance=product.resistance_nominal)
+        effect = product.effect or self.room_item_modification.specs.get(
+            'effect_override')
+        watt_per_meter = product.product_type.mainSpec
+        length = self.room_item_modification.specs.get(
+            'length')
+        if effect and length:
+            try:
+                watt_per_meter = float(effect) / float(length)
+            except ValueError:
+                pass
         self.dictionary.update({
             'product.effect' + self.subfix:
-                product.effect,
-            'product.watt_per_(square)_meter' + self.subfix:
-                product.product_type.mainSpec,
+                effect,
+            'product.watt_per_(square)_meter' + self.subfix: watt_per_meter,
             'product.voltage' + self.subfix:
                 calc.voltage,
             'product.current' + self.subfix:
@@ -305,9 +314,8 @@ class FormHandler(object):
                 product.resistance_min,
             'product.resistance_nominal' + self.subfix:
                 calc.resistance,
-            'product.twowires' + self.subfix: (
-                True if product.effect != product.product_type.mainSpec
-                else False)
+            'product.per_meter' + self.subfix:
+                product.product_type.per_meter
         })
 
     def push_from_room(self, room, unique=False):
@@ -420,7 +428,10 @@ class FormHandler(object):
                                room_item_modification.user.family_name)
         })
 
-        if specs: # noqa
+        if specs:  # noqa
+            self.dictionary.update({
+                'length' + self.subfix: specs.get('length', '')
+            })
             for key in [
                     'area_output', 'cc', 'installation_depth',
                     'curcuit_breaker_size'

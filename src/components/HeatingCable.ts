@@ -130,6 +130,8 @@ export interface HeatingCableSpecs {
   installation_depth?: InputReadOnlyToggleInterface
   curcuit_breaker_size?: InputReadOnlyToggleInterface
   ground_fault_protection?: number
+  length?: number
+  effect_override?: number
 }
 
 interface InputReadOnlyToggleInterface {
@@ -266,6 +268,8 @@ export class HeatingCable extends Post {
   product_filter: KnockoutObservable<ProductFilter>
   product_pagination: Pagination = new Pagination([], 10)
   suggested_effect: KnockoutComputed<number>
+  length: KnockoutObservable<number> = this.obs_mod()
+  mainspec_override: KnockoutObservable<number> = this.obs_mod()
 
   validationModel = ko.validatedObservable({
     product_id: this.product_id,
@@ -358,7 +362,7 @@ export class HeatingCable extends Post {
         return default_cc
       }
       let room_effect = this.parent.parent.room_effect()
-      let this_effect = product.effect
+      let this_effect = product.effect || this.effect_override()
       if (room_effect && this_effect) {
         let coverage_fraction = this_effect / room_effect
         let heated_area = this.parent.parent.heated_area()
@@ -386,10 +390,14 @@ export class HeatingCable extends Post {
           },
           cc: this.cc().serialize(),
           area_output: this.area_output().serialize(),
-          // installation_depth: this.installation_depth().serialize(),
-          // curcuit_breaker_size: this.curcuit_breaker_size().serialize(),
-          // ground_fault_protection: this.ground_fault_protection().output(),
         },
+      }
+      let product = this.product ? this.product() : null
+      if (product) {
+        if (product.per_meter) {
+          obj.specs.length = this.length()
+          obj.specs.effect_override = this.effect_override()
+        }
       }
       if (this.installation_depth().override()) {
         obj.specs.installation_depth = this.installation_depth().serialize()
@@ -403,15 +411,12 @@ export class HeatingCable extends Post {
     this.suggested_effect = ko.computed(() => {
       let this_effect = 0
       if (this.product()) {
-        this_effect = this.product()!.effect
+        this_effect = this.product()!.effect || this.effect_override()
       }
       let suggested_effect = this.parent.parent.bestFitEffect() - (this.parent.parent.room_effect() - this_effect)
 
       return suggested_effect
     })
-    // if (this.suggested_effect() && this.product_filter) {
-    //   this.product_filter().effect(this.suggested_effect())
-    // }
     this.set(heating_cable)
     ko.computed(() => {
       if (!this.product_filter) {
@@ -448,7 +453,8 @@ export class HeatingCable extends Post {
       pf.cable(pf.cable() || Boolean(!product.isMat && !product.per_meter))
       pf.single_leader(pf.single_leader() || Boolean(product.per_meter))
       pf.outside(Boolean(product.outside || !product.inside))
-      this.product_pagination.current_page(0)
+      let product_index = this.product_pagination.list.indexOf(this.product())
+      this.product_pagination.current_page(Math.floor(product_index / this.product_pagination.per_page))
     }
   }
   product = ko.computed((): ProductInterface | undefined => {
@@ -465,6 +471,19 @@ export class HeatingCable extends Post {
         return product
       }
     }
+  })
+  effect_override: KnockoutComputed<number> = ko.computed(() => {
+    let product = this.product ? this.product() : null
+    if (product) {
+      let U = this.parent.parent.parent.parent.construction_voltage()
+      if (product.per_meter && !product.self_limiting && product.restrictions && U > 0) {
+        if (product.restrictions.nom > 0) {
+          let R_total = this.length() * product.restrictions.nom
+          return U * U / R_total
+        }
+      }
+    }
+    return 0
   })
   select_product = (product: ProductInterface, event: Event) => {
     this.product_id(product.id)
@@ -484,6 +503,9 @@ export class HeatingCable extends Post {
       }
       if (heating_cable.specs.installation_depth) {
         this.installation_depth().set_from_object(heating_cable.specs.installation_depth)
+      }
+      if (heating_cable.specs.length) {
+        this.length(heating_cable.specs.length)
       }
       if (heating_cable.specs.installation_depth) {
         this.installation_depth().set_from_object(heating_cable.specs.installation_depth)

@@ -135,9 +135,11 @@ export class TSAppViewModel {
   }
   get_selected_vk_types_cookie = () => {
     let cookie = getCookie('vk_types')
-    let vk_types: string[] = []
+    let vk_types: number[] = []
     if (cookie) {
-      vk_types = cookie.split(',')
+      vk_types = cookie.split(',').map((x) => {
+        return Number(x)
+      })
       if (vk_types.length > 0) {
         this.selected_vk_types(vk_types)
       }

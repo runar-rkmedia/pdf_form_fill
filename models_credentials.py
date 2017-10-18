@@ -645,12 +645,13 @@ class Room(MyBaseModel, db.Model):
                          control_system_other,
                          inside_specs=None,
                          outside_specs=None):
-        """serialize."""
+        """Update or create a room."""
         room = Room.by_id(room_id, user)
         customer = Customer.by_id(customer_id, user)
         if not customer:
             raise my_exceptions.NotACustomer
         if not room:
+            print('creatinggggs1!!!')
             room = Room()
 
         for n in [area, heated_area, maxEffect, normalEffect]:
@@ -686,6 +687,9 @@ class Room(MyBaseModel, db.Model):
         room.control_system_room_sensor = control_system_room_sensor
         room.control_system_designation = control_system_designation
         room.control_system_other = control_system_other
+        db.session.add(room)
+        db.session.commit()
+        print('idd is', room.id)
         return room
 
     @property

@@ -368,6 +368,13 @@ class SpecsForm(SubForm):
     cc = FormField(Cc)
     curcuit_breaker_size = FormField(CurcuitBreakerSize)
     installation_depth = FormField(InstallationDepth)
+    length = BetterDecimalField(validators=[
+        Optional()
+    ])
+    effect_override = BetterDecimalField(validators=[
+        Optional()
+    ])
+
 
 
 class HeatingCableForm(FlaskForm):

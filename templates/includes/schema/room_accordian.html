@@ -19,7 +19,7 @@
             <span class="hidden-xs" data-bind="text:'(' +  heated_area() + '&nbsp;m²)'"></span>
             <!-- /ko -->
             <!-- ko if: room_effect -->
-            <span class="" data-bind="text:'&ensp;&mdash;&ensp;' +  room_effect() + '&nbsp;W'"></span>
+            <span class="" data-bind="text:'&ensp;&mdash;&ensp;' +  room_effect().toFixed(0) + '&nbsp;W'"></span>
             <!-- /ko -->
           </span>
           <!-- ko if: modified -->

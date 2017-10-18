@@ -268,7 +268,6 @@ def json_multi_save():
         customer = Customer.update_or_create(customer, form.customer, current_user)
         if customer:
             return_data['customer'] = {'customer_id': customer.id}
-        print(return_data)
     for heating_cable in form.heating_cables.data:
         room_item = RoomItem.by_id(heating_cable['id'], current_user)
         new_room_item = RoomItem.update_or_create(

@@ -50,16 +50,16 @@ class Nexans(StampablePdfForm):
                     d.s_if('product.effect', sub='W'),
                 ]),
             'product.resistance_nominal': '{0:.1f}'.format(
-                    d.g('product.resistance_nominal')
+                    d.g('product.resistance_nominal',0.0)
                     ),
-            'check-toleder': not d.s_bool('product.twowires'),
-            'check-enleder': d.s_bool('product.twowires'),
+            'check-toleder': not d.s_bool('product.per_meter'),
+            'check-enleder': d.s_bool('product.per_meter'),
             'max_temp_other_check': d.s_bool('max_temp_other'),
             'earthed_other_check': d.s_bool('earthed_other'),
             'control_system_other_check': d.s_bool('control_system_other'),
             'check-montert_i_henhold_til_installasjonsveiledning': d.s_bool('max_temp_installation')
         })
-        
+
         last_date = d.g('last_date')
         if last_date:
             last_date_formatted = date_format(last_date)
@@ -181,7 +181,7 @@ class Nexans(StampablePdfForm):
             'field': 'Text8',
             'type': NumberTypes
         },
-        'product.voltage': {
+        'customer.construction_voltage': {
             'text': 'Driftspenning',
             'field': 'Text9',
             'type': NumberTypes

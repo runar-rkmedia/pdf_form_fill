@@ -256,8 +256,9 @@ export class Room extends Post {
     let sum_effect = 0
     if (this.heating_cables()) {
       for (let heating_cable of this.heating_cables().list()) {
-        if (heating_cable.product()) {
-          sum_effect += Number(heating_cable.product()!.effect)
+        let product = heating_cable.product ? heating_cable.product() : null
+        if (product) {
+          sum_effect += product.per_meter ? heating_cable.effect_override() : Number(product.effect)
         }
       }
     }
