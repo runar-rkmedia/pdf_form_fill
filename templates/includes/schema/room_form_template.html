@@ -2,43 +2,56 @@
 <script type="text/html" id="room_form_template">
   <form id="room_form">
 
-      <h3>Rom/stedsinformasjon</h3>
+    <h3>Rom/stedsinformasjon</h3>
 
-      <div class="formgroup col-xs-12">
-        <div class="form-group">
-          <label for="room_handle">Rom/stednavn</label>
-          <input type="text" class="form-control" data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(),  templateName: 'room-suggestion-template', displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect, value: name">
-        </div>
+    <div class="formgroup col-xs-12">
+      <div class="form-group">
+        <label for="room_handle" data-bind="css: { 'label-mod-flag': name.modified() }">Rom/stednavn</label>
+        <input
+          type="text"
+          class="form-control"
+          data-bind=" textInput: name, typeahead: room_suggestion().suggestRoom(),  templateName: 'room-suggestion-template', displayKey: 'name', localSuggestions: true, onSelectFunction: room_suggestion().roomSuggestionOnSelect, value: name">
       </div>
-      {{render_field( roomForm.area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: area"}) }}
-      {{render_field( roomForm.heated_area, formgroup='form-group col-xs-6', **{'data-bind':"textInput: $data.heated_area"}) }}
-      {{render_field( roomForm.outside,
-      formgroup='col-xs-12', label_class='checkbox-inline', class_='', **{'data-bind':"checked: outside"}) }}
-      <div class="row">
-        <div class="col-xs-12">
-          <div class="text-right">
-            <div class="btn-group nowrap">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
-                data-loading-text="
+    </div>
+    <div class="form-group col-xs-6">
+      <label for="area" data-bind="css: { 'label-mod-flag': area.modified() }">Areal</label>
+      <input class="form-control" data-bind="textInput: area" id="area" type="number">
+    </div>
+    <div class="form-group col-xs-6">
+      <label for="heated_area" data-bind="css: { 'label-mod-flag': heated_area.modified() }">Oppvarmet Areal</label>
+      <input class="form-control" data-bind="textInput: $data.heated_area" id="heated_area" type="number">
+    </div>
+    <div class="col-xs-12">
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside.modified() }">
+        <input class="checkbox" data-bind="checked: outside" id="outside" type="checkbox">
+        Utvendig
+      </label>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="text-right">
+          <div class="btn-group nowrap">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
+              data-loading-text="
         <span class='glyphicon glyphicon-refresh spinning'></span>"></button>
-              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Vis dropdown-meny</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li>
-                  <a data-bind="
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Vis dropdown-meny</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li>
+                <a data-bind="
                         click: function() {comfirm_delete_dialog('Slette <b>' + name() + '</b>', 'Er du sikker på at du vil slette dette rommet/stedet?', modified() || sub_modified()? 'Du har ulagrede elementer her': undefined)}">
-                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                    Slett rom</a>
-                </li>
-              </ul>
-            </div>
+                  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                  Slett rom</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
+    </div>
   </form>
 </script>

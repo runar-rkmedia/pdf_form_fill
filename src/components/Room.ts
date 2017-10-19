@@ -224,9 +224,12 @@ export class Room extends Post {
   }
   use_inside_checklist = ko.computed((): boolean => {
     if (this.heating_cables()) {
-      if (!this.outside()) {
-        if (this.heating_cables().has_manufacturor('Øglænd')) {
-          return true
+      for (let heating_cable of this.heating_cables().list()) {
+        let product = heating_cable.product ? heating_cable.product() : null
+        if (product) {
+          if (product.manufacturor == 'Øglænd' && product.inside) {
+            return true
+          }
         }
       }
     }
@@ -234,9 +237,12 @@ export class Room extends Post {
   })
   use_outside_checklist = ko.computed((): boolean => {
     if (this.heating_cables()) {
-      if (this.outside()) {
-        if (this.heating_cables().has_manufacturor('Øglænd')) {
-          return true
+      for (let heating_cable of this.heating_cables().list()) {
+        let product = heating_cable.product ? heating_cable.product() : null
+        if (product) {
+          if (product.manufacturor == 'Øglænd' && product.outside) {
+            return true
+          }
         }
       }
     }

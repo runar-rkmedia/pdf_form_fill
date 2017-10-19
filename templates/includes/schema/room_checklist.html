@@ -1,127 +1,216 @@
 <!-- ko if: heating_cables().list().length > 0 -->
-  <hr>
-  <h2>Sjekkliste</h2>
-  <div class="bs-callout bs-callout-info">
-    <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
-    <p>Kun de påkrevde feltene vises.</p>
-  </div>
-  <div class="well well-sm col-xs-12">
-    <div class="col-xs-6" data-bind="visible: heating_cables().has_manufacturor('Nexans')">
-      <label data-bind="css: { 'label-mod-flag': curcuit_breaker_size.modified() }"><br class="visible-xs-inline">Sikringsstørrelse</label>
-      <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
+<hr>
+<h2>Sjekkliste</h2>
+<div class="bs-callout bs-callout-info">
+  <p>Denne sjekklisten gjelder for alle kablene i dette rommet/stedet.</p>
+  <p>Kun de påkrevde feltene vises.</p>
+</div>
+<div class="well well-sm col-xs-12">
+  <div class="col-xs-6" data-bind="visible: heating_cables().has_manufacturor('Nexans')">
+    <label data-bind="css: { 'label-mod-flag': curcuit_breaker_size.modified() }"><br class="visible-xs-inline">Sikringsstørrelse</label>
+    <select class="form-control col-xs-12" data-bind="options: $root.curcuit_breaker_list,
                         optionsText: 'text',
                         optionsValue: 'id',
                         value: curcuit_breaker_size"></select>
-    </div>
-    <div class="col-xs-12" data-bind="css: {'col-xs-6': heating_cables().has_manufacturor('Nexans')}">
-      <div class="form-group">
-        <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm<br class="visible-xs-inline">
-          jordfeil</label>
-        <input type="number" min="0" data-bind="textInput:ground_fault_protection" class="form-control">
-      </div>
+  </div>
+  <div class="col-xs-12" data-bind="css: {'col-xs-6': heating_cables().has_manufacturor('Nexans')}">
+    <div class="form-group">
+      <label data-bind="css: { 'label-mod-flag': ground_fault_protection.modified() }">Utløserstrøm<br class="visible-xs-inline">
+        jordfeil</label>
+      <input type="number" min="0" data-bind="textInput:ground_fault_protection" class="form-control">
     </div>
   </div>
-  <div class="col-xs-12 well well-sm">
-    <!-- ko if: use_outside_checklist()-->
-    <h3>Utendørs installasjon</h3>
-    <div class="csscolumn-234">
-      <div>{{render_field( roomForm.outside_specs.concrete, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: outside_concrete"}) }}</div>
-
-      <div>{{render_field( roomForm.outside_specs.asphalt, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: outside_asphalt"}) }}</div>
-
-      <div>{{render_field( roomForm.outside_specs.paving_stones, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: outside_paving_stones"}) }}</div>
-
-      <div>{{render_field( roomForm.outside_specs.vessel, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: outside_vessel"}) }}</div>
-
-      <div>{{render_field( roomForm.outside_specs.frost_protection_pipe, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: outside_frost_protection_pipe"}) }}</div>
-
-      <div>{{render_field( roomForm.outside_specs.frost_protection, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: outside_frost_protection"}) }}</div>
+</div>
+<div class="col-xs-12 well well-sm">
+  <!-- ko if: use_outside_checklist()-->
+  <h3>Utendørs installasjon</h3>
+  <div class="csscolumn-234">
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside_concrete.modified() }">
+        <input class="checkbox checkbox " data-bind="checked: outside_concrete" id="outside_specs-concrete" name="outside_specs-concrete" type="checkbox" value="y">
+        Betong
+      </label>
     </div>
-    <!-- /ko -->
-    <!-- ko if: use_inside_checklist()-->
-    <h3>Innendørs installasjon</h3>
-    <div class="csscolumn-234">
-      <div>{{render_field( roomForm.inside_specs.concrete, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: inside_concrete"}) }}</div>
-
-      <div>{{render_field( roomForm.inside_specs.LamiFlex, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: inside_LamiFlex"}) }}</div>
-
-      <div>{{render_field( roomForm.inside_specs.frost_protection_pipe, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: inside_frost_protection_pipe"}) }}</div>
-
-      <div>{{render_field( roomForm.inside_specs.low_profile, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: inside_low_profile"}) }}</div>
-
-      <div>{{render_field( roomForm.inside_specs.fireproof, class_='checkbox ', label_class='checkbox-inline', formgroup=None, **{'data-bind':"checked: inside_fireproof"}) }}
-      </div>
-
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside_asphalt.modified() }">
+        <input class="checkbox checkbox " data-bind="checked: outside_asphalt" id="outside_specs-asphalt" name="outside_specs-asphalt" type="checkbox" value="y">
+        Asfalt
+      </label>
     </div>
-    {{render_field( roomForm.inside_specs.other,**{'data-bind':"textInput: inside_other"}) }}
-    <!-- /ko -->
-    <div class="col-xs-12">
-      <div class="form-group">
-        <label data-bind="css: { 'label-mod-flag': installation_depth.modified() }">Montasjedybde (mm)</label>
-        <input type="number" min="0" data-bind="textInput: installation_depth" class="form-control">
-      </div>
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside_paving_stones.modified() }">
+        <input class="checkbox checkbox " data-bind="checked: outside_paving_stones" id="outside_specs-paving_stones" name="outside_specs-paving_stones" type="checkbox" value="y">
+        Belegningsstein
+      </label>
     </div>
-  </div>
-  <!-- ko if: heating_cables().has_manufacturor('Nexans') -->
-  <div class="col-xs-12 well well-sm">
-    <h3>Jording</h3>
-    <div class="csscolumn-">
-      {{render_field( roomForm.check_earthed.cable_screen, class_='checkbox',formgroup='checkbox', **{'data-bind':"checked: earthed_cable_screen"}) }}
-
-      {{render_field( roomForm.check_earthed.chicken_wire, class_='checkbox',formgroup='checkbox', **{'data-bind':"checked: earthed_chicken_wire"}) }}
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside_vessel.modified() }">
+        <input class="checkbox checkbox " data-bind="checked: outside_vessel" id="outside_specs-vessel" name="outside_specs-vessel" type="checkbox" value="y">
+        Fartøy
+      </label>
     </div>
-    {{render_field( roomForm.check_earthed.other, formgroup='form-group', **{'data-bind':"textInput: earthed_other"}) }}
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside_frost_protection_pipe.modified() }">
+        <input class="checkbox checkbox " data-bind="checked: outside_frost_protection_pipe" id="outside_specs-frost_protection_pipe" name="outside_specs-frost_protection_pipe" type="checkbox" value="y">
+        Frostsikring rør
+      </label>
+    </div>
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': outside_frost_protection.modified() }">
+        <input class="checkbox checkbox " data-bind="checked: outside_frost_protection" id="outside_specs-frost_protection" name="outside_specs-frost_protection" type="checkbox" value="y">
+        Frostsikring tak/takrenner
+      </label>
+    </div>
   </div>
   <!-- /ko -->
-  <div class="col-xs-12 well well-sm">
-    <h3>Styresystem</h3>
-
-    <!-- ko if: heating_cables().has_manufacturor(['Øglænd', 'Nexans'])  -->
-    {{render_field( roomForm.check_control_system.designation, formgroup='form-group', **{'data-bind':"textInput: control_system_designation"}) }}
-    <!-- /ko -->
-    <label>Følertype</label>
-    <div class="justified-xs-column-3">
-      <div>
-        {{render_field( roomForm.check_control_system.floor_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_floor_sensor"})}}
-      </div>
-      <div>
-        {{render_field( roomForm.check_control_system.room_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_room_sensor"}) }}
-      </div>
-      <div>
-        {{render_field( roomForm.check_control_system.limit_sensor, class_='checkbox-inline', formgroup='checkbox-inline', **{'data-bind':"checked: control_system_limit_sensor"}) }}
-
-      </div>
+  <!-- ko if: use_inside_checklist()-->
+  <h3>Innendørs installasjon</h3>
+  <div class="csscolumn-234">
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': inside_concrete.modified() }">
+        <input class="checkbox " data-bind="checked: inside_concrete" id="inside_specs-concrete" name="inside_specs-concrete" type="checkbox" value="y">
+        Betong
+      </label>
     </div>
-    <!-- ko if: heating_cables().has_manufacturor(['Øglænd', 'Nexans'])  -->
-    {{render_field( roomForm.check_control_system.other, formgroup='form-group', **{'data-bind':"textInput: control_system_other"}) }}
-    <!-- /ko -->
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': inside_LamiFlex.modified() }">
+        <input class="checkbox " data-bind="checked: inside_LamiFlex" id="inside_specs-LamiFlex" name="inside_specs-LamiFlex" type="checkbox" value="y">
+        ØS Lamiflex
+      </label>
+    </div>
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': inside_frost_protection_pipe.modified() }">
+        <input class="checkbox " data-bind="checked: inside_frost_protection_pipe" id="inside_specs-frost_protection_pipe" name="inside_specs-frost_protection_pipe" type="checkbox" value="y">
+        Frostsikring rør
+      </label>
+    </div>
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': inside_low_profile.modified() }">
+        <input class="checkbox " data-bind="checked: inside_low_profile" id="inside_specs-low_profile" name="inside_specs-low_profile" type="checkbox" value="y">
+        Lavtbyggende gulv
+      </label>
+    </div>
+    <div>
+      <label class="checkbox-inline" data-bind="css: { 'label-mod-flag': inside_fireproof.modified() }">
+        <input class="checkbox " data-bind="checked: inside_fireproof" id="inside_specs-fireproof" name="inside_specs-fireproof" type="checkbox" value="y">
+        Brennbart underlag
+      </label>
+    </div>
   </div>
-  <div class="col-xs-12 well well-sm">
-    <h3>Beskyttelsestiltak</h3>
-    <p >Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
-
-    {{render_field( roomForm.check_max_temp.planning, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_planning"}) }}
-
-    {{render_field( roomForm.check_max_temp.installation, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: max_temp_limited_by_installation"}) }}
-
-    <!-- ko if: heating_cables().has_manufacturor('Nexans') -->
-    {{render_field( roomForm.check_max_temp.other, formgroup='form-group', **{'data-bind':"textInput: max_temp_limited_by_other"}) }}
-    <!-- /ko -->
+  <div class="form-group">
+    <label for="inside_specs-other" data-bind="css: { 'label-mod-flag': inside_other.modified() }">Annet</label>
+    <input class="form-control" data-bind="textInput: inside_other" id="inside_specs-other" name="inside_specs-other" type="text" value="">
   </div>
-  <div class="col-xs-12 well well-sm">
-    {{render_field( roomForm.owner_informed, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: owner_informed"}) }}
-
-    {{render_field( roomForm.handed_to_owner, class_='checkbox', formgroup='checkbox', **{'data-bind':"checked: handed_to_owner"}) }}
+  <!-- /ko -->
+  <div class="col-xs-12">
+    <div class="form-group">
+      <label data-bind="css: { 'label-mod-flag': installation_depth.modified() }">Montasjedybde (mm)</label>
+      <input type="number" min="0" data-bind="textInput: installation_depth" class="form-control">
+    </div>
   </div>
-  <div>
-    <div class="text-right">
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
-        data-loading-text="
+</div>
+<!-- ko if: heating_cables().has_manufacturor('Nexans') -->
+<div class="col-xs-12 well well-sm">
+  <h3>Jording</h3>
+  <div class="checkbox">
+    <label class="checkbox" data-bind="css: { 'label-mod-flag': earthed_cable_screen.modified() }">
+      <input class="checkbox checkbox" data-bind="checked: earthed_cable_screen" id="check_earthed-cable_screen" name="check_earthed-cable_screen" type="checkbox" value="y">
+      Jordet kabelskjerm
+    </label>
+  </div>
+  <div class="checkbox">
+    <label class="checkbox" data-bind="css: { 'label-mod-flag': earthed_chicken_wire.modified() }">
+      <input class="checkbox checkbox" data-bind="checked: earthed_chicken_wire" id="check_earthed-chicken_wire" name="check_earthed-chicken_wire" type="checkbox" value="y">
+      Jordet netting
+    </label>
+  </div>
+  <div class="form-group" data-bind="css: { 'label-mod-flag': earthed_other.modified() }">
+    <label for="check_earthed-other">Annet</label>
+    <input class="form-control" data-bind="textInput: earthed_other" id="check_earthed-other" name="check_earthed-other" type="text" value="">
+  </div>
+</div>
+<!-- /ko -->
+<div class="col-xs-12 well well-sm">
+  <h3>Styresystem</h3>
+  <!-- ko if: heating_cables().has_manufacturor(['Øglænd', 'Nexans'])  -->
+  <div class="form-group">
+    <label for="check_control_system-designation" data-bind="css: { 'label-mod-flag': control_system_designation.modified() }">Typebetegnelse</label>
+    <input class="form-control" data-bind="textInput: control_system_designation" id="check_control_system-designation" name="check_control_system-designation" type="text" value="">
+  </div>
+  <!-- /ko -->
+  <label>Følertype</label>
+  <div class="justified-xs-column-3">
+    <div class="checkbox-inline">
+      <label class="checkbox" data-bind="css: { 'label-mod-flag': control_system_floor_sensor.modified() }">
+        <input class="checkbox checkbox-inline" data-bind="checked: control_system_floor_sensor" id="check_control_system-floor_sensor" name="check_control_system-floor_sensor" type="checkbox" value="y">
+        Gulv
+      </label>
+    </div>
+    <div class="checkbox-inline">
+      <label class="checkbox" data-bind="css: { 'label-mod-flag': control_system_room_sensor.modified() }">
+        <input class="checkbox checkbox-inline" data-bind="checked: control_system_room_sensor" id="check_control_system-room_sensor" name="check_control_system-room_sensor" type="checkbox" value="y">
+        Rom
+      </label>
+    </div>
+    <div class="checkbox-inline">
+      <label class="checkbox" data-bind="css: { 'label-mod-flag': control_system_limit_sensor.modified() }">
+        <input class="checkbox checkbox-inline" data-bind="checked: control_system_limit_sensor" id="check_control_system-limit_sensor" name="check_control_system-limit_sensor" type="checkbox" value="y">
+        Begrensning
+      </label>
+    </div>
+  </div>
+  <!-- ko if: heating_cables().has_manufacturor(['Øglænd', 'Nexans'])  -->
+  <div class="form-group">
+    <label for="check_control_system-other" data-bind="css: { 'label-mod-flag': control_system_other.modified() }">Annet</label>
+    <input class="form-control" data-bind="textInput: control_system_other" id="check_control_system-other" name="check_control_system-other" type="text" value="">
+  </div>
+  <!-- /ko -->
+</div>
+<div class="col-xs-12 well well-sm">
+  <h3>Beskyttelsestiltak</h3>
+  <p>Maks temperatur i opppvarmingssystemet er begrenset til 80˚C ved</p>
+  <div class="checkbox">
+    <label class="checkbox" data-bind="css: { 'label-mod-flag': max_temp_limited_by_planning.modified() }">
+      <input class="checkbox checkbox" data-bind="checked: max_temp_limited_by_planning" id="check_max_temp-planning" name="check_max_temp-planning" type="checkbox" value="y">
+      Planlegging (innstallasjonsveiledningen er fulgt, og eier er informert om forutsetningene)
+    </label>
+  </div>
+  <div class="checkbox">
+    <label class="checkbox" data-bind="css: { 'label-mod-flag': max_temp_limited_by_installation.modified() }">
+      <input class="checkbox checkbox" data-bind="checked: max_temp_limited_by_installation" id="check_max_temp-installation" name="check_max_temp-installation" type="checkbox" value="y">
+      Utførelse av montasje (Installasjonsveiledningen er fulgt)
+    </label>
+  </div>
+  <!-- ko if: heating_cables().has_manufacturor('Nexans') -->
+  <div class="form-group">
+    <label for="check_max_temp-other" data-bind="css: { 'label-mod-flag': max_temp_limited_by_other.modified() }">Eventuell bruk av beskyttelsesutstyr</label>
+    <input class="form-control" data-bind="textInput: max_temp_limited_by_other" id="check_max_temp-other" name="check_max_temp-other" type="text" value="">
+  </div>
+  <!-- /ko -->
+</div>
+<div class="col-xs-12 well well-sm">
+  <div class="checkbox">
+    <label class="checkbox" data-bind="css: { 'label-mod-flag': owner_informed.modified() }">
+      <input class="checkbox checkbox" data-bind="checked: owner_informed" id="owner_informed" name="owner_informed" type="checkbox" value="y">
+      Eier og/eller bruker er informert
+    </label>
+  </div>
+  <div class="checkbox">
+    <label class="checkbox" data-bind="css: { 'label-mod-flag': handed_to_owner.modified() }">
+      <input class="checkbox checkbox" data-bind="checked: handed_to_owner" id="handed_to_owner" name="handed_to_owner" type="checkbox" value="y">
+      Dokumentasjonen er overlevert
+    </label>
+  </div>
+</div>
+<div>
+  <div class="text-right">
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bind=" click: post, css: {opaque: !validationModel.isValid() || !modified()}, enable: modified() && validationModel.isValid(), text: id() >= 0 ? 'Endre' : 'Lagre'"
+      data-loading-text="
           <span class='glyphicon glyphicon-refresh spinning'></span>"></button>
 
-    </div>
   </div>
+</div>
 <!-- /ko -->
