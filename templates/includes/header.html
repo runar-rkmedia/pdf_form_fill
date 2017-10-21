@@ -8,12 +8,12 @@
           <span class="icon-bar"></span>
         </a>
       {% endif %}
-      <a class="navbar-brand" href="{{url_for('landing_page')}}">VarmeDok</a>
+      <a class="navbar-brand" href="{{url_for('landing_page')}}">VarmeDok <small class="text-muted" >Beta</small></a>
 
     </div>
     <div class="collapse navbar-collapse" id="navbar">
       <ul class="nav navbar-nav navbar-right">
-        {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated and is_app %}
           <!-- ko with: customer -->
           <li>
             <!-- ko if: can_fill_form -->
@@ -31,24 +31,6 @@
 
           </li>
           <!-- /ko -->
-          <li class="dropdown hidden-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hei,
-              {{current_user.given_name}}
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a href="{{ url_for('control_panel') }}">Innstillinger</a>
-              </li>
-              <li>
-                <a href="{{ url_for('control_panel_company') }}">{{ current_user.company.name }}</a>
-              </li>
-              <li role="separator" class="divider"></li>
-              <li>
-                <a href="{{ url_for('logout') }}">Logg ut</a>
-              </li>
-            </ul>
-          </li>
         {% endif %}
       </ul>
     </div>

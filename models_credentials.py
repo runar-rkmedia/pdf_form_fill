@@ -226,6 +226,15 @@ class User(ByID, UserMixin, db.Model):
     settings = (db.Column(db.JSON()))
 
     @property
+    def customers(self):
+        """Return all customers this user has created/modified."""
+        return Customer.query\
+            .filter(
+                (Customer.created_by_user_id == self.id) |
+                (Customer.modified_by_user_id == self.id)
+            )
+
+    @property
     def last_edit(self):
         """Return the last edit the user made to a customer."""
         if not self.last_modified_customer:
@@ -474,14 +483,12 @@ class Customer(MyBaseModel, db.Model):
     @property
     def last_modified(self):
         """Return the lastmodification to it, or its rooms."""
-        latest = self.date
-        # TODO: This should be an SQL-query instead.
+        latest = None
         for room in self.rooms:
             for room_item in room.items:
-                if room_item.modification_date:
-                    latest = room_item.modification_date
+                if not latest or room_item.modification_date > latest.date:
+                    latest = room_item.latest
         return latest
-
     @property
     def serialize_short(self):
         """Serialize for lists of customer."""
@@ -495,11 +502,12 @@ class Customer(MyBaseModel, db.Model):
                 'date': self.date
             },
         }
-        if (self.last_modified - self.date).seconds > 60:
+        latest = self.last_modified
+        if latest and (latest.date - self.date).seconds > 60:
             dictionary['modified'] = {
-                'given_name': self.created_by_user.given_name,
-                'family_name': self.created_by_user.family_name,
-                'date': self.last_modified
+                'given_name': latest.user.given_name,
+                'family_name': latest.user.family_name,
+                'date': latest.date
             }
         if self.rooms:
             dictionary['rooms'] = [

@@ -77,8 +77,8 @@ def get_invite(invite_id):
 
 @app.route('/company/edit', methods=['GET', 'POST'])
 @login_required
-def set_company(invite=None):
-    """Description."""
+def set_company():
+    """Create or edit a users company."""
     form = forms.CreateCompany()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -93,14 +93,12 @@ def set_company(invite=None):
             ) as e:
                 flash(e.message, 'danger')
                 return render_template(
-                    'create_company.html', invite=invite, form=form)
-            if invite:
-                invite.invitee = current_user
-                db.session.add(invite)
+                    'create_company.html', form=form)
 
             return redirect(url_for('control_panel_company'))
+        flash(form.errors, 'danger')
         return render_template(
-            'create_company.html', invite=invite, form=form, mode='edit')
+            'create_company.html', form=form, mode='edit')
     if current_user.company:
         form.name.data = current_user.company.name
         form.org_nr.data = current_user.company.orgnumber
@@ -115,7 +113,7 @@ def set_company(invite=None):
         form.contact_name.data = current_user.company.contact_name
         form.email.data = current_user.company.contact_email
 
-    return render_template('create_company.html', invite=invite, form=form)
+    return render_template('create_company.html', form=form)
 
 
 @app.route('/set_sign', methods=['POST'])
@@ -481,14 +479,12 @@ def main():
 @app.route('/welcome')
 def landing_page():
     """Landing-page-view."""
-    create_company_invite = None
-    if not (current_user and current_user.is_authenticated and current_user.company):
-        create_company_invite = Invite.query\
-            .filter(
-                (Invite.type == 'create_company') &
-                (Invite.invitee_user_id == None) # noqa
-            ).first()
-    return render_template("landing.html", create_company_invite=create_company_invite)
+    return render_template("landing.html")
+
+@app.route('/help')
+def help():
+    """Helps-view."""
+    return render_template("help.html")
 
 
 @login_required

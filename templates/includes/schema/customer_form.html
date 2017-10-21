@@ -6,7 +6,7 @@
 
 <div class="row ">
   <div class="col-xs-12">
-    <h2>
+    <h2 class="mt-0">
       <span class="pointer" data-bind="text: construction.name()? construction.name : construction.address1() ? construction.address1 : 'Kunde', click: function(){$('#customer_form_collapse').collapse('toggle')}"></span>
       <!-- ko if: construction.name() -->
         <small class="text-primary text-nowrap" data-bind="text: construction.address1"></small>

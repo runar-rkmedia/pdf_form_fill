@@ -6,84 +6,88 @@
   <!-- Main jumbotron for a primary marketing message or call to action -->
   <div class="jumbotron">
     <div class="container">
-      <h1>Lager dokumentasjon for deg</h1>
-      <p>Ta et oppgjør med gjentagende informasjon og kjedelige produktoppslag. Gjør mer av det du faktisk vil.</p>
-      <p>Det har aldri vært så enkelt å fylle ut varmekabel-dokumentasjon.</p>
-      <p>
-        {% if create_company_invite %}
-          <a class="btn btn-primary btn-lg" href="{{ url_for('get_invite', invite_id=create_company_invite.id) }}" role="button">Registrer firma &raquo;</a>
+      <h1>Rask dokumentasjon fra flere produsenter</h1>
+      <p class="lead">En mye raskere og enklere måte å dokumentere varmekabler på.</p>
+
+      <p>Her fyller du bare ut basis-informasjon, og VarmeDok lager komplette dokumentassjon for deg, med utregninger, produktdata og mer. Selvsagt i henhold til krav om dokumentasjon fra hver enkelt produsent.</p>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12  mt-4 mb-4">
+        <div class="justified manufacturors text-center">
+          <div class="col-xs-3">
+            <img src="static/icons/Nexans.svg" alt="Nexans" class="img-responsive">
+            Nexans
+          </div>
+          <div class="col-xs-3">
+            <img src="static/icons/Thermofloor.svg" alt="Nexans" class="img-responsive">
+            Thermofloor
+          </div>
+          <div class="col-xs-3">
+            <img src="static/icons/Øglænd.svg" alt="Nexans" class="img-responsive">
+            Øglænd
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+
+        {% if current_user and current_user.is_authenticated and current_user.company %}
+          <a class="btn btn-primary " href="{{ url_for('view_form') }}" role="button">Kom i gang &raquo;</a>
+        {% else %}
+          <a class="btn btn-primary  mb-4" href="{{ url_for('set_company')}}" role="button">Registrer firma &raquo;</a>
           {% with login_text = True %}
           {% include 'includes/login_buttons.html' %}
           {% endwith %}
 
           <a class="help-block" data-toggle="collapse" href="#firma-registrert" aria-expanded="false" aria-controls="firma-registrert">Er firmaet ditt allerede registrert hos oss?</a>
           <div class="row">
-          <div class="collapse" id="firma-registrert">
-            <div class="well">
-                  <p>Spør en kollega etter en invitasjonslenke. Invitasjoner kan enkelt lages fra kontrollpanelet.</p>
-                </div>
-            </div>
-          </div>
-        {% elif current_user and current_user.is_authenticated and current_user.company %}
-          <a class="btn btn-primary btn-lg" href="{{ url_for('view_form') }}" role="button">Kom i gang &raquo;</a>
-        {% else %}
-          <a class="btn btn-primary btn-lg" role="button" type="button" data-toggle="collapse" data-target="#ingen-invitasjoner" aria-expanded="false" aria-controls="ingen-invitasjoner">Registrer firma &raquo;</a>
-          <div class="collapse" id="ingen-invitasjoner">
-            <div class="well">
-              <h2>Ikke flere invitasjoner igjen</h2>
-              <p>Vi har dessverre ingen ledige invitasjoner.</p>
-              <p>Sjekk inn her senere. Vi legger stadig ut nye invitasjoner.</p>
-              <p>Om du kjenner noen som bruker VarmeDok, kan du spørre de etter en invitasjon.</p>
-              <p>Alternativt, kan du alltid sende en hyggelig epost til oss.</p>
+            <div class="collapse" id="firma-registrert">
+              <div class="bs-callout bs-callout-info">
+                <h3>Invitasjon fra kollega</h3>
+                <p>Spør en kollega etter en invitasjonslenke. Invitasjoner kan enkelt lages fra kontrollpanelet.</p>
+                <p>Da slipper du å fylle ut firmainformasjon, og dere kan finne alle firmaets dokumentasjon av varmekabler samlet her, for enkel redigering.</p>
+              </div>
             </div>
           </div>
         {% endif %}
-      </p>
+      </div>
     </div>
   </div>
 
-  <div class="container">
-    <!-- Example row of columns -->
-    <div class="row">
-      <div class="col-md-6">
-        <h2>Smarte produkt-forslag</h2>
-        <img class="img-thumbnail" src="{{url_for('static', filename='images/Room.png')}}" alt="Beregner beste produkt for rom">
-        <p>Fortell oss størrelse på rommet, og hvilken type rom, og du får opp en sortert liste over de kablene som passer best her.
-        </p>
-      </div>
-      <!-- <div class="col-md-6">
-    <h2>Smarte adresse-forslag</h2>
-    <img src="{{url_for('static', filename='images/address.png')}}" alt="Smarte adresse-forslag">
-    <p>Det holder som oftest med tre første bokstavene i adressen, så fyller vi ut resten.
-    </p>
-    <p></p>
-  </div> -->
-      <div class="col-md-6">
-        <h2>Husker og regner</h2>
-        <p>Hvor mange Watt per m2 blir det? Hva var nå organisasjonsnummeret vårt igjen? Hva er nominell resistans for denne kabelen?
-        </p>
-        <p>Det trenger du ikke vite lengre.</p>
-        <p>Med produktinformasjon fra de største leverandørene av varmekabler, kan vi automatisk finne alt dette for deg.</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <h2>Allerede fylt ut</h2>
-      <p>Istedet for å starte med et tomt skjema, fyller vi heller ut informasjonen med gjetninger basert på erfaring. Er det en stue, er det sansynligvis 30 mA fordfeilvern, og en romføler.
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Smart utfylling</h2>
+      <img class="img-thumbnail" src="{{url_for('static', filename='images/Room.png')}}" alt="Beregner beste produkt for rom">
+      <p>Ved å fylle ut mest mulig for deg, med beregninger og innhenting av informasjon fra flere kilder vil det bli mindre arbeid for deg.
       </p>
-      <p></p>
     </div>
-    <div class="col-md-4">
-      <h2>En gang holder</h2>
-      <p>Legger du flere kabler for samme kunde? Flere kabler på samme rom?</p>
-      <p>Du trenger ikke fylle ut samme informasjon flere ganger.</p>
-      <p></p>
+    <div class="col-md-6">
+      <h2>Det har aldri vært så enkelt å fylle ut varmekabel-dokumentasjon.</h2>
+      Vi henter inn informasjon om produkter og andre kilder mens vi regner ut verdier for deg, slik at du bare trenger å fylle ut den mest nødvendige informasjonen.
     </div>
-    <div class="col-md-4">
-      <h2>Samler informasjon</h2>
-      <p>Skal du koble til en kabel som en kollega har installert? Da finner du dokumentasjon enkelt her, og med noen raske tastetrykk kan du legge til målingene.</p>
-      <p></p>
+    <div class="col-md-6">
+      <h2>Husker og regner</h2>
+      <p>Hvor mange Watt per m² blir det? Hva var nå organisasjonsnummeret vårt igjen? Hva er nominell resistans for denne kabelen?
+      </p>
+      <p>Det trenger du ikke vite lengre.</p>
+      <p>Med produktinformasjon fra de største leverandørene av varmekabler, kan vi automatisk finne alt dette for deg.</p>
     </div>
   </div>
-  <!-- /container -->
+  <div class="col-md-4">
+    <h2>Flere varmekabler på samme kunde og rom</h2>
+    <p>Har du allerede lagt til til en kunde, kan du raskt legge til en varmekabel til, uten å fylle ut kundeinformasjonen igjen. Alt blir samlet på samme kunde, og delt inn etter rom/sted.
+    </p>
+    <p></p>
+  </div>
+  <div class="col-md-4">
+    <h2>Alt lagres, alltid tilgjengelig</h2>
+    Alle dine kollegaers dokumentasjon lagres og er tilgjengelig for alle i ditt firma. Disse kan sees og endres når som helst.
+  </div>
+</div>
+<p class="text-center help-block">*Flere produsenter kommer</p>
 
 {% endblock %}

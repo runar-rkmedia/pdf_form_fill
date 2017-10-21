@@ -1,0 +1,20 @@
+  <a id="feedback-btn" class="collapse {{'in' if not expanded}} pull-right" data-bind="click: function(d,e) {$('#feedback-collapse').collapse('show'); $('#feedback-btn').collapse('hide')}" aria-expanded="false" aria-controls="feedback-collapse">
+    <span class="glyphicon glyphicon-education" aria-hidden="true"></span>
+    Tilbakemelding</a>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="collapse{{' in' if expanded}}" id="feedback-collapse">
+        <button type="button" class="{{' hidden ' if expanded}}close close-dark pull-right" aria-label="Close" data-bind="click: function(d,e){$(e.target).closest('.collapse').collapse('toggle')}">
+          <span aria-hidden="true">×</span>
+        </button>
+        <div class="bs-callout bs-callout-info mt-0">
+          <h3>
+            <span class="glyphicon glyphicon-education" aria-hidden="true"></span>
+            Tilbakemelding</h3>
+          <p>Vi setter veldig pris på din tilbakemelding. Har du noen
+            <a class="text-nowrap" href="https://feedback.userreport.com/3146daa4-1541-4ca5-a23a-3d7b9f8411d5/#ideas/popular">tanker du vil dele med oss?</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>

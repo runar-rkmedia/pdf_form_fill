@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% block body %}
-<div class="bs-callout bs-callout-primary">
-  <h4>Innlogging kreves</h4>
-  <p>Denne siden krever innlogging.</p>
-</div>
-<h1>Logg inn med</h1>
-{% include 'includes/login_buttons.html' %}
+  <div class="bs-callout bs-callout-primary mt-0">
+    <h4>Innlogging kreves</h4>
+    <p>Denne siden krever innlogging.</p>
+  </div>
+
+  <div class="row text-center">
+    <div class="col-xs-12">
+            {% with login_text = True %}
+            {% include 'includes/login_buttons.html' %}
+            {% endwith %}
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">{% with expanded = True %}
+      {% include 'includes/feedback-collapse.html' %}
+      {% endwith %}</div>
+  </div>
 {% endblock %}

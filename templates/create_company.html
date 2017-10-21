@@ -1,78 +1,86 @@
 <!DOCTYPE html>
 {% extends 'base.html' %}
 {% block body %}
+  {% include 'includes/feedback-collapse.html' %}
+
   <!-- ko with: company -->
   <div class="container">
     <div class="row">
-      <h2>Opprette firma-data.</h2>
-
-      Her kan du opprette et firma for bruk på denne siden.
+      {% if current_user.company %}
+        <h2>Redigere firma-data.</h2>
+        Her kan du endre informasjonen til deres firma.
+      {% else %}
+        <h2>Opprette firma-data.</h2>
+        Her kan du opprette et firma for bruk på denne siden.
+      {% endif %}
 
       {% from "includes/formhelpers.html" import render_field,
       render_field_group %}
       <hr>
       <form method="post" role="form">
-    <div class="form-group">
-      <label for="#company-search">
-        Søk etter firmaet ditt her, så hjelper vi deg med utfyllingen.
-      </label>
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="f.eks. Petter Strømmen AS"
-          data-bind=" value: search, typeahead: autocompleteBRreg, templateName: 'brregsuggestion-template', displayKey: 'adresse', onSelectFunction: suggestionOnSelect, remoteFilter:
+        <div class="form-group">
+          <label for="#company-search">
+            Søk etter firmaet ditt her, så hjelper vi deg med utfyllingen.
+          </label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="f.eks. Petter Strømmen AS"
+              data-bind=" value: search, typeahead: autocompleteBRreg, templateName: 'brregsuggestion-template', displayKey: 'adresse', onSelectFunction: suggestionOnSelect, remoteFilter:
   brreg_remote_filter, typeaheadOpts:{minLength:2}">
-        <span class="input-group-addon glyphicon glyphicon-search" aria-hidden="true"></span>
-      </div>
-    </div>
-    <hr>
-    <div data-bind="css: {hidden: !(orgnumber() && selected_result)}">
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          <h4>Firma-infomarsjon</h4>
+            <span class="input-group-addon glyphicon glyphicon-search" aria-hidden="true"></span>
+          </div>
         </div>
+        <hr>
+        <div data-bind="css: {hidden: !(orgnumber() && selected_result)}">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h4>Firma-infomarsjon</h4>
+            </div>
 
-        <div class="panel-body">{{ form.csrf_token }}
-      <div class="form-group">
-        {{ render_field(form.name, **{'data-bind':"valueWithInit: name", 'placeholder': 'Petter Strømmen AS'}) }}
-        {{ render_field(form.org_nr, **{'data-bind':" valueWithInit: orgnumber", 'placeholder': '123456789'}) }}
-      </div>
-      <!-- ko if: addresses().length > 0 -->
-      <div class="list-group">
-        <p data-bind="text: addresses().length == 1 ? 'Følgende adresse er funnet:' : 'Velg en adresse nedenfor som du vil bruke til utfylling av skjemaer.'" class="help-block"></p>
-        <!-- ko foreach: addresses -->
-        <div class="list-group-item" data-bind="css: {active: $parent.selected_address() == $index()}, click: $parent.set_address">
-          <span class="badge" data-bind="text: type"></span>
-          <h5 class="list-group-item-heading" data-bind="text: $data.adresse ? adresse : poststed"></h5>
-          <div data-bind="text: postnummer"></div>
-          <!-- ko if: $parent.selected_address() == $index() -->
-          <span class="glyphicon glyphicon-ok pull-right text-success large-text" aria-hidden="true"></span>
-          <!-- /ko -->
-          <div data-bind="text: poststed"></div>
-        </div>
-        <!-- /ko -->
-        <p>Er ikke dette riktig? Trykk
-          <a data-bind="click: function(d,e) {$('#company-address').removeClass('hidden'), $(e.target).parent().hide()}">her</a>
-          for å fylle inn manuelt</p>
-      </div>
-      <!-- /ko -->
-      <div id="company-address" {% if mode == 'create' %} class="hidden" {% endif %}>
-        <fieldset>
-          <div class="form-group">{{ render_field(form.address.address1, False, **{'data-bind':" valueWithInit: address1"}) }}
-            {{ render_field(form.address.address2, False, no_label=True, **{'data-bind':" valueWithInit: address2"}) }}</div>
-          <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.post_code,  **{'data-bind':" valueWithInit: post_code"}) }}</div>
-          <div class="col-xs-8
+            <div class="panel-body">{{ form.csrf_token }}
+              <div class="form-group">
+                {{ render_field(form.name, **{'data-bind':"valueWithInit: name", 'placeholder': 'Petter Strømmen AS'}) }}
+                {{ render_field(form.org_nr, **{'data-bind':" valueWithInit: orgnumber", 'placeholder': '123456789'}) }}
+              </div>
+              <!-- ko if: addresses().length > 0 -->
+              <div class="list-group">
+                <p data-bind="text: addresses().length == 1 ? 'Følgende adresse er funnet:' : 'Velg en adresse nedenfor som du vil bruke til utfylling av skjemaer.'" class="help-block"></p>
+                <!-- ko foreach: addresses -->
+                <div class="list-group-item" data-bind="css: {active: $parent.selected_address() == $index()}, click: $parent.set_address">
+                  <span class="badge" data-bind="text: type"></span>
+                  <h5 class="list-group-item-heading" data-bind="text: $data.adresse ? adresse : poststed"></h5>
+                  <div data-bind="text: postnummer"></div>
+                  <!-- ko if: $parent.selected_address() == $index() -->
+                  <span class="glyphicon glyphicon-ok pull-right text-success large-text" aria-hidden="true"></span>
+                  <!-- /ko -->
+                  <div data-bind="text: poststed"></div>
+                </div>
+                <!-- /ko -->
+                <p>Er ikke dette riktig? Trykk
+                  <a data-bind="click: function(d,e) {$('#company-address').removeClass('hidden'), $(e.target).parent().hide()}">her</a>
+                  for å fylle inn manuelt</p>
+              </div>
+              <!-- /ko -->
+              <div id="company-address" {% if not current_user.company %} class="hidden" {% endif %}>
+                <fieldset>
+                  <div class="form-group">{{ render_field(form.address.address1, False, **{'data-bind':" valueWithInit: address1"}) }}
+                    {{ render_field(form.address.address2, False, no_label=True, **{'data-bind':" valueWithInit: address2"}) }}</div>
+                  <div class="col-xs-4 zero-pad-l">{{ render_field(form.address.post_code,  **{'data-bind':" valueWithInit: post_code"}) }}</div>
+                  <div class="col-xs-8
     zero-pad-r">{{ render_field(form.address.post_area, **{'data-bind':" valueWithInit: post_area"}) }}</div>
-        </fieldset>
-      </div>
-      <div data-bind="text: addMapsScript()"></div>
-      {{ render_field(form.description, **{'placeholder':   'Vi kobler stort og smått'}) }}
-      {{ render_field(form.contact_name, **{'placeholder':   'Finn Feilen'}) }}
-      {{ render_field(form.email, **{'placeholder':   'finn@strømmen.no'}) }}
-      {{ render_field(form.phone, **{'placeholder':   '12345678, 00471234567890', 'pattern': '\d{8}|00[\d]{3,20}'})}}
-    </div>
-    </div>
+                </fieldset>
+              </div>
+              <div data-bind="text: addMapsScript()"></div>
+              {{ render_field(form.description, **{'placeholder':   'Vi kobler stort og smått'}) }}
+              {{ render_field(form.contact_name, **{'placeholder':   'Finn Feilen'}) }}
+              {{ render_field(form.installer_name, **{'placeholder':   'John Ekspert'}) }}
+              {{ render_field(form.email, **{'placeholder':   'finn@strømmen.no'}) }}
+              {{ render_field(form.phone, **{'placeholder':   '12345678', 'pattern': '\d{8}|00[\d]{3,20}'})}}
+              {{ render_field(form.mobile, **{'placeholder':   '98012345', 'pattern': '\d{8}|00[\d]{3,20}'})}}
+            </div>
+          </div>
           <div class="panel panel-info">
             <div class="panel-heading">
               <h4>Arbeidssted</h4>
@@ -87,16 +95,16 @@
                 <p>Sett markøren til ca der dere har flest installasjoner.
                   <p>Dette brukes til smarte addresse-forslag, som gjør det raskere for montørene å fylle ut addresser.</p>
                 </p>
-                <button type="button" class="btn btn-primary"  data-bind="click: set_geo_from_address">Bruk firmats adresse</button>
+                <button type="button" class="btn btn-primary" data-bind="click: set_geo_from_address">Bruk firmats adresse</button>
               </div>
               <div id="map" class="company-map"></div>
             </div>
           </div>
 
           <button type="submit" class="btn btn-primary">Lagre</button>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
   </div>
   <!-- /ko -->
 {% endblock %}

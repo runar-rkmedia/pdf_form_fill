@@ -3,30 +3,34 @@
 {% block body %}
   {% from "includes/formhelpers.html" import render_field,
   render_field_group %}
+  {% include 'includes/feedback-collapse.html' %}
+
   <div data-bind="text: customer().get()"></div>
   <!-- ko if: Products().products().length == 0 || customer().loading() -->
-    Henter inn data...
-    <span class="glyphicon glyphicon-refresh spinning"></span>
+  Henter inn data...
+  <span class="glyphicon glyphicon-refresh spinning"></span>
   <!-- /ko -->
   <!-- ko if: Products().products().length > 0 && customer -->
-  <div class="tab-content hidden" data-bind="css: {hidden: !customer || customer().loading()}" >
+  <div class="tab-content hidden" data-bind="css: {hidden: !customer || customer().loading()}">
     <div role="tabpanel" class="tab-pane {% if pane == 0 %}active{%endif%}" id="customer-pane">
       {% include 'includes/schema/customer_form.html' %}
 
     </div>
     <div role="tabpanel" class="tab-pane {% if pane == 1 %}active{%endif%}" id="customer-list-pane">
-      {% if pane == 1 %}<div data-bind="text: customerList().list().length == 0?customerList().get_list() : ''" ></div>{%endif%}
-      {% include 'customer_list.html' %}
+      {% if pane == 1 %}
+        <div data-bind="text: customerList().list().length == 0?customerList().get_list() : ''"></div>{%endif%}
+        {% include 'customer_list.html' %}
+      </div>
     </div>
-  </div>
+
     <!-- /ko -->
 
-{% endblock %}
-{% block script %}
-  {% include 'includes/schema/select_heating_cable_form.html' %}
-  {% include 'includes/schema/room_form_template.html' %}
-  {% include 'includes/schema/measurements.html' %}
-  {% include 'includes/schema/calculations_template.html' %}
-  {% include 'includes/schema/ohm_field.html' %}
-  {% include 'includes/schema/mohm_field.html' %}
-{% endblock %}
+  {% endblock %}
+  {% block script %}
+    {% include 'includes/schema/select_heating_cable_form.html' %}
+    {% include 'includes/schema/room_form_template.html' %}
+    {% include 'includes/schema/measurements.html' %}
+    {% include 'includes/schema/calculations_template.html' %}
+    {% include 'includes/schema/ohm_field.html' %}
+    {% include 'includes/schema/mohm_field.html' %}
+  {% endblock %}

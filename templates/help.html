@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block body %}
+  <h1>Hjelp</h1>
+  <p class="help-block">Her finner du svar på de mest vanlige spørsmålene.</p>
+
+  Du kan alltid gi
+  <a href="https://feedback.userreport.com/3146daa4-1541-4ca5-a23a-3d7b9f8411d5/#ideas/popular">
+    tilbakemelding</a>
+  om du ikke finner svar her, eller vil komme med nye ideer.
+
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingOne">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Hvordan invitere kollegaer?
+          </a>
+        </h4>
+      </div>
+      <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+          <p>Dette kan gjøres fra
+            <mark>Instillinger</mark>
+            i menyen til venstre. Der finner du en knapp for å invitere en kollega, og en lenke dukker opp.</p>
+          <p>Denne lenken sender du så til en kollega.</p>
+          <p>Du kan lage flere lenker samtidig. Husk at
+            <strong>en lenke bare er gyldig en gang</strong>, så hver kollega må ha en lenke hver.</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingTwo">
+        <h4 class="panel-title">
+          <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            Jeg finner ikke varmekabelen/matten jeg vil bruke
+          </a>
+        </h4>
+      </div>
+      <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+        <div class="panel-body">
+          <p>Det kan være at produktet ditt er filtrert bort. Dette justeres ved å benytte knappene merket
+            <mark>Produsenter</mark>,
+            <mark>Type</mark>
+            og
+            <mark>Innebruk/utebruk</mark>.
+          </p>
+          <p>Om alle bryterne er på, og du fortsatt ikke finner ditt produkt,
+            <a href="https://feedback.userreport.com/3146daa4-1541-4ca5-a23a-3d7b9f8411d5/#ideas/popular">ta kontakt.</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingThree">
+        <h4 class="panel-title">
+          <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            De utfylte skjemaene er helt tomme.
+          </a>
+        </h4>
+      </div>
+      <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+        <div class="panel-body">
+          <p>Dette skyldes som ofte programvaren som viser ditt skjema, og ikke skjemaet i seg selv. Skjemaet skal vises korrekt i Adobe Acrobat, Preview og de aller fleste .pdf-visere.</p>
+          <h3>iPhone/iPad-brukere</h3>
+          <p>iPhone og iPad kan for tiden ikke vise utfylte skjemaer som standard. Det anbefales å bruke en annen .pdf-viser.</p>
+          Det finnes mange apper som kan brukes, men vi kan anbefale <a href="https://itunes.apple.com/no/app/documents-by-readdle/id364901807?mt=8">Documents av Readdle - Readdle Inc. (gratis)</a>.
+          <p>Fra iOS 11 kan det også vises uten tilleggsapplikasjoner. Dette gjøres fra delingsknappen, å trykke så videre til <mark>Opprett pdf</mark></p>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingFour">
+        <h4 class="panel-title">
+          <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+            Hva vil det si at VarmeDok er i Beta?
+          </a>
+        </h4>
+      </div>
+      <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+        <div class="panel-body">
+          <p>Det betyr ganske enkelt at dette er et prosjekt under utvikling.</p>
+          <p>Det vil kunne komme endringer og tilleggsfunksjoner til nettsiden. Mindre feil kan forekomme, men all din dokumentasjon er trygg. </p>
+          <p>Dermed setter vi ekstra stor pris på din tilbakemelding. Vi legger ofte til nye ideer og hører på hva brukerene vil ha.</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingFive">
+        <h4 class="panel-title">
+          <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+            Koster dette noe?
+          </a>
+        </h4>
+      </div>
+      <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+        <div class="panel-body">
+          Nei, VarmeDok er gratis å bruke. VarmeDok har som mål å være gratis for all fremtid, og fri for reklame.
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

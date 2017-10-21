@@ -427,9 +427,10 @@ class CreateCompany(FlaskForm):
             )
         ])
     mobile = TelField(
-        'Telefon',
+        'Mobil (valgfritt)',
         description='8 siffer. For internasjonale nummer, bruk 00 foran.',
         validators=[
+            Optional(),
             Regexp(
                 '\d{8}|00[-\w]{3,20}',
                 message=

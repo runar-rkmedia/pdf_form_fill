@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <div class="panel-group" id="accordion-room">
   <!-- ko with: $data -->
-  <div class="panel" data-bind="css: {'panel-primary': !modified(), 'panel-mod-flag': modified()}">
+  <div class="panel panel-primary">
     <div class="panel-heading collapsed" data-toggle="collapse" aria-expanded="false" href="#room-form" aria-controls="#room-form">
       <h3 class="panel-title carrot">
 
@@ -22,9 +22,9 @@
             <span class="" data-bind="text:'&ensp;&mdash;&ensp;' +  room_effect().toFixed(0) + '&nbsp;W'"></span>
             <!-- /ko -->
           </span>
-          <!-- ko if: modified -->
-          <b>Ikke lagret</b>
-          <!-- /ko -->
+        <!-- ko if: modified -->
+        <span class="icon-mod-flag" aria-hidden="true"></span>
+        <!-- /ko -->
           <!-- ko if: sub_modified -->
           <span class="icon-mod-flag" aria-hidden="true"></span>
           <!-- /ko -->
