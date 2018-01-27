@@ -6,6 +6,7 @@ from .stamp import StampablePdfForm
 TRUE = 'On'
 FALSE = 'Off'
 
+
 class ThermoFloorCable(StampablePdfForm):
 
     def __init__(self, dictionary):
@@ -37,14 +38,23 @@ class ThermoFloorCable(StampablePdfForm):
             'customer.construction_change':
             FALSE if d.g('customer.construction_new') else TRUE,
         })
+        import pprint
+        pprint.pprint(d.g('company.installer_name'))
+        if d.g('company.installer_name'):
+            self.dictionary['installer'] = '{0} ({1})'.format(
+                d.g('company.installer_name'),
+                d.g('installed_by')
+            )
+        else:
+            self.dictionary['installer'] = d.g('installed_by')
+
         if (
             d.s_bool('control_system_room_sensor') or
             d.s_bool('control_system_floor_sensor') or
             d.s_bool('control_system_limit_sensor') or
             d.s_bool('control_system_other')
-            ):
+        ):
             self.dictionary['control_system_check_any'] = TRUE
-
 
     FILL_PDF_FILENAME = 'Dokumentasjonssider_varmekabel_Ver2016-A.pdf'
 
@@ -341,7 +351,7 @@ class ThermoFloorCable(StampablePdfForm):
             'field': 'Installasjonsveiledning for ThermoFloor gulvvarmesystemer',
             'type':  str
         },
-        'installed_by': {
+        'installer': {
             'text': 'TextInPDF',
             'field': 'Installatør',
             'type':  str

@@ -214,6 +214,8 @@ class FormHandler(object):
                 company.contact_name,
             'company.contact_phone':
                 company.contact_phone,
+            'company.installer_name':
+                company.installer_name,
             'company.contact_phone_f':
                 NumberFormatter.phone(company.contact_phone),
             'company.contact_email':

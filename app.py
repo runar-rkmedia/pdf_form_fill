@@ -111,6 +111,7 @@ def set_company():
         form.lng.data = current_user.company.lng
         form.phone.data = current_user.company.contact_phone
         form.contact_name.data = current_user.company.contact_name
+        form.installer_name.data = current_user.company.installer_name
         form.email.data = current_user.company.contact_email
 
     return render_template('create_company.html', form=form)

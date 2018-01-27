@@ -144,7 +144,7 @@ class Company(MyBaseModel, db.Model):
 
     @classmethod
     def update_or_create(cls, company_id, name, description, orgnumber, address,
-                         lat, lng, contact_name, contact_phone, contact_email):
+                         lat, lng, contact_name, installer_name, contact_phone, contact_email):
         """Update if exists, else create Company."""
         if not isinstance(address, Address):
             raise ValueError(
@@ -160,6 +160,8 @@ class Company(MyBaseModel, db.Model):
         company.lat = lat
         company.lng = lng
         company.contact_name = contact_name
+        company.installer_name = installer_name
+        print('fatali',installer_name)
         company.contact_phone = contact_phone
         company.contact_email = contact_email
         try:
@@ -176,6 +178,9 @@ class Company(MyBaseModel, db.Model):
     @classmethod
     def update_or_create_all(cls, form, company=None):
         """up."""
+        from pprint import pprint
+        pprint(form.data)
+        pprint(form.installer_name.data)
         if company:
             company_id = company.id
         else:
@@ -200,6 +205,7 @@ class Company(MyBaseModel, db.Model):
             lat=form.lat.data,
             lng=form.lng.data,
             contact_name=form.contact_name.data,
+            installer_name=form.installer_name.data,
             contact_phone=form.phone.data,
             contact_email=form.email.data,)
         return company

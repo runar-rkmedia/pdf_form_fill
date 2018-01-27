@@ -46,6 +46,9 @@ class Oegleand(StampablePdfForm):
         self.dict_update({
             'company.phone': d.g('company.contact.phone_f', d.g('company.contact.mobile_f')),
         })
+        self.dict_update({
+            'company.installer_name__': d.g('company.name'),
+        })
         self.dictionary['inside_specs.not_fireproof'] = FALSE if self.dictionary.get('inside_specs.fireproof') else TRUE
         self.dictionary['inside_specs.other_check'] = TRUE if self.dictionary.get('inside_specs.other') else FALSE
         if  1 <= self.dictionary.get('ground_fault_protection', -1) <= 30:
@@ -127,7 +130,7 @@ class Oegleand(StampablePdfForm):
             'field': 'Fart',
             'type': bool
         },
-        'company.name': {
+        'company.installer_name__': {
             'text': 'TextInPDF',
             'field': 'Firmanavn',
             'type': str
