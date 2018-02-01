@@ -318,7 +318,7 @@ export class HeatingCable extends Post {
         ground_fault_protection: 30
       }
     }
-    let heating_cable = Object.assign(default_data, heating_cable_)
+    let heating_cable = { ...default_data, ...heating_cable_ }
     this.product_id.extend(
       { required: true, number: true, min: 1000000, max: 9999999 })
     this.product_model = product_model

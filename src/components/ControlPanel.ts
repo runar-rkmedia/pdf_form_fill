@@ -98,10 +98,10 @@ export class Company extends Base {
     this.selected_result(data)
     this.addresses.removeAll()
     if (data.forretningsadresse) {
-      this.addresses.push(Object.assign(data.forretningsadresse, { type: 'Forretningsadresse' }))
+      this.addresses.push({ ...data.forretningsadresse, type: 'Forretningsadresse' })
     }
     if (data.postadresse) {
-      this.addresses.push(Object.assign(data.postadresse, { type: 'Postadresse' }))
+      this.addresses.push({ ...data.postadresse, type: 'Postadresse' })
     }
     if (this.addresses().length > 0) {
       this.set_address(this.addresses()[0])
@@ -116,8 +116,7 @@ export class Company extends Base {
   }
   get_geo_data(data: {}) {
     return $.get('https://maps.googleapis.com/maps/api/geocode/json',
-      Object.assign(data, { key: 'AIzaSyD8P9OPG70WZhy2YjxdF - oR47FQHJOiFFA' })
-    )
+      { ...data, key: 'AIzaSyD8P9OPG70WZhy2YjxdF - oR47FQHJOiFFA' })
   }
   get_geo_code(address: Brreg_addresse) {
     let query: any[] = []
@@ -156,12 +155,12 @@ export class Company extends Base {
   addMapsScript() {
     let googleMapsUrl = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD8P9OPG70WZhy2YjxdF-oR47FQHJOiFFA'
     if (!document.querySelectorAll(`[src="${googleMapsUrl}"]`).length) {
-      document.body.appendChild(Object.assign(
-        document.createElement('script'), {
-          type: 'text/javascript',
-          src: googleMapsUrl,
-          onload: () => this.doMapInitLogic()
-        }));
+      const script = document.createElement('script')
+      script.setAttribute('type', 'text/javascript')
+      script.setAttribute('src', googleMapsUrl)
+      script.onload = () => this.doMapInitLogic()
+
+      document.body.appendChild(script);
     } else {
       this.doMapInitLogic();
     }

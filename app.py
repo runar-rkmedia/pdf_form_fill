@@ -121,6 +121,7 @@ def set_company():
 @login_required
 def save_image():
     """Save an image from a data-string."""
+
     image_b64 = request.json.get('imageBase64')
     if not image_b64:
         raise my_exceptions.MyBaseException(

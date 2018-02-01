@@ -24,9 +24,8 @@ export class HeatingCableList extends ByID {
   has_key = (key: string, value: any[]): boolean => {
     for (let heating_cable of this.list()) {
       if (heating_cable.product()) {
-        if (value.includes((<any>heating_cable.product()!)[key])) {
+        if (value.indexOf((<any>heating_cable.product()!)[key]) >= 0) {
           return true
-
         }
       }
     }
