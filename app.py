@@ -13,7 +13,7 @@ from flask.json import jsonify
 
 import forms
 import my_exceptions
-from addresses.address_pymongo import get_address_from_street_name
+from norwegian_adresses.address_pymongo import get_address_from_street_name
 from flask_login import current_user, login_required
 # import schemas
 from form_handler import MultiForms
@@ -516,14 +516,7 @@ def search_address():
         results = get_address_from_street_name(**kwargs)
     except ValueError:
         return jsonify(None)
-    formated_result = []
-    for result in results:
-        formated_result.append({
-            'post_area': result['post_area'],
-            'post_code': result['post_code'],
-            'street_name': result['street_name'],
-        })
-    return jsonify(formated_result)
+    return jsonify(results)
 
 
 # hook up extensions to app
