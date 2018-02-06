@@ -41,6 +41,7 @@ marshmallow==2.13.6
 marshmallow-enum==1.4.1
 marshmallow-sqlalchemy==0.13.1
 mccabe==0.6.1
+norwegian-adresses==0.1.7
 nose2==0.6.5
 oauthlib==2.0.4
 olefile==0.44
